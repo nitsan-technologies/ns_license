@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2015-07-24T20:37:42Z" product-name="ns_license">
+		<header/>
+		<body>
+            <!-- License LLL Start-->
+            <trans-unit id="license-activation">
+                <source>License Management</source>
+            </trans-unit>
+            <trans-unit id="license-activation.product">
+                <source>Product</source>
+            </trans-unit>
+            <trans-unit id="license-activation.documentation">
+                <source>Docs</source>
+            </trans-unit>
+            <trans-unit id="license-activation.extkey">
+                <source>Extension Key</source>
+            </trans-unit>
+            <trans-unit id="license-activation.version">
+                <source>Version</source>
+            </trans-unit>
+            <trans-unit id="license-activation.license">
+                <source>License Key</source>
+            </trans-unit>
+            <trans-unit id="license-activation.action">
+                <source>Action</source>
+            </trans-unit>
+            <trans-unit id="license-deactivation.action">
+                <source>Deactivate Lincese</source>
+            </trans-unit>
+            <trans-unit id="license-activation.updateTo">
+                <source>Update to</source>
+            </trans-unit>
+            <trans-unit id="license-activation.latest">
+                <source>Latest Version</source>
+            </trans-unit>
+            <trans-unit id="license-activation.licenseKey">
+                <source>Register Your License Key</source>
+            </trans-unit>
+            <trans-unit id="license-activation.noRecordTitle">
+                <source>No License Found</source>
+            </trans-unit>
+            <trans-unit id="license-activation.noRecordDescription">
+                <source>You can buy premium TYPO3 products from our TYPO3 Marketplace at https://t3terminal.com/</source>
+            </trans-unit>
+            <trans-unit id="license-activation.overwriteExtension">
+                <source>Overwrite Your Existing Extension</source>
+            </trans-unit>
+            <trans-unit id="license-activation.licensepLaceholder">
+                <source>Enter your purchased license key</source>
+            </trans-unit>
+            <trans-unit id="license-activation.btn-activate">
+                <source>Activate Lincese &amp; Download Extension</source>
+            </trans-unit>
+            <trans-unit id="license-activation.update_extension">
+                <source>Update Extension</source>
+            </trans-unit>
+            <trans-unit id="license-activation.update_extension_msg">
+                <source>Are you sure want to overwrite existing TYPO3 extension? Before you proceed, we suggest you to take backup of your existing TYPO3 extension.</source>
+            </trans-unit>
+            <trans-unit id="license-activation.update_extension_btn_cancel">
+                <source>Cancel</source>
+            </trans-unit>
+            <trans-unit id="license-activation.update_extension_btn_update">
+                <source>Update</source>
+            </trans-unit>
+            <trans-unit id="license-activation.deactivation">
+                <source>The extension has been successfully deactivated.</source>
+            </trans-unit>
+            <trans-unit id="license-activation.activated">
+                <source>Your license key has been successfully activated.</source>
+            </trans-unit>
+            <trans-unit id="license-activation.overwrite_message">
+                <source>The extension is already available. If you still want to install it, then check the "overwrite extension" checkbox.</source>
+            </trans-unit>
+            <trans-unit id="license-activation.downloaded_successfully">
+                <source>Your extension is successfully downloaded, Now go to Admin Tools > Extensions Manager > Activate this TYPO3 extension</source>
+            </trans-unit>
+            <!-- Errors -->
+            <trans-unit id="errorMessage.license_not_entered">
+                <source>You should enter your License key</source>
+            </trans-unit>
+            <trans-unit id="errorMessage.error1">
+                <source>Your provided license key is not valid</source>
+            </trans-unit>
+            <trans-unit id="errorMessage.error2">
+                <source>Your license key alreayd used to other domains, You can not use this license key to more then %s domains</source>
+            </trans-unit>
+            <trans-unit id="errorMessage.error3">
+                <source>Your order is in "pedning status", For any questions, you can submit support ticket</source>
+            </trans-unit>
+            <trans-unit id="errorMessage.error4">
+                <source>Your license key is valid, but something wrong at our server. Please submit support ticket at https://t3terminal.com/support-submit-ticket</source>
+            </trans-unit>
+            <trans-unit id="errorMessage.default">
+                <source>Your provided license key is not valid</source>
+            </trans-unit>
+            <trans-unit id="license-activation.footerTitle">
+                <source>Do you need any help?</source>
+            </trans-unit>
+            <trans-unit id="license-activation.footerDescription">
+                <source>Please submit your ticket to get in touch with our support department via our support system.</source>
+            </trans-unit>
+            <trans-unit id="license-activation.footerButton">
+                <source>Submit Your Ticket</source>
+            </trans-unit>
+            <!-- License LLL End-->
+		</body>
+	</file>
+</xliff>
