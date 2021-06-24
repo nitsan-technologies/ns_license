@@ -116,7 +116,12 @@ class NsLicenseModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\Action
                     return false;
                 }
             } else {
-                return false;
+                $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_key=' . $extKey);
+                if ($licenseData->status) {
+                    return false;
+                } else {
+                    return true;
+                }
             }
         } else {
             $activePackages = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Package\PackageManager::class)->getActivePackages();
