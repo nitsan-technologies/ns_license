@@ -139,19 +139,21 @@ class NsLicenseModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\Action
                     $extData = $nsLicenseRepository->fetchData($extension);
                     if (empty($extData)) {
                         $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_key=' . $extension);
-                        if ($licenseData->status) {
+                        if ($licenseData->status && !is_null($licenseData)) {
                             $disableExtensions[] = $extension;
                             $extFolder = $this->siteRoot . '/typo3conf/ext/' . $extension . '/';
                             $this->updateFiles($extFolder, $extension);
                         }
                     } else {
                         $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $extData[0]['license_key']);
-                        if ($licenseData->status) {
-                            $nsLicenseRepository->updateData($licenseData);
-                        } elseif (!$licenseData->status) {
-                            $disableExtensions[] = $extension;
-                            $extFolder = $this->siteRoot . '/typo3conf/ext/' . $extension . '/';
-                            $this->updateFiles($extFolder, $extension);
+                        if (!is_null($licenseData)) {
+                            if ($licenseData->status) {
+                                $nsLicenseRepository->updateData($licenseData);
+                            } elseif (!$licenseData->status) {
+                                $disableExtensions[] = $extension;
+                                $extFolder = $this->siteRoot . '/typo3conf/ext/' . $extension . '/';
+                                $this->updateFiles($extFolder, $extension);
+                            }
                         }
                     }
                 }
