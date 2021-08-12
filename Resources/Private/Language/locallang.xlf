@@ -32,7 +32,10 @@
                 <source>Update to</source>
             </trans-unit>
             <trans-unit id="license-activation.latest">
-                <source>Latest Version</source>
+                <source>Up to date</source>
+            </trans-unit>
+            <trans-unit id="license-activation.Updates">
+                <source>Check for Updates </source>
             </trans-unit>
             <trans-unit id="license-activation.licenseKey">
                 <source>Register Your License Key</source>
@@ -103,6 +106,12 @@
             </trans-unit>
             <trans-unit id="license-activation.footerButton">
                 <source>Submit Your Ticket</source>
+            </trans-unit>
+            <trans-unit id="license.key.up_to_date">
+                <source>No extension update available.</source>
+            </trans-unit>
+            <trans-unit id="license.key.update">
+                <source>Extension update available.</source>
             </trans-unit>
             <!-- License LLL End-->
 		</body>

@@ -61,7 +61,8 @@
                                     </f:then>
                                     <f:else><p class="btn btn-success disabled"><f:translate key="license-activation.latest" /></p></f:else>
                                 </f:if>
-                                &nbsp;<f:link.action action="deactivation" class="btn btn-danger license-deactivation" arguments="{extension: extension}"><f:translate key="license-deactivation.action" /></f:link.action>
+                                <f:link.action action="checkUpdate" class="btn btn-warning license-reload text-white" arguments="{extKey: extension.extension_key}"><f:translate key="license-activation.Updates" /></f:link.action>
+                                <f:link.action action="deactivation" class="btn btn-danger license-deactivation" arguments="{extension: extension}"><f:translate key="license-deactivation.action" /></f:link.action>
                             </td>
                         </tr>
                     </f:for>

@@ -97,73 +97,99 @@ class NsLicenseModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\Action
      *
      * @return void
      */
-    public function connectToServer($extKey = null)
+    public function checkUpdateAction()
+    {
+        $params = $this->request->getArguments();
+        if (isset($params['extKey'])) {
+            $this->connectToServer($params['extKey'], 1);
+            $extData = $this->nsLicenseRepository->fetchData($params['extKey']);
+            if (version_compare($extData[0]['version'], $extData[0]['lts_version'], '==')) {
+                $message = LocalizationUtility::translate('license.key.up_to_date', 'NsLicense');
+            } else {
+                $message = LocalizationUtility::translate('license.key.update', 'NsLicense');
+            }
+            $this->addFlashMessage($message, $params['extKey'], \TYPO3\CMS\Core\Messaging\AbstractMessage::OK);
+        }
+        $this->redirect('list');
+    }
+
+    /**
+     * action list.
+     *
+     * @return void
+     */
+    public function connectToServer($extKey = null, $reload = 0)
     {
         $this->initializeAction();
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $nsLicenseRepository = $this->objectManager->get(\NITSAN\NsLicense\Domain\Repository\NsLicenseRepository::class);
-        if ($extKey) {
-            $extData = $nsLicenseRepository->fetchData($extKey);
-            if (!empty($extData)) {
-                $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $extData[0]['license_key']);
-                if ($licenseData->status) {
-                    $nsLicenseRepository->updateData($licenseData);
-                    return true;
-                } elseif (!$licenseData->status) {
-                    $disableExtensions[] = $extKey;
-                    $extFolder = $this->siteRoot . '/typo3conf/ext/' . $extKey . '/';
-                    $this->updateFiles($extFolder, $extKey);
-                    return false;
-                }
-            } else {
-                $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_key=' . $extKey);
-                if ($licenseData->status) {
-                    return false;
+        if (!isset($_COOKIE['serverConnectionTime']) || $reload) {
+            setcookie("serverConnectionTime", 1, time()+60*60*24*14);
+            $nsLicenseRepository = $this->objectManager->get(\NITSAN\NsLicense\Domain\Repository\NsLicenseRepository::class);
+            if ($extKey) {
+                $extData = $nsLicenseRepository->fetchData($extKey);
+                if (!empty($extData)) {
+                    $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $extData[0]['license_key']);
+                    if ($licenseData->status) {
+                        $nsLicenseRepository->updateData($licenseData);
+                        return true;
+                    } elseif (!$licenseData->status) {
+                        $disableExtensions[] = $extKey;
+                        $extFolder = $this->siteRoot . '/typo3conf/ext/' . $extKey . '/';
+                        $this->updateFiles($extFolder, $extKey);
+                        return false;
+                    }
                 } else {
-                    return true;
-                }
-            }
-        } else {
-            $activePackages = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Package\PackageManager::class)->getActivePackages();
-            $allExtensions = [];
-            foreach ($activePackages as $key => $value) {
-                $exp_key = explode('_theme', $key);
-                if ($exp_key[0] == 'ns') {
-                    if ($key != 'ns_basetheme' && $key != 'ns_license') {
-                        $allExtensions[] = $key;
+                    $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_key=' . $extKey);
+                    if ($licenseData->status) {
+                        return false;
+                    } else {
+                        return true;
                     }
                 }
-            }
-            if (count($allExtensions) > 0) {
-                foreach ($allExtensions as $extension) {
-                    $extData = $nsLicenseRepository->fetchData($extension);
-                    if (empty($extData)) {
-                        $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_key=' . $extension);
-                        if ($licenseData->status && !is_null($licenseData)) {
-                            $disableExtensions[] = $extension;
-                            $extFolder = $this->siteRoot . '/typo3conf/ext/' . $extension . '/';
-                            $this->updateFiles($extFolder, $extension);
+            } else {
+                $activePackages = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Package\PackageManager::class)->getActivePackages();
+                $allExtensions = [];
+                foreach ($activePackages as $key => $value) {
+                    $exp_key = explode('_theme', $key);
+                    if ($exp_key[0] == 'ns') {
+                        if ($key != 'ns_basetheme' && $key != 'ns_license') {
+                            $allExtensions[] = $key;
                         }
-                    } else {
-                        $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $extData[0]['license_key']);
-                        if (!is_null($licenseData)) {
-                            if ($licenseData->status) {
-                                $nsLicenseRepository->updateData($licenseData);
-                            } elseif (!$licenseData->status) {
+                    }
+                }
+                if (count($allExtensions) > 0) {
+                    foreach ($allExtensions as $extension) {
+                        $extData = $nsLicenseRepository->fetchData($extension);
+                        if (empty($extData)) {
+                            $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_key=' . $extension);
+                            if ($licenseData->status && !is_null($licenseData)) {
                                 $disableExtensions[] = $extension;
                                 $extFolder = $this->siteRoot . '/typo3conf/ext/' . $extension . '/';
                                 $this->updateFiles($extFolder, $extension);
                             }
+                        } else {
+                            $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $extData[0]['license_key']);
+                            if (!is_null($licenseData)) {
+                                if ($licenseData->status) {
+                                    $nsLicenseRepository->updateData($licenseData);
+                                } elseif (!$licenseData->status) {
+                                    $disableExtensions[] = $extension;
+                                    $extFolder = $this->siteRoot . '/typo3conf/ext/' . $extension . '/';
+                                    $this->updateFiles($extFolder, $extension);
+                                }
+                            }
                         }
                     }
-                }
-                if ($disableExtensions != '') {
-                    $disableExtensions = implode(',', $disableExtensions);
-                    setcookie('NsLicense', $disableExtensions, time() + 3600, '/', '', 0);
-                } else {
-                    setcookie('NsLicense', '', time() + 3600, '/', '', 0);
+                    if ($disableExtensions != '') {
+                        $disableExtensions = implode(',', $disableExtensions);
+                        setcookie('NsLicense', $disableExtensions, time() + 3600, '/', '', 0);
+                    } else {
+                        setcookie('NsLicense', '', time() + 3600, '/', '', 0);
+                    }
                 }
             }
+        } else {
+            return true;
         }
     }
 

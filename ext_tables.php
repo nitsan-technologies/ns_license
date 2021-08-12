@@ -32,7 +32,7 @@ if (TYPO3_MODE === 'BE') {
             'NsLicenseModule', // Submodule key
             '', // Position
             [
-                'NsLicenseModule' => 'list, update, activation, deactivation',
+                'NsLicenseModule' => 'list, update, activation, deactivation, checkUpdate',
             ],
             [
                 'access' => 'user,group',
