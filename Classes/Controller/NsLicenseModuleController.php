@@ -240,6 +240,12 @@ class NsLicenseModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\Action
         $params = $this->request->getArguments();
         $extKey = $params['extension']['extension_key'];
         if (isset($params['extension']['license_key']) && $params['extension']['license_key'] != '') {
+            $updateStatus = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['extension']['license_key'] . '&ns_updates=1');
+            if (!is_null($updateStatus) && !$updateStatus->status) {
+                $this->addFlashMessage(LocalizationUtility::translate('errorMessage.license_expired', 'NsLicense'), 'Your annual License key is expired', \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
+                $this->redirect('list');
+            }
+            
             $souceFolder = $this->siteRoot . 'typo3conf/ext/' . $extKey;
             if (is_dir($souceFolder)) {
                 $uploadFolder = $this->siteRoot . 'uploads/ns_license/' . $extKey . '/' . $params['extension']['version'];
@@ -254,6 +260,7 @@ class NsLicenseModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\Action
             }
             $params['extension']['license'] = $params['extension']['license_key'];
             $params['extension']['overwrite'] = true;
+            $params['extension']['isUpdateAction'] = true;
             $this->downloadExtension($params['extension']);
         } else {
             $this->addFlashMessage(LocalizationUtility::translate('errorMessage.license_not_entered', 'NsLicense'), 'ERROR', \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
@@ -270,6 +277,7 @@ class NsLicenseModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\Action
     {
         $params = $this->request->getArguments();
         if (isset($params['license']) && $params['license'] != '') {
+            $params['activation'] = true;
             $this->downloadExtension($params);
         } else {
             $this->addFlashMessage(LocalizationUtility::translate('errorMessage.license_not_entered', 'NsLicense'), 'ERROR', \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
@@ -304,7 +312,15 @@ class NsLicenseModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\Action
     {
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         if (isset($params['license']) && $params['license'] != '') {
-            $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license']);
+            if ($params['activation']) {
+                $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license'] . '&activation=1');
+            } else {
+                $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license']);
+            }
+            if ($params['extension']['isUpdateAction'] && !$licenseData->isUpdatable) {
+                $this->addFlashMessage(LocalizationUtility::translate('errorMessage.license_expired', 'NsLicense'), 'Your annual License key is expired', \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
+                $this->redirect('list');
+            }
             if ($licenseData->status) {
                 if ($_COOKIE['NsLicense'] != '') {
                     $disableExtensions = explode(',', $_COOKIE['NsLicense']);

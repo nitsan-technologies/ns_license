@@ -83,6 +83,9 @@
             <trans-unit id="errorMessage.license_not_entered">
                 <source>You should enter your License key</source>
             </trans-unit>
+            <trans-unit id="errorMessage.license_expired">
+                <source>Your annual license key is expired, To get new update you will need to renew your license. Please submit ticket at https://t3terminal.com/support-submit-ticket.</source>
+            </trans-unit>
             <trans-unit id="errorMessage.error1">
                 <source>Your provided license key is not valid</source>
             </trans-unit>
