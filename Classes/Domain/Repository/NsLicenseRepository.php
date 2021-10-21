@@ -42,7 +42,9 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
                     'product_link' => $data->product_link,
                     'documentation_link' => $data->documentation_link,
                     'version' => $extVersion,
-                    'lts_version' => $key
+                    'lts_version' => $key,
+                    'is_life_time' => $data->is_life_time,
+                    'expiration_date' => $data->expiration_date,
                 ])
                 ->execute();
         }
@@ -84,6 +86,8 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
            ->set('license_key', $data->license_key)
            ->set('extension_key', $data->extension_key)
            ->set('product_link', $data->product_link)
+           ->set('is_life_time', $data->is_life_time)
+           ->set('expiration_date', $data->expiration_date)
            ->set('documentation_link', $data->documentation_link);
         if ($ltsCheck == 1) {
             $queryBuilder->set('version', $key);

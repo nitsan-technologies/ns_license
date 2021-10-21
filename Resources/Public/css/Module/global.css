@@ -580,3 +580,6 @@ label {
 .module-docheader+.module-body {
     padding: 0px !important;
 }
+[id="typo3-inner-docbody"] {
+    padding: 24px;
+}

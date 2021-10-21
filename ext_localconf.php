@@ -14,7 +14,7 @@ if (TYPO3_MODE === 'BE' && version_compare(TYPO3_branch, '8.0', '>') && version_
         'NITSAN\\NsLicense\\Setup',
         'executeOnSignal'
     );
-} elseif (TYPO3_MODE === 'BE' && version_compare(TYPO3_branch, '9.0', '>')) {
+} elseif (TYPO3_MODE === 'BE' && version_compare(TYPO3_branch, '9.0', '>=')) {
     $signalSlotDispatcher = TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
     $signalSlotDispatcher->connect(
         \TYPO3\CMS\Extensionmanager\Utility\InstallUtility::class,

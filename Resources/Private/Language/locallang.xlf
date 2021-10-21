@@ -13,6 +13,24 @@
             <trans-unit id="license-activation.documentation">
                 <source>Docs</source>
             </trans-unit>
+            <trans-unit id="license-activation.licenseType">
+                <source>License Type</source>
+            </trans-unit>
+            <trans-unit id="license-activation.licenseType.life_time">
+                <source>Life Time</source>
+            </trans-unit>
+            <trans-unit id="license-activation.licenseType.annual">
+                <source>Annual</source>
+            </trans-unit>
+            <trans-unit id="license-activation.expiration_date">
+                <source>Expiration</source>
+            </trans-unit>
+            <trans-unit id="license-activation.expiration_date.na">
+                <source>N/A</source>
+            </trans-unit>
+            <trans-unit id="license-activation.expiration_date.expired">
+                <source>Expired</source>
+            </trans-unit>
             <trans-unit id="license-activation.extkey">
                 <source>Extension Key</source>
             </trans-unit>
@@ -26,7 +44,7 @@
                 <source>Action</source>
             </trans-unit>
             <trans-unit id="license-deactivation.action">
-                <source>Deactivate Lincese</source>
+                <source>Deactivate</source>
             </trans-unit>
             <trans-unit id="license-activation.updateTo">
                 <source>Update to</source>
@@ -53,7 +71,7 @@
                 <source>Enter your purchased license key</source>
             </trans-unit>
             <trans-unit id="license-activation.btn-activate">
-                <source>Activate Lincese &amp; Download Extension</source>
+                <source>Activate License &amp; Download Extension</source>
             </trans-unit>
             <trans-unit id="license-activation.update_extension">
                 <source>Update Extension</source>

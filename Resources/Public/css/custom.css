@@ -54,8 +54,4 @@
     .ns-license-loader img {
         max-width: 120px;
     }
-    .ns-license-activation-table > thead > tr > th,
-    .ns-license-activation-table > tbody > tr > td{
-        padding: 15px 20px;
-    }
 }

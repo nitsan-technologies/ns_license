@@ -2,13 +2,17 @@
 
 namespace NITSAN\NsLicense\Controller;
 
+use NITSAN\NsLicense\Domain\Repository\NsLicenseRepository;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Annotation\Inject as inject;
+use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+use TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException;
+use TYPO3\CMS\Extensionmanager\Service\ExtensionManagementService;
+use TYPO3\CMS\Extensionmanager\Utility\FileHandlingUtility;
 
 /***
  *
@@ -24,13 +28,12 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 /**
  * NsLicenseModuleController.
  */
-class NsLicenseModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
+class NsLicenseModuleController extends ActionController
 {
     /**
      * NsLicenseRepository.
      *
-     * @var \NITSAN\NsLicense\Domain\Repository\NsLicenseRepository
-     * @inject
+     * @var NsLicenseRepository
      */
     protected $nsLicenseRepository = null;
 
@@ -44,6 +47,11 @@ class NsLicenseModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\Action
 
     protected $installUtility = null;
 
+    public function injectNsLicenseRepository(NsLicenseRepository $nsLicenseRepository)
+    {
+        $this->nsLicenseRepository = $nsLicenseRepository;
+    }
+
     /**
      * Initializes this object.
      *
@@ -54,6 +62,8 @@ class NsLicenseModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\Action
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->contentObject = GeneralUtility::makeInstance('TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer');
         $this->installUtility = GeneralUtility::makeInstance(\TYPO3\CMS\Extensionmanager\Utility\InstallUtility::class);
+        $this->managementService = GeneralUtility::makeInstance(ExtensionManagementService::class);
+        $this->fileHandlingUtility = GeneralUtility::makeInstance(FileHandlingUtility::class);
     }
 
     /**
@@ -75,7 +85,7 @@ class NsLicenseModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\Action
             $this->isComposerMode = \TYPO3\CMS\Core\Core\Bootstrap::usesComposerClassLoading();
             if ($this->isComposerMode) {
                 $commonEnd = explode('/', GeneralUtility::getIndpEnv('TYPO3_DOCUMENT_ROOT'));
-                unset($commonEnd[count($commonEnd)-1]);
+                unset($commonEnd[count($commonEnd) - 1]);
                 $this->composerSiteRoot = implode('/', $commonEnd) . '/';
             }
         }
@@ -89,6 +99,11 @@ class NsLicenseModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\Action
     public function listAction()
     {
         $extensions = $this->nsLicenseRepository->fetchData();
+        foreach ($extensions as $key => $extension) {
+            if ($extension['is_life_time'] != 1) {
+                $extensions[$key]['days'] = (int) floor((($extension['expiration_date'] - time()) + 86400) / 86400);
+            }
+        }
         $this->view->assign('extensions', $extensions);
     }
 
@@ -123,7 +138,7 @@ class NsLicenseModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\Action
         $this->initializeAction();
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         if (!isset($_COOKIE['serverConnectionTime']) || $reload) {
-            setcookie("serverConnectionTime", 1, time()+60*60*24*14);
+            setcookie('serverConnectionTime', 1, time() + 60 * 60 * 24 * 14);
             $nsLicenseRepository = $this->objectManager->get(\NITSAN\NsLicense\Domain\Repository\NsLicenseRepository::class);
             if ($extKey) {
                 $extData = $nsLicenseRepository->fetchData($extKey);
@@ -131,11 +146,13 @@ class NsLicenseModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\Action
                     $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $extData[0]['license_key']);
                     if ($licenseData->status) {
                         $nsLicenseRepository->updateData($licenseData);
+
                         return true;
                     } elseif (!$licenseData->status) {
                         $disableExtensions[] = $extKey;
                         $extFolder = $this->siteRoot . '/typo3conf/ext/' . $extKey . '/';
                         $this->updateFiles($extFolder, $extKey);
+
                         return false;
                     }
                 } else {
@@ -194,7 +211,7 @@ class NsLicenseModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\Action
     }
 
     /**
-     * updateFiles
+     * updateFiles.
      *
      * @return void
      */
@@ -220,7 +237,7 @@ class NsLicenseModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\Action
     }
 
     /**
-     * Wrapper function for unloading extensions
+     * Wrapper function for unloading extensions.
      *
      * @param string $extensionKey
      */
@@ -245,7 +262,7 @@ class NsLicenseModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\Action
                 $this->addFlashMessage(LocalizationUtility::translate('errorMessage.license_expired', 'NsLicense'), 'Your annual License key is expired', \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
                 $this->redirect('list');
             }
-            
+
             $souceFolder = $this->siteRoot . 'typo3conf/ext/' . $extKey;
             if (is_dir($souceFolder)) {
                 $uploadFolder = $this->siteRoot . 'uploads/ns_license/' . $extKey . '/' . $params['extension']['version'];
@@ -303,8 +320,9 @@ class NsLicenseModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\Action
     }
 
     /**
-     * action activation
-     * @param array $params.
+     * action activation.
+     *
+     * @param array $params
      *
      * @return void
      */
@@ -343,7 +361,6 @@ class NsLicenseModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\Action
                     $extKey = $licenseData->extension_key . '.zip';
                     $extKeyPath = $this->siteRoot . 'typo3temp/' . $extKey;
                     $this->downloadZipFile($ltsext, $licenseData->license_key, $extKeyPath, $licenseData->user_name);
-                    $this->uploadExtension = $objectManager->get(\TYPO3\CMS\Extensionmanager\Controller\UploadExtensionFileController::class);
                     try {
                         if ($this->isComposerMode) {
                             $zipService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\Archive\ZipService::class);
@@ -358,7 +375,13 @@ class NsLicenseModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\Action
                                 $zipService->extract($extKeyPath, $extensionDir);
                             }
                         } else {
-                            $this->uploadExtension->extractExtensionFromFile($extKeyPath, $extKey, ($params['overwrite'] ? true : false));
+                            if (version_compare(TYPO3_branch, '11.0', '>')) {
+                                $extKey = str_replace('.zip', '', $extKey);
+                                $this->extractExtensionFromZipFile($extKeyPath, $extKey, ($params['overwrite'] ? true : false));
+                            } else {
+                                $this->uploadExtension = $objectManager->get(\TYPO3\CMS\Extensionmanager\Controller\UploadExtensionFileController::class);
+                                $this->uploadExtension->extractExtensionFromFile($extKeyPath, $extKey, ($params['overwrite'] ? true : false));
+                            }
                         }
                         unlink($extKeyPath);
                     } catch (\Exception $e) {
@@ -375,7 +398,6 @@ class NsLicenseModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\Action
                     $extKey = $licenseData->extension_key . '.zip';
                     $extKeyPath = $this->siteRoot . 'typo3temp/' . $extKey;
                     $this->downloadZipFile($ltsext, $licenseData->license_key, $extKeyPath, $licenseData->user_name);
-                    $this->uploadExtension = $objectManager->get(\TYPO3\CMS\Extensionmanager\Controller\UploadExtensionFileController::class);
                     try {
                         if ($this->isComposerMode) {
                             $zipService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\Archive\ZipService::class);
@@ -390,7 +412,13 @@ class NsLicenseModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\Action
                                 $zipService->extract($extKeyPath, $extensionDir);
                             }
                         } else {
-                            $this->uploadExtension->extractExtensionFromFile($extKeyPath, $extKey, ($params['overwrite'] ? true : false));
+                            if (version_compare(TYPO3_branch, '11.0', '>')) {
+                                $extKey = str_replace('.zip', '', $extKey);
+                                $this->extractExtensionFromZipFile($extKeyPath, $extKey, ($params['overwrite'] ? true : false));
+                            } else {
+                                $this->uploadExtension = $objectManager->get(\TYPO3\CMS\Extensionmanager\Controller\UploadExtensionFileController::class);
+                                $this->uploadExtension->extractExtensionFromFile($extKeyPath, $extKey, ($params['overwrite'] ? true : false));
+                            }
                         }
                         unlink($extKeyPath);
                     } catch (\Exception $e) {
@@ -408,18 +436,31 @@ class NsLicenseModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\Action
                 }
                 $this->addFlashMessage(LocalizationUtility::translate('license-activation.downloaded_successfully', 'NsLicense'), 'EXT:' . $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::OK);
                 if ($params['extension_key'] == 'ns_revolution_slider') {
-                    $mediaSouceFolder = $this->siteRoot . 'uploads/ns_license/' . $params['extension_key'] . '/' . $params['version'] . '/vendor/revslider/media/';
-                    $mediaUploadFolder = $this->siteRoot . 'typo3conf/ext/' . $params['extension_key'] . '/vendor/revslider/media/';
-                    try {
-                        GeneralUtility::rmdir($mediaUploadFolder, true);
-                        GeneralUtility::mkdir_deep($mediaUploadFolder);
-                        GeneralUtility::copyDirectory($mediaSouceFolder, $mediaUploadFolder);
-                    } catch (\Exception $e) {
-                        $this->addFlashMessage($e->getMessage(), 'Extension not updated', \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
-                        $this->redirect('list');
+                    $rsInstallUtility = GeneralUtility::makeInstance(\NITSAN\NsRevolutionSlider\Slots\InstallUtility::class);
+                    $rsInstallUtility->schemaUpdate();
+                    $pluginsFolder = $this->siteRoot . 'uploads/ns_license/ns_revolution_slider/' . $params['version'] . '/vendor/wp/wp-content/plugins/';
+                    $mainPluginsUploadFolder = $this->siteRoot . 'typo3conf/ext/ns_revolution_slider/vendor/wp/wp-content/plugins/';
+                    $folders = GeneralUtility::get_dirs($pluginsFolder);
+                    if ($folders) {
+                        try {
+                            foreach ($folders as $folder) {
+                                if ($folder !== 'revslider') {
+                                    $pluginsSouceFolder = $pluginsFolder . $folder . '/';
+                                    $pluginsUploadFolder = $mainPluginsUploadFolder . $folder . '/';
+
+                                    GeneralUtility::rmdir($pluginsUploadFolder, true);
+                                    GeneralUtility::mkdir_deep($pluginsUploadFolder);
+                                    GeneralUtility::copyDirectory($pluginsSouceFolder, $pluginsUploadFolder);
+                                }
+                            }
+                        } catch (\Exception $e) {
+                            $this->addFlashMessage($e->getMessage(), 'Extension not updated', \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
+                            $this->redirect('list');
+                        }
                     }
-                    $revsliderSouceFolder = $this->siteRoot . 'uploads/ns_license/' . $params['extension_key'] . '/' . $params['version'] . '/vendor/revslider/revslider/public/assets/';
-                    $revsliderUploadFolder = $this->siteRoot . 'typo3conf/ext/' . $params['extension_key'] . '/vendor/revslider/revslider/public/assets/';
+
+                    $revsliderSouceFolder = $this->siteRoot . 'uploads/ns_license/ns_revolution_slider/' . $params['version'] . '/vendor/wp/wp-content/uploads/';
+                    $revsliderUploadFolder = $this->siteRoot . 'typo3conf/ext/ns_revolution_slider/vendor/wp/wp-content/uploads/';
                     try {
                         GeneralUtility::rmdir($revsliderUploadFolder, true);
                         GeneralUtility::mkdir_deep($revsliderUploadFolder);
@@ -449,8 +490,49 @@ class NsLicenseModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\Action
     }
 
     /**
-     * fetchLicense
-     * @param string $license.
+     * Extracts a given zip file and installs the extension.
+     *
+     * @param string $uploadedFile Path to uploaded file
+     * @param bool   $overwrite    Overwrite existing extension if TRUE
+     *
+     * @throws ExtensionManagerException
+     */
+    protected function extractExtensionFromZipFile(string $uploadedFile, string $extensionKey, bool $overwrite = false): string
+    {
+        $isExtensionAvailable = $this->managementService->isAvailable($extensionKey);
+        if (!$overwrite && $isExtensionAvailable) {
+            throw new ExtensionManagerException('Extension is already available and overwriting is disabled.', 1342864311);
+        }
+        if ($isExtensionAvailable) {
+            $this->copyExtensionFolderToTempFolder($extensionKey);
+        }
+        $this->removeFromOriginalPath = true;
+        $this->fileHandlingUtility->unzipExtensionFromFile($uploadedFile, $extensionKey);
+
+        return $extensionKey;
+    }
+
+    /**
+     * Copies current extension folder to typo3temp directory as backup.
+     *
+     * @param string $extensionKey
+     *
+     * @throws \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException
+     */
+    protected function copyExtensionFolderToTempFolder($extensionKey)
+    {
+        $this->extensionBackupPath = Environment::getVarPath() . '/transient/' . $extensionKey . substr(sha1($extensionKey . microtime()), 0, 7) . '/';
+        GeneralUtility::mkdir($this->extensionBackupPath);
+        GeneralUtility::copyDirectory(
+            $this->fileHandlingUtility->getExtensionDir($extensionKey),
+            $this->extensionBackupPath
+        );
+    }
+
+    /**
+     * fetchLicense.
+     *
+     * @param string $license
      *
      * @return array|null
      **/
@@ -478,11 +560,12 @@ class NsLicenseModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\Action
     }
 
     /**
-     * downloadZipFile
-     * @param string $extensionDownloadUrl.
-     * @param string $license.
-     * @param string $extKeyPath.
-     * @param string $userName.
+     * downloadZipFile.
+     *
+     * @param string $extensionDownloadUrl
+     * @param string $license
+     * @param string $extKeyPath
+     * @param string $userName
      *
      * @return void
      */

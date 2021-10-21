@@ -25,14 +25,18 @@ if (TYPO3_MODE === 'BE') {
                 'name' => 'nitsan'
             ];
         }
-
+        if (version_compare(TYPO3_branch, '10.0', '>=')) {
+            $controller = \NITSAN\NsLicense\Controller\NsLicenseModuleController::class;
+        } else {
+            $controller = 'NsLicenseModule';
+        }
         \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
             'NITSAN.NsLicense',
             'nitsan', // Make module a submodule of 'nitsan'
             'NsLicenseModule', // Submodule key
             '', // Position
             [
-                'NsLicenseModule' => 'list, update, activation, deactivation, checkUpdate',
+                $controller => 'list, update, activation, deactivation, checkUpdate',
             ],
             [
                 'access' => 'user,group',

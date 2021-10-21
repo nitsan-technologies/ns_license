@@ -12,6 +12,8 @@ CREATE TABLE ns_product_license (
   	documentation_link text,
 	version varchar(15) DEFAULT NULL,
 	lts_version varchar(15) NOT NULL,
+	is_life_time varchar(5) DEFAULT NULL,
+	expiration_date int(11) DEFAULT '0' NOT NULL,
 
 	PRIMARY KEY (uid)
 );
