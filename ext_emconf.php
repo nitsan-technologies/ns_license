@@ -18,7 +18,7 @@ $EM_CONF[$_EXTKEY] = [
   'author_email' => 'sanjay@nitsan.in',
   'author_company' => 'NITSAN Technologies Pvt Ltd',
   'state' => 'stable',
-  'version' => '1.2.0',
+  'version' => '1.2.1',
   'constraints' =>
   [
     'depends' =>

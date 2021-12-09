@@ -70,7 +70,7 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         return $isAvailable;
     }
 
-    public function updateData($data, $ltsCheck = 0)
+    public function updateData($data, $ltsCheck = 0, $updateTag = null)
     {
         end($data->extension_download_url);
         $key = key($data->extension_download_url);
@@ -90,7 +90,11 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
            ->set('expiration_date', $data->expiration_date)
            ->set('documentation_link', $data->documentation_link);
         if ($ltsCheck == 1) {
-            $queryBuilder->set('version', $key);
+            if (is_null($updateTag)) {
+                $queryBuilder->set('version', $key);
+            } else {
+                $queryBuilder->set('version', $updateTag);
+            }
         }
         $queryBuilder->set('lts_version', $key)
            ->execute();

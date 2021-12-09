@@ -4,10 +4,8 @@ define([
     'TYPO3/CMS/NsLicense/Main',
     'TYPO3/CMS/Backend/jquery.clearable'
 ], function ($, Model) {
-    $('.license-activation .license-activation-latest').on('click', function(e){
-        e.preventDefault();
-        $(this).addClass('active');
-        $('#activation-modal').modal('show');
+    $('.ns-license-activation-table .ns-license-actions-btns .btn-download').on('click', function(e){
+        $('#nsLicenseLoaderUpdate').show();
     });
     $('#activation-modal .activation-modal-update').on('click', function(e){
         var url = $('.license-activation .license-activation-latest.active').attr('href');
@@ -17,6 +15,12 @@ define([
     });
     $('.license-activation .license-deactivation').on('click', function(e) {
         $('#nsLicenseLoader').show();
+    });
+    if ($('#extension-info-modal').length) {
+        $('#extension-info-modal').modal('show');
+    };
+    $('.activation-modal').on('click', function(e) {
+        $('.modal').modal('hide');
     });
     $('.custom-reset').on('click', function(){
         var that = $(this);
