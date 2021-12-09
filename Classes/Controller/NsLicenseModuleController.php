@@ -13,9 +13,7 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException;
 use TYPO3\CMS\Extensionmanager\Service\ExtensionManagementService;
 use TYPO3\CMS\Extensionmanager\Utility\FileHandlingUtility;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
-session_start();
 /***
  *
  * This file is part of the "[NITSAN] NS Bas" Extension for TYPO3 CMS.
@@ -100,50 +98,6 @@ class NsLicenseModuleController extends ActionController
      */
     public function listAction()
     {
-    	$params = $this->request->getArguments();
-    	if ($params) {
-    		if ($params['updateApi'] == 1 || $params['availableApi'] == 1) {
-    			$licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['extension']['license_key'] . '&infobox=1', true);
-    		} else {
-    			$licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license'] . '&infobox=1', true);
-    		}
-            if (isset($licenseData['error_code'])) {
-                $this->addFlashMessage(LocalizationUtility::translate('errorMessage.' . $licenseData['error_code'], 'NsLicense'), 'Your annual License key is expired', \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
-                $this->redirect('list');
-            }
-    		if ($licenseData) {
-    			$version = VersionNumberUtility::getNumericTypo3Version();
-    			foreach ($licenseData['extension_download_url'] as $key => $value) {
-    				$licenseData['extension_download_url'][$key] = $value;
-    				$opration = preg_replace('/[0-9.]+/', '', $value['core']);
-					$core = explode($opration, $value['core']);
-					if (version_compare($version, $core[1], $opration)) {
-    					$licenseData['extension_download_url'][$key]['active'] = true;
-    				} else {
-    					$licenseData['extension_download_url'][$key]['active'] = false;
-    				}
-    				$i = (int)$core[1];
-    				unset($licenseData['extension_download_url'][$key]['core']);
-    				for ($i ; $i <= $version; $i++) { 
-    					$licenseData['extension_download_url'][$key]['core'][] = $i;
-    				}
-    			}
-    			if ($params['updateApi']) {
-	    			$this->view->assign('updateApi', true);
-    			}
-    			if ($params['availableApi']) {
-    				$this->view->assign('updateApi', true);
-    			}
-    			if ($licenseData['is_life_time'] == 1) {
-	                $licenseData['days'] = 1;
-	            } else {
-	            	$licenseData['days'] = (int) floor((($licenseData['expiration_date'] - time()) + 86400) / 86400);
-	            }
-    			$licenseData['overwrite'] = (int) ($params['updateApi'] ? 1 : $params['overwrite']);
-    			$_SESSION[$licenseData['extension_key']] = $licenseData;
-    			$this->view->assign('extensionInfo', (array) $licenseData);
-    		}
-    	}
         $extensions = $this->nsLicenseRepository->fetchData();
         foreach ($extensions as $key => $extension) {
             if ($extension['is_life_time'] != 1) {
@@ -365,105 +319,6 @@ class NsLicenseModuleController extends ActionController
         $this->redirect('list');
     }
 
-        /**
-     * action activation.
-     *
-     * @return void
-     */
-    public function downloadAction()
-    {
-        $params = $this->request->getArguments();
-        if ($params && isset($_SESSION[$params['extension_key']])) {
-        	$licenseData = $_SESSION[$params['extension_key']];
-        	$downloadUrl = $licenseData['extension_download_url'][$params['tag']]['url'];
-            if ($params['overwrite'] == 1) {
-                $licenseData['overwrite'] = true;
-            }
-            $extKey = $licenseData['extension_key'] . '.zip';
-        	$extKeyPath = $this->siteRoot . 'typo3temp/' . $extKey;
-        	$existingData = $this->nsLicenseRepository->fetchData($licenseData['extension_key']);
-        	$this->downloadZipFile($downloadUrl, $licenseData['license_key'], $extKeyPath, $licenseData['user_name']);
-            try {
-                if ($this->isComposerMode) {
-                    $zipService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\Archive\ZipService::class);
-                    $extensionDir = $this->composerSiteRoot . 'extensions/' . $licenseData['extension_key'];
-                    if ($zipService->verify($extKeyPath)) {
-                        if (!is_dir($extensionDir)) {
-                            GeneralUtility::mkdir_deep($extensionDir);
-                        } else {
-                            GeneralUtility::rmdir($extensionDir, true);
-                            GeneralUtility::mkdir_deep($extensionDir);
-                        }
-                        $zipService->extract($extKeyPath, $extensionDir);
-                    }
-                } else {
-                    if (version_compare(TYPO3_branch, '11.0', '>')) {
-                        $this->extractExtensionFromZipFile($extKeyPath, $licenseData['extension_key'], ($licenseData['overwrite'] ? true : false));
-                    } else {
-                        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-                        $this->uploadExtension = $objectManager->get(\TYPO3\CMS\Extensionmanager\Controller\UploadExtensionFileController::class);
-                        $this->uploadExtension->extractExtensionFromFile($extKeyPath, $licenseData['extension_key'], ($licenseData['overwrite'] ? true : false));
-                    }
-                }
-                unlink($extKeyPath);
-                if ( count($existingData) > 0 ) {
-                	$this->nsLicenseRepository->updateData( (object) $licenseData, 1, $params['tag']);	
-                } else {
-                	$this->nsLicenseRepository->insertNewData( (object) $licenseData, $params['tag']);
-                }
-            } catch (\Exception $e) {
-                if (strpos($e->getMessage(), 'Unable to open zip') !== false) {
-                    $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense'), $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
-                } else {
-                    $this->addFlashMessage(LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'), $licenseData['extension_key'], \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
-                }
-                $this->redirect('list');
-            }
-	        $this->addFlashMessage(LocalizationUtility::translate('license-activation.downloaded_successfully', 'NsLicense'), 'EXT:' . $licenseData['extension_key'], \TYPO3\CMS\Core\Messaging\AbstractMessage::OK);
-            if ($licenseData['extension_key'] == 'ns_revolution_slider') {
-                $activedNsRevolution = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Package\PackageManager::class)->isPackageActive('ns_revolution_slider');
-            }
-	        if ($licenseData['extension_key'] == 'ns_revolution_slider' && $activedNsRevolution && count($existingData) > 0 ) {
-	            $rsInstallUtility = GeneralUtility::makeInstance(\NITSAN\NsRevolutionSlider\Slots\InstallUtility::class);
-	            $rsInstallUtility->schemaUpdate();
-	            $pluginsFolder = $this->siteRoot . 'uploads/ns_license/ns_revolution_slider/' . $existingData['version'] . '/vendor/wp/wp-content/plugins/';
-	            $mainPluginsUploadFolder = $this->siteRoot . 'typo3conf/ext/ns_revolution_slider/vendor/wp/wp-content/plugins/';
-	            $folders = GeneralUtility::get_dirs($pluginsFolder);
-	            if ($folders) {
-	                try {
-	                    foreach ($folders as $folder) {
-	                        if ($folder !== 'revslider') {
-	                            $pluginsSouceFolder = $pluginsFolder . $folder . '/';
-	                            $pluginsUploadFolder = $mainPluginsUploadFolder . $folder . '/';
-
-	                            GeneralUtility::rmdir($pluginsUploadFolder, true);
-	                            GeneralUtility::mkdir_deep($pluginsUploadFolder);
-	                            GeneralUtility::copyDirectory($pluginsSouceFolder, $pluginsUploadFolder);
-	                        }
-	                    }
-	                } catch (\Exception $e) {
-	                    $this->addFlashMessage($e->getMessage(), 'Extension not updated', \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
-	                    $this->redirect('list');
-	                }
-	            }
-
-	            $revsliderSouceFolder = $this->siteRoot . 'uploads/ns_license/ns_revolution_slider/' . $existingData['version'] . '/vendor/wp/wp-content/uploads/';
-	            $revsliderUploadFolder = $this->siteRoot . 'typo3conf/ext/ns_revolution_slider/vendor/wp/wp-content/uploads/';
-	            try {
-	                GeneralUtility::rmdir($revsliderUploadFolder, true);
-	                GeneralUtility::mkdir_deep($revsliderUploadFolder);
-	                GeneralUtility::copyDirectory($revsliderSouceFolder, $revsliderUploadFolder);
-	            } catch (\Exception $e) {
-	                $this->addFlashMessage($e->getMessage(), 'Extension not updated', \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
-	                $this->redirect('list');
-	            }
-	        }
-	    } else {
-	    	$this->addFlashMessage(LocalizationUtility::translate('license-activation.tryagain_message', 'NsLicense'), '', \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
-	    }
-        $this->redirect('list');
-    }
-
     /**
      * action activation.
      *
@@ -678,11 +533,10 @@ class NsLicenseModuleController extends ActionController
      * fetchLicense.
      *
      * @param string $license
-     * @param bool   $isarray
      *
      * @return array|null
      **/
-    public function fetchLicense($license, $isarray = false)
+    public function fetchLicense($license)
     {
         $url = 'https://composer.t3terminal.com/API/GetComposerDetails.php?' . $license;
         $curl = curl_init();
@@ -697,15 +551,12 @@ class NsLicenseModuleController extends ActionController
           CURLOPT_CUSTOMREQUEST => 'POST',
         ]);
         $response = curl_exec($curl);
-        if (!$response && curl_error($curl) != '') {
+        if (!$response) {
             echo 'Error :- ' . curl_error($curl);
         }
         curl_close($curl);
-        if ($isarray) {
-        	return json_decode($response, true);
-        } else {
-        	return json_decode($response);
-        }
+
+        return json_decode($response);
     }
 
     /**
@@ -736,7 +587,7 @@ class NsLicenseModuleController extends ActionController
           ],
         ]);
         $response = curl_exec($curl);
-        if (!$response && curl_error($curl) != '') {
+        if (!$response) {
             echo 'Error :- ' . curl_error($curl);
         }
         curl_close($curl);

@@ -36,7 +36,7 @@ if (TYPO3_MODE === 'BE') {
             'NsLicenseModule', // Submodule key
             '', // Position
             [
-                $controller => 'list, update, download, activation, deactivation, checkUpdate',
+                $controller => 'list, update, activation, deactivation, checkUpdate',
             ],
             [
                 'access' => 'user,group',

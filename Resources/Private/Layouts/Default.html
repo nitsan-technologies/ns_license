@@ -22,12 +22,12 @@
 			</div>
 		</div>
 	</div>
-	<div id="activation-modal" class="t3js-modal modal  fade modal-type-default modal-severity-info modal-style-light modal-size-default" tabindex="-1">
+	<div id="activation-modal" class="t3js-modal modal fade modal-type-default modal-severity-info modal-style-light modal-size-default" tabindex="-1">
 		<div class="modal-dialog">
 			<div class="t3js-modal-content modal-content">
 				<div class="modal-header">
 					<h4 class="t3js-modal-title modal-title"><f:translate key="license-activation.update_extension" /></h4>
-					<button class="t3js-modal-close close activation-modal ns-license-modal-close" data-dismiss="modal">
+					<button class="t3js-modal-close close" data-dismiss="modal">
 						<span aria-hidden="true">
 							<span class="t3js-icon icon icon-size-small icon-state-default icon-actions-close" data-identifier="actions-close">
 								<span class="icon-markup">
@@ -44,81 +44,12 @@
 					<p><f:translate key="license-activation.update_extension_msg" />?</p>
 				</div>
 				<div class="t3js-modal-footer modal-footer">
-					<button class="btn btn-danger t3js-active btn-default activation-modal" data-dismiss="modal"><span><f:translate key="license-activation.update_extension_btn_cancel" /></span></button>
-					<button class="btn btn-info activation-modal-update activation-modal" data-dismiss="modal"><span><f:translate key="license-activation.update_extension_btn_update" /></span></button>
+					<button class="btn t3js-active btn-default" data-dismiss="modal"><span><f:translate key="license-activation.update_extension_btn_cancel" /></span></button>
+					<button class="btn btn-info activation-modal-update" data-dismiss="modal"><span><f:translate key="license-activation.update_extension_btn_update" /></span></button>
 				</div>
 			</div>
 		</div>
 	</div>
-	<f:if condition="{extensionInfo}">
-		<div id="extension-info-modal" class="t3js-modal modal fade ns-license-available-ext-tags modal-type-default modal-severity-info modal-style-light modal-size-default" tabindex="-1">
-			<div class="modal-dialog">
-				<div class="t3js-modal-content modal-content">
-					<div class="modal-header">
-						<h4 class="t3js-modal-title modal-title"><f:translate key="license-activation.extension_list" /></h4>
-						<button class="t3js-modal-close close activation-modal ns-license-modal-close" data-dismiss="modal">
-							<span aria-hidden="true">
-								<span class="t3js-icon icon icon-size-small icon-state-default icon-actions-close" data-identifier="actions-close">
-									<span class="icon-markup">
-										<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-											<path d="M11.9 5.5L9.4 8l2.5 2.5c.2.2.2.5 0 .7l-.7.7c-.2.2-.5.2-.7 0L8 9.4l-2.5 2.5c-.2.2-.5.2-.7 0l-.7-.7c-.2-.2-.2-.5 0-.7L6.6 8 4.1 5.5c-.2-.2-.2-.5 0-.7l.7-.7c.2-.2.5-.2.7 0L8 6.6l2.5-2.5c.2-.2.5-.2.7 0l.7.7c.2.2.2.5 0 .7z" class="icon-color"></path>
-										</svg>
-									</span>
-								</span>
-							</span>
-							<span class="sr-only"></span>
-						</button>
-					</div>
-					<div class="t3js-modal-body modal-body">
-						<div class="table-responsive ns-license-available-ext-tags-table-wrap">
-							<table class="table license-activation ns-license-activation-table">
-								<thead>
-									<tr>
-										<th width="12%"><f:translate key="license-activation.tag" /></th>
-										<th width="73%" class="text-center"><f:translate key="license-activation.version" /></th>
-										<th width="15%" class="text-center"><f:translate key="license-activation.action" /></th>
-									</tr>
-								</thead>
-								<tbody>
-									<f:for each="{extensionInfo.extension_download_url}" as="extensionTag" key="tag" reverse="1">
-										<tr>
-											<td>{tag}</td>
-											<td class="text-center">
-												<h5>
-													<f:for each="{extensionTag.core}" as="core">
-														<span class="badge bg-info">{core}</span>
-													</f:for>
-												</h5>
-											</td>
-											<td class="ns-license-actions-btns text-center">
-												<f:if condition="{extensionTag.active} && {extensionInfo.days} > 0">
-													<f:then>
-														<f:link.action action="download" controller="NsLicenseModule" class="btn btn-success btn-download" arguments="{extension_key: extensionInfo.extension_key, tag: tag, overwrite: 1}">{f:translate(key: 'license-activation.download')}</f:link.action>
-													</f:then>
-													<f:else>
-														<a href="javascript:;" class="btn btn-success btn-download disabled">{f:translate(key: 'license-activation.download')}</a>
-													</f:else>
-												</f:if>
-											</td>
-										</tr>
-									</f:for>
-								</tbody>
-							</table>
-						</div>
-                        <f:if condition="{extensionInfo.days} < 0">
-                        	<p><f:translate key="errorMessage.license_expired" /></p>
-                        </f:if>
-					</div>
-					<div class="t3js-modal-footer modal-footer">
-						<button class="btn btn-danger t3js-active btn-default activation-modal" data-dismiss="modal"><span><f:translate key="license-activation.update_extension_btn_cancel" /></span></button>
-					</div>
-					<div class="ns-license-loader" id="nsLicenseLoaderUpdate" style="display: none;">
-				        <f:image src="typo3conf/ext/ns_license/Resources//Public/Icons/loader.gif" alt="loader img" style="width:120px; height: 160px;" />
-				    </div>
-				</div>
-			</div>
-		</div>
-	</f:if>
 </f:be.container>
 
 </html>

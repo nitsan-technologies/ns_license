@@ -50,16 +50,6 @@
 .ns-license-activation-table > tbody > tr > td{
     padding: 10px 15px;
 }
-.ns-license-modal-close {
-    opacity: 1;
-}
-.ns-license-modal-close .icon-size-small {
-    width: 32px;
-    height: 32px;
-}
-.ns-license-activation-table .ns-license-actions-btns .btn {
-    margin: 5px 3px;
-}
 @media (min-width: 993px){
     .ns-license-loader img {
         max-width: 120px;

@@ -40,17 +40,11 @@
             <trans-unit id="license-activation.license">
                 <source>License Key</source>
             </trans-unit>
-            <trans-unit id="license-activation.tag">
-                <source>Tags</source>
-            </trans-unit>
             <trans-unit id="license-activation.action">
                 <source>Action</source>
             </trans-unit>
             <trans-unit id="license-deactivation.action">
                 <source>Deactivate</source>
-            </trans-unit>
-            <trans-unit id="license-activation.download">
-                <source>Download</source>
             </trans-unit>
             <trans-unit id="license-activation.updateTo">
                 <source>Update to</source>
@@ -91,12 +85,6 @@
             <trans-unit id="license-activation.update_extension_btn_update">
                 <source>Update</source>
             </trans-unit>
-            <trans-unit id="license-activation.update_extension_btn_available">
-                <source>Available tags</source>
-            </trans-unit>
-            <trans-unit id="license-activation.extension_list">
-                <source>Available Extension tags.</source>
-            </trans-unit>
             <trans-unit id="license-activation.deactivation">
                 <source>The extension has been successfully deactivated.</source>
             </trans-unit>
@@ -115,9 +103,6 @@
             </trans-unit>
             <trans-unit id="errorMessage.license_expired">
                 <source>Your annual license key is expired, To get new update you will need to renew your license. Please submit ticket at https://t3terminal.com/support-submit-ticket.</source>
-            </trans-unit>
-            <trans-unit id="license-activation.tryagain_message">
-                <source>Please try again after some time.</source>
             </trans-unit>
             <trans-unit id="errorMessage.error1">
                 <source>Your provided license key is not valid</source>
@@ -148,9 +133,6 @@
             </trans-unit>
             <trans-unit id="license.key.update">
                 <source>Extension update available.</source>
-            </trans-unit>
-            <trans-unit id="activation.wait_update_extension_msg">
-                <source>Please wait for a few min. We are fetching the available update list.</source>
             </trans-unit>
             <!-- License LLL End-->
 		</body>

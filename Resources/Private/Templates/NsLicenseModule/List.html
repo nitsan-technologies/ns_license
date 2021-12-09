@@ -3,7 +3,7 @@
   <f:section name="content">
 	<f:flashMessages />
     <div class="ns-license-activation-form">
-        <f:form  action="list" class="ns-license-form">
+        <f:form  action="activation" class="ns-license-form">
             <div class="form-group" style="align-items: center;">
                 <div class="input-group">
                   <div class="input-group-prepend">
@@ -11,27 +11,12 @@
                       <f:translate key="license-activation.licenseKey" />
                     </div>
                   </div>
-                  
-                  <f:if condition="{updateApi}">
-                      <f:then>
-                         <f:form.textfield name="license" class="form-control" id="license" required="required" placeholder="{f:translate(key: 'license-activation.licensepLaceholder')}" value="" /> 
-                      </f:then>
-                      <f:else>
-                          <f:form.textfield name="license" class="form-control" id="license" required="required" placeholder="{f:translate(key: 'license-activation.licensepLaceholder')}" value="{extensionInfo.license_key}" />
-                      </f:else>
-                  </f:if>
+                  <f:form.textfield name="license" class="form-control" id="license" required="required" placeholder="{f:translate(key: 'license-activation.licensepLaceholder')}" />
                   &nbsp;&nbsp;
                   <f:form.submit class="btn btn-success" value="{f:translate(key: 'license-activation.btn-activate')}" />
                     <div class="form-group" style="text-align: right; margin-bottom: 0; margin-right: 290px; display: flex; align-items: center; margin-left: 15px;">
                         <div class="form-check">
-                            <f:if condition="{updateApi}">
-                                <f:then>
-                                    <f:form.checkbox id="overwrite" name="overwrite" value="1" class="form-check-input" />
-                                </f:then>
-                                <f:else>
-                                    <f:form.checkbox id="overwrite" name="overwrite" value="1" class="form-check-input" checked="{extensionInfo.overwrite} == 1" />
-                                </f:else>
-                            </f:if>
+                            <f:form.checkbox id="overwrite" name="overwrite" value="1" class="form-check-input" />
                             <label class="form-check-label" for="overwrite"><f:translate key="license-activation.overwriteExtension" />?</label>
                         </div>
                     </div>
@@ -43,70 +28,68 @@
         <f:then>
             <div class="table-responsive ns-license-table-wrap">
                 <table class="table license-activation ns-license-activation-table">
-                    <thead>
+                <thead>
+                    <tr>
+                        <th><f:translate key="license-activation.extkey" /></th>
+                        <th><f:translate key="license-activation.license" /></th>
+                        <th><f:translate key="license-activation.version" /></th>
+                        <th class="text-left"><f:translate key="license-activation.product" /></th>
+                        <th class="text-center"><f:translate key="license-activation.documentation" /></th>
+                        <th class="text-center"><f:translate key="license-activation.licenseType" /></th>
+                        <th class="text-center"><f:translate key="license-activation.expiration_date" /></th>
+                        <th class="text-center"><f:translate key="license-activation.action" /></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <f:for each="{extensions}" as="extension">
                         <tr>
-                            <th><f:translate key="license-activation.extkey" /></th>
-                            <th><f:translate key="license-activation.license" /></th>
-                            <th><f:translate key="license-activation.version" /></th>
-                            <th class="text-left"><f:translate key="license-activation.product" /></th>
-                            <th class="text-center"><f:translate key="license-activation.documentation" /></th>
-                            <th class="text-center"><f:translate key="license-activation.licenseType" /></th>
-                            <th class="text-center"><f:translate key="license-activation.expiration_date" /></th>
-                            <th width="22%" class="text-center"><f:translate key="license-activation.action" /></th>
+                            <td>{extension.extension_key}</td>
+                            <td>{extension.license_key}</td>
+                            <td>
+                                <f:if condition="{extension.version}">
+                                    <f:then>{extension.version}</f:then>
+                                </f:if>
+                            </td>
+                            <td class="text-left ns-license-icon-cell">
+                                <f:link.typolink target="_bank" parameter="{extension.product_link}">
+                                    <f:image src="typo3conf/ext/ns_license/Resources/Public/Icons/Product.svg" alt="icon" width="32" height="32" />
+                                </f:link.typolink>
+                            </td>
+                            <td class="text-center ns-license-icon-cell"><f:link.typolink target="_bank" parameter="{extension.documentation_link}"><em class="fa fa-file-pdf-o"></em></f:link.typolink></td>
+                            <td class="text-center">
+                                <f:if condition="{extension.is_life_time} == 1">
+                                    <f:then><f:translate key="license-activation.licenseType.life_time" /></f:then>
+                                    <f:else><f:translate key="license-activation.licenseType.annual" /></f:else>
+                                </f:if>
+                            </td>
+                            <td class="text-center">
+                                <f:if condition="{extension.is_life_time} == 1">
+                                    <f:then>
+                                        <f:translate key="license-activation.expiration_date.na" />
+                                    </f:then>
+                                    <f:else>
+                                        <span class="{f:if(condition: '{extension.days} < 31', then: 'p-2 mb-2 bg-danger text-white')}">
+                                            <f:if condition="{extension.days} < 0">
+                                                <f:then><f:translate key="license-activation.expiration_date.expired" /></f:then>
+                                                <f:else>{extension.days} days</f:else>
+                                            </f:if>
+                                        </span>
+                                    </f:else>
+                                </f:if>
+                            </td>
+                            <td class="ns-license-actions-btns text-center">
+                                <f:if condition="{extension.lts_version} > {extension.version}">
+                                    <f:then>
+                                        <f:link.action action="update" class="btn btn-info license-activation-latest" arguments="{extension: extension}"><f:translate key="license-activation.updateTo" /> {extension.lts_version}</f:link.action>
+                                    </f:then>
+                                    <f:else><a href="javascript:;" class="btn btn-success disabled"><f:translate key="license-activation.latest" /></a></f:else>
+                                </f:if>
+                                <f:link.action action="checkUpdate" class="btn btn-warning license-reload text-white" arguments="{extKey: extension.extension_key}"><f:translate key="license-activation.Updates" /></f:link.action>
+                                <f:link.action action="deactivation" class="btn btn-danger license-deactivation" arguments="{extension: extension}"><f:translate key="license-deactivation.action" /></f:link.action>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <f:for each="{extensions}" as="extension">
-                            <tr>
-                                <td>{extension.extension_key}</td>
-                                <td>{extension.license_key}</td>
-                                <td>
-                                    <f:if condition="{extension.version}">
-                                        <f:then>{extension.version}</f:then>
-                                    </f:if>
-                                </td>
-                                <td class="text-left ns-license-icon-cell">
-                                    <f:link.typolink target="_bank" parameter="{extension.product_link}">
-                                        <f:image src="typo3conf/ext/ns_license/Resources/Public/Icons/Product.svg" alt="icon" width="32" height="32" />
-                                    </f:link.typolink>
-                                </td>
-                                <td class="text-center ns-license-icon-cell"><f:link.typolink target="_bank" parameter="{extension.documentation_link}"><em class="fa fa-file-pdf-o"></em></f:link.typolink></td>
-                                <td class="text-center">
-                                    <f:if condition="{extension.is_life_time} == 1">
-                                        <f:then><f:translate key="license-activation.licenseType.life_time" /></f:then>
-                                        <f:else><f:translate key="license-activation.licenseType.annual" /></f:else>
-                                    </f:if>
-                                </td>
-                                <td class="text-center">
-                                    <f:if condition="{extension.is_life_time} == 1">
-                                        <f:then>
-                                            <f:translate key="license-activation.expiration_date.na" />
-                                        </f:then>
-                                        <f:else>
-                                            <span class="{f:if(condition: '{extension.days} < 31', then: 'p-2 mb-2 bg-danger text-white')}">
-                                                <f:if condition="{extension.days} < 0">
-                                                    <f:then><f:translate key="license-activation.expiration_date.expired" /></f:then>
-                                                    <f:else>{extension.days} days</f:else>
-                                                </f:if>
-                                            </span>
-                                        </f:else>
-                                    </f:if>
-                                </td>
-                                <td class="ns-license-actions-btns text-center">
-                                    <f:if condition="{extension.lts_version} > {extension.version}">
-                                        <f:then>
-                                            <f:link.action action="list" class="btn btn-info license-activation-latest" arguments="{extension: extension, updateApi: 1, version: extension.version}"><f:translate key="license-activation.update_extension_btn_update" /></f:link.action>
-                                        </f:then>
-                                        <f:else>
-                                            <f:link.action action="list" class="btn btn-info license-activation-latest" arguments="{extension: extension, availableApi: 1, version: extension.version}"><f:translate key="license-activation.update_extension_btn_available" /></f:link.action>
-                                        </f:else>
-                                    </f:if>
-                                    <f:link.action action="checkUpdate" class="btn btn-warning license-reload text-white" arguments="{extKey: extension.extension_key}"><f:translate key="license-activation.Updates" /></f:link.action>
-                                    <f:link.action action="deactivation" class="btn btn-danger license-deactivation" arguments="{extension: extension}"><f:translate key="license-deactivation.action" /></f:link.action>
-                                </td>
-                            </tr>
-                        </f:for>
-                    </tbody>
+                    </f:for>
+                </tbody>
                 </table>
             </div>
         </f:then>
