@@ -5,7 +5,7 @@
 		<body>
             <!-- License LLL Start-->
             <trans-unit id="license-activation">
-                <source>License Management</source>
+                <source>License Manage</source>
             </trans-unit>
             <trans-unit id="license-activation.product">
                 <source>Product</source>
@@ -53,7 +53,7 @@
                 <source>Up to date</source>
             </trans-unit>
             <trans-unit id="license-activation.Updates">
-                <source>Check for Updates </source>
+                <source>Check for Updates</source>
             </trans-unit>
             <trans-unit id="license-activation.licenseKey">
                 <source>Register Your License Key</source>
@@ -77,7 +77,7 @@
                 <source>Update Extension</source>
             </trans-unit>
             <trans-unit id="license-activation.update_extension_msg">
-                <source>Are you sure want to overwrite existing TYPO3 extension? Before you proceed, we suggest you to take backup of your existing TYPO3 extension.</source>
+                <source>Are you sure you want to overwrite the existing TYPO3 extension? Before proceeding, we suggest you backup your existing TYPO3 extension.</source>
             </trans-unit>
             <trans-unit id="license-activation.update_extension_btn_cancel">
                 <source>Cancel</source>
@@ -86,53 +86,56 @@
                 <source>Update</source>
             </trans-unit>
             <trans-unit id="license-activation.deactivation">
-                <source>The extension has been successfully deactivated.</source>
+                <source>The extension is successfully deactivated.</source>
             </trans-unit>
             <trans-unit id="license-activation.activated">
-                <source>Your license key has been successfully activated.</source>
+                <source>Your license key is successfully activated.</source>
             </trans-unit>
             <trans-unit id="license-activation.overwrite_message">
-                <source>The extension is already available. If you still want to install it, then check the "overwrite extension" checkbox.</source>
+                <source>The extension is already available. If you still want to install it, check the "overwrite extension" checkbox.</source>
             </trans-unit>
             <trans-unit id="license-activation.downloaded_successfully">
-                <source>Your extension is successfully downloaded, Now go to Admin Tools > Extensions Manager > Activate this TYPO3 extension</source>
+                <source>The extension is already available. If you still want to install it, check the "overwrite extension" checkbox.</source>
+            </trans-unit>
+            <trans-unit id="license-activation.downloaded_successfully_from_update">
+                <source>Your extension is successfully updated.</source>
             </trans-unit>
             <!-- Errors -->
             <trans-unit id="errorMessage.license_not_entered">
-                <source>You should enter your License key</source>
+                <source>You should enter your License key.</source>
             </trans-unit>
             <trans-unit id="errorMessage.license_expired">
-                <source>Your annual license key is expired, To get new update you will need to renew your license. Please submit ticket at https://t3terminal.com/support-submit-ticket.</source>
+                <source>Your annual license key is expired. To get a new update, you will need to renew your license. Please submit a ticket at https://t3terminal.com/support-submit-ticket.</source>
             </trans-unit>
             <trans-unit id="errorMessage.error1">
-                <source>Your provided license key is not valid</source>
+                <source>Your provided license key is not valid.</source>
             </trans-unit>
             <trans-unit id="errorMessage.error2">
-                <source>Your license key alreayd used to other domains, You can not use this license key to more then %s domains</source>
+                <source>Your license key is already used for other domains. You can not use this license key to more than %s domains.</source>
             </trans-unit>
             <trans-unit id="errorMessage.error3">
-                <source>Your order is in "pedning status", For any questions, you can submit support ticket</source>
+                <source>Your order is in "pending status", For any questions, you can submit support ticket at https://t3terminal.com/support-submit-ticket</source>
             </trans-unit>
             <trans-unit id="errorMessage.error4">
-                <source>Your license key is valid, but something wrong at our server. Please submit support ticket at https://t3terminal.com/support-submit-ticket</source>
+                <source>Your license key is valid, but something is wrong with our server. Please submit support ticket at https://t3terminal.com/support-submit-ticket</source>
             </trans-unit>
             <trans-unit id="errorMessage.default">
-                <source>Your provided license key is not valid</source>
+                <source>Your provided license key is not valid.</source>
             </trans-unit>
             <trans-unit id="license-activation.footerTitle">
                 <source>Do you need any help?</source>
             </trans-unit>
             <trans-unit id="license-activation.footerDescription">
-                <source>Please submit your ticket to get in touch with our support department via our support system.</source>
+                <source>Please submit your ticket to contact our support department via our support system.</source>
             </trans-unit>
             <trans-unit id="license-activation.footerButton">
                 <source>Submit Your Ticket</source>
             </trans-unit>
             <trans-unit id="license.key.up_to_date">
-                <source>No extension update available.</source>
+                <source>No extension update is available.</source>
             </trans-unit>
             <trans-unit id="license.key.update">
-                <source>Extension update available.</source>
+                <source>Extension update is available.</source>
             </trans-unit>
             <!-- License LLL End-->
 		</body>
