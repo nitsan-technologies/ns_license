@@ -278,7 +278,7 @@ class NsLicenseModuleController extends ActionController
             $params['extension']['license'] = $params['extension']['license_key'];
             $params['extension']['overwrite'] = true;
             $params['extension']['isUpdateAction'] = true;
-            $this->downloadExtension($params['extension']);
+            $this->downloadExtension($params['extension'], 'fromUpdate');
         } else {
             $this->addFlashMessage(LocalizationUtility::translate('errorMessage.license_not_entered', 'NsLicense'), 'ERROR', \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
         }
@@ -326,7 +326,7 @@ class NsLicenseModuleController extends ActionController
      *
      * @return void
      */
-    public function downloadExtension($params = null)
+    public function downloadExtension($params = null, $fromWhere = null)
     {
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         if (isset($params['license']) && $params['license'] != '') {
@@ -434,7 +434,12 @@ class NsLicenseModuleController extends ActionController
                     $this->addFlashMessage(LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'), 'EXT:' . $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
                     $this->redirect('list');
                 }
-                $this->addFlashMessage(LocalizationUtility::translate('license-activation.downloaded_successfully', 'NsLicense'), 'EXT:' . $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::OK);
+                if($fromWhere == 'fromUpdate') {
+                    $this->addFlashMessage(LocalizationUtility::translate('license-activation.downloaded_successfully_from_update', 'NsLicense'), 'EXT:' . $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::OK);
+                }
+                else {
+                    $this->addFlashMessage(LocalizationUtility::translate('license-activation.downloaded_successfully', 'NsLicense'), 'EXT:' . $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::OK);
+                }
                 if ($params['extension_key'] == 'ns_revolution_slider') {
                     $rsInstallUtility = GeneralUtility::makeInstance(\NITSAN\NsRevolutionSlider\Slots\InstallUtility::class);
                     $rsInstallUtility->schemaUpdate();
