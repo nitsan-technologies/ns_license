@@ -34,7 +34,7 @@
     }
   },
   "replace": {
-      "nitsan/ns-license": "self.version"
+      "typo3-ter/ns-license": "self.version"
   },
   "config": {
     "vendor-dir": ".Build/vendor/",
