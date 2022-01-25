@@ -1,10 +1,47 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap');
+/****************************************************************************
+ * Fonts
+ ***************************************************************************/
+
+ /*Verdana Regular*/
+ @font-face {
+    font-family: 'Verdana';
+    font-stretch: normal;
+    font-style: normal;
+    font-weight: 400;
+    src: url('../../fonts/Verdana-Regular.woff2') format('woff2'),
+      url('../../fonts/Verdana-Regular.woff') format('woff'),
+      url('../../fonts/Verdana-Regular.ttf') format('truetype');
+  }
+ 
+   /*Verdana Bold*/
+   @font-face {
+     font-family: 'Verdana';
+     font-stretch: normal;
+     font-style: normal;
+     font-weight: 700;
+     src: url('../../fonts/Verdana-Bold.woff2') format('woff2'),
+       url('../../fonts/Verdana-Bold.woff') format('woff'),
+       url('../../fonts/Verdana-Bold.ttf') format('truetype');
+   }
+ 
+  /*SourceSansPro Regular*/
+  @font-face {
+    font-family: 'SourceSansPro';
+    font-stretch: normal;
+    font-style: normal;
+    font-weight: 400;
+    src: url('../../fonts/sourcesanspro-regular-webfont.woff2') format('woff2'),
+      url('../../fonts/sourcesanspro-regular-webfont.woff') format('woff'),
+      url('../../fonts/SourceSansPro-Regular.ttf') format('truetype');
+ }
+
 html, body {
-    font-size: 14px;
+    font-size: 12px;
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    color: #212424;
 }
 
 .form-control::-webkit-input-placeholder {
@@ -84,23 +121,29 @@ label {
     margin-right: 5px;
 }
 
+.ns-ext-name {
+    color: #000;
+    font-family: 'SourceSansPro';
+    font-size: 27px;
+    line-height: normal;
+    
+  }
+  
+  .ns-ext-name-desktop {
+      display: none;
+  }
+
 .ns-ext-navigation {
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #f8f8f8;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
+    padding: 0;
 }
 
 .ns-ext-navigation .navbar-brand {
-    font-size: 20px;
-    color: #333333;
-    font-weight: 700;
     margin-right: 30px;
 }
 
 .ns-ext-navigation .navbar {
-    padding-top: 0;
-    padding-bottom: 0;
+    padding: 0;
 }
 
 .ns-ext-navigation .navbar-nav .nav-link {
@@ -567,12 +610,6 @@ label {
     }
 }
 
-@media(min-width:1200px) {
-    html, body {
-        font-size: 15px;
-    }
-}
-
 /* TYPO3 v10 Patch */
 .module-loading-indicator, .module-docheader.t3js-module-docheader {
     display: none !important;
@@ -582,4 +619,186 @@ label {
 }
 [id="typo3-inner-docbody"] {
     padding: 24px;
+}
+
+.btn {
+    font-size: 12px;
+    font-weight: 400;
+    border-radius: 2px;
+}
+
+.btn .btn__icon { 
+    margin-right: 5px;
+    min-width: 30px;
+}
+
+.btn:focus,
+.btn:active {
+    box-shadow: none;
+    outline: none;
+}
+
+.btn-gray,
+.btn-gray.disabled {
+    color: #000;
+} 
+
+.btn-gray {
+    background-color: #eaeaea;
+    border-color: #ccc;
+}
+
+.btn-gray:focus,
+.btn-gray:hover {
+    background-color: #d7d7d7;
+}
+
+.btn.btn-primary {
+    background-color: #007bff;
+    padding: 9px 20px;
+}
+
+.btn.btn-primary:hover {
+    background-color: #0062cc;
+}
+
+.ns-ext-form .form-control {
+    border-color: #ccc;
+    border-radius: 2px;
+    box-shadow: none;
+    color: #212424;
+    height: calc(1.8em + 0.75rem + 2px);
+}
+
+.custom-checkbox {
+    padding-left: 30px;
+}
+
+.custom-checkbox .custom-control-label {
+    position: relative;
+    margin-bottom: 0;
+    vertical-align: top;
+}
+
+.custom-checkbox .custom-control-label::before {
+    border-radius: 0;
+    height: 20px;
+    width: 20px;
+    left: -30px;
+    top: 0;
+}
+
+.custom-checkbox .custom-control-label::after {
+    background-size: 12px 12px;
+    height: 12px;
+    left: -26px;
+    top: 4px;
+    width: 12px;
+}
+
+.custom-card {
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+    border-color: #ccc;
+    box-shadow: none;
+    margin-bottom: 30px;
+}
+
+.custom-card .card-header {
+    background-color: #eaeaea;
+    padding: 10px 20px;
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+}
+.custom-card .card-header h5 {
+    color: #212424;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+.custom-card .card-body {
+    padding: 30px 20px;
+}
+
+.ns-license-activation-form .ns-license-form .form-group {
+    margin-bottom: 16px;
+}
+
+.ns-license-activation-form .ns-license-form,
+.ns-license-activation-form .ns-license-form .form-group:last-child {
+    margin-bottom: 0 !important;
+}
+
+.form-group .form-group__label,
+.form-group__label {
+    font-weight: 700;
+}
+
+.ns-license-form .form-group > label {
+    margin-bottom: 13px;
+}
+
+.ns-license-actions-btns .btn:not(:last-child) {
+    margin-right: 5px;
+}
+
+.ns-license-actions-btns .btn {
+    align-items: center;
+    display: inline-flex;
+    margin-bottom: 5px;
+}
+
+.text-red {
+    color: #ff0336;    
+}
+
+.ns-ext-list-table.table>thead>tr>th {
+    background-color: #eaeaea;
+    border-color: #ccc;
+    color: #000;
+    font-weight: 700;
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
+
+.ns-ext-list-table.table>:not(:first-child) {
+    border-top: 0;
+}
+
+.ns-ext-list-table.table>tbody>tr:nth-child(even)>td {
+    background-color: #fff;
+}
+
+.ns-ext-list-table.table>tbody>tr:nth-child(odd)>td {
+    background-color: #fafafa;
+}
+
+.ns-license-form .form-group .form-control {
+    height: 32px;
+}
+
+.ns-license-form .form-group [type='submit'] {
+    margin-top: 5px;
+}
+
+.footer__callout-info {
+    align-items: center;
+    display: flex;
+}
+
+.footer__callout-info p {
+    margin-bottom: 0;
+}
+
+.footer__callout-info .btn {
+    margin-left: 13px;
+    padding: 9px 18px;
+}
+
+@media (max-width: 1200px) {
+    .ns-license-table-wrap .ns-license-activation-table {
+        min-width: 1500px;
+    }
 }

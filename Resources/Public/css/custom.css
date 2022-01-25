@@ -40,11 +40,11 @@
 }
 .ns-license-icon-cell a img {
     max-width: 32px;
-    width:auto;
+    width: auto;
 }
 .ns-license-icon-cell a em {
-    color: #212529;  
-    font-size: 26px; 
+    color: #212424;  
+    font-size: 20px; 
 }
 .ns-license-activation-table > thead > tr > th,
 .ns-license-activation-table > tbody > tr > td{
