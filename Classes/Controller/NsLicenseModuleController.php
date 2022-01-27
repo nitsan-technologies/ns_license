@@ -104,6 +104,13 @@ class NsLicenseModuleController extends ActionController
                 $extensions[$key]['days'] = (int) floor((($extension['expiration_date'] - time()) + 86400) / 86400);
             }
         }
+        
+        if (version_compare(TYPO3_branch, '11', '>=')) {
+            $this->view->assign('modalAttr','data-bs-');
+        } else {
+            $this->view->assign('modalAttr','data-');
+        }
+
         $this->view->assign('extensions', $extensions);
     }
 

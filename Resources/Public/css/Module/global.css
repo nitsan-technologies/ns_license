@@ -629,7 +629,7 @@ label {
 
 .btn .btn__icon { 
     margin-right: 5px;
-    min-width: 30px;
+    min-width: 20px;
 }
 
 .btn:focus,
@@ -747,7 +747,10 @@ label {
 .ns-license-actions-btns .btn {
     align-items: center;
     display: inline-flex;
-    margin-bottom: 5px;
+}
+
+.btn-uptodate {
+    min-width: 145px;
 }
 
 .text-red {

@@ -27,7 +27,7 @@
 			<div class="t3js-modal-content modal-content">
 				<div class="modal-header">
 					<h4 class="t3js-modal-title modal-title"><f:translate key="license-activation.update_extension" /></h4>
-					<button class="t3js-modal-close close" data-dismiss="modal">
+					<button class="t3js-modal-close close" {modalAttr}dismiss="modal">
 						<span aria-hidden="true">
 							<span class="t3js-icon icon icon-size-small icon-state-default icon-actions-close" data-identifier="actions-close">
 								<span class="icon-markup">
@@ -44,8 +44,8 @@
 					<p><f:translate key="license-activation.update_extension_msg" />?</p>
 				</div>
 				<div class="t3js-modal-footer modal-footer">
-					<button class="btn t3js-active btn-default" data-dismiss="modal"><span><f:translate key="license-activation.update_extension_btn_cancel" /></span></button>
-					<button class="btn btn-info activation-modal-update" data-dismiss="modal"><span><f:translate key="license-activation.update_extension_btn_update" /></span></button>
+					<button class="btn btn-gray t3js-active btn-default" {modalAttr}dismiss="modal"><span><f:translate key="license-activation.update_extension_btn_cancel" /></span></button>
+					<button class="btn btn-info activation-modal-update" {modalAttr}dismiss="modal"><span><f:translate key="license-activation.update_extension_btn_update" /></span></button>
 				</div>
 			</div>
 		</div>
