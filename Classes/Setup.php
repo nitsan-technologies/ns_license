@@ -13,6 +13,9 @@ class Setup
 {
     public function executeOnSignal($extname = null)
     {
+        if (version_compare(TYPO3_branch, '11', '>=')) {
+            $extname = array_key_first($extname->getPackageKeys());
+        }
         if (strpos($extname, 'ns_theme_') !== false && $extname != 'ns_license' && $extname != 'ns_basetheme') {
             $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
             $this->nsLicenseModule = $this->objectManager->get(NsLicenseModuleController::class);
