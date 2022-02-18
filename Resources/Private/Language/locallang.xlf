@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <xliff version="1.0">
-	<file source-language="en" datatype="plaintext" original="messages" date="2015-07-24T20:37:42Z" product-name="ns_license">
-		<header/>
-		<body>
+  <file source-language="en" datatype="plaintext" original="messages" date="2015-07-24T20:37:42Z" product-name="ns_license">
+    <header/>
+    <body>
             <!-- License LLL Start-->
             <trans-unit id="license-activation">
-                <source>License Manage</source>
+                <source>License Manager</source>
             </trans-unit>
             <trans-unit id="license-activation.product">
                 <source>Product</source>
@@ -50,7 +50,7 @@
                 <source>Update to</source>
             </trans-unit>
             <trans-unit id="license-activation.latest">
-                <source>Up to date</source>
+                <source>Up to Date</source>
             </trans-unit>
             <trans-unit id="license-activation.Updates">
                 <source>Check for Updates</source>
@@ -62,7 +62,7 @@
                 <source>No License Found</source>
             </trans-unit>
             <trans-unit id="license-activation.noRecordDescription">
-                <source>You can buy premium TYPO3 products from our TYPO3 Marketplace at https://t3terminal.com/</source>
+                <source>You can buy premium TYPO3 products from our TYPO3 Marketplace at https://t3terminal.com</source>
             </trans-unit>
             <trans-unit id="license-activation.overwriteExtension">
                 <source>Overwrite Your Existing Extension</source>
@@ -74,10 +74,10 @@
                 <source>Activate License &amp; Download Extension</source>
             </trans-unit>
             <trans-unit id="license-activation.update_extension">
-                <source>Update Extension</source>
+                <source>Attention Please!</source>
             </trans-unit>
             <trans-unit id="license-activation.update_extension_msg">
-                <source>Are you sure you want to overwrite the existing TYPO3 extension? Before proceeding, we suggest you backup your existing TYPO3 extension.</source>
+                <source>Are you sure that you want to overwrite the existing TYPO3 extension? Before proceeding, we suggest you backup your existing TYPO3 extension.</source>
             </trans-unit>
             <trans-unit id="license-activation.update_extension_btn_cancel">
                 <source>Cancel</source>
@@ -95,32 +95,32 @@
                 <source>The extension is already available. If you still want to install it, check the "overwrite extension" checkbox.</source>
             </trans-unit>
             <trans-unit id="license-activation.downloaded_successfully">
-                <source>The extension is already available. If you still want to install it, check the "overwrite extension" checkbox.</source>
+                <source>The extension is successfully downloaded! Go to Admin Tools > Extensions > Activate Extension. Read more at https://docs.t3terminal.com/en/latest/License/LicenseActivation/Index.html</source>
             </trans-unit>
             <trans-unit id="license-activation.downloaded_successfully_from_update">
-                <source>Your extension is successfully updated.</source>
+                <source>Your extension is successfully updated. No worries, we have taken a backup of your last version at this path /uploads/ns_license/</source>
             </trans-unit>
             <!-- Errors -->
             <trans-unit id="errorMessage.license_not_entered">
-                <source>You should enter your License key.</source>
+                <source>Please enter a valid License key.</source>
             </trans-unit>
             <trans-unit id="errorMessage.license_expired">
-                <source>Your annual license key is expired. To get a new update, you will need to renew your license. Please submit a ticket at https://t3terminal.com/support-submit-ticket.</source>
+                <source>Your annual license key is expired. To get a new updates and support, please renew your license. Kindly submit a ticket at https://t3terminal.com/support-submit-ticket.</source>
             </trans-unit>
             <trans-unit id="errorMessage.error1">
                 <source>Your provided license key is not valid.</source>
             </trans-unit>
             <trans-unit id="errorMessage.error2">
-                <source>Your license key is already used for other domains. You can not use this license key to more than %s domains.</source>
+                <source>Your license key is already registered at other domains. You can not use this license key to more than %s domains.</source>
             </trans-unit>
             <trans-unit id="errorMessage.error3">
-                <source>Your order is in "pending status", For any questions, you can submit support ticket at https://t3terminal.com/support-submit-ticket</source>
+                <source>Your order's status is currently "pending", For any questions, you can submit support ticket at https://t3terminal.com/support-submit-ticket</source>
             </trans-unit>
             <trans-unit id="errorMessage.error4">
                 <source>Your license key is valid, but something is wrong with our server. Please submit support ticket at https://t3terminal.com/support-submit-ticket</source>
             </trans-unit>
             <trans-unit id="errorMessage.default">
-                <source>Your provided license key is not valid.</source>
+                <source>Sorry! Your provided license key is not valid.</source>
             </trans-unit>
             <trans-unit id="license-activation.footerTitle">
                 <source>Do you need any help?</source>
@@ -132,12 +132,24 @@
                 <source>Submit Your Ticket</source>
             </trans-unit>
             <trans-unit id="license.key.up_to_date">
-                <source>No extension update is available.</source>
+                <source>Your Extension is Up-to Date!</source>
             </trans-unit>
             <trans-unit id="license.key.update">
-                <source>Extension update is available.</source>
+                <source>Good news! New version of this extension is available, Please click on "Update to x.x.x" button to get latest version.</source>
             </trans-unit>
-            <!-- License LLL End-->
-		</body>
-	</file>
+            <trans-unit id="license-deactivation.confirmation">
+                <source>Caution!</source>
+            </trans-unit>
+            <trans-unit id="license-deactivation.confirmation.message">
+                <source>Do you really want to deactivate license key from this domain? The TYPO3 extension will not more work on this domain.</source>
+            </trans-unit>
+            <trans-unit id="license-deactivation.button">
+                <source>I Agree!</source>
+            </trans-unit>
+            <trans-unit id="license-activation.extension_repair">
+                <source>Your license key is successfully activated. The extension is successfully re-activated.</source>
+            </trans-unit>
+            <!-- Licence LLL End-->
+    </body>
+  </file>
 </xliff>

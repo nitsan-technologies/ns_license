@@ -4,6 +4,8 @@ define([
     'TYPO3/CMS/NsLicense/Main',
     'TYPO3/CMS/Backend/jquery.clearable'
 ], function ($, Model) {
+
+    // Confirmation modalbox `Version Update` button
     $('.license-activation .license-activation-latest').on('click', function(e){
         e.preventDefault();
         $(this).addClass('active');
@@ -15,9 +17,29 @@ define([
         $('#nsLicenseLoader').show();
         window.location = url;
     });
-    $('.license-activation .license-deactivation').on('click', function(e) {
-        $('#nsLicenseLoader').show();
+    //$('.license-activation .license-deactivation').on('click', function(e) {
+        //$('#nsLicenseLoader').show();
+    //});
+
+    // Confirmation modalbox `License DeActivation` button
+    $('.license-activation .license-deactivation-latest').on('click', function(e){
+        e.preventDefault();
+        $(this).addClass('active');
+        $('#deactivation-modal').modal('show');
     });
+    $('#deactivation-modal .deactivation-modal-update').on('click', function(e){
+        var url = $('.license-activation .license-deactivation-latest.active').attr('href');
+        $('.license-activation .license-deactivation-latest.active').removeClass('active');
+        $('#nsLicenseLoader').show();
+        window.location = url;
+    });
+
+    // If Cancel button from Modalbox
+    $('.modal .cancel-button').on('click', function(e){
+        $('.license-activation a.active').removeClass('active');
+    });
+
+    // Reset Form
     $('.custom-reset').on('click', function(){
         var that = $(this);
         that.find('i').addClass('fa-spin');
@@ -31,6 +53,7 @@ define([
         }, 2000);
     });
 
+    // Submit to register license key
     $('.ns-license-form').submit(function(){
         $('#nsLicenseLoader').show();
     });

@@ -41,11 +41,40 @@
 					</button>
 				</div>
 				<div class="t3js-modal-body modal-body">
-					<p><f:translate key="license-activation.update_extension_msg" />?</p>
+					<p><f:translate key="license-activation.update_extension_msg" /></p>
 				</div>
 				<div class="t3js-modal-footer modal-footer">
-					<button class="btn btn-gray t3js-active btn-default" {modalAttr}dismiss="modal"><span><f:translate key="license-activation.update_extension_btn_cancel" /></span></button>
+					<button class="btn btn-gray t3js-active btn-default cancel-button" {modalAttr}dismiss="modal"><span><f:translate key="license-activation.update_extension_btn_cancel" /></span></button>
 					<button class="btn btn-info activation-modal-update" {modalAttr}dismiss="modal"><span><f:translate key="license-activation.update_extension_btn_update" /></span></button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="deactivation-modal" class="t3js-modal modal fade modal-type-default modal-severity-danger modal-style-default modal-size-default" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="t3js-modal-content modal-content">
+				<div class="modal-header">
+					<h4 class="t3js-modal-title modal-title"><f:translate key="license-deactivation.confirmation" /></h4>
+					<button class="t3js-modal-close close" {modalAttr}dismiss="modal">
+						<span aria-hidden="true">
+							<span class="t3js-icon icon icon-size-small icon-state-default icon-actions-close" data-identifier="actions-close">
+								<span class="icon-markup">
+									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+										<path d="M11.9 5.5L9.4 8l2.5 2.5c.2.2.2.5 0 .7l-.7.7c-.2.2-.5.2-.7 0L8 9.4l-2.5 2.5c-.2.2-.5.2-.7 0l-.7-.7c-.2-.2-.2-.5 0-.7L6.6 8 4.1 5.5c-.2-.2-.2-.5 0-.7l.7-.7c.2-.2.5-.2.7 0L8 6.6l2.5-2.5c.2-.2.5-.2.7 0l.7.7c.2.2.2.5 0 .7z" class="icon-color"></path>
+									</svg>
+								</span>
+							</span>
+						</span>
+						<span class="sr-only"></span>
+					</button>
+				</div>
+				<div class="t3js-modal-body modal-body">
+					<p><f:translate key="license-deactivation.confirmation.message" /></p>
+				</div>
+				<div class="t3js-modal-footer modal-footer">
+					<button class="btn btn-gray t3js-active btn-default cancel-button" {modalAttr}dismiss="modal"><span><f:translate key="license-activation.update_extension_btn_cancel" /></span></button>
+					<button class="btn btn-danger deactivation-modal-update" {modalAttr}dismiss="modal"><span><f:translate key="license-deactivation.button" /></span></button>
 				</div>
 			</div>
 		</div>

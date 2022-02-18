@@ -244,6 +244,32 @@ class NsLicenseModuleController extends ActionController
     }
 
     /**
+     * updateRepairFiles.
+     *
+     * @return void
+     */
+    public function updateRepairFiles($extFolder, $extension)
+    {
+        if (file_exists($extFolder . 'ext_tables..php')) {
+            rename($extFolder . 'ext_tables..php', $extFolder . 'ext_tables.php');
+        }
+        if (file_exists($extFolder . 'Configuration./TCA/Overrides/sys_template..php')) {
+            rename($extFolder . 'Configuration./TCA/Overrides/sys_template..php', $extFolder . 'Configuration/TCA/Overrides/sys_template.php');
+        }
+        if (file_exists($extFolder . 'Configuration.')) {
+            rename($extFolder . 'Configuration.', $extFolder . 'Configuration');
+        }
+        if (file_exists($extFolder . 'Resources.')) {
+            rename($extFolder . 'Resources.', $extFolder . 'Resources');
+        }
+        try {
+            $this->loadExtension($extension);
+        } catch (\Exception $e) {
+            $this->addFlashMessage($e->getMessage(), $extension, \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
+        }
+    }
+
+    /**
      * Wrapper function for unloading extensions.
      *
      * @param string $extensionKey
@@ -251,6 +277,17 @@ class NsLicenseModuleController extends ActionController
     protected function unloadExtension($extensionKey)
     {
         $this->packageManager->deactivatePackage($extensionKey);
+        $this->cacheManager->flushCachesInGroup('system');
+    }
+
+     /**
+     * Wrapper function for loading extensions.
+     *
+     * @param string $extensionKey
+     */
+    protected function loadExtension($extensionKey)
+    {
+        $this->packageManager->activatePackage($extensionKey);
         $this->cacheManager->flushCachesInGroup('system');
     }
 
@@ -363,6 +400,7 @@ class NsLicenseModuleController extends ActionController
                     $this->redirect('list');
                 }
                 $isAvailable = $this->nsLicenseRepository->fetchData($licenseData->extension_key);
+
                 if ($isAvailable && $params['overwrite'] == 1) {
                     $ltsext = end($licenseData->extension_download_url);
                     $extKey = $licenseData->extension_key . '.zip';
@@ -400,52 +438,83 @@ class NsLicenseModuleController extends ActionController
                         $this->redirect('list');
                     }
                     $this->nsLicenseRepository->updateData($licenseData, 1);
+                    
                 } elseif (!$isAvailable) {
-                    $ltsext = end($licenseData->extension_download_url);
-                    $extKey = $licenseData->extension_key . '.zip';
-                    $extKeyPath = $this->siteRoot . 'typo3temp/' . $extKey;
-                    $this->downloadZipFile($ltsext, $licenseData->license_key, $extKeyPath, $licenseData->user_name);
-                    try {
-                        if ($this->isComposerMode) {
-                            $zipService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\Archive\ZipService::class);
-                            $extensionDir = $this->composerSiteRoot . 'extensions/' . $licenseData->extension_key;
-                            if ($zipService->verify($extKeyPath)) {
-                                if (!is_dir($extensionDir)) {
-                                    GeneralUtility::mkdir_deep($extensionDir);
-                                } else {
-                                    GeneralUtility::rmdir($extensionDir, true);
-                                    GeneralUtility::mkdir_deep($extensionDir);
+                    
+                    // OPTION 1. Repairing > Let's just repair, If the product already there in typo3conf/ext + needs repair
+                    if ($this->isComposerMode) {
+                        $extFolder = $this->composerSiteRoot . 'extensions/' . $licenseData->extension_key . '/';
+                    }
+                    else {
+                        $extFolder = $this->siteRoot . '/typo3conf/ext/' . $licenseData->extension_key . '/';
+                    }
+                    if (
+                        (file_exists($extFolder . 'ext_tables..php')) ||  
+                        (file_exists($extFolder . 'Configuration./TCA/Overrides/sys_template..php')) ||
+                        (file_exists($extFolder . 'Configuration.')) || 
+                        (file_exists($extFolder . 'Resources.'))
+                        ) {
+                        $isRepair = 'Yes';
+                        $this->updateRepairFiles($extFolder, $licenseData->extension_key);
+                    }
+
+                    // OPTION 2. Overriding > Else let's continue to download extension
+                    else {
+                        $ltsext = end($licenseData->extension_download_url);
+                        $extKey = $licenseData->extension_key . '.zip';
+                        $extKeyPath = $this->siteRoot . 'typo3temp/' . $extKey;
+                        $this->downloadZipFile($ltsext, $licenseData->license_key, $extKeyPath, $licenseData->user_name);
+                        try {
+                            if ($this->isComposerMode) {
+                                $zipService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\Archive\ZipService::class);
+                                $extensionDir = $this->composerSiteRoot . 'extensions/' . $licenseData->extension_key;
+                                if ($zipService->verify($extKeyPath)) {
+                                    if (!is_dir($extensionDir)) {
+                                        GeneralUtility::mkdir_deep($extensionDir);
+                                    } else {
+                                        GeneralUtility::rmdir($extensionDir, true);
+                                        GeneralUtility::mkdir_deep($extensionDir);
+                                    }
+                                    $zipService->extract($extKeyPath, $extensionDir);
                                 }
-                                $zipService->extract($extKeyPath, $extensionDir);
-                            }
-                        } else {
-                            if (version_compare(TYPO3_branch, '11.0', '>')) {
-                                $extKey = str_replace('.zip', '', $extKey);
-                                $this->extractExtensionFromZipFile($extKeyPath, $extKey, ($params['overwrite'] ? true : false));
                             } else {
-                                $this->uploadExtension = $objectManager->get(\TYPO3\CMS\Extensionmanager\Controller\UploadExtensionFileController::class);
-                                $this->uploadExtension->extractExtensionFromFile($extKeyPath, $extKey, ($params['overwrite'] ? true : false));
+                                if (version_compare(TYPO3_branch, '11.0', '>')) {
+                                    $extKey = str_replace('.zip', '', $extKey);
+                                    $this->extractExtensionFromZipFile($extKeyPath, $extKey, ($params['overwrite'] ? true : false));
+                                } else {
+                                    $this->uploadExtension = $objectManager->get(\TYPO3\CMS\Extensionmanager\Controller\UploadExtensionFileController::class);
+                                    $this->uploadExtension->extractExtensionFromFile($extKeyPath, $extKey, ($params['overwrite'] ? true : false));
+                                }
                             }
+                            unlink($extKeyPath);
+                        } catch (\Exception $e) {
+                            if (strpos($e->getMessage(), 'Unable to open zip') !== false) {
+                                $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense'), $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
+                            } else {
+                                $this->addFlashMessage(LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'), $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
+                            }
+                            $this->redirect('list');
                         }
-                        unlink($extKeyPath);
-                    } catch (\Exception $e) {
-                        if (strpos($e->getMessage(), 'Unable to open zip') !== false) {
-                            $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense'), $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
-                        } else {
-                            $this->addFlashMessage(LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'), $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
-                        }
-                        $this->redirect('list');
                     }
                     $this->nsLicenseRepository->insertNewData($licenseData);
                 } else {
                     $this->addFlashMessage(LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'), 'EXT:' . $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
                     $this->redirect('list');
                 }
+
+                // Is it from Update version?
                 if($fromWhere == 'fromUpdate') {
                     $this->addFlashMessage(LocalizationUtility::translate('license-activation.downloaded_successfully_from_update', 'NsLicense'), 'EXT:' . $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::OK);
                 }
+
+                // Seems from New license key registration
                 else {
-                    $this->addFlashMessage(LocalizationUtility::translate('license-activation.downloaded_successfully', 'NsLicense'), 'EXT:' . $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::OK);
+                    if($isRepair == 'Yes') {
+                        $this->addFlashMessage(LocalizationUtility::translate('license-activation.extension_repair', 'NsLicense'), 'EXT:' . $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::OK);
+                    }
+                    else {
+                        $this->addFlashMessage(LocalizationUtility::translate('license-activation.downloaded_successfully', 'NsLicense'), 'EXT:' . $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::OK);
+                    }
                 }
                 if ($params['extension_key'] == 'ns_revolution_slider') {
                     $rsInstallUtility = GeneralUtility::makeInstance(\NITSAN\NsRevolutionSlider\Slots\InstallUtility::class);
@@ -482,6 +551,8 @@ class NsLicenseModuleController extends ActionController
                         $this->redirect('list');
                     }
                 }
+
+                // Successfully redirect to license listing
                 $this->redirect('list');
             } else {
                 $title = 'ERROR';
@@ -496,7 +567,7 @@ class NsLicenseModuleController extends ActionController
                 $this->redirect('list');
             }
         }
-        // return to list;
+        // Successfully redirect to license listing
         $this->addFlashMessage(LocalizationUtility::translate('errorMessage.default', 'NsLicense'), $params['license'], \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
         $this->redirect('list');
     }
