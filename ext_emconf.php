@@ -1,26 +1,26 @@
 <?php
 
 $EM_CONF['ns_license'] = array (
-  'title' => '[NITSAN] License Management',
+  'title' => '[NITSAN] License Manager',
   'description' => 'Manage License(s) of your purchased T3Terminal\'s premium TYPO3 products. Know more at documentation https://docs.t3terminal.com/en/latest/License/LicenseActivation/Index.html.',
   'category' => 'templates',
   'author' => 'Team NITSAN',
   'author_email' => 'sanjay@nitsan.in',
   'author_company' => 'NITSAN Technologies Pvt Ltd',
   'state' => 'stable',
-  'version' => '1.4.1',
+  'version' => '1.5.0',
   'constraints' => 
   array (
     'depends' => 
-    array (
-      'typo3' => '8.0.0-11.5.99',
-    ),
+      array (
+        'typo3' => '8.0.0-11.5.99',
+      ),
     'conflicts' => 
-    array (
-    ),
-    'suggests' => 
-    array (
-    ),
+      array (
+      ),
+      'suggests' => 
+      array (
+      ),
   ),
   'autoload' => 
   array (
@@ -32,4 +32,3 @@ $EM_CONF['ns_license'] = array (
   'uploadfolder' => false,
   'clearcacheonload' => false,
 );
-
