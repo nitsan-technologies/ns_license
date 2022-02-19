@@ -110,7 +110,6 @@ class NsLicenseModuleController extends ActionController
         } else {
             $this->view->assign('modalAttr','data-');
         }
-
         $this->view->assign('extensions', $extensions);
     }
 
@@ -307,7 +306,7 @@ class NsLicenseModuleController extends ActionController
                 $this->redirect('list');
             }
 
-            $souceFolder = $this->siteRoot . 'typo3conf/ext/' . $extKey;
+            $souceFolder = ($this->isComposerMode) ? $souceFolder = $this->composerSiteRoot . 'extensions/' . $extKey . '/' : $souceFolder = $this->siteRoot . 'typo3conf/ext/' . $extKey;
             if (is_dir($souceFolder)) {
                 $uploadFolder = $this->siteRoot . 'uploads/ns_license/' . $extKey . '/' . $params['extension']['version'];
                 try {

@@ -83,7 +83,7 @@
                 <source>Cancel</source>
             </trans-unit>
             <trans-unit id="license-activation.update_extension_btn_update">
-                <source>Update</source>
+                <source>Update Now</source>
             </trans-unit>
             <trans-unit id="license-activation.deactivation">
                 <source>The extension is successfully deactivated.</source>

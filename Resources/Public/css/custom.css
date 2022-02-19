@@ -50,6 +50,10 @@
 .ns-license-activation-table > tbody > tr > td{
     padding: 10px 15px;
 }
+
+.modal-dialog .modal-footer .btn-info {
+    background-color: #6daae0;
+}
 @media (min-width: 993px){
     .ns-license-loader img {
         max-width: 120px;
