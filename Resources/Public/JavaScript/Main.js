@@ -5,6 +5,9 @@ define([
     'TYPO3/CMS/Backend/jquery.clearable'
 ], function ($, Model) {
 
+    // Initialize tooltip for NITSAN > License Manager > Domains (on-over)
+    $('[data-toggle="tooltip"]').tooltip();
+    
     // Confirmation modalbox `Version Update` button
     $('.license-activation .license-activation-latest').on('click', function(e){
         e.preventDefault();
@@ -55,6 +58,11 @@ define([
 
     // Submit to register license key
     $('.ns-license-form').submit(function(){
+        $('#nsLicenseLoader').show();
+    });
+
+    // Check for updates
+    $('.license-reload').on('click', function(){
         $('#nsLicenseLoader').show();
     });
 });

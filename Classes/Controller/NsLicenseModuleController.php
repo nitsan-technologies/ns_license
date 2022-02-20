@@ -16,7 +16,7 @@ use TYPO3\CMS\Extensionmanager\Utility\FileHandlingUtility;
 
 /***
  *
- * This file is part of the "[NITSAN] NS Bas" Extension for TYPO3 CMS.
+ * This file is part of the "[NITSAN] NS License" Extension for TYPO3 CMS.
  *
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
@@ -102,6 +102,9 @@ class NsLicenseModuleController extends ActionController
         foreach ($extensions as $key => $extension) {
             if ($extension['is_life_time'] != 1) {
                 $extensions[$key]['days'] = (int) floor((($extension['expiration_date'] - time()) + 86400) / 86400);
+            }
+            if(!empty($extension['domains'])) {
+                $extensions[$key]['domains'] = str_replace(","," | ",$extensions[$key]['domains']);
             }
         }
         

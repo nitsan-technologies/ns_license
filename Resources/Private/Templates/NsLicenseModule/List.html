@@ -45,6 +45,7 @@
                         <th class="text-center"><f:translate key="license-activation.version" /></th>
                         <th class="text-center"><f:translate key="license-activation.product" /></th>
                         <th class="text-center"><f:translate key="license-activation.documentation" /></th>
+                        <th class="text-center"><f:translate key="license-activation.domains" /></th>
                         <th class="text-center"><f:translate key="license-activation.licenseType" /></th>
                         <th class="text-center"><f:translate key="license-activation.expiration_date" /></th>
                         <th class="text-center"><f:translate key="license-activation.action" /></th>
@@ -62,11 +63,21 @@
                             </td>
                             <td class="text-center ns-license-icon-cell">
                                 <f:link.typolink target="_bank" parameter="{extension.product_link}">
-                                    <!--<f:image src="typo3conf/ext/ns_license/Resources/Public/Icons/Product.svg" alt="icon" width="32" height="32" />-->
                                     <em class="fa fa-shopping-cart"></em>
                                 </f:link.typolink>
                             </td>
-                            <td class="text-center ns-license-icon-cell"><f:link.typolink target="_bank" parameter="{extension.documentation_link}"><em class="fa fa-file-text"></em></f:link.typolink></td>
+                            <td class="text-center ns-license-icon-cell">
+                                <f:link.typolink target="_bank" parameter="{extension.documentation_link}">
+                                    <em class="fa fa-file-text"></em>
+                                </f:link.typolink>
+                            </td>
+                            <td class="text-center ns-license-icon-cell">
+                                <f:if condition="{extension.domains}">
+                                    <a href="#" data-toggle="tooltip" data-placement="top" data-html="true" title="{extension.domains}">
+                                        <em class="fa fa-info-circle"></em>
+                                    </a>
+                                </f:if>
+                            </td>
                             <td class="text-center">
                                 <f:if condition="{extension.is_life_time} == 1">
                                     <f:then><f:translate key="license-activation.licenseType.life_time" /></f:then>

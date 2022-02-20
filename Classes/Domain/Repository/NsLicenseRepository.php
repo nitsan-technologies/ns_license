@@ -6,7 +6,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /***
  *
- * This file is part of the "NS Basetheme" Extension for TYPO3 CMS.
+ * This file is part of the "NS License" Extension for TYPO3 CMS.
  *
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
@@ -45,6 +45,7 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
                     'lts_version' => $key,
                     'is_life_time' => $data->is_life_time,
                     'expiration_date' => $data->expiration_date,
+                    'domains' => $data->domains,
                 ])
                 ->execute();
         }
@@ -88,7 +89,8 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
            ->set('product_link', $data->product_link)
            ->set('is_life_time', $data->is_life_time)
            ->set('expiration_date', $data->expiration_date)
-           ->set('documentation_link', $data->documentation_link);
+           ->set('documentation_link', $data->documentation_link)
+           ->set('domains', $data->domains);
         if ($ltsCheck == 1) {
             $queryBuilder->set('version', $key);
         }

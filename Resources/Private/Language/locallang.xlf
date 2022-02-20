@@ -13,8 +13,11 @@
             <trans-unit id="license-activation.documentation">
                 <source>Docs</source>
             </trans-unit>
+            <trans-unit id="license-activation.domains">
+                <source>Domains</source>
+            </trans-unit>
             <trans-unit id="license-activation.licenseType">
-                <source>License Type</source>
+                <source>License</source>
             </trans-unit>
             <trans-unit id="license-activation.licenseType.life_time">
                 <source>Life Time</source>
@@ -53,7 +56,7 @@
                 <source>Up to Date</source>
             </trans-unit>
             <trans-unit id="license-activation.Updates">
-                <source>Check for Updates</source>
+                <source>Check Updates</source>
             </trans-unit>
             <trans-unit id="license-activation.licenseKey">
                 <source>Register Your License Key</source>
