@@ -35,7 +35,7 @@ define([
     });
 
     // If Cancel button from Modalbox
-    $('.modal .cancel-button').on('click', function(e){
+    $('.modal .cancel-button, .modal .t3js-modal-close').on('click', function(e){
         $('.license-activation a.active').removeClass('active');
     });
 

@@ -51,8 +51,8 @@
     padding: 10px 15px;
 }
 
-.modal-dialog .modal-footer .btn-info {
-    background-color: #6daae0;
+.modal-dialog .modal-footer .btn-warning {
+    color: #fff;
 }
 @media (min-width: 993px){
     .ns-license-loader img {
