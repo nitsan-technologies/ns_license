@@ -1,4 +1,5 @@
 # EXT.ns_license
 
-- This extension will help premium customers of T3Terminal to activate purchased TYPO3 product with a license key.
-- Find at official version at TER https://extensions.typo3.org/extension/ns_license
+- Manage License(s) of your purchased T3Terminal's premium TYPO3 products.
+- TER https://extensions.typo3.org/extension/ns_license
+- Documentation https://docs.t3terminal.com/en/latest/License/LicenseActivation/Index.html

@@ -46,6 +46,7 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
                     'is_life_time' => $data->is_life_time,
                     'expiration_date' => $data->expiration_date,
                     'domains' => $data->domains,
+                    'license_type' => $data->license_type,
                 ])
                 ->execute();
         }
@@ -90,7 +91,8 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
            ->set('is_life_time', $data->is_life_time)
            ->set('expiration_date', $data->expiration_date)
            ->set('documentation_link', $data->documentation_link)
-           ->set('domains', $data->domains);
+           ->set('domains', $data->domains)
+           ->set('license_type', $data->license_type);;
         if ($ltsCheck == 1) {
             $queryBuilder->set('version', $key);
         }

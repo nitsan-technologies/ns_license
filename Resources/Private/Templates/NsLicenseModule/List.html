@@ -43,8 +43,8 @@
                         <th><f:translate key="license-activation.extkey" /></th>
                         <th><f:translate key="license-activation.license" /></th>
                         <th class="text-center"><f:translate key="license-activation.version" /></th>
-                        <th class="text-center"><f:translate key="license-activation.product" /></th>
                         <th class="text-center"><f:translate key="license-activation.documentation" /></th>
+                        <th class="text-center"><f:translate key="license-activation.allow" /></th>
                         <th class="text-center"><f:translate key="license-activation.domains" /></th>
                         <th class="text-center"><f:translate key="license-activation.licenseType" /></th>
                         <th class="text-center"><f:translate key="license-activation.expiration_date" /></th>
@@ -62,20 +62,36 @@
                                 </f:if>
                             </td>
                             <td class="text-center ns-license-icon-cell">
-                                <f:link.typolink target="_bank" parameter="{extension.product_link}">
-                                    <em class="fa fa-shopping-cart"></em>
-                                </f:link.typolink>
-                            </td>
-                            <td class="text-center ns-license-icon-cell">
                                 <f:link.typolink target="_bank" parameter="{extension.documentation_link}">
                                     <em class="fa fa-file-text"></em>
                                 </f:link.typolink>
                             </td>
                             <td class="text-center ns-license-icon-cell">
+                                <f:if condition="{extension.license_type}">
+                                    <f:then>
+                                        <a href="#" data-toggle="tooltip" data-placement="top" data-html="true" title="{extension.license_type} {f:translate(key: 'license-activation.domains')} {f:translate(key: 'license-activation.allow')}">
+                                            <em class="fa fa-check-circle"></em>
+                                        </a>
+                                    </f:then>
+                                    <f:else>
+                                        <a href="#" data-toggle="tooltip" data-placement="top" data-html="true" title="{f:translate(key: 'license-activation.no_domains')}">
+                                            <em class="fa fa-check-circle"></em>
+                                        </a>
+                                    </f:else>
+                                </f:if>
+                            </td>
+                            <td class="text-center ns-license-icon-cell">
                                 <f:if condition="{extension.domains}">
-                                    <a href="#" data-toggle="tooltip" data-placement="top" data-html="true" title="{extension.domains}">
-                                        <em class="fa fa-info-circle"></em>
-                                    </a>
+                                    <f:then>
+                                        <a href="#" data-toggle="tooltip" data-placement="top" data-html="true" title="{extension.domains}">
+                                            <em class="fa fa-info-circle"></em>
+                                        </a>
+                                    </f:then>
+                                    <f:else>
+                                        <a href="#" data-toggle="tooltip" data-placement="top" data-html="true" title="{f:translate(key: 'license-activation.no_domains')}">
+                                            <em class="fa fa-info-circle"></em>
+                                        </a>
+                                    </f:else>
                                 </f:if>
                             </td>
                             <td class="text-center">

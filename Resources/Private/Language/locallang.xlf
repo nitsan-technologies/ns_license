@@ -13,8 +13,14 @@
             <trans-unit id="license-activation.documentation">
                 <source>Docs</source>
             </trans-unit>
+            <trans-unit id="license-activation.allow">
+                <source>Allow</source>
+            </trans-unit>
             <trans-unit id="license-activation.domains">
                 <source>Domains</source>
+            </trans-unit>
+            <trans-unit id="license-activation.no_domains">
+                <source>Click on `Check Updates` button to get latest list</source>
             </trans-unit>
             <trans-unit id="license-activation.licenseType">
                 <source>License</source>
@@ -80,13 +86,13 @@
                 <source>Attention Please!</source>
             </trans-unit>
             <trans-unit id="license-activation.update_extension_msg">
-                <source>Are you sure that you want to overwrite the existing TYPO3 extension? Before proceeding, we suggest you backup your existing TYPO3 extension.</source>
+                <source>Are you sure that you want to overwrite the existing TYPO3 extension? Before proceeding, we suggest you backup your existing TYPO3 extension. Otherwise, no worries, your extension's current version will be backup at the `/uploads/ns_license/` directory.</source>
             </trans-unit>
             <trans-unit id="license-activation.update_extension_btn_cancel">
                 <source>Cancel</source>
             </trans-unit>
             <trans-unit id="license-activation.update_extension_btn_update">
-                <source>Update Now</source>
+                <source>Update Now!</source>
             </trans-unit>
             <trans-unit id="license-activation.deactivation">
                 <source>The extension is successfully deactivated.</source>
@@ -144,10 +150,10 @@
                 <source>Caution!</source>
             </trans-unit>
             <trans-unit id="license-deactivation.confirmation.message">
-                <source>Do you really want to deactivate license key from this domain? The TYPO3 extension will not more work on this domain.</source>
+                <source>Do you want to deactivate the license key from this domain? The TYPO3 extension will not more work on this domain.</source>
             </trans-unit>
             <trans-unit id="license-deactivation.button">
-                <source>I Agree!</source>
+                <source>Deactivate Now!</source>
             </trans-unit>
             <trans-unit id="license-activation.extension_repair">
                 <source>Your license key is successfully activated. The extension is successfully re-activated.</source>

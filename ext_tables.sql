@@ -15,6 +15,7 @@ CREATE TABLE ns_product_license (
 	is_life_time varchar(5) DEFAULT NULL,
 	expiration_date int(11) DEFAULT '0' NOT NULL,
 	domains text,
+	license_type varchar(5) DEFAULT NULL,
 
 	PRIMARY KEY (uid)
 );
