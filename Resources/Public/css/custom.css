@@ -54,6 +54,16 @@
 .modal-dialog .modal-footer .btn-warning {
     color: #fff;
 }
+.btn-uptodate {
+    min-width: 133px;
+}
+.ns-license-actions-btns .btn {
+    margin-left: 3px;
+    margin-right: 3px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
 @media (min-width: 993px){
     .ns-license-loader img {
         max-width: 120px;
