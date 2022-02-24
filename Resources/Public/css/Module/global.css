@@ -800,6 +800,19 @@ label {
     padding: 9px 18px;
 }
 
+.tooltip .tooltip-inner {
+    border-radius: 2px;
+    font-size: 12px;
+    font-family: 'Verdana';
+    line-height: 18px;
+    padding: 5px 10px;
+}
+
+.tooltip.in,
+.ns-license-icon-cell .tooltip.in {
+    opacity: 1 !important;
+}
+
 @media (max-width: 1200px) {
     .ns-license-table-wrap .ns-license-activation-table {
         min-width: 1500px;
