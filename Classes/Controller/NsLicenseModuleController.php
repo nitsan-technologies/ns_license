@@ -429,20 +429,19 @@ class NsLicenseModuleController extends ActionController
                                 $this->uploadExtension = $objectManager->get(\TYPO3\CMS\Extensionmanager\Controller\UploadExtensionFileController::class);
                                 $this->uploadExtension->extractExtensionFromFile($extKeyPath, $extKey, ($params['overwrite'] ? true : false));
                             }
-
-                            //Rename the static data dump file after update the extension for theme...
-                            if (strpos($extKey, 'ns_') !== false && $extKey != 'ns_license' && $extKey != 'ns_basetheme') {
-                                if (version_compare(TYPO3_branch, '9.0', '>')) {
-                                    $this->siteRoot = \TYPO3\CMS\Core\Core\Environment::getPublicPath();
-                                } else {
-                                    $this->siteRoot = PATH_site;
-                                }
-                                if (strpos($extKey, 'ns_theme_') !== false && version_compare(TYPO3_branch, '9.0', '>')) {
-                                    // Check SQL import file, and rename it
-                                    $extFolder = (Environment::isComposerMode()) ? $this->siteRoot . '/extensions/' . $extname . '/' : $this->siteRoot . '/typo3conf/ext/' . $extKey . '/';
-                                    if (file_exists($extFolder . 'ext_tables_static+adt.sql')) {
-                                        rename($extFolder . 'ext_tables_static+adt.sql', $extFolder . 'ext_tables_static+adt..sql');
-                                    }
+                        }
+                        //Rename the static data dump file after update the extension for theme...
+                        if (strpos($licenseData->extension_key, 'ns_') !== false && $licenseData->extension_key != 'ns_license' && $licenseData->extension_key != 'ns_basetheme') {
+                            if (version_compare(TYPO3_branch, '9.0', '>')) {
+                                $this->siteRoot = \TYPO3\CMS\Core\Core\Environment::getPublicPath();
+                            } else {
+                                $this->siteRoot = PATH_site;
+                            }
+                            if (strpos($licenseData->extension_key, 'ns_theme_') !== false && version_compare(TYPO3_branch, '9.0', '>')) {
+                                // Check SQL import file, and rename it
+                                $extFolder = (Environment::isComposerMode()) ? $this->siteRoot . '/extensions/' . $licenseData->extension_key . '/' : $this->siteRoot . '/typo3conf/ext/' . $licenseData->extension_key . '/';
+                                if (file_exists($extFolder . 'ext_tables_static+adt.sql')) {
+                                    rename($extFolder . 'ext_tables_static+adt.sql', $extFolder . 'ext_tables_static+adt..sql');
                                 }
                             }
                         }
