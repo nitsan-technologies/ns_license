@@ -13,7 +13,7 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException;
 use TYPO3\CMS\Extensionmanager\Service\ExtensionManagementService;
 use TYPO3\CMS\Extensionmanager\Utility\FileHandlingUtility;
-
+use TYPO3\CMS\Core\Http\RequestFactory;
 /***
  *
  * This file is part of the "[NITSAN] NS License" Extension for TYPO3 CMS.
@@ -47,6 +47,8 @@ class NsLicenseModuleController extends ActionController
 
     protected $installUtility = null;
 
+    protected $requestFactory = null;
+
     public function injectNsLicenseRepository(NsLicenseRepository $nsLicenseRepository)
     {
         $this->nsLicenseRepository = $nsLicenseRepository;
@@ -64,6 +66,7 @@ class NsLicenseModuleController extends ActionController
         $this->installUtility = GeneralUtility::makeInstance(\TYPO3\CMS\Extensionmanager\Utility\InstallUtility::class);
         $this->managementService = GeneralUtility::makeInstance(ExtensionManagementService::class);
         $this->fileHandlingUtility = GeneralUtility::makeInstance(FileHandlingUtility::class);
+        $this->requestFactory = GeneralUtility::makeInstance(RequestFactory::class);
     }
 
     /**
@@ -639,24 +642,18 @@ class NsLicenseModuleController extends ActionController
     public function fetchLicense($license)
     {
         $url = 'https://composer.t3terminal.com/API/GetComposerDetails.php?' . $license;
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-          CURLOPT_URL => $url,
-          CURLOPT_RETURNTRANSFER => true,
-          CURLOPT_ENCODING => '',
-          CURLOPT_MAXREDIRS => 10,
-          CURLOPT_TIMEOUT => 0,
-          CURLOPT_FOLLOWLOCATION => true,
-          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-          CURLOPT_CUSTOMREQUEST => 'POST',
-        ]);
-        $response = curl_exec($curl);
-        if (!$response) {
-            echo 'Error :- ' . curl_error($curl);
+        try {
+            $response = $this->requestFactory->request(
+                $url,
+                'POST',
+                []
+             );
+        } catch (\Throwable $th) {
+            echo 'Error :- ' . $th->getMessage();
         }
-        curl_close($curl);
-
-        return json_decode($response);
+        
+        $rawResponse = $response->getBody()->getContents();
+        return json_decode($rawResponse);
     }
 
     /**
@@ -672,25 +669,22 @@ class NsLicenseModuleController extends ActionController
     public function downloadZipFile($extensionDownloadUrl, $license, $extKeyPath, $userName)
     {
         $authorization = 'Basic ' . base64_encode($userName . ':' . $license);
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-          CURLOPT_URL => $extensionDownloadUrl,
-          CURLOPT_RETURNTRANSFER => true,
-          CURLOPT_ENCODING => '',
-          CURLOPT_MAXREDIRS => 10,
-          CURLOPT_TIMEOUT => 0,
-          CURLOPT_FOLLOWLOCATION => true,
-          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-          CURLOPT_CUSTOMREQUEST => 'POST',
-          CURLOPT_HTTPHEADER => [
-            'Authorization: ' . $authorization,
-          ],
-        ]);
-        $response = curl_exec($curl);
-        if (!$response) {
-            echo 'Error :- ' . curl_error($curl);
+        
+        try {
+
+            $response = $this->requestFactory->request(
+                $extensionDownloadUrl,
+                'POST',
+                ['headers' => ['Authorization' => $authorization]]
+             );
+             
+        } catch (\Throwable $th) {
+           
+            echo 'Error :- ' . $th->getMessage();
         }
-        curl_close($curl);
-        file_put_contents($extKeyPath, $response);
+        
+        $rawResponse = $response->getBody()->getContents();
+    
+        file_put_contents($extKeyPath, $rawResponse);
     }
 }
