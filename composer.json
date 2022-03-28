@@ -1,7 +1,7 @@
 {
   "name": "nitsan/ns-license",
   "type": "typo3-cms-extension",
-  "description": "The TYPO3 theme which is design for parent and child theme concept, This parent theme have common and global configuration to support the child theme. Read more at documentation.",
+  "description": "Manage License(s) of your purchased T3Terminal premium TYPO3 products. Know more at documentation https://docs.t3terminal.com/en/latest/License/LicenseActivation/Index.html",
   "keywords": [
     "TYPO3 CMS",
     "license",
