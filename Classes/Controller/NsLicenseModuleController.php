@@ -643,17 +643,21 @@ class NsLicenseModuleController extends ActionController
     {
         $url = 'https://composer.t3terminal.com/API/GetComposerDetails.php?' . $license;
         try {
+
             $response = $this->requestFactory->request(
                 $url,
                 'POST',
                 []
              );
+
+            $rawResponse = $response->getBody()->getContents();
+            
+            return json_decode($rawResponse);
+
         } catch (\Throwable $th) {
-            echo 'Error :- ' . $th->getMessage();
+            
         }
-        
-        $rawResponse = $response->getBody()->getContents();
-        return json_decode($rawResponse);
+ 
     }
 
     /**
@@ -677,14 +681,14 @@ class NsLicenseModuleController extends ActionController
                 'POST',
                 ['headers' => ['Authorization' => $authorization]]
              );
-             
+
+            $rawResponse = $response->getBody()->getContents();
+    
+            file_put_contents($extKeyPath, $rawResponse);
+
         } catch (\Throwable $th) {
            
-            echo 'Error :- ' . $th->getMessage();
         }
-        
-        $rawResponse = $response->getBody()->getContents();
-    
-        file_put_contents($extKeyPath, $rawResponse);
+
     }
 }
