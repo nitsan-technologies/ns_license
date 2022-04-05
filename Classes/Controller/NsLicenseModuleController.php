@@ -148,34 +148,41 @@ class NsLicenseModuleController extends ActionController
     public function connectToServer($extKey = null, $reload = 0)
     {
         $this->initializeAction();
+        $extFolder = $this->siteRoot . '/typo3conf/ext/' . $extKey . '/';
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         if (!isset($_COOKIE['serverConnectionTime']) || $reload) {
             setcookie('serverConnectionTime', 1, time() + 60 * 60 * 24 * 14);
             $nsLicenseRepository = $this->objectManager->get(\NITSAN\NsLicense\Domain\Repository\NsLicenseRepository::class);
+
+            // Let's check for particular Extension
             if ($extKey) {
                 $extData = $nsLicenseRepository->fetchData($extKey);
                 if (!empty($extData)) {
                     $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $extData[0]['license_key']);
-                    if ($licenseData->status) {
-                        $nsLicenseRepository->updateData($licenseData);
-
-                        return true;
-                    } elseif (!$licenseData->status) {
-                        $disableExtensions[] = $extKey;
-                        $extFolder = $this->siteRoot . '/typo3conf/ext/' . $extKey . '/';
-                        $this->updateFiles($extFolder, $extKey);
-
-                        return false;
+                    if(!is_null($licenseData)) {
+                        if ($licenseData->status) {
+                            $nsLicenseRepository->updateData($licenseData);
+                            $this->updateRepairFiles($extFolder, $extKey);
+                            return true;
+                        } elseif (!$licenseData->status) {
+                            $disableExtensions[] = $extKey;
+                            $this->updateFiles($extFolder, $extKey);
+                            return false;
+                        }
                     }
                 } else {
                     $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_key=' . $extKey);
-                    if ($licenseData->status) {
-                        return false;
-                    } else {
-                        return true;
+                    if(!is_null($licenseData)) {
+                        if ($licenseData->status) {
+                            return true;
+                        } else {
+                            return false;
+                        }
                     }
                 }
-            } else {
+            }
+            // Let's check for All Extensions
+            else {
                 $activePackages = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Package\PackageManager::class)->getActivePackages();
                 $allExtensions = [];
                 foreach ($activePackages as $key => $value) {
@@ -191,25 +198,28 @@ class NsLicenseModuleController extends ActionController
                         $extData = $nsLicenseRepository->fetchData($extension);
                         if (empty($extData)) {
                             $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_key=' . $extension);
-                            if ($licenseData->status && !is_null($licenseData)) {
-                                $disableExtensions[] = $extension;
-                                $extFolder = $this->siteRoot . '/typo3conf/ext/' . $extension . '/';
-                                $this->updateFiles($extFolder, $extension);
+                            if(!is_null($licenseData)) {
+                                if ($licenseData->status) {
+                                    $this->updateRepairFiles($extFolder, $extKey);
+                                } elseif (!$licenseData->status) {
+                                    $disableExtensions[] = $extension;
+                                    $this->updateFiles($extFolder, $extension);
+                                }
                             }
                         } else {
                             $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $extData[0]['license_key']);
-                            if (!is_null($licenseData)) {
+                            if(!is_null($licenseData)) {
                                 if ($licenseData->status) {
                                     $nsLicenseRepository->updateData($licenseData);
+                                    $this->updateRepairFiles($extFolder, $extKey);
                                 } elseif (!$licenseData->status) {
                                     $disableExtensions[] = $extension;
-                                    $extFolder = $this->siteRoot . '/typo3conf/ext/' . $extension . '/';
                                     $this->updateFiles($extFolder, $extension);
                                 }
                             }
                         }
                     }
-                    if ($disableExtensions != '') {
+                    if (!empty($disableExtensions)) {
                         $disableExtensions = implode(',', $disableExtensions);
                         setcookie('NsLicense', $disableExtensions, time() + 3600, '/', '', 0);
                     } else {
@@ -217,9 +227,10 @@ class NsLicenseModuleController extends ActionController
                     }
                 }
             }
-        } else {
-            return true;
         }
+
+        // Always return true if nothing happen
+        return true;
     }
 
     /**
@@ -255,23 +266,32 @@ class NsLicenseModuleController extends ActionController
      */
     public function updateRepairFiles($extFolder, $extension)
     {
+        $isRepair = false;
         if (file_exists($extFolder . 'ext_tables..php')) {
             rename($extFolder . 'ext_tables..php', $extFolder . 'ext_tables.php');
+            $isRepair = true;
         }
         if (file_exists($extFolder . 'Configuration./TCA/Overrides/sys_template..php')) {
             rename($extFolder . 'Configuration./TCA/Overrides/sys_template..php', $extFolder . 'Configuration/TCA/Overrides/sys_template.php');
+            $isRepair = true;
         }
         if (file_exists($extFolder . 'Configuration.')) {
             rename($extFolder . 'Configuration.', $extFolder . 'Configuration');
+            $isRepair = true;
         }
         if (file_exists($extFolder . 'Resources.')) {
             rename($extFolder . 'Resources.', $extFolder . 'Resources');
+            $isRepair = true;
         }
-        try {
-            $this->loadExtension($extension);
-        } catch (\Exception $e) {
-            $this->addFlashMessage($e->getMessage(), $extension, \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
+
+        if($isRepair) {
+            try {
+                $this->loadExtension($extension);
+            } catch (\Exception $e) {
+                $this->addFlashMessage($e->getMessage(), $extension, \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
+            }
         }
+        return $isRepair;
     }
 
     /**
@@ -468,16 +488,12 @@ class NsLicenseModuleController extends ActionController
                     else {
                         $extFolder = $this->siteRoot . '/typo3conf/ext/' . $licenseData->extension_key . '/';
                     }
-                    if (
-                        (file_exists($extFolder . 'ext_tables..php')) ||  
-                        (file_exists($extFolder . 'Configuration./TCA/Overrides/sys_template..php')) ||
-                        (file_exists($extFolder . 'Configuration.')) || 
-                        (file_exists($extFolder . 'Resources.'))
-                        ) {
+                    
+                    // Check if Update Repair
+                    if($this->updateRepairFiles($extFolder, $licenseData->extension_key)) {
                         $isRepair = 'Yes';
-                        $this->updateRepairFiles($extFolder, $licenseData->extension_key);
                     }
-
+                    
                     // OPTION 2. Overriding > Else let's continue to download extension
                     else {
                         $ltsext = end($licenseData->extension_download_url);
@@ -516,6 +532,7 @@ class NsLicenseModuleController extends ActionController
                             $this->redirect('list');
                         }
                     }
+                    
                     $this->nsLicenseRepository->insertNewData($licenseData);
                 } else {
                     $this->addFlashMessage(LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'), 'EXT:' . $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
@@ -641,23 +658,18 @@ class NsLicenseModuleController extends ActionController
      **/
     public function fetchLicense($license)
     {
+        //return;
         $url = 'https://composer.t3terminal.com/API/GetComposerDetails.php?' . $license;
         try {
-
             $response = $this->requestFactory->request(
                 $url,
                 'POST',
                 []
-             );
-
+            );
             $rawResponse = $response->getBody()->getContents();
-            
             return json_decode($rawResponse);
-
-        } catch (\Throwable $th) {
-            
+        } catch (\Throwable $th) {   
         }
- 
     }
 
     /**
@@ -673,22 +685,15 @@ class NsLicenseModuleController extends ActionController
     public function downloadZipFile($extensionDownloadUrl, $license, $extKeyPath, $userName)
     {
         $authorization = 'Basic ' . base64_encode($userName . ':' . $license);
-        
         try {
-
             $response = $this->requestFactory->request(
                 $extensionDownloadUrl,
                 'POST',
                 ['headers' => ['Authorization' => $authorization]]
-             );
-
+            );
             $rawResponse = $response->getBody()->getContents();
-    
             file_put_contents($extKeyPath, $rawResponse);
-
         } catch (\Throwable $th) {
-           
         }
-
     }
 }

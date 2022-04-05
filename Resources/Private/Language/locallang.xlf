@@ -129,7 +129,7 @@
                 <source>Your license key is valid, but something is wrong with our server. Please submit support ticket at https://t3terminal.com/support-submit-ticket</source>
             </trans-unit>
             <trans-unit id="errorMessage.default">
-                <source>Sorry! Your provided license key is not valid.</source>
+                <source>Sorry! Something is wrong to connect at our License system server, Please try again or submit support ticket at https://t3terminal.com/support-submit-ticket</source>
             </trans-unit>
             <trans-unit id="license-activation.footerTitle">
                 <source>Do you need any help?</source>

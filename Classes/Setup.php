@@ -19,7 +19,7 @@ class Setup
         if (strpos($extname, 'ns_theme_') !== false && $extname != 'ns_license' && $extname != 'ns_basetheme') {
             $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
             $this->nsLicenseModule = $this->objectManager->get(NsLicenseModuleController::class);
-            $this->nsLicenseModule->connectToServer($extname);
+            $this->nsLicenseModule->connectToServer($extname, 1);
         }
     }
 }
