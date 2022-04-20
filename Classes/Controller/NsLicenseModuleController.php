@@ -137,9 +137,17 @@ class NsLicenseModuleController extends ActionController
     {
         $params = $this->request->getArguments();
         if (isset($params['extKey'])) {
+            
+            // Let's flush all the cache to change the version number
+            $this->cacheManager->flushCaches();
+            
+            // Try to validate license key with system
             $this->connectToServer($params['extKey'], 1);
+            
+            // Fetch latest LTS version from APIs
             $extData = $this->nsLicenseRepository->fetchData($params['extKey']);
-
+            
+            // Finally compare version with ext_emconf + latest available version
             $versionId = $this->getVersionFromEmconf($params['extKey']);
             if (version_compare($versionId, $extData[0]['lts_version'], '==')) {
                 $message = LocalizationUtility::translate('license.key.up_to_date', 'NsLicense');
