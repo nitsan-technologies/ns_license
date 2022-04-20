@@ -1,8 +1,7 @@
 define([
     'jquery',
     'TYPO3/CMS/Backend/Modal',
-    'TYPO3/CMS/NsLicense/Main',
-    'TYPO3/CMS/Backend/jquery.clearable'
+    'TYPO3/CMS/NsLicense/Main'
 ], function ($, Model) {
 
     // Initialize tooltip for NITSAN > License Manager > Domains (on-over)
