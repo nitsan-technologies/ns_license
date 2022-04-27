@@ -416,9 +416,11 @@ class NsLicenseModuleController extends ActionController
             } else {
                 $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license']);
             }
-            if ($params['extension']['isUpdateAction'] && !$licenseData->isUpdatable) {
-                $this->addFlashMessage(LocalizationUtility::translate('errorMessage.license_expired', 'NsLicense'), 'Your annual License key is expired', \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
-                $this->redirect('list');
+            if(isset($params['extension'])) {
+                if ($params['extension']['isUpdateAction'] && !$licenseData->isUpdatable) {
+                    $this->addFlashMessage(LocalizationUtility::translate('errorMessage.license_expired', 'NsLicense'), 'Your annual License key is expired', \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
+                    $this->redirect('list');
+                }
             }
             if ($licenseData->status) {
                 if ($_COOKIE['NsLicense'] != '') {
@@ -747,14 +749,18 @@ class NsLicenseModuleController extends ActionController
      */
     public function getVersionFromEmconf($extKey)
     {
-        return GeneralUtility::makeInstance(PackageManager::class)->getPackage($extKey)->getPackageMetaData()->getVersion();
-        /*
+        $versionId = '';
+        // Creating issue with TYPO3 core way with `dev-master`
+        // $versionId = GeneralUtility::makeInstance(PackageManager::class)->getPackage($extKey)->getPackageMetaData()->getVersion();
+
+        // Let's grab mannualy the Version Id
         $extFolder = $this->getExtensionFolder($extKey);
         if (is_file($extFolder . 'ext_emconf.php')) {
             include $extFolder . 'ext_emconf.php';
             $arrEmConf = (isset($EM_CONF[$extKey])) ? $EM_CONF[$extKey] : $EM_CONF[null];
-            return $arrEmConf['version'];
-        }*/
+            $versionId = $arrEmConf['version'];
+        }
+        return $versionId;
     }
 
     /**
