@@ -98,6 +98,9 @@ class NsLicenseModuleController extends ActionController
                 $this->composerSiteRoot = implode('/', $commonEnd) . '/';
             }
         }
+
+        // Compulsory add "/" at the end
+        $this->siteRoot = rtrim($this->siteRoot, '/') . '/';
     }
 
     /**
@@ -471,11 +474,6 @@ class NsLicenseModuleController extends ActionController
                         
                         // Rename the static data dump file after update the extension for theme...
                         if (strpos($licenseData->extension_key, 'ns_') !== false && $licenseData->extension_key != 'ns_license' && $licenseData->extension_key != 'ns_basetheme') {
-                            if (version_compare(TYPO3_branch, '9.0', '>')) {
-                                $this->siteRoot = \TYPO3\CMS\Core\Core\Environment::getPublicPath();
-                            } else {
-                                $this->siteRoot = PATH_site;
-                            }
                             if (strpos($licenseData->extension_key, 'ns_theme_') !== false && version_compare(TYPO3_branch, '9.0', '>')) {
                                 // Check SQL import file, and rename it
                                 $extFolder = $this->getExtensionFolder($licenseData->extension_key);
@@ -570,6 +568,8 @@ class NsLicenseModuleController extends ActionController
                         $this->addFlashMessage(LocalizationUtility::translate('license-activation.downloaded_successfully', 'NsLicense'), 'EXT:' . $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::OK);
                     }
                 }
+
+                // Special code for EXT.ns_revolution_slider
                 if ($params['extension_key'] == 'ns_revolution_slider') {
                     $rsInstallUtility = GeneralUtility::makeInstance(\NITSAN\NsRevolutionSlider\Slots\InstallUtility::class);
                     $rsInstallUtility->schemaUpdate();
@@ -597,7 +597,8 @@ class NsLicenseModuleController extends ActionController
                         }
                     }
 
-                    $revsliderSouceFolder = $this->siteRoot . 'uploads/ns_license/ns_revolution_slider/' . $versionId . '/vendor/wp/wp-content/uploads/';
+                    $versionOriginalId = $params['version'];
+                    $revsliderSouceFolder = $this->siteRoot . 'uploads/ns_license/ns_revolution_slider/' . $versionOriginalId . '/vendor/wp/wp-content/uploads/';
                     $revsliderUploadFolder = $this->siteRoot . 'typo3conf/ext/ns_revolution_slider/vendor/wp/wp-content/uploads/';
                     
                     try {
