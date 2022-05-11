@@ -577,6 +577,7 @@ class NsLicenseModuleController extends ActionController
                     $versionOriginalId = $params['version'];
                     $versionId = $this->getVersionFromEmconf($params['extension_key']);
 
+                    // Setup Plugin
                     $pluginsFolder = $this->siteRoot . 'uploads/ns_license/ns_revolution_slider/' . $versionOriginalId . '/vendor/wp/wp-content/plugins/';
                     $mainPluginsUploadFolder = $this->siteRoot . 'typo3conf/ext/ns_revolution_slider/vendor/wp/wp-content/plugins/';
                     
@@ -599,6 +600,7 @@ class NsLicenseModuleController extends ActionController
                         }
                     }
 
+                    // Setup Main Uploads
                     $revsliderSouceFolder = $this->siteRoot . 'uploads/ns_license/ns_revolution_slider/' . $versionOriginalId . '/vendor/wp/wp-content/uploads/';
                     $revsliderUploadFolder = $this->siteRoot . 'typo3conf/ext/ns_revolution_slider/vendor/wp/wp-content/uploads/';
                     
