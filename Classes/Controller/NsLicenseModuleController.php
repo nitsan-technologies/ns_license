@@ -574,8 +574,10 @@ class NsLicenseModuleController extends ActionController
                     $rsInstallUtility = GeneralUtility::makeInstance(\NITSAN\NsRevolutionSlider\Slots\InstallUtility::class);
                     $rsInstallUtility->schemaUpdate();
                     
+                    $versionOriginalId = $params['version'];
                     $versionId = $this->getVersionFromEmconf($params['extension_key']);
-                    $pluginsFolder = $this->siteRoot . 'uploads/ns_license/ns_revolution_slider/' . $versionId . '/vendor/wp/wp-content/plugins/';
+
+                    $pluginsFolder = $this->siteRoot . 'uploads/ns_license/ns_revolution_slider/' . $versionOriginalId . '/vendor/wp/wp-content/plugins/';
                     $mainPluginsUploadFolder = $this->siteRoot . 'typo3conf/ext/ns_revolution_slider/vendor/wp/wp-content/plugins/';
                     
                     $folders = GeneralUtility::get_dirs($pluginsFolder);
@@ -597,7 +599,6 @@ class NsLicenseModuleController extends ActionController
                         }
                     }
 
-                    $versionOriginalId = $params['version'];
                     $revsliderSouceFolder = $this->siteRoot . 'uploads/ns_license/ns_revolution_slider/' . $versionOriginalId . '/vendor/wp/wp-content/uploads/';
                     $revsliderUploadFolder = $this->siteRoot . 'typo3conf/ext/ns_revolution_slider/vendor/wp/wp-content/uploads/';
                     
