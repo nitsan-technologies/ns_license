@@ -13,7 +13,9 @@ class BackendUserLogin
 {
     public function dispatch(array $backendUser)
     {
-        $this->nsLicenseModule = GeneralUtility::makeInstance(NsLicenseModuleController::class);
-        $this->nsLicenseModule->connectToServer();
+        if($backendUser['user']['admin'] == 1) {
+            $this->nsLicenseModule = GeneralUtility::makeInstance(NsLicenseModuleController::class);
+            $this->nsLicenseModule->connectToServer();
+        }
     }
 }
