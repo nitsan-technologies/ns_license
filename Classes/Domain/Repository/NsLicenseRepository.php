@@ -26,8 +26,12 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         if ($isAvailable) {
             $this->updateData($data, 1);
         } else {
-            end($data->extension_download_url);
-            $key = key($data->extension_download_url);
+            $extensionDownloadUrl = $data->extension_download_url;
+            if (PHP_VERSION > 8) {
+                $extensionDownloadUrl = get_mangled_object_vars($data->extension_download_url);
+            }
+            end($extensionDownloadUrl);
+            $key = key($extensionDownloadUrl);
             if (is_null($extVersion)) {
                 $extVersion = $key;
             }
@@ -74,8 +78,12 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 
     public function updateData($data, $ltsCheck = 0)
     {
-        end($data->extension_download_url);
-        $key = key($data->extension_download_url);
+        $extensionDownloadUrl = $data->extension_download_url;
+        if (PHP_VERSION > 8) {
+            $extensionDownloadUrl = get_mangled_object_vars($data->extension_download_url);
+        }
+        end($extensionDownloadUrl);
+        $key = key($extensionDownloadUrl);
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('ns_product_license');
         $queryBuilder
            ->update('ns_product_license')
