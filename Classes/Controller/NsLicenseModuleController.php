@@ -412,9 +412,10 @@ class NsLicenseModuleController extends ActionController
      */
     public function downloadExtension($params = null, $fromWhere = null)
     {
+        $isRepair = '';
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         if (isset($params['license']) && $params['license'] != '') {
-            if ($params['activation']) {
+            if (isset($params['activation']) && $params['activation']) {
                 $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license'] . '&activation=1');
             } else {
                 $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license']);
@@ -425,8 +426,9 @@ class NsLicenseModuleController extends ActionController
                     $this->redirect('list');
                 }
             }
+
             if ($licenseData->status) {
-                if ($_COOKIE['NsLicense'] != '') {
+                if (isset($_COOKIE['NsLicense']) && $_COOKIE['NsLicense'] != '') {
                     $disableExtensions = explode(',', $_COOKIE['NsLicense']);
                     $key = array_search($licenseData->extension_key, $disableExtensions);
                     if ($key) {
@@ -435,16 +437,19 @@ class NsLicenseModuleController extends ActionController
                         setcookie('NsLicense', $disableExtensions, time() + 3600, '/', '', 0);
                     }
                 }
-                if ($licenseData->existing) {
+                if (isset($licenseData->existing) && $licenseData->existing) {
                     $extVersion = GeneralUtility::makeInstance(PackageManager::class)->getPackage($licenseData->extension_key)->getPackageMetaData()->getVersion();
                     $this->nsLicenseRepository->insertNewData($licenseData, $extVersion);
                     $this->addFlashMessage('EXT:' . $licenseData->extension_key . LocalizationUtility::translate('license-activation.activated', 'NsLicense'), 'EXT:' . $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::OK);
                     $this->redirect('list');
                 }
                 $isAvailable = $this->nsLicenseRepository->fetchData($licenseData->extension_key);
-
                 if ($isAvailable && $params['overwrite'] == 1) {
-                    $ltsext = end($licenseData->extension_download_url);
+                    $extensionDownloadUrl = $licenseData->extension_download_url;
+                    if (PHP_VERSION > 8) {
+                        $extensionDownloadUrl = get_mangled_object_vars($licenseData->extension_download_url);
+                    }
+                    $ltsext = end($extensionDownloadUrl);
                     $extKey = $licenseData->extension_key . '.zip';
                     $extKeyPath = $this->siteRoot . 'typo3temp/' . $extKey;
                     $this->downloadZipFile($ltsext, $licenseData->license_key, $extKeyPath, $licenseData->user_name, $licenseData->extension_key);
@@ -497,18 +502,21 @@ class NsLicenseModuleController extends ActionController
                     $this->nsLicenseRepository->updateData($licenseData, 1);
                     
                 } elseif (!$isAvailable) {
-                    
                     // OPTION 1. Repairing > Let's just repair, If the product already there in typo3conf/ext + needs repair
                     $extFolder = $this->getExtensionFolder($licenseData->extension_key);
-                    
+
                     // Check if Update Repair
                     if($this->updateRepairFiles($extFolder, $licenseData->extension_key)) {
                         $isRepair = 'Yes';
                     }
-                    
+
                     // OPTION 2. Overriding > Else let's continue to download extension
                     else {
-                        $ltsext = end($licenseData->extension_download_url);
+                        $extensionDownloadUrl = $licenseData->extension_download_url;
+                        if (PHP_VERSION > 8) {
+                            $extensionDownloadUrl = get_mangled_object_vars($licenseData->extension_download_url);
+                        }
+                        $ltsext = end($extensionDownloadUrl);
                         $extKey = $licenseData->extension_key . '.zip';
                         $extKeyPath = $this->siteRoot . 'typo3temp/' . $extKey;
                         $this->downloadZipFile($ltsext, $licenseData->license_key, $extKeyPath, $licenseData->user_name, $licenseData->extension_key);
@@ -534,6 +542,7 @@ class NsLicenseModuleController extends ActionController
                                     $this->uploadExtension->extractExtensionFromFile($extKeyPath, $extKey, ($params['overwrite'] ? true : false));
                                 }
                             }
+
                             unlink($extKeyPath);
 
                             // Let's flush all the cache to change the version number
@@ -570,7 +579,7 @@ class NsLicenseModuleController extends ActionController
                 }
 
                 // Special code for EXT.ns_revolution_slider
-                if ($params['extension_key'] == 'ns_revolution_slider') {
+                if (isset($params['extension_key']) && $params['extension_key'] == 'ns_revolution_slider') {
                     $rsInstallUtility = GeneralUtility::makeInstance(\NITSAN\NsRevolutionSlider\Slots\InstallUtility::class);
                     $rsInstallUtility->schemaUpdate();
                     
@@ -645,6 +654,7 @@ class NsLicenseModuleController extends ActionController
      */
     protected function extractExtensionFromZipFile(string $uploadedFile, string $extensionKey, bool $overwrite = false): string
     {
+
         $isExtensionAvailable = $this->managementService->isAvailable($extensionKey);
         if (!$overwrite && $isExtensionAvailable) {
             throw new ExtensionManagerException('Extension is already available and overwriting is disabled.', 1342864311);
