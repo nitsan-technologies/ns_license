@@ -2,7 +2,7 @@
 
 $EM_CONF['ns_license'] = array (
   'title' => '[NITSAN] License Manager',
-  'description' => 'Manage License(s) of your purchased T3Terminal\'s premium TYPO3 products. Know more at documentation https://docs.t3terminal.com/en/latest/License/LicenseActivation/Index.html',
+  'description' => 'Manage License(s) of your purchased T3Terminal\'s premium TYPO3 products. Know more at documentation https://docs.t3planet.com/en/latest/License/LicenseActivation/Index.html',
   'category' => 'templates',
   'author' => 'Team NITSAN',
   'author_email' => 'sanjay@nitsan.in',
