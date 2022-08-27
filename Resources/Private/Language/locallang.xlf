@@ -53,7 +53,10 @@
                 <source>Action</source>
             </trans-unit>
             <trans-unit id="license-deactivation.action">
-                <source>Deactivate</source>
+                <source>Deactivate Delete</source>
+            </trans-unit>
+            <trans-unit id="license-reactivation.action">
+                <source>Reactivate Repair</source>
             </trans-unit>
             <trans-unit id="license-activation.updateTo">
                 <source>Update to</source>
@@ -96,6 +99,9 @@
             </trans-unit>
             <trans-unit id="license-activation.deactivation">
                 <source>The extension is successfully deactivated.</source>
+            </trans-unit>
+            <trans-unit id="license-activation.reactivation">
+                <source>The extension is successfully reactivated and repaird.</source>
             </trans-unit>
             <trans-unit id="license-activation.activated">
                 <source>Your license key is successfully activated.</source>

@@ -110,6 +110,9 @@ class NsLicenseModuleController extends ActionController
      */
     public function listAction()
     {
+        // Let's flush all the cache to change the version number
+        $this->cacheManager->flushCaches();
+        
         $extensions = $this->nsLicenseRepository->fetchData();
         foreach ($extensions as $key => $extension) {
             if ($extension['is_life_time'] != 1) {
@@ -121,6 +124,10 @@ class NsLicenseModuleController extends ActionController
 
             // Get latest version from extension ext_emconf.php
             $extensions[$key]['version'] = $this->getVersionFromEmconf($extensions[$key]['extension_key']);
+
+            // Check if required repair
+            $extFolder = $this->getExtensionFolder($extensions[$key]['extension_key']);
+            $extensions[$key]['isRepareRequired'] = $this->checkRepairFiles($extFolder, $extensions[$key]['extension_key']);
         }
         
         if (version_compare(TYPO3_branch, '11', '>=')) {
@@ -318,6 +325,30 @@ class NsLicenseModuleController extends ActionController
     }
 
     /**
+     * checkRepairFiles.
+     *
+     * @return void
+     */
+    public function checkRepairFiles($extFolder, $extension)
+    {
+        $isRepair = false;
+        if (file_exists($extFolder . 'ext_tables..php')) {
+            $isRepair = true;
+        }
+        if (file_exists($extFolder . 'Configuration./TCA/Overrides/sys_template..php')) {
+            $isRepair = true;
+        }
+        if (file_exists($extFolder . 'Configuration.')) {
+            $isRepair = true;
+        }
+        if (file_exists($extFolder . 'Resources.')) {
+            $isRepair = true;
+        }
+
+        return $isRepair;
+    }
+
+    /**
      * Wrapper function for unloading extensions.
      *
      * @param string $extensionKey
@@ -388,7 +419,7 @@ class NsLicenseModuleController extends ActionController
     }
 
     /**
-     * action activation.
+     * action deactivation.
      *
      * @return void
      */
@@ -399,7 +430,21 @@ class NsLicenseModuleController extends ActionController
         $this->nsLicenseRepository->deactivate($params['extension']['license_key'], $params['extension']['extension_key']);
         $extFolder = $this->getExtensionFolder($params['extension']['extension_key']);
         $this->updateFiles($extFolder, $params['extension']['extension_key']);
-        $this->addFlashMessage(LocalizationUtility::translate('license-activation.deactivation', 'NsLicense'), 'EXT: ' . $params['extension']['extension_key'], \TYPO3\CMS\Core\Messaging\AbstractMessage::OK);
+        $this->addFlashMessage(LocalizationUtility::translate('license-activation.deactivation', 'NsLicense'), 'EXT:' . $params['extension']['extension_key'], \TYPO3\CMS\Core\Messaging\AbstractMessage::OK);
+        $this->redirect('list');
+    }
+
+    /**
+     * action reactivation.
+     *
+     * @return void
+     */
+    public function ReactivationAction()
+    {
+        $params = $this->request->getArguments();
+        $extFolder = $this->getExtensionFolder($params['extension']['extension_key']);
+        $this->updateRepairFiles($extFolder, $params['extension']['extension_key']);
+        $this->addFlashMessage(LocalizationUtility::translate('license-activation.reactivation', 'NsLicense'), 'EXT:' . $params['extension']['extension_key'], \TYPO3\CMS\Core\Messaging\AbstractMessage::OK);
         $this->redirect('list');
     }
 

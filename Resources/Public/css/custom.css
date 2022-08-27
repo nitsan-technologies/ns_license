@@ -62,6 +62,7 @@
     margin-right: 3px;
     padding-left: 5px;
     padding-right: 5px;
+    min-width: 150px;
 }
 
 @media (min-width: 993px){
