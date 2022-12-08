@@ -74,7 +74,7 @@
                 <source>No License Found</source>
             </trans-unit>
             <trans-unit id="license-activation.noRecordDescription">
-                <source>You can buy premium TYPO3 products from our TYPO3 Marketplace at https://t3terminal.com</source>
+                <source>You can buy premium TYPO3 products from our TYPO3 Marketplace at https://t3planet.com</source>
             </trans-unit>
             <trans-unit id="license-activation.overwriteExtension">
                 <source>Overwrite Your Existing Extension</source>
@@ -110,7 +110,7 @@
                 <source>The extension is already available. If you still want to install it, check the "overwrite extension" checkbox.</source>
             </trans-unit>
             <trans-unit id="license-activation.downloaded_successfully">
-                <source>The extension is successfully downloaded! Go to Admin Tools > Extensions > Activate Extension. Read more at https://docs.t3terminal.com/en/latest/License/LicenseActivation/Index.html</source>
+                <source>The extension is successfully downloaded! Go to Admin Tools > Extensions > Activate Extension. Read more at https://docs.t3planet.com/en/latest/License/LicenseActivation/Index.html</source>
             </trans-unit>
             <trans-unit id="license-activation.downloaded_successfully_from_update">
                 <source>Your extension is successfully updated. No worries, we have taken a backup of your last version at this path /uploads/ns_license/</source>
@@ -120,7 +120,7 @@
                 <source>Please enter a valid License key.</source>
             </trans-unit>
             <trans-unit id="errorMessage.license_expired">
-                <source>Your annual license key is expired. To get a new updates and support, please renew your license. Kindly submit a ticket at https://t3terminal.com/support-submit-ticket.</source>
+                <source>Your annual license key is expired. To get a new updates and support, please renew your license. Kindly submit a ticket at https://t3planet.com/support-submit-ticket.</source>
             </trans-unit>
             <trans-unit id="errorMessage.error1">
                 <source>Your provided license key is not valid.</source>
@@ -129,13 +129,13 @@
                 <source>Your license key is already registered at other domains. You can not use this license key to more than %s domains.</source>
             </trans-unit>
             <trans-unit id="errorMessage.error3">
-                <source>Your order's status is currently "pending", For any questions, you can submit support ticket at https://t3terminal.com/support-submit-ticket</source>
+                <source>Your order's status is currently "pending", For any questions, you can submit support ticket at https://t3planet.com/support-submit-ticket</source>
             </trans-unit>
             <trans-unit id="errorMessage.error4">
-                <source>Your license key is valid, but something is wrong with our server. Please submit support ticket at https://t3terminal.com/support-submit-ticket</source>
+                <source>Your license key is valid, but something is wrong with our server. Please submit support ticket at https://t3planet.com/support-submit-ticket</source>
             </trans-unit>
             <trans-unit id="errorMessage.default">
-                <source>Sorry! Something is wrong to connect at our License system server, Please try again or submit support ticket at https://t3terminal.com/support-submit-ticket</source>
+                <source>Sorry! Something is wrong to connect at our License system server, Please try again or submit support ticket at https://t3planet.com/support-submit-ticket</source>
             </trans-unit>
             <trans-unit id="license-activation.footerTitle">
                 <source>Do you need any help?</source>
