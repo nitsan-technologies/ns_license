@@ -751,7 +751,7 @@ class NsLicenseModuleController extends ActionController
             return json_decode($rawResponse);
         } catch (\Throwable $e) {
             $this->addFlashMessage($e->getMessage(), 'Your server has an issue connecting with our license system; Please get in touch with your server administrator with the below error message.', \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
-            $this->redirect('list');
+            //$this->redirect('list');
         }
     }
 
@@ -781,7 +781,7 @@ class NsLicenseModuleController extends ActionController
             $this->getBackupToUploadFolder($extKey);
         } catch (\Throwable $e) {
             $this->addFlashMessage($e->getMessage(), 'Your server has an issue connecting with our license system; Please get in touch with your server administrator with the below error message.', \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
-            $this->redirect('list');
+            //$this->redirect('list');
         }
     }
 
