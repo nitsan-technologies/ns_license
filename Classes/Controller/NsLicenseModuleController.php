@@ -271,16 +271,16 @@ class NsLicenseModuleController extends ActionController
     public function updateFiles($extFolder, $extension)
     {
         if (file_exists($extFolder . 'ext_tables.php')) {
-            rename($extFolder . 'ext_tables.php', $extFolder . 'ext_tables..php');
+            @rename($extFolder . 'ext_tables.php', $extFolder . 'ext_tables..php');
         }
         if (file_exists($extFolder . 'Configuration/TCA/Overrides/sys_template.php')) {
-            rename($extFolder . 'Configuration/TCA/Overrides/sys_template.php', $extFolder . 'Configuration/TCA/Overrides/sys_template..php');
+            @rename($extFolder . 'Configuration/TCA/Overrides/sys_template.php', $extFolder . 'Configuration/TCA/Overrides/sys_template..php');
         }
         if (file_exists($extFolder . 'Configuration')) {
-            rename($extFolder . 'Configuration', $extFolder . 'Configuration.');
+            @rename($extFolder . 'Configuration', $extFolder . 'Configuration.');
         }
         if (file_exists($extFolder . 'Resources')) {
-            rename($extFolder . 'Resources', $extFolder . 'Resources.');
+            @rename($extFolder . 'Resources', $extFolder . 'Resources.');
         }
         try {
             $this->unloadExtension($extension);
@@ -298,19 +298,19 @@ class NsLicenseModuleController extends ActionController
     {
         $isRepair = false;
         if (file_exists($extFolder . 'ext_tables..php')) {
-            rename($extFolder . 'ext_tables..php', $extFolder . 'ext_tables.php');
+            @rename($extFolder . 'ext_tables..php', $extFolder . 'ext_tables.php');
             $isRepair = true;
         }
         if (file_exists($extFolder . 'Configuration./TCA/Overrides/sys_template..php')) {
-            rename($extFolder . 'Configuration./TCA/Overrides/sys_template..php', $extFolder . 'Configuration/TCA/Overrides/sys_template.php');
+            @rename($extFolder . 'Configuration./TCA/Overrides/sys_template..php', $extFolder . 'Configuration/TCA/Overrides/sys_template.php');
             $isRepair = true;
         }
         if (file_exists($extFolder . 'Configuration.')) {
-            rename($extFolder . 'Configuration.', $extFolder . 'Configuration');
+            @rename($extFolder . 'Configuration.', $extFolder . 'Configuration');
             $isRepair = true;
         }
         if (file_exists($extFolder . 'Resources.')) {
-            rename($extFolder . 'Resources.', $extFolder . 'Resources');
+            @rename($extFolder . 'Resources.', $extFolder . 'Resources');
             $isRepair = true;
         }
 
@@ -528,7 +528,7 @@ class NsLicenseModuleController extends ActionController
                                 // Check SQL import file, and rename it
                                 $extFolder = $this->getExtensionFolder($licenseData->extension_key);
                                 if (file_exists($extFolder . 'ext_tables_static+adt.sql')) {
-                                    rename($extFolder . 'ext_tables_static+adt.sql', $extFolder . 'ext_tables_static+adt..sql');
+                                    @rename($extFolder . 'ext_tables_static+adt.sql', $extFolder . 'ext_tables_static+adt..sql');
                                 }
                             }
                         }
