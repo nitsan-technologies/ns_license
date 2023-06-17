@@ -1,0 +1,26 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  NITSAN\NsLicense\:
+    resource: '../Classes/*'
+
+  NITSAN\NsLicense\Setup:
+    tags:
+      - name: event.listener
+        identifier: 'ns-license-check'
+        method: 'executeOnSignal'
+        event: TYPO3\CMS\Core\Package\Event\BeforePackageActivationEvent
+
+  NITSAN\NsLicense\Controller\NsLicenseModuleController:
+    arguments:
+      $moduleTemplateFactory: '@TYPO3\CMS\Backend\Template\ModuleTemplateFactory'
+      $iconFactory: '@TYPO3\CMS\Core\Imaging\IconFactory'
+      $pageRenderer: '@TYPO3\CMS\Core\Page\PageRenderer'
+      $requestFactory: '@TYPO3\CMS\Core\Http\RequestFactory'
+      $fileHandlingUtility: '@TYPO3\CMS\Extensionmanager\Utility\FileHandlingUtility'
+      $managementService: '@TYPO3\CMS\Extensionmanager\Service\ExtensionManagementService'
+      $installUtility: '@TYPO3\CMS\Extensionmanager\Utility\InstallUtility'
+      $contentObject: '@TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer'

@@ -1,0 +1,50 @@
+{
+  "name": "nitsan/ns-license",
+  "type": "typo3-cms-extension",
+  "description": "Manage License(s) of your purchased T3Planet premium TYPO3 products. Know more at documentation https://docs.t3planet.com/en/latest/License/LicenseActivation/Index.html",
+  "keywords": [
+    "TYPO3 CMS",
+    "license",
+    "bootstrap",
+    "responsive",
+    "frontend",
+    "theme",
+    "template",
+    "ns"
+  ],
+  "homepage": "https://gitlab.com/sanjay_nitsan/ns_license",
+  "authors": [
+    {
+        "name": "Team NITSAN",
+        "email": "sanjay@nitsan.in",
+        "role": "Developer",
+        "homepage": "http://www.nitsan.in/"
+    }
+  ],
+  "support": {
+    "issues": "https://gitlab.com/sanjay_nitsan/ns_license/issues"
+  },
+  "license": "MIT",
+  "require": {
+    "typo3/cms-core": "^12"
+  },
+  "autoload": {
+    "psr-4": {
+      "NITSAN\\NsLicense\\": "Classes/"
+    }
+  },
+  "replace": {
+      "typo3-ter/ns-license": "self.version"
+  },
+  "config": {
+    "vendor-dir": ".Build/vendor/",
+    "bin-dir": ".Build/bin/"
+  },
+  "extra": {
+      "typo3/cms": {
+          "cms-package-dir": "{$vendor-dir}/typo3/cms",
+          "web-dir": ".Build/public",
+          "extension-key": "ns_license"
+      }
+  }
+}
