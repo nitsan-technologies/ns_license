@@ -1,7 +1,0 @@
-services:
-  NITSAN\NsLicense\Setup:
-    tags:
-      - name: event.listener
-        identifier: 'ns-license-check'
-        method: 'executeOnSignal'
-        event: TYPO3\CMS\Core\Package\Event\BeforePackageActivationEvent
