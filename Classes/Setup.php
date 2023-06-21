@@ -23,7 +23,7 @@ class Setup
             $extname = array_key_first($extname->getPackageKeys());
         }
         if (str_contains($extname, 'ns_theme_')   && $extname != 'ns_license' && $extname != 'ns_basetheme') {
-            $this->nsLicenseModule->connectToServer($extname, 1);
+            $this->nsLicenseModule->connectToServer($extname, 1, 'checkTheme');
         }
     }
 }
