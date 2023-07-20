@@ -573,14 +573,14 @@ class NsLicenseModuleController extends ActionController
                     $pluginsFolder = $this->siteRoot . 'uploads/ns_license/ns_revolution_slider/' . $versionOriginalId . '/vendor/wp/wp-content/plugins/';
                     $mainPluginsUploadFolder = $this->siteRoot . 'typo3conf/ext/ns_revolution_slider/Resources/Public/vendor/wp/wp-content/plugins/';
                     if (Environment::isComposerMode()) {
-                        $mainPluginsUploadFolder = Environment::getProjectPath() . '/extensions/ns_revolution_slider/Resources/Public/vendor/wp/wp-content/plugins/';
+                        $mainPluginsUploadFolder = Environment::getProjectPath() . '/vendor/nitsan/ns-revolution-slider/Resources/Public/vendor/wp/wp-content/plugins/';
                     }
 
                     //Check if old structure is available while migrating the extension from <=11 to 12.x
                     if (file_exists($this->siteRoot . 'typo3conf/ext/ns_revolution_slider/vendor/')) {
                         $mainPluginsUploadFolder = $this->siteRoot . 'typo3conf/ext/ns_revolution_slider/vendor/wp/wp-content/plugins/';
                         if (Environment::isComposerMode()) {
-                            $mainPluginsUploadFolder = Environment::getProjectPath() . '/extensions/ns_revolution_slider/vendor/wp/wp-content/plugins/';
+                            $mainPluginsUploadFolder = Environment::getProjectPath() . '/vendor/nitsan/ns-revolution-slider/vendor/wp/wp-content/plugins/';
                         }
                     }
 
@@ -607,14 +607,14 @@ class NsLicenseModuleController extends ActionController
                     $revsliderSourceFolder = $this->siteRoot . 'uploads/ns_license/ns_revolution_slider/' . $versionOriginalId . '/vendor/wp/wp-content/uploads/';
                     $revsliderUploadFolder = $this->siteRoot . 'typo3conf/ext/ns_revolution_slider/Resource/Public/vendor/wp/wp-content/uploads/';
                     if (Environment::isComposerMode()) {
-                        $revsliderUploadFolder = Environment::getProjectPath() . '/extensions/ns_revolution_slider/Resources/Public/vendor/wp/wp-content/uploads/';
+                        $revsliderUploadFolder = Environment::getProjectPath() . '/vendor/nitsan/ns-revolution-slider/Resources/Public/vendor/wp/wp-content/uploads/';
                     }
 
                     //Check if old structure is available while migrating the extension from <=11 to 12.x
                     if (file_exists($this->siteRoot . 'typo3conf/ext/ns_revolution_slider/vendor/')) {
                         $revsliderUploadFolder = $this->siteRoot . 'typo3conf/ext/ns_revolution_slider/vendor/wp/wp-content/uploads/';
                         if (Environment::isComposerMode()) {
-                            $revsliderUploadFolder = Environment::getProjectPath() . '/extensions/ns_revolution_slider/vendor/wp/wp-content/uploads/';
+                            $revsliderUploadFolder = Environment::getProjectPath() . '/vendor/nitsan/ns-revolution-slider/vendor/wp/wp-content/uploads/';
                         }
                     }
                     try {
@@ -702,8 +702,7 @@ class NsLicenseModuleController extends ActionController
      **/
     public function fetchLicense($license)
     {
-        //return;
-        $url = 'https://composer.t3terminal.com/API/GetComposerDetails.php?' . $license;
+        $url = 'https://composer.t3planet.com/API/GetComposerDetails.php?' . $license;
         try {
             $response = $this->requestFactory->request(
                 $url,
@@ -763,7 +762,8 @@ class NsLicenseModuleController extends ActionController
     public function getExtensionFolder($extKey)
     {
         if ($this->isComposerMode) {
-            $extFolder = $this->composerSiteRoot . 'extensions/' . $extKey . '/';
+            $extKey = str_replace('_', '-', $extKey);
+            $extFolder = $this->composerSiteRoot . 'vendor/nitsan/' . $extKey . '/';
         } else {
             $extFolder = $this->siteRoot . 'typo3conf/ext/' . $extKey . '/';
         }
