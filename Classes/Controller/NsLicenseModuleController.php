@@ -146,6 +146,11 @@ class NsLicenseModuleController extends ActionController
             $extensions[$key]['isRepareRequired'] = $this->checkRepairFiles($extFolder, $extensions[$key]['extension_key']);
         }
         $view = $this->initializeModuleTemplate($this->request);
+        $showUpdateButton = '1';
+        if ($this->isComposerMode) {
+            $showUpdateButton = '0';
+        }
+        $view->assign('showUpdateButton', $showUpdateButton);
         $view->assign('extensions', $extensions);
         return $view->renderResponse();
     }
