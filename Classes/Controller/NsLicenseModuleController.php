@@ -487,7 +487,7 @@ class NsLicenseModuleController extends ActionController
                         $this->cacheManager->flushCaches();
                     } catch (\Exception $e) {
                         if (str_contains($e->getMessage(), 'Unable to open zip')) {
-                            $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense'), $licenseData->extension_key, ContextualFeedbackSeverity::ERROR);
+                            $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense', [$licenseData->extension_key, $this->typo3Version]), $licenseData->extension_key, ContextualFeedbackSeverity::ERROR);
                         } else {
                             $this->addFlashMessage(LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'), $licenseData->extension_key, ContextualFeedbackSeverity::ERROR);
                         }
@@ -540,7 +540,7 @@ class NsLicenseModuleController extends ActionController
                             $this->cacheManager->flushCaches();
                         } catch (\Exception $e) {
                             if (str_contains($e->getMessage(), 'Unable to open zip')) {
-                                $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense'), $licenseData->extension_key, ContextualFeedbackSeverity::ERROR);
+                                $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense', [$licenseData->extension_key, $this->typo3Version]), $licenseData->extension_key, ContextualFeedbackSeverity::ERROR);
                             } else {
                                 $this->addFlashMessage(LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'), $licenseData->extension_key, ContextualFeedbackSeverity::ERROR);
                             }
