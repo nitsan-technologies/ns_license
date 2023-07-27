@@ -74,7 +74,7 @@
                 <source>No License Found</source>
             </trans-unit>
             <trans-unit id="license-activation.noRecordDescription">
-                <source>You can buy premium TYPO3 products from our TYPO3 Marketplace at https://t3planet.com</source>
+                <source>You can buy premium TYPO3 products from our TYPO3 Store at https://t3planet.com</source>
             </trans-unit>
             <trans-unit id="license-activation.overwriteExtension">
                 <source>Overwrite Your Existing Extension</source>
