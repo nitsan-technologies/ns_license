@@ -451,24 +451,14 @@ class NsLicenseModuleController extends ActionController
                     $ltsext = end($extensionDownloadUrl);
                     $extKey = $licenseData->extension_key . '.zip';
                     $extKeyPath = $this->siteRoot . 'typo3temp/' . $extKey;
-                    $this->downloadZipFile($ltsext, $licenseData->license_key, $extKeyPath, $licenseData->user_name, $licenseData->extension_key);
+                    if (!$this->isComposerMode) {
+                        $this->downloadZipFile($ltsext, $licenseData->license_key, $extKeyPath, $licenseData->user_name, $licenseData->extension_key);
+                    }
                     try {
-                        if ($this->isComposerMode) {
-                            $zipService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\Archive\ZipService::class);
-                            $extensionDir = $this->getExtensionFolder($licenseData->extension_key);
-
-                            if ($zipService->verify($extKeyPath)) {
-                                if (!is_dir($extensionDir)) {
-                                    GeneralUtility::mkdir_deep($extensionDir);
-                                } else {
-                                    GeneralUtility::rmdir($extensionDir, true);
-                                    GeneralUtility::mkdir_deep($extensionDir);
-                                }
-                                $zipService->extract($extKeyPath, $extensionDir);
-                            }
-                        } else {
+                        if (!$this->isComposerMode) {
                             $extKey = str_replace('.zip', '', $extKey);
                             $this->extractExtensionFromZipFile($extKeyPath, $extKey, ($params['overwrite'] ? true : false));
+                            unlink($extKeyPath);
                         }
 
                         // Rename the static data dump file after update the extension for theme...
@@ -481,7 +471,6 @@ class NsLicenseModuleController extends ActionController
                                 }
                             }
                         }
-                        unlink($extKeyPath);
 
                         // Let's flush all the cache to change the version number
                         $this->cacheManager->flushCaches();
@@ -505,37 +494,27 @@ class NsLicenseModuleController extends ActionController
 
                     // OPTION 2. Overriding > Else let's continue to download extension
                     else {
-                        $extensionDownloadUrl = $licenseData->extension_download_url;
-                        if (PHP_VERSION > 8) {
-                            if ($extensionDownloadUrl) {
-                                $extensionDownloadUrl = get_mangled_object_vars($licenseData->extension_download_url);
+                        $extKeyPath = '';
+                        if (!$this->isComposerMode) {
+                            $extensionDownloadUrl = $licenseData->extension_download_url;
+                            if (PHP_VERSION > 8) {
+                                if ($extensionDownloadUrl) {
+                                    $extensionDownloadUrl = get_mangled_object_vars($licenseData->extension_download_url);
+                                }
                             }
+
+                            $ltsext = end($extensionDownloadUrl);
+                            $extKey = $licenseData->extension_key . '.zip';
+                            $extKeyPath = $this->siteRoot . 'typo3temp/' . $extKey;
+                            $this->downloadZipFile($ltsext, $licenseData->license_key, $extKeyPath, $licenseData->user_name, $licenseData->extension_key);
                         }
 
-                        $ltsext = end($extensionDownloadUrl);
-                        $extKey = $licenseData->extension_key . '.zip';
-                        $extKeyPath = $this->siteRoot . 'typo3temp/' . $extKey;
-                        $this->downloadZipFile($ltsext, $licenseData->license_key, $extKeyPath, $licenseData->user_name, $licenseData->extension_key);
                         try {
-                            if ($this->isComposerMode) {
-                                $zipService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\Archive\ZipService::class);
-                                $extensionDir = $this->getExtensionFolder($licenseData->extension_key);
-                                if ($zipService->verify($extKeyPath)) {
-                                    if (!is_dir($extensionDir)) {
-                                        GeneralUtility::mkdir_deep($extensionDir);
-                                    } else {
-                                        GeneralUtility::rmdir($extensionDir, true);
-                                        GeneralUtility::mkdir_deep($extensionDir);
-                                    }
-                                    $zipService->extract($extKeyPath, $extensionDir);
-                                }
-                            } else {
+                            if (!$this->isComposerMode) {
                                 $extKey = str_replace('.zip', '', $extKey);
                                 $this->extractExtensionFromZipFile($extKeyPath, $extKey, ($params['overwrite'] ? true : false));
+                                unlink($extKeyPath);
                             }
-
-                            unlink($extKeyPath);
-
                             // Let's flush all the cache to change the version number
                             $this->cacheManager->flushCaches();
                         } catch (\Exception $e) {
@@ -547,7 +526,10 @@ class NsLicenseModuleController extends ActionController
                             return $this->redirect('list');
                         }
                     }
-
+                    if ($this->isComposerMode && empty($licenseData->extension_download_url)) {
+                        $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense', [$licenseData->extension_key, $this->typo3Version]), $licenseData->extension_key, ContextualFeedbackSeverity::ERROR);
+                        return $this->redirect('list');
+                    }
                     $this->nsLicenseRepository->insertNewData($licenseData);
                 } else {
                     $this->addFlashMessage(LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'), 'EXT:' . $licenseData->extension_key, ContextualFeedbackSeverity::ERROR);
