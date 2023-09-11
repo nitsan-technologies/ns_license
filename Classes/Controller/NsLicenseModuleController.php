@@ -104,6 +104,7 @@ class NsLicenseModuleController extends ActionController
         parent::initializeAction();
 
         // Initial common properties
+        // @extensionScannerIgnoreLine
         $this->packageManager = GeneralUtility::makeInstance(PackageManager::class);
         $this->cacheManager = GeneralUtility::makeInstance(CacheManager::class);
 

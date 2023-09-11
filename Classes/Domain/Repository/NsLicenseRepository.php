@@ -156,7 +156,7 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         $queryBuilder
             ->update('wp_posts')
             ->where(
-                $queryBuilder->expr()->andX(
+                $queryBuilder->expr()->and(
                     $queryBuilder->expr()->like(
                         'guid',
                         $queryBuilder->createNamedParameter(
