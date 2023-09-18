@@ -49,6 +49,16 @@ class NsLicenseModuleController extends ActionController
 
     protected $requestFactory = null;
 
+    protected $managementService = null;
+
+    protected $fileHandlingUtility = null;
+    
+    protected $packageManager;
+
+    protected $cacheManager;
+
+    protected $removeFromOriginalPath;
+
     public function injectNsLicenseRepository(NsLicenseRepository $nsLicenseRepository)
     {
         $this->nsLicenseRepository = $nsLicenseRepository;
@@ -82,6 +92,7 @@ class NsLicenseModuleController extends ActionController
 
         // Initial common properties
         $this->packageManager = GeneralUtility::makeInstance(PackageManager::class);
+    
         $this->cacheManager = GeneralUtility::makeInstance(CacheManager::class);
 
         // Check if TYPO3 is greater then 9.x LTS
@@ -531,6 +542,7 @@ class NsLicenseModuleController extends ActionController
                         // Let's flush all the cache to change the version number
                         $this->cacheManager->flushCaches();
                     } catch (\Exception $e) {
+                       
                         if (strpos($e->getMessage(), 'Unable to open zip') !== false) {
                             $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense'), $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
                         } else {
@@ -565,6 +577,7 @@ class NsLicenseModuleController extends ActionController
 
                         try {
                             if (!$this->isComposerMode) {
+                           
                                 if (version_compare(TYPO3_branch, '11.0', '>')) {
                                     $extKey = str_replace('.zip', '', $extKey);
                                     $this->extractExtensionFromZipFile($extKeyPath, $extKey, ($params['overwrite'] ? true : false));
@@ -576,7 +589,9 @@ class NsLicenseModuleController extends ActionController
                             }
                             // Let's flush all the cache to change the version number
                             $this->cacheManager->flushCaches();
+                 
                         } catch (\Exception $e) {
+               
                             if (strpos($e->getMessage(), 'Unable to open zip') !== false) {
                                 $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense'), $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
                             } else {

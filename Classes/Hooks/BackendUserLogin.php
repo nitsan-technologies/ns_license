@@ -9,8 +9,12 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  *
  */
+
+
 class BackendUserLogin
 {
+    private $nsLicenseModule;
+    
     public function dispatch(array $backendUser)
     {
         if($backendUser['user']['admin'] == 1) {
