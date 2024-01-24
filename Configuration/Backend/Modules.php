@@ -6,7 +6,7 @@ $module = [
     'nitsan_nslicensemodule' => [
         'parent' => 'nitsan_module',
         'position' => ['after' => 'top'],
-        'access' => 'user,group',
+        'access' => 'user',
         'path' => '/module/nitsan/NsLicense',
         'iconIdentifier' => 'submodule-nslicense',
         'labels' => 'LLL:EXT:ns_license/Resources/Private/Language/locallang_licensemodule.xlf',
