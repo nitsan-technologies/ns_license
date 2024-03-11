@@ -138,10 +138,10 @@
                 <source>Sorry! Something is wrong to connect at our License system server, Please try again or submit support ticket at https://t3planet.com/support</source>
             </trans-unit>
             <trans-unit id="license-activation.footerTitle">
-                <source>Do you need any help?</source>
+                <source>Need Help With Domain Registration?</source>
             </trans-unit>
             <trans-unit id="license-activation.footerDescription">
-                <source>Please submit your ticket to contact our support department via our support system.</source>
+                <source>If you wish to allow access to your local, staging, testing domains etc., to your license key. Please get in touch with our support team to whitelist those domains.</source>
             </trans-unit>
             <trans-unit id="license-activation.footerButton">
                 <source>Submit Your Ticket</source>

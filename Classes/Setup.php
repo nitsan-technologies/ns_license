@@ -1,6 +1,7 @@
 <?php
 
 namespace NITSAN\NsLicense;
+
 /**
  * This Class called when any extension enable or Activated from
  * the Extension Manager.

@@ -322,11 +322,11 @@ class NsLicenseModuleController extends ActionController
         $this->cacheManager->flushCachesInGroup('system');
     }
 
-     /**
-     * Wrapper function for loading extensions.
-     *
-     * @param string $extensionKey
-     */
+    /**
+    * Wrapper function for loading extensions.
+    *
+    * @param string $extensionKey
+    */
     protected function loadExtension($extensionKey)
     {
         $this->packageManager->activatePackage($extensionKey);

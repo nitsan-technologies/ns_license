@@ -176,15 +176,15 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
                 false
             )
             ->executeStatement();
-            
-            // Find & Replace Ptah in `wp_revslider_slides` Table
-            $connection = $connectionPool->getConnectionForTable('wp_revslider_slides');
-            $query1 = "UPDATE wp_revslider_slides SET params = JSON_REPLACE(params, '$.bg.image', REPLACE(JSON_UNQUOTE(JSON_EXTRACT(params, '$.bg.image')), '/typo3conf/ext/ns_revolution_slider/', $convertedPath)) WHERE JSON_UNQUOTE(JSON_EXTRACT(params, '$.bg.image')) LIKE '%/typo3conf/ext/ns_revolution_slider/%'";
 
-            $connection->executeQuery($query1);
-            $query2 = "UPDATE wp_revslider_slides SET params = JSON_REPLACE(params, '$.thumb.customThumbSrc', REPLACE(JSON_UNQUOTE(JSON_EXTRACT(params, '$.thumb.customThumbSrc')), '/typo3conf/ext/ns_revolution_slider/', $convertedPath))
+        // Find & Replace Ptah in `wp_revslider_slides` Table
+        $connection = $connectionPool->getConnectionForTable('wp_revslider_slides');
+        $query1 = "UPDATE wp_revslider_slides SET params = JSON_REPLACE(params, '$.bg.image', REPLACE(JSON_UNQUOTE(JSON_EXTRACT(params, '$.bg.image')), '/typo3conf/ext/ns_revolution_slider/', $convertedPath)) WHERE JSON_UNQUOTE(JSON_EXTRACT(params, '$.bg.image')) LIKE '%/typo3conf/ext/ns_revolution_slider/%'";
+
+        $connection->executeQuery($query1);
+        $query2 = "UPDATE wp_revslider_slides SET params = JSON_REPLACE(params, '$.thumb.customThumbSrc', REPLACE(JSON_UNQUOTE(JSON_EXTRACT(params, '$.thumb.customThumbSrc')), '/typo3conf/ext/ns_revolution_slider/', $convertedPath))
             WHERE JSON_UNQUOTE(JSON_EXTRACT(params, '$.thumb.customThumbSrc')) LIKE '%/typo3conf/ext/ns_revolution_slider/%'";
 
-            $connection->executeQuery($query2);
+        $connection->executeQuery($query2);
     }
 }
