@@ -2,18 +2,19 @@
 
 namespace NITSAN\NsLicense\Controller;
 
-use NITSAN\NsLicense\Domain\Repository\NsLicenseRepository;
-use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
-use TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException;
-use TYPO3\CMS\Extensionmanager\Service\ExtensionManagementService;
+use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use NITSAN\NsLicense\Domain\Repository\NsLicenseRepository;
 use TYPO3\CMS\Extensionmanager\Utility\FileHandlingUtility;
-use TYPO3\CMS\Core\Http\RequestFactory;
+use TYPO3\CMS\Extensionmanager\Service\ExtensionManagementService;
+use TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException;
 /***
  *
  * This file is part of the "[NITSAN] NS License" Extension for TYPO3 CMS.
@@ -58,6 +59,11 @@ class NsLicenseModuleController extends ActionController
     protected $cacheManager;
 
     protected $removeFromOriginalPath;
+
+    /**
+     * @var int
+     */
+    protected int $typo3Version = 0;
 
     public function injectNsLicenseRepository(NsLicenseRepository $nsLicenseRepository)
     {
@@ -109,7 +115,9 @@ class NsLicenseModuleController extends ActionController
                 $this->composerSiteRoot = implode('/', $commonEnd) . '/';
             }
         }
-
+        $versionInformation = GeneralUtility::makeInstance(Typo3Version::class);
+        $this->typo3Version = $versionInformation->getMajorVersion();
+        
         // Compulsory add "/" at the end
         $this->siteRoot = rtrim($this->siteRoot, '/') . '/';
     }
@@ -204,7 +212,7 @@ class NsLicenseModuleController extends ActionController
             if ($extKey) {
                 $extData = $nsLicenseRepository->fetchData($extKey);
                 if (!empty($extData)) {
-                    $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $extData[0]['license_key']);
+                    $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $extData[0]['license_key'] . '&typo3_version=' . $this->typo3Version);
                     if(!is_null($licenseData)) {
                         if ($licenseData->status) {
                             $nsLicenseRepository->updateData($licenseData);
@@ -217,7 +225,7 @@ class NsLicenseModuleController extends ActionController
                         }
                     }
                 } else {
-                    $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_key=' . $extKey);
+                    $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_key=' . $extKey . '&typo3_version=' . $this->typo3Version);
                     if(!is_null($licenseData)) {
                         if ($licenseData->status) {
                             return true;
@@ -397,7 +405,7 @@ class NsLicenseModuleController extends ActionController
         $extKey = $params['extension']['extension_key'];
         if (isset($params['extension']['license_key']) && $params['extension']['license_key'] != '') {
             
-            $updateStatus = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['extension']['license_key'] . '&ns_updates=1');
+            $updateStatus = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['extension']['license_key'] . '&ns_updates=1&typo3_version='. $this->typo3Version);
             if (!is_null($updateStatus) && !$updateStatus->status) {
                 $this->addFlashMessage(LocalizationUtility::translate('errorMessage.license_expired', 'NsLicense'), 'Your annual License key is expired', \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
                 $this->redirect('list');
@@ -477,9 +485,9 @@ class NsLicenseModuleController extends ActionController
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         if (isset($params['license']) && $params['license'] != '') {
             if (isset($params['activation']) && $params['activation']) {
-                $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license'] . '&activation=1');
+                $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license'] . '&activation=1&typo3_version='. $this->typo3Version);
             } else {
-                $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license']);
+                $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license']. '&typo3_version='. $this->typo3Version);
             }
             if(isset($params['extension'])) {
                 if ($params['extension']['isUpdateAction'] && !$licenseData->isUpdatable) {
@@ -544,7 +552,7 @@ class NsLicenseModuleController extends ActionController
                     } catch (\Exception $e) {
                        
                         if (strpos($e->getMessage(), 'Unable to open zip') !== false) {
-                            $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense'), $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
+                            $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense', [$licenseData->extension_key, $this->typo3Version]), $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
                         } else {
                             $this->addFlashMessage(LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'), $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
                         }
@@ -593,7 +601,7 @@ class NsLicenseModuleController extends ActionController
                         } catch (\Exception $e) {
                
                             if (strpos($e->getMessage(), 'Unable to open zip') !== false) {
-                                $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense'), $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
+                                $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense', [$licenseData->extension_key, $this->typo3Version]), $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
                             } else {
                                 $this->addFlashMessage(LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'), $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
                             }
@@ -601,7 +609,7 @@ class NsLicenseModuleController extends ActionController
                         }
                     }
                     if ($this->isComposerMode && empty($licenseData->extension_download_url)) {
-                        $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense'), $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
+                        $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense', [$licenseData->extension_key, $this->typo3Version]), $licenseData->extension_key, \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
                         $this->redirect('list');
                     }
                     $this->nsLicenseRepository->insertNewData($licenseData);
