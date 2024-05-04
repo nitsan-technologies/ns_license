@@ -384,6 +384,7 @@ class NsLicenseModuleController extends ActionController
     public function DeactivationAction(): ResponseInterface
     {
         $params = $this->request->getArguments();
+        $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['extension']['license_key'] . '&deactivate=1');
         $this->nsLicenseRepository->deactivate($params['extension']['license_key'], $params['extension']['extension_key']);
         $extFolder = $this->getExtensionFolder($params['extension']['extension_key']);
         $this->updateFiles($extFolder, $params['extension']['extension_key']);
