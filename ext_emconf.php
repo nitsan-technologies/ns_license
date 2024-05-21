@@ -1,12 +1,12 @@
 <?php
 
 $EM_CONF['ns_license'] = array (
-  'title' => '[NITSAN] License Manager',
-  'description' => 'Manage License(s) of your purchased T3Planet\'s premium TYPO3 products. Know more at documentation https://docs.t3planet.com/en/latest/License/LicenseActivation/Index.html',
+  'title' => 'License Manager',
+  'description' => 'Manage License(s) of your purchased from T3Planet such as TYPO3 Templates and TYPO3 Extensions. Documentation & Free Support https://docs.t3planet.com/en/latest/License/LicenseActivation/Index.html',
   'category' => 'templates',
-  'author' => 'Team NITSAN',
+  'author' => 'Team T3Planet',
   'author_email' => 'sanjay@nitsan.in',
-  'author_company' => 'NITSAN Technologies Pvt Ltd',
+  'author_company' => 'T3Planet // NITSAN',
   'state' => 'stable',
   'version' => '1.9.0',
   'constraints' => 
