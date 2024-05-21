@@ -1,7 +1,7 @@
 {
   "name": "nitsan/ns-license",
   "type": "typo3-cms-extension",
-  "description": "Manage License(s) of your purchased T3Planet premium TYPO3 products. Know more at documentation https://docs.t3planet.com/en/latest/License/LicenseActivation/Index.html",
+  "description": "Manage License(s) of your purchased from T3Planet such as TYPO3 Templates and TYPO3 Extensions.",
   "keywords": [
     "TYPO3 CMS",
     "license",
