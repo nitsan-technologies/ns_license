@@ -144,6 +144,10 @@ class NsLicenseModuleController extends ActionController
             // Get latest version from extension ext_emconf.php
             $extensions[$key]['version'] = $this->getVersionFromEmconf($extensions[$key]['extension_key']);
 
+            if (version_compare($extensions[$key]['lts_version'], $extensions[$key]['version'], '>')) {
+                $extensions[$key]['isUpdateAvail'] = true;
+            }
+            
             // Check if required repair
             $extFolder = $this->getExtensionFolder($extensions[$key]['extension_key']);
             $extensions[$key]['isRepareRequired'] = $this->checkRepairFiles($extFolder, $extensions[$key]['extension_key']);
