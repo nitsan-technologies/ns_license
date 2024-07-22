@@ -115,8 +115,8 @@ class NsLicenseModuleController extends ActionController
                 $this->composerSiteRoot = implode('/', $commonEnd) . '/';
             }
         }
-        $versionInformation = GeneralUtility::makeInstance(Typo3Version::class);
-        $this->typo3Version = $versionInformation->getMajorVersion();
+        // $versionInformation = GeneralUtility::makeInstance(Typo3Version::class);
+        // $this->typo3Version = $versionInformation->getMajorVersion();
         
         // Compulsory add "/" at the end
         $this->siteRoot = rtrim($this->siteRoot, '/') . '/';
