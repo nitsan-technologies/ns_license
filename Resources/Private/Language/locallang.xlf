@@ -140,11 +140,20 @@
             <trans-unit id="license-activation.footerTitle">
                 <source>Need Help With Domain Registration?</source>
             </trans-unit>
+            <trans-unit id="license-activation.footerTowTitle">
+                <source>Need to Know How License Works?</source>
+            </trans-unit>
             <trans-unit id="license-activation.footerDescription">
                 <source>If you wish to allow access to your local, staging, testing domains etc., to your license key. Please get in touch with our support team to whitelist those domains.</source>
             </trans-unit>
+            <trans-unit id="license-activation.footerTwoDescription">
+                <source>You can explore how to get the license key, activate, download, and install your purchased TYPO3 extensions. Check out the in-depth guidance on the license system. Read Documentation</source>
+            </trans-unit>
             <trans-unit id="license-activation.footerButton">
                 <source>Submit Your Ticket</source>
+            </trans-unit>
+            <trans-unit id="license-activation.licenseButton">
+                <source>How License Works</source>
             </trans-unit>
             <trans-unit id="license.key.up_to_date">
                 <source>Your Extension is Up-to Date!</source>
