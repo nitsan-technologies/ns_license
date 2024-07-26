@@ -3,7 +3,7 @@
 <f:section name="Content">
     <link rel="stylesheet" type="text/css" href="{f:uri.resource(path:'css/Module/font-awesome.min.css', extensionName: 'ns_license')}" media="all">
     <link rel="stylesheet" type="text/css" href="{f:uri.resource(path:'css/custom.css', extensionName: 'ns_license')}" media="all">
-    <f:be.pageRenderer includeRequireJsModules="{0:'TYPO3/CMS/NsLicense/Main'}" />
+    <f:be.pageRenderer includeJavaScriptModules="{0:'@nitsan/ns-license/main.js'}" />
     <f:flashMessages />
     <div class="ns-license-activation-panel">
         <div class="row">
@@ -66,12 +66,12 @@
                             <td class="text-center ns-license-icon-cell">
                                 <f:if condition="{extension.license_type}">
                                     <f:then>
-                                        <a href="#" data-toggle="tooltip" data-placement="top" data-html="true" title="{extension.license_type} {f:translate(key: 'license-activation.domains')} {f:translate(key: 'license-activation.allow')}">
+                                        <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" data-html="true" title="{extension.license_type} {f:translate(key: 'license-activation.domains')} {f:translate(key: 'license-activation.allow')}">
                                             <core:icon identifier="actions-check-circle-alt" size="small" />
                                         </a>
                                     </f:then>
                                     <f:else>
-                                        <a href="#" data-toggle="tooltip" data-placement="top" data-html="true" title="{f:translate(key: 'license-activation.no_domains')}">
+                                        <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" data-html="true" title="{f:translate(key: 'license-activation.no_domains')}">
                                             <core:icon identifier="actions-check-circle-alt" size="small" />
                                         </a>
                                     </f:else>
@@ -147,9 +147,9 @@
                                         </a>
                                     </f:else>
                                 </f:if>
-                                <f:link.action action="deactivation" class="btn btn-danger license-deactivation-latest" arguments="{extension: extension}">
+                                <f:link.action data="{bs-toggle:'modal', bs-target:'#deactivation-modal'}" action="deactivation" class="btn btn-danger license-deactivation-latest" arguments="{extension: extension}">
                                     <core:icon identifier="actions-delete" size="small" />
-                                    <f:translate key="license-deactivation.action" />                                    
+                                    <f:translate key="license-deactivation.action" />
                                 </f:link.action>
                             </td>
                         </tr>
@@ -163,7 +163,7 @@
                 <div class="alert alert-warning">
                     <div class="media">
                         <div class="media-left">
-                            <span class="fa-stack fa-lg"><core:icon identifier="actions-info-circle-alt" size="medium" />span>
+                            <span class="fa-stack fa-lg"><core:icon identifier="actions-info-circle-alt" size="medium" /></span>
                         </div>
                         <div class="media-body">
                             <h4 class="alert-title"><f:translate key="license-activation.noRecordTitle" /></h4>

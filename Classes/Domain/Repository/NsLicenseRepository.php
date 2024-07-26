@@ -95,12 +95,17 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
     {
         $extensionDownloadUrl = $data->extension_download_url;
         if (PHP_VERSION > 8) {
-            $extensionDownloadUrl = get_mangled_object_vars($data->extension_download_url);
+            if ($data->extension_download_url) {
+                $extensionDownloadUrl = get_mangled_object_vars($data->extension_download_url);    
+            }
+            $extensionDownloadUrl = [];
+            
         }
         end($extensionDownloadUrl);
         $key = key($extensionDownloadUrl);
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('ns_product_license');
-        $queryBuilder
+        if ($key) {
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('ns_product_license');
+            $queryBuilder
             ->update('ns_product_license')
             ->where(
                 $queryBuilder->expr()->eq('extension_key', $queryBuilder->createNamedParameter($data->extension_key))
@@ -116,11 +121,13 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
             ->set('documentation_link', $data->documentation_link)
             ->set('domains', $data->domains)
             ->set('license_type', $data->license_type);
-        if ($ltsCheck == 1) {
-            $queryBuilder->set('version', $key);
+            if ($ltsCheck == 1) {
+                $queryBuilder->set('version', $key);
+            }
+            $queryBuilder->set('lts_version', $key)
+                ->executeStatement();
         }
-        $queryBuilder->set('lts_version', $key)
-            ->executeStatement();
+        
     }
 
     /**

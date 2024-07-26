@@ -98,7 +98,7 @@ class NsLicenseModuleController extends ActionController
     /**
      * Initialize Action.
      */
-    public function initializeAction()
+    public function initializeAction() : void
     {
         // Call from Default ActionController
         parent::initializeAction();
@@ -115,6 +115,7 @@ class NsLicenseModuleController extends ActionController
         //TYPO3 version
         $versionInformation = GeneralUtility::makeInstance(Typo3Version::class);
         $this->typo3Version = $versionInformation->getMajorVersion();
+        // $this->typo3Version = 12;
 
         // Compulsory add "/" at the end
         $this->siteRoot = rtrim($this->siteRoot, '/') . '/';
@@ -178,8 +179,14 @@ class NsLicenseModuleController extends ActionController
                 $message = LocalizationUtility::translate('license.key.up_to_date', 'NsLicense');
             } else {
                 $message = LocalizationUtility::translate('license.key.update', 'NsLicense');
+                $severity = ContextualFeedbackSeverity::OK;
+                if ($this->isComposerMode) {
+                    $message = LocalizationUtility::translate('license.key.update.composer', 'NsLicense');
+                    $severity = ContextualFeedbackSeverity::INFO;
+                }
+                
             }
-            $this->addFlashMessage($message, $params['extKey'], ContextualFeedbackSeverity::OK);
+            $this->addFlashMessage($message, $params['extKey'], $severity);
         }
         return $this->redirect('list');
     }

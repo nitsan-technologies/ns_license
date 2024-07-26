@@ -173,6 +173,9 @@
             <trans-unit id="license-activation.extension_repair">
                 <source>Your license key is successfully activated. The extension is successfully re-activated.</source>
             </trans-unit>
+            <trans-unit id="license.key.update.composer">
+                <source>Good news! New version of this extension is available, But the system is set to composer mode.So, please update composer to get latest version.</source>
+            </trans-unit>
             <!-- Licence LLL End-->
     </body>
   </file>
