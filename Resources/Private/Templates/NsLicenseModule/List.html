@@ -116,7 +116,7 @@
                                 <f:if condition="{showUpdateButton}">
                                     <f:if condition="{extension.isUpdateAvail}">
                                         <f:then>
-                                            <f:link.action action="update" class="btn btn-outline-secondary license-activation-latest" arguments="{extension: extension}">
+                                            <f:link.action data="{bs-toggle:'modal', bs-target:'#activation-modal'}" action="update" class="btn btn-outline-secondary license-activation-latest" arguments="{extension: extension}">
                                                 <core:icon identifier="actions-check-circle" size="small" />
                                                 <f:translate key="license-activation.updateTo" /> {extension.lts_version}
                                             </f:link.action>

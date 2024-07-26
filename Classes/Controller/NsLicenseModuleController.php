@@ -176,6 +176,7 @@ class NsLicenseModuleController extends ActionController
             // Finally compare version with ext_emconf + latest available version
             $versionId = $this->getVersionFromEmconf($params['extKey']);
             if (version_compare($versionId, $extData[0]['lts_version'], '==')) {
+                $severity = ContextualFeedbackSeverity::OK;
                 $message = LocalizationUtility::translate('license.key.up_to_date', 'NsLicense');
             } else {
                 $message = LocalizationUtility::translate('license.key.update', 'NsLicense');
