@@ -13,7 +13,7 @@ $EM_CONF['ns_license'] = array(
     array(
       'depends' =>
         array(
-          'typo3' => '12.0.0-13.4.99',
+          'typo3' => '12.0.0-13.9.99',
         ),
       'conflicts' =>
         array(
