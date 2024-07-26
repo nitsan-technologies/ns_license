@@ -2,18 +2,18 @@
 
 $EM_CONF['ns_license'] = array(
   'title' => 'License Manager',
-  'description' => 'Manage License(s) of your purchased from T3Planet such as TYPO3 Templates and TYPO3 Extensions. Documentation & Free Support https://docs.t3planet.com/en/latest/License/LicenseActivation/Index.html', 
+  'description' => 'Manage License(s) of your purchased from T3Planet such as TYPO3 Templates and TYPO3 Extensions. Documentation & Free Support https://docs.t3planet.com/en/latest/License/LicenseActivation/Index.html',
   'category' => 'templates',
   'author' => 'Team T3Planet',
   'author_email' => 'sanjay@nitsan.in',
   'author_company' => 'T3Planet // NITSAN',
   'state' => 'stable',
-  'version' => '12.0.11',
+  'version' => '13.0.0',
   'constraints' =>
     array(
       'depends' =>
         array(
-          'typo3' => '12.0.0-12.4.99',
+          'typo3' => '12.0.0-13.4.99',
         ),
       'conflicts' =>
         array(
