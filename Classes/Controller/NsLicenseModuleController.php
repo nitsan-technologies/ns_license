@@ -699,7 +699,7 @@ class NsLicenseModuleController extends ActionController
      **/
     public function fetchLicense($license)
     {
-        $url = 'https://composer.t3planet.com/API/GetComposerDetails.php?' . $license;
+        $url = 'https://composer.t3planet.cloud/API/GetComposerDetails.php?' . $license;
         try {
             $response = $this->requestFactory->request(
                 $url,
