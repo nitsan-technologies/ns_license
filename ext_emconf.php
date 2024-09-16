@@ -8,7 +8,7 @@ $EM_CONF['ns_license'] = array(
   'author_email' => 'sanjay@nitsan.in',
   'author_company' => 'T3Planet // NITSAN',
   'state' => 'stable',
-  'version' => '13.0.1',
+  'version' => '13.0.2',
   'constraints' =>
     array(
       'depends' =>

@@ -68,6 +68,9 @@ class NsLicenseModuleController extends ActionController
      */
     private mixed $cacheManager;
 
+    protected string $extensionBackupPath;
+
+
     public function injectNsLicenseRepository(NsLicenseRepository $nsLicenseRepository)
     {
         $this->nsLicenseRepository = $nsLicenseRepository;
@@ -634,13 +637,11 @@ class NsLicenseModuleController extends ActionController
                 // Successfully redirect to license listing
                 return $this->redirect('list');
             }
-            $title = 'ERROR';
-            if ($licenseData->extKey) {
-                $title = $licenseData->extKey;
-            }
+            $title = $licenseData->extKey ?? 'ERROR';
             $message = LocalizationUtility::translate('errorMessage.default', 'NsLicense');
             if ($licenseData->error_code) {
-                $message = LocalizationUtility::translate('errorMessage.' . $licenseData->error_code, 'NsLicense', [$licenseData->license_type]);
+                $license_type = $licenseData->license_type ?? '';
+                $message = LocalizationUtility::translate('errorMessage.' . $licenseData->error_code, 'NsLicense', [$license_type]);
             }
             $this->addFlashMessage($message, $title, ContextualFeedbackSeverity::ERROR);
             return $this->redirect('list');
@@ -667,7 +668,7 @@ class NsLicenseModuleController extends ActionController
         if ($isExtensionAvailable) {
             $this->copyExtensionFolderToTempFolder($extensionKey);
         }
-        $this->removeFromOriginalPath = true;
+    
         $this->fileHandlingUtility->unzipExtensionFromFile($uploadedFile, $extensionKey);
 
         return $extensionKey;
