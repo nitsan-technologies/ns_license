@@ -97,9 +97,7 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         if (PHP_VERSION > 8) {
             if ($data->extension_download_url) {
                 $extensionDownloadUrl = get_mangled_object_vars($data->extension_download_url);    
-            }
-            $extensionDownloadUrl = [];
-            
+            }            
         }
         end($extensionDownloadUrl);
         $key = key($extensionDownloadUrl);
