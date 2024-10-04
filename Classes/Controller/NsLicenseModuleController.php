@@ -157,7 +157,7 @@ class NsLicenseModuleController extends ActionController
         }
         $view->assign('showUpdateButton', $showUpdateButton);
         $view->assign('extensions', $extensions);
-        return $view->renderResponse();
+        return $view->renderResponse('NsLicenseModule/List');
     }
 
     /**
