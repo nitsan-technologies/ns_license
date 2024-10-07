@@ -24,3 +24,8 @@ services:
       $managementService: '@TYPO3\CMS\Extensionmanager\Service\ExtensionManagementService'
       $installUtility: '@TYPO3\CMS\Extensionmanager\Utility\InstallUtility'
       $contentObject: '@TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer'
+      $nsLicenseRepository: '@NITSAN\NsLicense\Domain\Repository\NsLicenseRepository'
+      $licenseService: '@NITSAN\NsLicense\Service\LicenseService'
+
+  NITSAN\NsLicense\Domain\Repository\NsLicenseRepository:
+    public: true
