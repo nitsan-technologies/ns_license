@@ -209,17 +209,6 @@ class NsLicenseModuleController extends ActionController
     }
 
     /**
-    * Wrapper function for loading extensions.
-    *
-    * @param string $extensionKey
-    */
-    protected function loadExtension($extensionKey)
-    {
-        $this->packageManager->activatePackage($extensionKey);
-        $this->cacheManager->flushCachesInGroup('system');
-    }
-
-    /**
      * action list.
      */
     public function updateAction(): ResponseInterface
@@ -313,7 +302,7 @@ class NsLicenseModuleController extends ActionController
                     return $this->redirect('list');
                 }
             }
-            if ($licenseData->status) {
+            if ($licenseData && $licenseData->status) {
                 if (isset($_COOKIE['NsLicense']) && $_COOKIE['NsLicense'] != '') {
                     $disableExtensions = explode(',', $_COOKIE['NsLicense']);
                     $key = array_search($licenseData->extension_key, $disableExtensions);

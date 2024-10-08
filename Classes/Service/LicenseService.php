@@ -12,6 +12,7 @@ use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Core\Http\RequestFactory;
 
 class LicenseService {
 	
@@ -22,12 +23,14 @@ class LicenseService {
 	protected $typo3Version;
     protected $packageManager;
     protected $cacheManager;
+    protected $requestFactory;
 
 	public function __construct(
     ) {
 
 		$this->packageManager = GeneralUtility::makeInstance(PackageManager::class);
         $this->cacheManager = GeneralUtility::makeInstance(CacheManager::class);
+        $this->requestFactory = GeneralUtility::makeInstance(RequestFactory::class);
 
     	$this->nsLicenseRepository = GeneralUtility::makeInstance(NsLicenseRepository::class);
     	$this->siteRoot = \TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/';
@@ -202,6 +205,17 @@ class LicenseService {
             }
         }
         return $isRepair;
+    }
+
+    /**
+    * Wrapper function for loading extensions.
+    *
+    * @param string $extensionKey
+    */
+    protected function loadExtension($extensionKey)
+    {
+        $this->packageManager->activatePackage($extensionKey);
+        $this->cacheManager->flushCachesInGroup('system');
     }
 
 }
