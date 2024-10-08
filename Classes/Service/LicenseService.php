@@ -20,6 +20,8 @@ class LicenseService {
 	protected $composerSiteRoot;
 	protected $isComposerMode;
 	protected $typo3Version;
+    protected $packageManager;
+    protected $cacheManager;
 
 	public function __construct(
     ) {
@@ -167,6 +169,39 @@ class LicenseService {
             $messageQueue = $flashMessageService->getMessageQueueByIdentifier();
             $messageQueue->addMessage($msg);
         }
+    }
+
+      /**
+     * updateRepairFiles.
+     */
+    public function updateRepairFiles($extFolder, $extension)
+    {
+        $isRepair = false;
+        if (file_exists($extFolder . 'ext_tables..php')) {
+            rename($extFolder . 'ext_tables..php', $extFolder . 'ext_tables.php');
+            $isRepair = true;
+        }
+        if (file_exists($extFolder . 'Configuration.')) {
+            rename($extFolder . 'Configuration.', $extFolder . 'Configuration');
+            $isRepair = true;
+        }
+        if (file_exists($extFolder . 'Configuration/TCA/Overrides/sys_template..php')) {
+            rename($extFolder . 'Configuration/TCA/Overrides/sys_template..php', $extFolder . 'Configuration/TCA/Overrides/sys_template.php');
+            $isRepair = true;
+        }
+        if (file_exists($extFolder . 'Resources.')) {
+            rename($extFolder . 'Resources.', $extFolder . 'Resources');
+            $isRepair = true;
+        }
+
+        if ($isRepair) {
+            try {
+                $this->loadExtension($extension);
+            } catch (\Exception $e) {
+                $this->addFlashMessage($e->getMessage(), $extension, ContextualFeedbackSeverity::ERROR);
+            }
+        }
+        return $isRepair;
     }
 
 }

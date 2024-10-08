@@ -185,38 +185,6 @@ class NsLicenseModuleController extends ActionController
         return $this->redirect('list');
     }
 
-    /**
-     * updateRepairFiles.
-     */
-    public function updateRepairFiles($extFolder, $extension)
-    {
-        $isRepair = false;
-        if (file_exists($extFolder . 'ext_tables..php')) {
-            rename($extFolder . 'ext_tables..php', $extFolder . 'ext_tables.php');
-            $isRepair = true;
-        }
-        if (file_exists($extFolder . 'Configuration.')) {
-            rename($extFolder . 'Configuration.', $extFolder . 'Configuration');
-            $isRepair = true;
-        }
-        if (file_exists($extFolder . 'Configuration/TCA/Overrides/sys_template..php')) {
-            rename($extFolder . 'Configuration/TCA/Overrides/sys_template..php', $extFolder . 'Configuration/TCA/Overrides/sys_template.php');
-            $isRepair = true;
-        }
-        if (file_exists($extFolder . 'Resources.')) {
-            rename($extFolder . 'Resources.', $extFolder . 'Resources');
-            $isRepair = true;
-        }
-
-        if ($isRepair) {
-            try {
-                $this->loadExtension($extension);
-            } catch (\Exception $e) {
-                $this->addFlashMessage($e->getMessage(), $extension, ContextualFeedbackSeverity::ERROR);
-            }
-        }
-        return $isRepair;
-    }
 
     /**
      * checkRepairFiles.
@@ -320,7 +288,7 @@ class NsLicenseModuleController extends ActionController
     {
         $params = $this->request->getArguments();
         $extFolder = $this->licenseService->getExtensionFolder($params['extension']['extension_key']);
-        $this->updateRepairFiles($extFolder, $params['extension']['extension_key']);
+        $this->licenseService->updateRepairFiles($extFolder, $params['extension']['extension_key']);
         $this->addFlashMessage(LocalizationUtility::translate('license-activation.reactivation', 'NsLicense'), 'EXT:' . $params['extension']['extension_key'], ContextualFeedbackSeverity::OK);
         return $this->redirect('list');
     }
@@ -410,7 +378,7 @@ class NsLicenseModuleController extends ActionController
                     $extFolder = $this->licenseService->getExtensionFolder($licenseData->extension_key);
 
                     // Check if Update Repair
-                    if ($this->updateRepairFiles($extFolder, $licenseData->extension_key)) {
+                    if ($this->licenseService->updateRepairFiles($extFolder, $licenseData->extension_key)) {
                         $isRepair = 'Yes';
                     }
 
