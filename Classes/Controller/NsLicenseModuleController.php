@@ -150,6 +150,11 @@ class NsLicenseModuleController extends ActionController
         return $view->renderResponse('NsLicenseModule/List');
     }
 
+    public function connectToServer($extKey = null, $reload = 0, $checkType = '')
+    {
+        $this->licenseService->connectToServer($extKey, $reload, $checkType);
+    }
+
     /**
      * action list.
      */
