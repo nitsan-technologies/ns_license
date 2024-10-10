@@ -639,8 +639,8 @@ class NsLicenseModuleController extends ActionController
 
                 // Special code for EXT.ns_revolution_slider
                 if (isset($params['extension_key']) && $params['extension_key'] == 'ns_revolution_slider') {
-                    $rsInstallUtility = GeneralUtility::makeInstance(\NITSAN\NsRevolutionSlider\Slots\InstallUtility::class);
-                    $rsInstallUtility->schemaUpdate();
+                    //$rsInstallUtility = GeneralUtility::makeInstance(\NITSAN\NsRevolutionSlider\Slots\InstallUtility::class);
+                    //$rsInstallUtility->schemaUpdate();
                     
                     $versionOriginalId = $params['version'];
                     $versionId = $this->getVersionFromEmconf($params['extension_key']);
