@@ -278,7 +278,7 @@ class NsLicenseModuleController extends ActionController
     /**
      * action reactivation.
      */
-    public function ReactivationAction()
+    public function reactivationAction()
     {
         $params = $this->request->getArguments();
         $extFolder = $this->licenseService->getExtensionFolder($params['extension']['extension_key']);
