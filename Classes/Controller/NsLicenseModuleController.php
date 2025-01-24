@@ -222,7 +222,7 @@ class NsLicenseModuleController extends ActionController
         $extKey = $params['extension']['extension_key'];
         if (isset($params['extension']['license_key']) && $params['extension']['license_key'] != '') {
             $updateStatus = $this->licenseService->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['extension']['license_key'] . '&ns_updates=1&typo3_version=' . $this->typo3Version);
-            if (isset($params['action'])) {
+            if (!isset($params['action'])) {
                 return $this->redirect('list');
             }
             if (!is_null($updateStatus) && !$updateStatus->status) {
