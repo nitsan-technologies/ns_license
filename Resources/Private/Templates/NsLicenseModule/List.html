@@ -116,13 +116,13 @@
                                 <f:if condition="{showUpdateButton}">
                                     <f:if condition="{extension.isUpdateAvail}">
                                         <f:then>
-                                            <f:link.action data="{bs-toggle:'modal', bs-target:'#activation-modal'}" action="update" class="btn btn-outline-secondary license-activation-latest" arguments="{extension: extension}">
+                                            <f:link.action data="{bs-toggle:'modal', bs-target:'#activation-modal'}" action="update" class="btn btn-default license-activation-latest" arguments="{extension: extension}">
                                                 <core:icon identifier="actions-check-circle" size="small" />
                                                 <f:translate key="license-activation.updateTo" /> {extension.lts_version}
                                             </f:link.action>
                                         </f:then>
                                         <f:else>
-                                            <a href="javascript:;" class="btn btn-outline-secondary disabled btn-uptodate">
+                                            <a href="javascript:;" class="btn btn-default disabled btn-uptodate">
                                                 <core:icon identifier="actions-check-circle-alt" size="small" />
                                                 <f:translate key="license-activation.latest" />
                                             </a>
