@@ -106,6 +106,8 @@ class NsLicenseModuleController extends ActionController
             $this->siteRoot = \TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/';
             $this->composerSiteRoot = \TYPO3\CMS\Core\Core\Environment::getProjectPath() . '/';
             $this->isComposerMode = Environment::isComposerMode();
+            $versionInformation = GeneralUtility::makeInstance(Typo3Version::class);
+            $this->typo3Version = $versionInformation->getMajorVersion();
         } else {
             $this->siteRoot = PATH_site;
             $this->isComposerMode = \TYPO3\CMS\Core\Core\Bootstrap::usesComposerClassLoading();
@@ -114,9 +116,10 @@ class NsLicenseModuleController extends ActionController
                 unset($commonEnd[count($commonEnd) - 1]);
                 $this->composerSiteRoot = implode('/', $commonEnd) . '/';
             }
+            $this->typo3Version = TYPO3_version;
+
         }
-         $versionInformation = GeneralUtility::makeInstance(Typo3Version::class);
-         $this->typo3Version = $versionInformation->getMajorVersion();
+        
 
         // Compulsory add "/" at the end
         $this->siteRoot = rtrim($this->siteRoot, '/') . '/';
