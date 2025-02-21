@@ -59,11 +59,8 @@ class NsLicenseModuleController extends ActionController
     protected $cacheManager;
 
     protected $removeFromOriginalPath;
-
-    /**
-     * @var int
-     */
-    protected int $typo3Version = 0;
+   
+    protected $typo3Version = 0;
 
     public function injectNsLicenseRepository(NsLicenseRepository $nsLicenseRepository)
     {
@@ -116,7 +113,7 @@ class NsLicenseModuleController extends ActionController
                 unset($commonEnd[count($commonEnd) - 1]);
                 $this->composerSiteRoot = implode('/', $commonEnd) . '/';
             }
-            $this->typo3Version = TYPO3_version;
+            $this->typo3Version = substr((string)TYPO3_version, 0, 1);
 
         }
         
