@@ -56,7 +56,7 @@ class LicenseService {
 
             if($checkType == 'checkTheme') {
                 $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_key=' . $extKey . '&typo3_version=' . $this->typo3Version);
-                if ($licenseData->status) {
+                if ($licenseData->status || $licenseData->checkTheme) {
                     return true;
                 }
             }
@@ -65,6 +65,9 @@ class LicenseService {
                 if (!empty($extData)) {
                     $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $extData[0]['license_key'] . '&typo3_version=' . $this->typo3Version);
                     if (!is_null($licenseData)) {
+                        if ($licenseData->serverError) {
+                            return true;
+                        }
                         if ($licenseData->status) {
                             $this->nsLicenseRepository->updateData($licenseData);
                             $this->updateRepairFiles($extFolder, $extKey);
@@ -161,6 +164,8 @@ class LicenseService {
             );
             $rawResponse = $response->getBody()->getContents();
             return json_decode($rawResponse);
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            return  (object) array('checkTheme'=> true, 'serverError'=> true);
         } catch (\Throwable $e) {
             $msg = GeneralUtility::makeInstance(
                 FlashMessage::class,
