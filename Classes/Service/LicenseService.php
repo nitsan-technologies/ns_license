@@ -56,7 +56,7 @@ class LicenseService {
 
             if($checkType == 'checkTheme') {
                 $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_key=' . $extKey . '&typo3_version=' . $this->typo3Version);
-                if ($licenseData->status || $licenseData->checkTheme) {
+                if (isset($licenseData->status) || isset($licenseData->checkTheme)) {
                     return true;
                 }
             }
@@ -65,15 +65,15 @@ class LicenseService {
                 if (!empty($extData)) {
                     $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $extData[0]['license_key'] . '&typo3_version=' . $this->typo3Version);
                     if (!is_null($licenseData)) {
-                        if ($licenseData->serverError) {
+                        if (isset($licenseData->serverError) && $licenseData->serverError) {
                             return true;
                         }
-                        if ($licenseData->status) {
+                        if (isset($licenseData->status) && $licenseData->status) {
                             $this->nsLicenseRepository->updateData($licenseData);
                             $this->updateRepairFiles($extFolder, $extKey);
                             return true;
                         }
-                        if (!$licenseData->status) {
+                        if (isset($licenseData->status) && !$licenseData->status) {
                             $this->updateFiles($extFolder, $extKey);
                             return false;
                         }
