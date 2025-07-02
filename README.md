@@ -1,11 +1,5 @@
-# EXT.ns_license
+# ns_license
 
-## [NITSAN] License Manager
+  [![nslicense](https://img.shields.io/badge/stable-v13.0.8-green?style=flat-square)](https://github.com/nitsan-technologies/ns_googledocs/tree/13.0.8) [![TYPO3 11](https://img.shields.io/badge/TYPO3-13-orange.svg?style=flat-square)](https://get.typo3.org/version/11) [![License](https://img.shields.io/badge/license-GPL--3.0-orange?style=flat-square)](https://www.gnu.org/licenses/gpl-3.0.en.html) [![T3Planet](https://img.shields.io/badge/T3Planet-nslicense-50b99a?style=flat-square)](https://t3planet.com/typo3-googledocs-extension)
 
-Manage License(s) of your purchased T3Planet's premium TYPO3 products.
-
-- TER: https://extensions.typo3.org/extension/ns_license
-- Composer: https://packagist.org/packages/nitsan/ns-license
-- Documentation: https://docs.t3planet.com/en/latest/License/LicenseActivation/Index.html
-- Issues: https://github.com/nitsan-technologies/ns_license/issues
-- Support: https://t3planet.com/support
+- Free version: https://extensions.typo3.org/extension/ns_license
