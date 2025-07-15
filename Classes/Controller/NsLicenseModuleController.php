@@ -307,7 +307,7 @@ class NsLicenseModuleController extends ActionController
                     return $this->redirect('list');
                 }
             }
-            if ($licenseData && $licenseData->status) {
+            if (isset($licenseData, $licenseData->status) && $licenseData->status) {
                 if (isset($_COOKIE['NsLicense']) && $_COOKIE['NsLicense'] != '') {
                     $disableExtensions = explode(',', $_COOKIE['NsLicense']);
                     $key = array_search($licenseData->extension_key, $disableExtensions);
