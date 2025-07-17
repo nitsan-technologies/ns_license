@@ -307,6 +307,12 @@ class NsLicenseModuleController extends ActionController
                     return $this->redirect('list');
                 }
             }
+            if (isset($params['action'])) {
+                if ($params['action'] === 'activation' && !$licenseData->isUpdatable) {
+                    $this->addFlashMessage(LocalizationUtility::translate('errorMessage.license_expired', 'NsLicense'), 'Your annual License key is expired', ContextualFeedbackSeverity::ERROR);
+                    return $this->redirect('list');
+                }
+            }
             if (isset($licenseData, $licenseData->status) && $licenseData->status) {
                 if (isset($_COOKIE['NsLicense']) && $_COOKIE['NsLicense'] != '') {
                     $disableExtensions = explode(',', $_COOKIE['NsLicense']);
