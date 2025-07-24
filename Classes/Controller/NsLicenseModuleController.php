@@ -308,7 +308,7 @@ class NsLicenseModuleController extends ActionController
                 }
             }
             if (isset($params['action'])) {
-                if ($params['action'] === 'activation' && !$licenseData->isUpdatable) {
+                if ($params['action'] === 'activation' && isset($licenseData->isUpdatable) && !$licenseData->isUpdatable) {
                     $this->addFlashMessage(LocalizationUtility::translate('errorMessage.license_expired', 'NsLicense'), 'Your annual License key is expired', ContextualFeedbackSeverity::ERROR);
                     return $this->redirect('list');
                 }
