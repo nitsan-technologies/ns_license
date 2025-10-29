@@ -462,7 +462,7 @@ class NsLicenseModuleController extends ActionController
                     }
 
                     $folders = GeneralUtility::get_dirs($pluginsFolder);
-                    if ($folders) {
+                    if (is_array($folders) && !empty($folders)) {
                         try {
                             foreach ($folders as $folder) {
                                 if ($folder !== 'revslider') {
@@ -481,8 +481,8 @@ class NsLicenseModuleController extends ActionController
                     }
 
                     // Setup Main Uploads
-                    $revsliderSourceFolder = $this->siteRoot . 'uploads/ns_license/ns_revolution_slider/' . $versionOriginalId . '/vendor/wp/wp-content/uploads/';
-                    $revsliderUploadFolder = $this->siteRoot . 'typo3conf/ext/ns_revolution_slider/Resource/Public/vendor/wp/wp-content/uploads/';
+                    $revsliderSourceFolder = $this->siteRoot . 'uploads/ns_license/ns_revolution_slider/' . $versionOriginalId . '/Resources/Public/vendor/wp/wp-content/uploads/';
+                    $revsliderUploadFolder = $this->siteRoot . 'typo3conf/ext/ns_revolution_slider/Resources/Public/vendor/wp/wp-content/uploads/';
                     if (Environment::isComposerMode()) {
                         $revsliderUploadFolder = Environment::getProjectPath() . '/vendor/nitsan/ns-revolution-slider/Resources/Public/vendor/wp/wp-content/uploads/';
                     }

@@ -12,17 +12,17 @@
     "template",
     "ns"
   ],
-  "homepage": "https://gitlab.com/sanjay_nitsan/ns_license",
+  "homepage": "https://t3planet.com",
   "authors": [
     {
         "name": "Team T3Planet",
-        "email": "sanjay@nitsan.in",
+        "email": "support@t3planet.com",
         "role": "Developer",
-        "homepage": "http://www.nitsan.in/"
+        "homepage": "https://t3planet.com"
     }
   ],
   "support": {
-    "issues": "https://gitlab.com/sanjay_nitsan/ns_license/issues"
+    "issues": "https://github.com/nitsan-technologies/ns_license/issues"
   },
   "license": "MIT",
   "require": {
