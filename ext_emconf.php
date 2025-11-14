@@ -8,12 +8,13 @@ $EM_CONF['ns_license'] = array(
   'author_email' => 'info@t3planet.de',
   'author_company' => 'T3Planet',
   'state' => 'stable',
-  'version' => '13.0.12',
+  'version' => '13.0.13',
   'constraints' =>
     array(
       'depends' =>
         array(
           'typo3' => '12.0.0-13.9.99',
+          'extensionmanager' => '12.0.0-13.9.99',
         ),
       'conflicts' =>
         array(
