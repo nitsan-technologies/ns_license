@@ -160,13 +160,6 @@ class LicenseService {
     public function fetchLicense($license)
     {
         $url = 'https://composer.t3planet.cloud/API/GetComposerDetails.php?' . $license;
-        $response = $this->requestFactory->request(
-            $url,
-            'POST',
-            []
-        );
-        $rawResponse = $response->getBody()->getContents();
-
         try {
             $response = $this->requestFactory->request(
                 $url,
