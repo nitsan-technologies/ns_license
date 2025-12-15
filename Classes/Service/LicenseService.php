@@ -95,8 +95,12 @@ class LicenseService {
     public function getExtensionFolder($extKey)
     {
         if ($this->isComposerMode) {
-            $extKey = str_replace('_', '-', $extKey);
-            $extFolder = $this->composerSiteRoot . 'vendor/nitsan/' . $extKey . '/';
+            if($extKey == 'dataviewer_pro') {
+                $extFolder = $this->composerSiteRoot . 'vendor/aix/' . $extKey . '/';
+            }else{
+                $extKey = str_replace('_', '-', $extKey);
+                $extFolder = $this->composerSiteRoot . 'vendor/nitsan/' . $extKey . '/';
+            }
         } else {
             $extFolder = $this->siteRoot . 'typo3conf/ext/' . $extKey . '/';
         }
@@ -156,6 +160,13 @@ class LicenseService {
     public function fetchLicense($license)
     {
         $url = 'https://composer.t3planet.cloud/API/GetComposerDetails.php?' . $license;
+        $response = $this->requestFactory->request(
+            $url,
+            'POST',
+            []
+        );
+        $rawResponse = $response->getBody()->getContents();
+
         try {
             $response = $this->requestFactory->request(
                 $url,
