@@ -95,8 +95,12 @@ class LicenseService {
     public function getExtensionFolder($extKey)
     {
         if ($this->isComposerMode) {
-            $extKey = str_replace('_', '-', $extKey);
-            $extFolder = $this->composerSiteRoot . 'vendor/nitsan/' . $extKey . '/';
+            if($extKey == 'dataviewer_pro') {
+                $extFolder = $this->composerSiteRoot . 'vendor/aix/' . $extKey . '/';
+            }else{
+                $extKey = str_replace('_', '-', $extKey);
+                $extFolder = $this->composerSiteRoot . 'vendor/nitsan/' . $extKey . '/';
+            }
         } else {
             $extFolder = $this->siteRoot . 'typo3conf/ext/' . $extKey . '/';
         }
