@@ -11,6 +11,7 @@ use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use NITSAN\NsLicense\Service\LicenseService;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
@@ -18,6 +19,7 @@ use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+use TYPO3\CMS\Core\Service\DependencyOrderingService;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extensionmanager\Utility\InstallUtility;
 use NITSAN\NsLicense\Domain\Repository\NsLicenseRepository;
@@ -25,7 +27,6 @@ use TYPO3\CMS\Extensionmanager\Utility\FileHandlingUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Extensionmanager\Service\ExtensionManagementService;
 use TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException;
-use NITSAN\NsLicense\Service\LicenseService;
 
 /***
  *
@@ -85,6 +86,7 @@ class NsLicenseModuleController extends ActionController
         protected readonly ContentObjectRenderer $contentObject,
         protected readonly NsLicenseRepository $nsLicenseRepository,
         protected readonly LicenseService $licenseService,
+        protected readonly DependencyOrderingService $dependencyOrderingService,
     ) {
     }
 
@@ -324,7 +326,7 @@ class NsLicenseModuleController extends ActionController
                     }
                 }
                 if (isset($licenseData->existing) && $licenseData->existing) {
-                    $extVersion = GeneralUtility::makeInstance(PackageManager::class)->getPackage($licenseData->extension_key)->getPackageMetaData()->getVersion();
+                    $extVersion = GeneralUtility::makeInstance(PackageManager::class, $this->dependencyOrderingService)->getPackage($licenseData->extension_key)->getPackageMetaData()->getVersion();
                     $this->nsLicenseRepository->insertNewData($licenseData, $extVersion);
                     $this->addFlashMessage('EXT:' . $licenseData->extension_key . LocalizationUtility::translate('license-activation.activated', 'NsLicense'), 'EXT:' . $licenseData->extension_key, ContextualFeedbackSeverity::OK);
                     return $this->redirect('list');
@@ -366,6 +368,7 @@ class NsLicenseModuleController extends ActionController
                         $this->cacheManager->flushCaches();
                     } catch (\Exception $e) {
                         if (str_contains($e->getMessage(), 'Unable to open zip')) {
+                            \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump('test',__FILE__.''.__LINE__);die;
                             $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense', [$licenseData->extension_key, $this->typo3Version]), $licenseData->extension_key, ContextualFeedbackSeverity::ERROR);
                         } else {
                             $this->addFlashMessage(LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'), $licenseData->extension_key, ContextualFeedbackSeverity::ERROR);
@@ -409,6 +412,8 @@ class NsLicenseModuleController extends ActionController
                             $this->cacheManager->flushCaches();
                         } catch (\Exception $e) {
                             if (str_contains($e->getMessage(), 'Unable to open zip')) {
+                            \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump('test',__FILE__.''.__LINE__);die;
+
                                 $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense', [$licenseData->extension_key, $this->typo3Version]), $licenseData->extension_key, ContextualFeedbackSeverity::ERROR);
                             } else {
                                 $this->addFlashMessage(LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'), $licenseData->extension_key, ContextualFeedbackSeverity::ERROR);
@@ -416,10 +421,10 @@ class NsLicenseModuleController extends ActionController
                             return $this->redirect('list');
                         }
                     }
-                    if ($this->isComposerMode && empty($licenseData->extension_download_url)) {
-                        $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense', [$licenseData->extension_key, $this->typo3Version]), $licenseData->extension_key, ContextualFeedbackSeverity::ERROR);
-                        return $this->redirect('list');
-                    }
+                    // if ($this->isComposerMode && empty($licenseData->extension_download_url)) {
+                    //     $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense', [$licenseData->extension_key, $this->typo3Version]), $licenseData->extension_key, ContextualFeedbackSeverity::ERROR);
+                    //     return $this->redirect('list');
+                    // }
                     $this->nsLicenseRepository->insertNewData($licenseData);
                 } else {
                     $this->addFlashMessage(LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'), 'EXT:' . $licenseData->extension_key, ContextualFeedbackSeverity::ERROR);

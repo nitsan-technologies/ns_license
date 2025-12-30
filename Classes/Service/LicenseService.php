@@ -13,6 +13,7 @@ use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Http\RequestFactory;
+use TYPO3\CMS\Core\Service\DependencyOrderingService;
 
 class LicenseService {
 	
@@ -24,11 +25,13 @@ class LicenseService {
     protected $packageManager;
     protected $cacheManager;
     protected $requestFactory;
+    protected $dependencyOrderingService;
 
 	public function __construct(
     ) {
 
-		$this->packageManager = GeneralUtility::makeInstance(PackageManager::class);
+        $this->dependencyOrderingService = GeneralUtility::makeInstance( DependencyOrderingService::class);
+		$this->packageManager = GeneralUtility::makeInstance(PackageManager::class, $this->dependencyOrderingService);
         $this->cacheManager = GeneralUtility::makeInstance(CacheManager::class);
         $this->requestFactory = GeneralUtility::makeInstance(RequestFactory::class);
 

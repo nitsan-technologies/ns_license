@@ -26,8 +26,8 @@
   },
   "license": "MIT",
   "require": {
-    "typo3/cms-core": "^12 || ^13",
-    "typo3/cms-extensionmanager": "^12 || ^13"
+    "typo3/cms-core": "^12 || ^13 || ^14",
+    "typo3/cms-extensionmanager": "^12 || ^13 || ^14"
   },
   "autoload": {
     "psr-4": {
