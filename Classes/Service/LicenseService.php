@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace NITSAN\NsLicense\Service;
@@ -15,40 +16,40 @@ use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Service\DependencyOrderingService;
 
-class LicenseService {
-	
-	protected $nsLicenseRepository;
-	protected $siteRoot;
-	protected $composerSiteRoot;
-	protected $isComposerMode;
-	protected $typo3Version;
+class LicenseService
+{
+    protected $nsLicenseRepository;
+    protected $siteRoot;
+    protected $composerSiteRoot;
+    protected $isComposerMode;
+    protected $typo3Version;
     protected $packageManager;
     protected $cacheManager;
     protected $requestFactory;
     protected $dependencyOrderingService;
 
-	public function __construct(
+    public function __construct(
     ) {
 
-        $this->dependencyOrderingService = GeneralUtility::makeInstance( DependencyOrderingService::class);
-		$this->packageManager = GeneralUtility::makeInstance(PackageManager::class, $this->dependencyOrderingService);
+        $this->dependencyOrderingService = GeneralUtility::makeInstance(DependencyOrderingService::class);
+        $this->packageManager = GeneralUtility::makeInstance(PackageManager::class, $this->dependencyOrderingService);
         $this->cacheManager = GeneralUtility::makeInstance(CacheManager::class);
         $this->requestFactory = GeneralUtility::makeInstance(RequestFactory::class);
 
-    	$this->nsLicenseRepository = GeneralUtility::makeInstance(NsLicenseRepository::class);
-    	$this->siteRoot = \TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/';
+        $this->nsLicenseRepository = GeneralUtility::makeInstance(NsLicenseRepository::class);
+        $this->siteRoot = \TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/';
         $this->composerSiteRoot = \TYPO3\CMS\Core\Core\Environment::getProjectPath() . '/';
         $this->isComposerMode = Environment::isComposerMode();
 
         //TYPO3 version
         $versionInformation = GeneralUtility::makeInstance(Typo3Version::class);
         $this->typo3Version = $versionInformation->getMajorVersion();
-        
+
         // Compulsory add "/" at the end
         $this->siteRoot = rtrim($this->siteRoot, '/') . '/';
     }
 
-	/**
+    /**
      * action list.
      */
     public function connectToServer($extKey = null, $reload = 0, $checkType = '')
@@ -57,7 +58,7 @@ class LicenseService {
         if (!isset($_COOKIE['serverConnectionTime']) || $reload) {
             setcookie('serverConnectionTime', (string) 1, time() + 60 * 60 * 24 * 14);
 
-            if($checkType == 'checkTheme') {
+            if ($checkType == 'checkTheme') {
                 $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_key=' . $extKey . '&typo3_version=' . $this->typo3Version);
                 if (isset($licenseData->status) || isset($licenseData->checkTheme)) {
                     return true;
@@ -98,9 +99,9 @@ class LicenseService {
     public function getExtensionFolder($extKey)
     {
         if ($this->isComposerMode) {
-            if($extKey == 'dataviewer_pro') {
+            if ($extKey == 'dataviewer_pro') {
                 $extFolder = $this->composerSiteRoot . 'vendor/aix/' . $extKey . '/';
-            }else{
+            } else {
                 $extKey = str_replace('_', '-', $extKey);
                 $extFolder = $this->composerSiteRoot . 'vendor/nitsan/' . $extKey . '/';
             }
@@ -134,7 +135,7 @@ class LicenseService {
                 FlashMessage::class,
                 $e->getMessage(),
                 $extension,
-                ContextualFeedbackSeverity::ERROR
+                ContextualFeedbackSeverity::ERROR,
             );
             $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
             $messageQueue = $flashMessageService->getMessageQueueByIdentifier();
@@ -167,18 +168,18 @@ class LicenseService {
             $response = $this->requestFactory->request(
                 $url,
                 'POST',
-                []
+                [],
             );
             $rawResponse = $response->getBody()->getContents();
             return json_decode($rawResponse);
         } catch (\GuzzleHttp\Exception\RequestException $e) {
-            return  (object) array('checkTheme'=> true, 'serverError'=> true);
+            return  (object) ['checkTheme' => true, 'serverError' => true];
         } catch (\Throwable $e) {
             $msg = GeneralUtility::makeInstance(
                 FlashMessage::class,
                 $e->getMessage(),
                 'Your server has an issue connecting with our license system; Please get in touch with your server administrator with the below error message.',
-                ContextualFeedbackSeverity::ERROR
+                ContextualFeedbackSeverity::ERROR,
             );
             $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
             $messageQueue = $flashMessageService->getMessageQueueByIdentifier();
@@ -186,7 +187,7 @@ class LicenseService {
         }
     }
 
-      /**
+    /**
      * updateRepairFiles.
      */
     public function updateRepairFiles($extFolder, $extension)
