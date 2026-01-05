@@ -173,7 +173,7 @@ class LicenseService
             $rawResponse = $response->getBody()->getContents();
             return json_decode($rawResponse);
         } catch (\GuzzleHttp\Exception\RequestException $e) {
-            return  (object) ['checkTheme' => true, 'serverError' => true];
+            return ['checkTheme' => true, 'serverError' => true];
         } catch (\Throwable $e) {
             $msg = GeneralUtility::makeInstance(
                 FlashMessage::class,
@@ -214,7 +214,16 @@ class LicenseService
             try {
                 $this->loadExtension($extension);
             } catch (\Exception $e) {
-                $this->addFlashMessage($e->getMessage(), $extension, ContextualFeedbackSeverity::ERROR);
+                $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
+                $messageQueue = $flashMessageService->getMessageQueueByIdentifier();
+                $messageQueue->addMessage(
+                    GeneralUtility::makeInstance(
+                        FlashMessage::class,
+                        $e->getMessage(),
+                        $extension,
+                        ContextualFeedbackSeverity::ERROR,
+                    ),
+                );
             }
         }
         return $isRepair;

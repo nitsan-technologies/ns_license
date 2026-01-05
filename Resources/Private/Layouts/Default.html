@@ -1,8 +1,8 @@
 <html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true" lang="">
 
 <div class="module">        
-    <div class="module-docheader t3js-module-docheader justify-content-center">
-        <h2 class="mb-0"><f:translate key="license-activation" extensionName="ns_license" /></h2>
+    <div class="module-docheader module-docheader-navigation t3js-module-docheader-navigation justify-content-center">
+        <h2 class="mb-0 w-100"><f:translate key="license-activation" extensionName="ns_license" /></h2>
     </div>
 
     <div class="module-body t3js-module-body">
@@ -14,7 +14,7 @@
             </div>
         </div>
 
-        <div id="activation-modal" class="t3js-modal modal fade modal-type-default modal-severity-warning modal-style-light modal-size-default" tabindex="-1">
+        <div id="activation-modal" class="t3js-modal modal fade ns-license-modal modal-type-default modal-severity-warning modal-style-light modal-size-default position-fixed top-50 start-50 translate-middle right-0 left-0 p-0" tabindex="-1">
             <div class="modal-dialog">
                 <div class="t3js-modal-content modal-content">
                     <div class="modal-header">
@@ -43,16 +43,16 @@
             </div>
         </div>
         
-        <div id="deactivation-modal" class="t3js-modal modal fade modal-type-default modal-severity-danger modal-style-default modal-size-default" tabindex="-1">
+        <div id="deactivation-modal" class="t3js-modal modal fade modal-type-default modal-severity-danger modal-style-default ns-license-modal modal-size-default position-fixed top-50 start-50 translate-middle right-0 left-0 p-0 border-0" tabindex="-1">
             <div class="modal-dialog">
                 <div class="t3js-modal-content modal-content">
                     <div class="modal-header">
                         <h4 class="t3js-modal-title modal-title"><f:translate key="license-deactivation.confirmation" extensionName="ns_license" /></h4>
-                        <button class="t3js-modal-close close" data-bs-dismiss="modal">
+                        <button class="t3js-modal-close close bg-transparent border-0" data-bs-dismiss="modal">
                                 <span aria-hidden="true">
                                     <span class="t3js-icon icon icon-size-small icon-state-default icon-actions-close" data-identifier="actions-close">
                                         <span class="icon-markup">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
                                                 <path d="M11.9 5.5L9.4 8l2.5 2.5c.2.2.2.5 0 .7l-.7.7c-.2.2-.5.2-.7 0L8 9.4l-2.5 2.5c-.2.2-.5.2-.7 0l-.7-.7c-.2-.2-.2-.5 0-.7L6.6 8 4.1 5.5c-.2-.2-.2-.5 0-.7l.7-.7c.2-.2.5-.2.7 0L8 6.6l2.5-2.5c.2-.2.5-.2.7 0l.7.7c.2.2.2.5 0 .7z" class="icon-color"></path>
                                             </svg>
                                         </span>
