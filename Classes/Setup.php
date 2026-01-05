@@ -14,9 +14,8 @@ use NITSAN\NsLicense\Controller\NsLicenseModuleController;
 class Setup
 {
     public function __construct(
-        protected readonly NsLicenseModuleController $nsLicenseModule
-    ) {
-    }
+        protected readonly NsLicenseModuleController $nsLicenseModule,
+    ) {}
 
     public function executeOnSignal($extname = null)
     {

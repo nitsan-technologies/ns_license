@@ -110,7 +110,7 @@
                 <source>The extension is already available. If you still want to install it, check the "overwrite extension" checkbox.</source>
             </trans-unit>
             <trans-unit id="license-activation.downloaded_successfully">
-                <source>The extension is successfully downloaded! Go to Admin Tools > Extensions > Activate Extension. Read more at https://docs.t3planet.com/en/latest/License/LicenseActivation/Index.html</source>
+                <source>The extension is successfully downloaded! Please activate the extension. Read more at https://docs.t3planet.com/en/latest/License/LicenseActivation/Index.html</source>
             </trans-unit>
             <trans-unit id="license-activation.downloaded_successfully_from_update">
                 <source>Your extension is successfully updated. No worries, we have taken a backup of your last version at this path /uploads/ns_license/</source>

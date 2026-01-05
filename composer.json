@@ -1,7 +1,7 @@
 {
   "name": "nitsan/ns-license",
   "type": "typo3-cms-extension",
-  "description": "Manage License(s) of your purchased from T3Planet such as TYPO3 Templates and TYPO3 Extensions.",
+  "description": "TYPO3 License Manager - Manage License(s) of your purchased from T3Planet such as TYPO3 Templates and TYPO3 Extensions.",
   "keywords": [
     "TYPO3 CMS",
     "license",
@@ -26,8 +26,8 @@
   },
   "license": "MIT",
   "require": {
-    "typo3/cms-core": "^12 || ^13",
-    "typo3/cms-extensionmanager": "^12 || ^13"
+    "typo3/cms-core": "^12 || ^13 || ^14",
+    "typo3/cms-extensionmanager": "^12 || ^13 || ^14"
   },
   "autoload": {
     "psr-4": {

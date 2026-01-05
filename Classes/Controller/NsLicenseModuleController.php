@@ -11,6 +11,7 @@ use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use NITSAN\NsLicense\Service\LicenseService;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
@@ -18,6 +19,7 @@ use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+use TYPO3\CMS\Core\Service\DependencyOrderingService;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extensionmanager\Utility\InstallUtility;
 use NITSAN\NsLicense\Domain\Repository\NsLicenseRepository;
@@ -25,7 +27,6 @@ use TYPO3\CMS\Extensionmanager\Utility\FileHandlingUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Extensionmanager\Service\ExtensionManagementService;
 use TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException;
-use NITSAN\NsLicense\Service\LicenseService;
 
 /***
  *
@@ -85,13 +86,13 @@ class NsLicenseModuleController extends ActionController
         protected readonly ContentObjectRenderer $contentObject,
         protected readonly NsLicenseRepository $nsLicenseRepository,
         protected readonly LicenseService $licenseService,
-    ) {
-    }
+        protected readonly DependencyOrderingService $dependencyOrderingService,
+    ) {}
 
     /**
      * Initialize Action.
      */
-    public function initializeAction() : void
+    public function initializeAction(): void
     {
         // Call from Default ActionController
         parent::initializeAction();
@@ -125,7 +126,7 @@ class NsLicenseModuleController extends ActionController
         $extensions = $this->nsLicenseRepository->fetchData();
         foreach ($extensions as $key => $extension) {
             if ($extension['is_life_time'] != 1) {
-                $extensions[$key]['days'] = (int)floor((($extension['expiration_date'] - time()) + 86400) / 86400);
+                $extensions[$key]['days'] = (int) floor((($extension['expiration_date'] - time()) + 86400) / 86400);
             }
             if (!empty($extension['domains'])) {
                 $extensions[$key]['domains'] = str_replace(',', ' | ', $extensions[$key]['domains']);
@@ -183,7 +184,7 @@ class NsLicenseModuleController extends ActionController
                     $message = LocalizationUtility::translate('license.key.update.composer', 'NsLicense');
                     $severity = ContextualFeedbackSeverity::INFO;
                 }
-                
+
             }
             $this->addFlashMessage($message, $params['extKey'], $severity);
         }
@@ -324,7 +325,7 @@ class NsLicenseModuleController extends ActionController
                     }
                 }
                 if (isset($licenseData->existing) && $licenseData->existing) {
-                    $extVersion = GeneralUtility::makeInstance(PackageManager::class)->getPackage($licenseData->extension_key)->getPackageMetaData()->getVersion();
+                    $extVersion = GeneralUtility::makeInstance(PackageManager::class, $this->dependencyOrderingService)->getPackage($licenseData->extension_key)->getPackageMetaData()->getVersion();
                     $this->nsLicenseRepository->insertNewData($licenseData, $extVersion);
                     $this->addFlashMessage('EXT:' . $licenseData->extension_key . LocalizationUtility::translate('license-activation.activated', 'NsLicense'), 'EXT:' . $licenseData->extension_key, ContextualFeedbackSeverity::OK);
                     return $this->redirect('list');
@@ -545,7 +546,7 @@ class NsLicenseModuleController extends ActionController
         if ($isExtensionAvailable) {
             $this->copyExtensionFolderToTempFolder($extensionKey);
         }
-    
+
         $this->fileHandlingUtility->unzipExtensionFromFile($uploadedFile, $extensionKey);
 
         return $extensionKey;
@@ -564,7 +565,7 @@ class NsLicenseModuleController extends ActionController
         GeneralUtility::mkdir($this->extensionBackupPath);
         GeneralUtility::copyDirectory(
             $this->fileHandlingUtility->getExtensionDir($extensionKey),
-            $this->extensionBackupPath
+            $this->extensionBackupPath,
         );
     }
 
@@ -583,7 +584,7 @@ class NsLicenseModuleController extends ActionController
             $response = $this->requestFactory->request(
                 $extensionDownloadUrl,
                 'POST',
-                ['headers' => ['Authorization' => $authorization]]
+                ['headers' => ['Authorization' => $authorization]],
             );
 
             $rawResponse = $response->getBody()->getContents();
@@ -643,7 +644,7 @@ class NsLicenseModuleController extends ActionController
      * Generates the action menu
      */
     protected function initializeModuleTemplate(
-        ServerRequestInterface $request
+        ServerRequestInterface $request,
     ): ModuleTemplate {
         return $this->moduleTemplateFactory->create($request);
     }

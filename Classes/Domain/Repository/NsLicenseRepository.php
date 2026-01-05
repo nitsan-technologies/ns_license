@@ -82,7 +82,7 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
             ->from('ns_product_license');
         if ($extensionKey != '') {
             $queryBuilder->where(
-                $queryBuilder->expr()->eq('extension_key', $queryBuilder->createNamedParameter($extensionKey))
+                $queryBuilder->expr()->eq('extension_key', $queryBuilder->createNamedParameter($extensionKey)),
             );
         }
         return $queryBuilder->executeQuery()->fetchAllAssociative();
@@ -96,8 +96,8 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         $extensionDownloadUrl = $data->extension_download_url;
         if (PHP_VERSION > 8) {
             if ($data->extension_download_url) {
-                $extensionDownloadUrl = get_mangled_object_vars($data->extension_download_url);    
-            }            
+                $extensionDownloadUrl = get_mangled_object_vars($data->extension_download_url);
+            }
         }
         end($extensionDownloadUrl);
         $key = key($extensionDownloadUrl);
@@ -106,7 +106,7 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
             $queryBuilder
             ->update('ns_product_license')
             ->where(
-                $queryBuilder->expr()->eq('extension_key', $queryBuilder->createNamedParameter($data->extension_key))
+                $queryBuilder->expr()->eq('extension_key', $queryBuilder->createNamedParameter($data->extension_key)),
             )
             ->set('name', $data->name)
             ->set('email', $data->email)
@@ -125,7 +125,7 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
             $queryBuilder->set('lts_version', $key)
                 ->executeStatement();
         }
-        
+
     }
 
     /**
@@ -138,7 +138,7 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
             ->delete('ns_product_license')
             ->where(
                 $queryBuilder->expr()->eq('license_key', $queryBuilder->createNamedParameter($licenseKey)),
-                $queryBuilder->expr()->eq('extension_key', $queryBuilder->createNamedParameter($extensionKey))
+                $queryBuilder->expr()->eq('extension_key', $queryBuilder->createNamedParameter($extensionKey)),
             )
             ->executeStatement();
     }
@@ -152,7 +152,7 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
     {
         // Assets Path
         $path = '/_assets/8a9c9ad5ec273e16a34d1ff6a0d6f983/';
-        $convertedPath = "'".str_replace('/', '\/', $path)."'";
+        $convertedPath = "'" . str_replace('/', '\/', $path) . "'";
 
         // Find & Replace Ptah in `wp_posts` Table
         $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
@@ -166,19 +166,19 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
                         'guid',
                         $queryBuilder->createNamedParameter(
                             '%/typo3conf/ext/ns_revolution_slider/%',
-                            Connection::PARAM_STR
-                        )
-                    )
-                )
+                            Connection::PARAM_STR,
+                        ),
+                    ),
+                ),
             )
             ->set(
                 'guid',
                 sprintf(
                     'REPLACE(`guid`, %s, %s)',
                     $queryBuilder->createNamedParameter('/typo3conf/ext/ns_revolution_slider/', Connection::PARAM_STR),
-                    $queryBuilder->createNamedParameter($path, Connection::PARAM_STR)
+                    $queryBuilder->createNamedParameter($path, Connection::PARAM_STR),
                 ),
-                false
+                false,
             )
             ->executeStatement();
 
