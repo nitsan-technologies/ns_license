@@ -1,7 +1,7 @@
 {
   "name": "nitsan/ns-license",
   "type": "typo3-cms-extension",
-  "description": "TYPO3 License Manager - Manage License(s) of your purchased from T3Planet such as TYPO3 Templates and TYPO3 Extensions.",
+  "description": "License Manager - Manage License(s) of your purchased from T3Planet such as TYPO3 Templates and TYPO3 Extensions.",
   "keywords": [
     "TYPO3 CMS",
     "license",

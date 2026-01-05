@@ -1,14 +1,14 @@
 <?php
 
 $EM_CONF['ns_license'] = [
-    'title' => 'TYPO3 License Manager',
+    'title' => 'License Manager',
     'description' => 'Manage licenses of your TYPO3 templates and extensions purchased from T3Planet. Includes activation and license validation. Documentation available at https://docs.t3planet.com/en/latest/License/LicenseActivation/Index.html',
     'category' => 'templates',
     'author' => 'Team T3Planet',
     'author_email' => 'info@t3planet.de',
     'author_company' => 'T3Planet',
     'state' => 'stable',
-    'version' => '14.0.0',
+    'version' => '14.0.1',
     'constraints'
       => [
           'depends'
