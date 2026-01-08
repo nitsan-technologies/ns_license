@@ -204,13 +204,21 @@ class NsLicenseModuleController extends ActionController
         if (file_exists($extFolder . 'Configuration./TCA/Overrides/sys_template..php')) {
             $isRepair = true;
         }
-        if (file_exists($extFolder . 'Configuration.')) {
+        if (file_exists($extFolder . 'Configuration/Backend/Modules..php')) {
             $isRepair = true;
         }
-        if (file_exists($extFolder . 'Resources.')) {
-            $isRepair = true;
+        if (is_dir($extFolder . 'Resources/Private/Language')) {
+            $languageDir = $extFolder . 'Resources/Private/Language/';
+            $files = scandir($languageDir);
+            if (is_array($files)) {
+                foreach ($files as $file) {
+                    if ($file !== '.' && $file !== '..' && pathinfo($file, PATHINFO_EXTENSION) === 'xlf' && strpos($file, '..xlf') !== false) {
+                        $isRepair = true;
+                        break;
+                    }
+                }
+            }
         }
-
         return $isRepair;
     }
 

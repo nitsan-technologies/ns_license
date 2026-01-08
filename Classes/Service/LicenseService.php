@@ -4,17 +4,20 @@ declare(strict_types=1);
 
 namespace NITSAN\NsLicense\Service;
 
-use NITSAN\NsLicense\Domain\Repository\NsLicenseRepository;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Messaging\FlashMessage;
-use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Core\Environment;
-use TYPO3\CMS\Core\Information\Typo3Version;
-use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Cache\CacheManager;
-use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Http\RequestFactory;
+use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Package\PackageManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Core\Service\OpcodeCacheService;
+use TYPO3\CMS\Install\Service\ClearCacheService;
+use TYPO3\CMS\Core\Messaging\FlashMessageService;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Service\DependencyOrderingService;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use NITSAN\NsLicense\Domain\Repository\NsLicenseRepository;
 
 class LicenseService
 {
@@ -116,18 +119,31 @@ class LicenseService
      */
     public function updateFiles($extFolder, $extension)
     {
+        if (is_dir($extFolder . 'Configuration/Backend') && file_exists($extFolder . 'Configuration/Backend/Modules.php')) {
+            rename($extFolder . 'Configuration/Backend/Modules.php', $extFolder . 'Configuration/Backend/Modules..php');
+        }
         if (file_exists($extFolder . 'ext_tables.php')) {
             rename($extFolder . 'ext_tables.php', $extFolder . 'ext_tables..php');
         }
         if (file_exists($extFolder . 'Configuration/TCA/Overrides/sys_template.php')) {
             rename($extFolder . 'Configuration/TCA/Overrides/sys_template.php', $extFolder . 'Configuration/TCA/Overrides/sys_template..php');
         }
-        if (file_exists($extFolder . 'Configuration')) {
-            rename($extFolder . 'Configuration', $extFolder . 'Configuration.');
+        if (is_dir($extFolder . 'Resources/Private/Language')) {
+            $languageDir = $extFolder . 'Resources/Private/Language/';
+            $files = scandir($languageDir);
+            if (is_array($files)) {
+                foreach ($files as $file) {
+                    if ($file !== '.' && $file !== '..' && pathinfo($file, PATHINFO_EXTENSION) === 'xlf') {
+                        $oldPath = $languageDir . $file;
+                        $newPath = $languageDir . pathinfo($file, PATHINFO_FILENAME) . '..xlf';
+                        if (file_exists($oldPath) && strpos($file, '..xlf') === false) {
+                            rename($oldPath, $newPath);
+                        }
+                    }
+                }
+            }
         }
-        if (file_exists($extFolder . 'Resources')) {
-            rename($extFolder . 'Resources', $extFolder . 'Resources.');
-        }
+        
         try {
             $this->unloadExtension($extension);
         } catch (\Exception $e) {
@@ -150,8 +166,22 @@ class LicenseService
      */
     protected function unloadExtension($extensionKey)
     {
-        $this->packageManager->deactivatePackage($extensionKey);
-        $this->cacheManager->flushCachesInGroup('system');
+        try {
+            ExtensionManagementUtility::unloadExtension($extensionKey);
+            GeneralUtility::makeInstance(ClearCacheService::class)->clearAll();
+            GeneralUtility::makeInstance(OpcodeCacheService::class)->clearAllActive();
+        } catch (\Exception $e) {
+            $message = GeneralUtility::makeInstance(
+                FlashMessage::class,
+                $e->getMessage(),
+                $extensionKey,
+                ContextualFeedbackSeverity::ERROR,
+            );
+            $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
+            $messageQueue = $flashMessageService->getMessageQueueByIdentifier();
+            $messageQueue->addMessage($message);
+        }
+
     }
 
     /**
@@ -197,16 +227,28 @@ class LicenseService
             rename($extFolder . 'ext_tables..php', $extFolder . 'ext_tables.php');
             $isRepair = true;
         }
-        if (file_exists($extFolder . 'Configuration.')) {
-            rename($extFolder . 'Configuration.', $extFolder . 'Configuration');
+        if (file_exists($extFolder . 'Configuration/Backend/Modules..php')) {
+            rename($extFolder . 'Configuration/Backend/Modules..php', $extFolder . 'Configuration/Backend/Modules.php');
             $isRepair = true;
         }
         if (file_exists($extFolder . 'Configuration/TCA/Overrides/sys_template..php')) {
             rename($extFolder . 'Configuration/TCA/Overrides/sys_template..php', $extFolder . 'Configuration/TCA/Overrides/sys_template.php');
             $isRepair = true;
         }
-        if (file_exists($extFolder . 'Resources.')) {
-            rename($extFolder . 'Resources.', $extFolder . 'Resources');
+        if (is_dir($extFolder . 'Resources/Private/Language')) {
+            $languageDir = $extFolder . 'Resources/Private/Language/';
+            $files = scandir($languageDir);
+            if (is_array($files)) {
+               foreach ($files as $file) {
+                    if ($file !== '.' && $file !== '..' && str_ends_with($file, '..xlf')) {
+                        $oldPath = $languageDir . $file;
+                        $newPath = str_replace('..xlf', '.xlf', $oldPath);
+                        if (file_exists($oldPath)) {
+                            rename($oldPath, $newPath);
+                        }
+                    }
+                }
+            }
             $isRepair = true;
         }
 
