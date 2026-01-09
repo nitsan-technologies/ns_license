@@ -304,11 +304,8 @@ class NsLicenseModuleController extends ActionController
         if (file_exists($extFolder . 'Configuration/TCA/Overrides/sys_template.php')) {
             @rename($extFolder . 'Configuration/TCA/Overrides/sys_template.php', $extFolder . 'Configuration/TCA/Overrides/sys_template..php');
         }
-        if (file_exists($extFolder . 'Configuration')) {
-            @rename($extFolder . 'Configuration', $extFolder . 'Configuration.');
-        }
-        if (file_exists($extFolder . 'Resources')) {
-            @rename($extFolder . 'Resources', $extFolder . 'Resources.');
+        if (file_exists($extFolder . 'Resources/Private/Language')) {
+            @rename($extFolder . 'Resources/Private/Language', $extFolder . 'Resources/Private/Language.');
         }
         try {
             $this->unloadExtension($extension);
@@ -333,12 +330,8 @@ class NsLicenseModuleController extends ActionController
             @rename($extFolder . 'Configuration./TCA/Overrides/sys_template..php', $extFolder . 'Configuration/TCA/Overrides/sys_template.php');
             $isRepair = true;
         }
-        if (file_exists($extFolder . 'Configuration.')) {
-            @rename($extFolder . 'Configuration.', $extFolder . 'Configuration');
-            $isRepair = true;
-        }
-        if (file_exists($extFolder . 'Resources.')) {
-            @rename($extFolder . 'Resources.', $extFolder . 'Resources');
+        if (file_exists($extFolder . 'Resources/Private/Language.')) {
+            @rename($extFolder . 'Resources/Private/Language.', $extFolder . 'Resources/Private/Language');
             $isRepair = true;
         }
 
@@ -363,13 +356,10 @@ class NsLicenseModuleController extends ActionController
         if (file_exists($extFolder . 'ext_tables..php')) {
             $isRepair = true;
         }
-        if (file_exists($extFolder . 'Configuration./TCA/Overrides/sys_template..php')) {
+        if (file_exists($extFolder . 'Configuration/TCA/Overrides/sys_template..php')) {
             $isRepair = true;
         }
-        if (file_exists($extFolder . 'Configuration.')) {
-            $isRepair = true;
-        }
-        if (file_exists($extFolder . 'Resources.')) {
+        if (file_exists($extFolder . 'Resources/Private/Language.')) {
             $isRepair = true;
         }
 
