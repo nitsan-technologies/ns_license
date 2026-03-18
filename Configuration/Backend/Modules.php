@@ -14,7 +14,7 @@ $module = [
         'inheritNavigationComponent' => false,
         'controllerActions' => [
             NsLicenseModuleController::class => [
-                'list', 'update', 'activation', 'deactivation', 'reactivation', 'checkUpdate',
+                'list', 'update', 'activation', 'deactivation', 'reactivation', 'extendTrial', 'getServicesData', 'getShopData', 'fetchExtensionLogs',
             ],
         ],
     ],

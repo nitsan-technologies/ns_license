@@ -14,8 +14,28 @@ CREATE TABLE ns_product_license (
 	lts_version varchar(15) NOT NULL,
 	is_life_time varchar(5) DEFAULT NULL,
 	expiration_date int(11) DEFAULT '0' NOT NULL,
-	domains text,
+	domains text DEFAULT NULL,
+	existing_domains text DEFAULT NULL,
+	username varchar(255) NOT NULL,
+	local_domains text DEFAULT NULL,
+	staging_domains text DEFAULT NULL,
 	license_type varchar(5) DEFAULT NULL,
-
+	trial_extended smallint(5) unsigned DEFAULT '0' NOT NULL,
+	rating float DEFAULT '0',
+	downloads int(11) DEFAULT '0' NOT NULL,
 	PRIMARY KEY (uid)
+);
+
+--
+-- Table structure for table `ns_sync_registry`
+-- Stores synchronized data in a registry format
+--
+CREATE TABLE ns_sync_registry (
+	uid int(11) NOT NULL auto_increment,
+	data_type varchar(50) NOT NULL,
+	data_content longtext,
+	created_at int(11) DEFAULT '0' NOT NULL,
+	updated_at int(11) DEFAULT '0' NOT NULL,
+	PRIMARY KEY (uid),
+	UNIQUE KEY data_type (data_type)
 );

@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace NITSAN\NsLicense\Service;
 
-use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Cache\CacheManager;
-use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -18,52 +16,48 @@ use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Service\DependencyOrderingService;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use NITSAN\NsLicense\Domain\Repository\NsLicenseRepository;
+use NITSAN\NsLicense\Service\ExtensionListService;
+use NITSAN\NsLicense\Service\ComposerApiClient;
 
-class LicenseService
+final class LicenseService
 {
     protected $nsLicenseRepository;
-    protected $siteRoot;
-    protected $composerSiteRoot;
-    protected $isComposerMode;
     protected $typo3Version;
     protected $packageManager;
     protected $cacheManager;
-    protected $requestFactory;
     protected $dependencyOrderingService;
+    protected $extensionListService;
+    protected ComposerApiClient $composerApiClient;
 
-    public function __construct(
-    ) {
-
+    public function __construct(?ExtensionListService $extensionListService = null, ?ComposerApiClient $composerApiClient = null)
+    {
         $this->dependencyOrderingService = GeneralUtility::makeInstance(DependencyOrderingService::class);
-        $this->packageManager = GeneralUtility::makeInstance(PackageManager::class, $this->dependencyOrderingService);
+        $this->packageManager = GeneralUtility::makeInstance(PackageManager::class);
         $this->cacheManager = GeneralUtility::makeInstance(CacheManager::class);
-        $this->requestFactory = GeneralUtility::makeInstance(RequestFactory::class);
-
         $this->nsLicenseRepository = GeneralUtility::makeInstance(NsLicenseRepository::class);
-        $this->siteRoot = \TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/';
-        $this->composerSiteRoot = \TYPO3\CMS\Core\Core\Environment::getProjectPath() . '/';
-        $this->isComposerMode = Environment::isComposerMode();
-
-        //TYPO3 version
         $versionInformation = GeneralUtility::makeInstance(Typo3Version::class);
         $this->typo3Version = $versionInformation->getMajorVersion();
-
-        // Compulsory add "/" at the end
-        $this->siteRoot = rtrim($this->siteRoot, '/') . '/';
+        $this->extensionListService = $extensionListService
+            ?? GeneralUtility::makeInstance(
+                ExtensionListService::class,
+                $this->nsLicenseRepository,
+                $this->packageManager
+            );
+        $this->composerApiClient = $composerApiClient
+            ?? GeneralUtility::makeInstance(ComposerApiClient::class);
     }
 
-    /**
-     * action list.
-     */
+   
     public function connectToServer($extKey = null, $reload = 0, $checkType = '')
     {
-        $extFolder = $this->getExtensionFolder($extKey);
+        $extFolder = $this->extensionListService->getExtensionFolder($extKey);
+      
         if (!isset($_COOKIE['serverConnectionTime']) || $reload) {
             setcookie('serverConnectionTime', (string) 1, time() + 60 * 60 * 24 * 14);
 
             if ($checkType == 'checkTheme') {
                 $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_key=' . $extKey . '&typo3_version=' . $this->typo3Version);
-                if (isset($licenseData->status) || isset($licenseData->checkTheme)) {
+                if (is_array($licenseData) && (isset($licenseData['status']) || isset($licenseData['checkTheme']))) {
                     return true;
                 }
             }
@@ -71,16 +65,20 @@ class LicenseService
                 $extData = $this->nsLicenseRepository->fetchData($extKey);
                 if (!empty($extData)) {
                     $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $extData[0]['license_key'] . '&typo3_version=' . $this->typo3Version);
-                    if (!is_null($licenseData)) {
-                        if (isset($licenseData->serverError) && $licenseData->serverError) {
+                    if (is_array($licenseData)) {
+                        if (!empty($licenseData['serverError'])) {
                             return true;
                         }
-                        if (isset($licenseData->status) && $licenseData->status) {
-                            $this->nsLicenseRepository->updateData($licenseData);
+                        if (isset($licenseData['expiration_date']) && (int)$licenseData['expiration_date'] <= time()) {
+                            $this->updateFiles($extFolder, $extKey);
+                            return false;
+                        }
+                        if (!empty($licenseData['status'])) {
+                            $this->nsLicenseRepository->updateData(json_decode(json_encode($licenseData)));
                             $this->updateRepairFiles($extFolder, $extKey);
                             return true;
                         }
-                        if (isset($licenseData->status) && !$licenseData->status) {
+                        if (isset($licenseData['status']) && !$licenseData['status']) {
                             $this->updateFiles($extFolder, $extKey);
                             return false;
                         }
@@ -94,29 +92,7 @@ class LicenseService
         return true;
     }
 
-    /**
-     * getExtensionFolder.
-     *
-     * @param string $extKey
-     */
-    public function getExtensionFolder($extKey)
-    {
-        if ($this->isComposerMode) {
-            if ($extKey == 'dataviewer_pro') {
-                $extFolder = $this->composerSiteRoot . 'vendor/aix/' . $extKey . '/';
-            } else {
-                $extKey = str_replace('_', '-', $extKey);
-                $extFolder = $this->composerSiteRoot . 'vendor/nitsan/' . $extKey . '/';
-            }
-        } else {
-            $extFolder = $this->siteRoot . 'typo3conf/ext/' . $extKey . '/';
-        }
-        return $extFolder;
-    }
-
-    /**
-     * updateFiles.
-     */
+ 
     public function updateFiles($extFolder, $extension)
     {
         if (is_dir($extFolder . 'Configuration/Backend') && file_exists($extFolder . 'Configuration/Backend/Modules.php')) {
@@ -143,7 +119,7 @@ class LicenseService
                 }
             }
         }
-        
+
         try {
             $this->unloadExtension($extension);
         } catch (\Exception $e) {
@@ -181,7 +157,6 @@ class LicenseService
             $messageQueue = $flashMessageService->getMessageQueueByIdentifier();
             $messageQueue->addMessage($message);
         }
-
     }
 
     /**
@@ -193,15 +168,11 @@ class LicenseService
      **/
     public function fetchLicense($license)
     {
-        $url = 'https://composer.t3planet.cloud/API/GetComposerDetails.php?' . $license;
+        $apiBaseUrl = $this->getApiBaseUrl();
+        $url = $apiBaseUrl . 'GetComposerDetails.php?' . $license;
+
         try {
-            $response = $this->requestFactory->request(
-                $url,
-                'POST',
-                [],
-            );
-            $rawResponse = $response->getBody()->getContents();
-            return json_decode($rawResponse);
+            return $this->composerApiClient->requestJsonArray($url, 'POST', []);
         } catch (\GuzzleHttp\Exception\RequestException $e) {
             return ['checkTheme' => true, 'serverError' => true];
         } catch (\Throwable $e) {
@@ -239,7 +210,7 @@ class LicenseService
             $languageDir = $extFolder . 'Resources/Private/Language/';
             $files = scandir($languageDir);
             if (is_array($files)) {
-               foreach ($files as $file) {
+                foreach ($files as $file) {
                     if ($file !== '.' && $file !== '..' && str_ends_with($file, '..xlf')) {
                         $oldPath = $languageDir . $file;
                         $newPath = str_replace('..xlf', '.xlf', $oldPath);
@@ -272,14 +243,369 @@ class LicenseService
     }
 
     /**
-    * Wrapper function for loading extensions.
-    *
-    * @param string $extensionKey
-    */
+     * Wrapper function for loading extensions.
+     *
+     * @param string $extensionKey
+     */
     protected function loadExtension($extensionKey)
     {
         $this->packageManager->activatePackage($extensionKey);
         $this->cacheManager->flushCachesInGroup('system');
+    }
+
+    /**
+     * Add domain to server using license key
+     * First validates the license key, then adds the domain to the server
+     *
+     * @param string $licenseKey
+     * @param string $domain
+     * @param string $extensionKey
+     * @param string $environment
+     * @return array|null Returns response with status and message, or null on error
+     */
+    public function addDomainToServer(string $licenseKey, string $domain, string $extensionKey = '', string $environment = 'local'): ?array
+    {
+        $apiBaseUrl = $this->getApiBaseUrl();
+
+        // First, validate the license key by calling GetComposerDetails.php
+        $currentDomain = GeneralUtility::getIndpEnv('HTTP_HOST');
+        $validateUrl = $apiBaseUrl . 'GetComposerDetails.php?domain=' . urlencode($currentDomain) . '&ns_license=' . urlencode($licenseKey) . '&typo3_version=' . $this->typo3Version;
+
+        try {
+            $validateData = $this->composerApiClient->requestJsonArray($validateUrl, 'POST', []);
+            // Check if license is valid (status should be true or have extension_key)
+            if (!isset($validateData['status']) || !$validateData['status']) {
+                return [
+                    'success' => false,
+                    'error_code' => $validateData['error_code'] ?? 'error1',
+                    'message' => 'Invalid license key or license expired'
+                ];
+            }
+
+            // License is valid, now add the new domain to server using POST
+            $addDomainUrl = $apiBaseUrl . 'AddDomainToLicense.php';
+            $addData = $this->composerApiClient->requestJsonArray($addDomainUrl, 'POST', [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
+                'body' => json_encode([
+                    'ns_license' => $licenseKey,
+                    'domain' => $domain,
+                    'environment' => $environment,
+                ]),
+            ]);
+            if (isset($addData['status']) && $addData['status']) {
+                return [
+                    'success' => true,
+                    'message' => $addData['message'] ?? 'Domain added successfully to server',
+                    'domains' => $addData['domains'] ?? ''
+                ];
+            } else {
+                return [
+                    'success' => false,
+                    'error_code' => $addData['error_code'] ?? 'error1',
+                    'message' => $addData['message'] ?? 'Failed to add domain to server'
+                ];
+            }
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            return [
+                'success' => false,
+                'error_code' => 'server_error',
+                'message' => 'Server connection error: ' . $e->getMessage()
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'error_code' => 'error',
+                'message' => 'Error adding domain to server: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Remove domain from license on the API server (POST to RemoveDomainFromLicense.php)
+     *
+     * @param string $licenseKey
+     * @param string $domain
+     * @param string $extensionKey
+     * @param string $environment production, staging, or local
+     * @return array|null Returns response with success and message, or null on error
+     */
+    public function removeDomainFromServer(string $licenseKey, string $domain, string $extensionKey = '', string $environment = 'production'): ?array
+    {
+        $apiBaseUrl = $this->getApiBaseUrl();
+        $url = $apiBaseUrl . 'RemoveDomainFromLicense.php';
+
+        try {
+            $data = $this->composerApiClient->requestJsonArray($url, 'POST', [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
+                'body' => json_encode([
+                    'ns_license' => $licenseKey,
+                    'domain' => $domain,
+                    'environment' => $environment,
+                ]),
+            ]);
+            if (isset($data['status']) && $data['status']) {
+                return [
+                    'success' => true,
+                    'message' => $data['message'] ?? 'Domain removed successfully from server',
+                    'domains' => $data['domains'] ?? '',
+                ];
+            }
+
+            return [
+                'success' => false,
+                'error_code' => $data['error_code'] ?? 'error1',
+                'message' => $data['message'] ?? 'Failed to remove domain from server',
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'error_code' => 'server_error',
+                'message' => 'Error removing domain from server: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Update (edit) domain name on the API server (POST to UpdateDomainInLicense.php).
+     * Only the domain name is updated; environment stays the same.
+     *
+     * @param string $licenseKey
+     * @param string $oldDomain
+     * @param string $newDomain
+     * @param string $environment production, staging, or local
+     * @param string $extensionKey
+     * @return array|null
+     */
+    public function updateDomainOnServer(string $licenseKey, string $oldDomain, string $newDomain, string $environment, string $extensionKey = ''): ?array
+    {
+        $apiBaseUrl = $this->getApiBaseUrl();
+        $url = $apiBaseUrl . 'UpdateDomainInLicense.php';
+
+        try {
+            $data = $this->composerApiClient->requestJsonArray($url, 'POST', [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
+                'body' => json_encode([
+                    'ns_license' => $licenseKey,
+                    'old_domain' => $oldDomain,
+                    'new_domain' => $newDomain,
+                    'environment' => $environment,
+                ]),
+            ]);
+            if (isset($data['status']) && $data['status']) {
+                return [
+                    'success' => true,
+                    'message' => $data['message'] ?? 'Domain updated successfully on server',
+                ];
+            }
+
+            return [
+                'success' => false,
+                'error_code' => $data['error_code'] ?? 'error1',
+                'message' => $data['message'] ?? 'Failed to update domain on server',
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'error_code' => 'server_error',
+                'message' => 'Error updating domain on server: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Extend trial period for a license
+     *
+     * @param string $licenseKey License key
+     * @return array|null Response from API
+     */
+    public function extendTrialPeriod(string $licenseKey): ?array
+    {
+        $apiBaseUrl = $this->getApiBaseUrl();
+        $url = $apiBaseUrl . 'ExtendTrial.php';
+
+        try {
+            $data = $this->composerApiClient->requestJsonArray($url, 'POST', [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
+                'body' => json_encode([
+                    'license' => $licenseKey,
+                ]),
+            ]);
+
+            // If API call was successful, update local database
+            if ($data && isset($data['status']) && $data['status'] && isset($data['expiration_date'])) {
+                try {
+                    $this->nsLicenseRepository->updateTrialExtended($licenseKey, (int)$data['expiration_date']);
+                } catch (\Exception $e) {
+                    // Log error but don't fail the request
+                    // The server database is already updated, local update is secondary
+                }
+            }
+
+            return $data;
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            return [
+                'status' => false,
+                'error_code' => 'server_error',
+                'message' => 'Server connection error: ' . $e->getMessage()
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'status' => false,
+                'error_code' => 'error',
+                'message' => 'Error extending trial: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Fetch data from API and update database
+     * Supports types: 'shop', 'services', 'extensions'
+     * @param string $type Type of data to fetch: 'shop', 'services', or 'extensions'
+     * @return array Response from API
+     */
+    public function fetchData(string $type = 'shop'): array
+    {
+        $apiBaseUrl = $this->getApiBaseUrl();
+
+        // Determine API endpoint and method based on type
+        if ($type === 'extensions') {
+            $extensions = [];
+            $availableExtensions = $this->packageManager->getAvailablePackages();
+            foreach ($availableExtensions as $package) {
+                $key = $package->getPackageKey();
+                if ($key === 'ns_license' || (!str_starts_with($key, 'ns_') && !str_starts_with($key, 'nitsan_'))) {
+                    continue;
+                }
+                $details = $this->nsLicenseRepository->fetchData($key);
+                if($details){
+                    $extensions[$key] = $details[0]['license_key'];
+                }else{
+                    $extensions[$key] ='';
+                }
+            }
+            
+            $allLicense = $this->nsLicenseRepository->fetchData();
+            if($allLicense){
+                foreach ($allLicense as $license) {
+                    if(!in_array($license['extension_key'], $extensions)){
+                        $extensions[$license['extension_key']] = $license['license_key'];
+                    }
+                }
+            }
+
+            $url = $apiBaseUrl . 'GetAccessLogs.php';
+            $method = 'POST';
+            // Get all license keys from repository
+            if (!$extensions) {
+                return [
+                    'status' => false,
+                    'message' => 'No license keys found. Add a license first to fetch extension logs.',
+                    'error_code' => 'no_license_keys'
+                ];
+            }
+            $options = [
+                'body' => json_encode([
+                    'extensions' => $extensions,
+                ]),
+                'headers' => [
+                    'Content-Type' => 'application/json'
+                ]
+            ];
+        } elseif ($type === 'shop') {
+            $url = $apiBaseUrl . 'GetShopAndServicesData.php?type=shop';
+            $method = 'GET';
+            $options = [];
+        } else {
+            $url = $apiBaseUrl . 'GetShopAndServicesData.php?type=services';
+            $method = 'GET';
+            $options = [];
+        }
+
+        try {
+            $data = $this->composerApiClient->requestJsonArray($url, $method, $options);
+            // If API call was successful, update database
+            if ($data) {
+                if ($type === 'extensions') {
+                    if (isset($data['logs']) && is_array($data['logs'])) {
+                        $this->saveSyncDataToDatabase('extensions', $data['logs']);
+                    }
+                    if (isset($data['details']) && is_array($data['details'])) {
+                        foreach ($data['details'] as $key => $licenseData) {
+                            if (!isset($licenseData['extension_download_url'])) {
+                                $licenseData['extension_download_url'] = [];
+                            }
+                            $licenseKey = trim((string)($licenseData['license_key'] ?? ''));
+                            if ($licenseKey !== '') {
+                                $licenseDataObj = json_decode(json_encode($licenseData));
+                                $this->nsLicenseRepository->updateData($licenseDataObj);
+                            } else {
+                                $licenseDataObj = json_decode(json_encode($licenseData));
+                                $this->nsLicenseRepository->insertNewData($licenseDataObj);
+                            }
+                        }
+                    }
+                } elseif ($type === 'shop') {
+                    if (isset($data['sections']) && is_array($data['sections'])) {
+                        $this->saveSyncDataToDatabase('shop', $data);
+                    }
+                } else {
+                    if (isset($data['categories']) && is_array($data['categories'])) {
+                        $this->saveSyncDataToDatabase('services', $data['categories']);
+                    }
+                }
+            }
+
+            return $data ?: ['status' => false, 'message' => 'No data received from API'];
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            return [
+                'status' => false,
+                'error_code' => 'server_error',
+                'message' => 'Server connection error: ' . $e->getMessage()
+            ];
+        } catch (\Throwable $e) {
+            debug($e);die();
+
+            return [
+                'status' => false,
+                'error_code' => 'error',
+                'message' => 'Error fetching data: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Save synchronized data to database
+     *
+     * @param string $type 'shop', 'services', or 'extensions'
+     * @param array $data Data to save
+     * @return bool
+     */
+    protected function saveSyncDataToDatabase(string $type, array $data): bool
+    {
+        try {
+            return $this->nsLicenseRepository->saveSyncData($type, $data);
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Get API base URL based on environment
+     *
+     * @return string
+     */
+    protected function getApiBaseUrl(): string
+    {
+        return 'https://composer.thebetaspace.com/API/';
+        // return 'https://composer.t3planet.cloud/API/';
     }
 
 }

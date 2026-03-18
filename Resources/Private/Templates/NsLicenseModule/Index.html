@@ -1,0 +1,50 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+     xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers" data-namespace-typo3-fluid="true">
+<f:layout name="Module" />
+
+<f:section name="Content">
+    <f:be.pageRenderer includeJavaScriptModules="{0:'@nitsan/ns-license/main.js', 1:'@nitsan/ns-license/filter.js',2:'@nitsan/ns-license/domains.js'}" />
+      <!-- Tab Content -->
+      <div class="tab-content" id="license-tab-content">
+        <!-- My Extensions Tab Pane -->
+        <div class="tab-pane fade show active" id="extensions-pane" role="tabpanel" aria-labelledby="my-extensions-tab">
+            <f:if condition="{extensions.premium} || {extensions.free}">
+                <f:then><f:render partial="Extensions" arguments="{_all}" /></f:then>
+                <f:else><p class="mt-3 text-muted"><f:translate key="fetchData.error.no_license_keys" /></p></f:else>
+            </f:if>
+        </div>
+
+        <!-- Shop Tab Pane -->
+        <div class="tab-pane fade" id="shop-pane" role="tabpanel" aria-labelledby="shop-tab" 
+             data-shop-url="{f:uri.action(action: 'getShopData', absolute: 1)}"
+             data-loading-label="{f:translate(key: 'license-loading.shop')}"
+             data-error-url-not-found="{f:translate(key: 'license-loading.error.shop-url-not-found')}"
+             data-error-failed="{f:translate(key: 'license-loading.error.shop-failed')}"
+             data-error-loading="{f:translate(key: 'license-loading.error.shop-error')}">
+            <div class="shop-loading-placeholder text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden"><f:translate key="license-loading.loading" /></span>
+                </div>
+                <p class="mt-3 text-muted"><f:translate key="license-loading.shop" /></p>
+            </div>
+            <div class="shop-content" style="display: none;"></div>
+        </div>
+
+        <!-- Services Tab Pane -->
+        <div class="tab-pane fade" id="services-pane" role="tabpanel" aria-labelledby="services-tab" 
+             data-services-url="{f:uri.action(action: 'getServicesData', absolute: 1)}"
+             data-loading-label="{f:translate(key: 'license-loading.services')}"
+             data-error-url-not-found="{f:translate(key: 'license-loading.error.services-url-not-found')}"
+             data-error-failed="{f:translate(key: 'license-loading.error.services-failed')}"
+             data-error-loading="{f:translate(key: 'license-loading.error.services-error')}">
+            <div class="services-loading-placeholder text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden"><f:translate key="license-loading.loading" /></span>
+                </div>
+                <p class="mt-3 text-muted"><f:translate key="license-loading.services" /></p>
+            </div>
+            <div class="services-content" style="display: none;"></div>
+        </div>
+    </div>
+</f:section>
+</html>

@@ -1,0 +1,67 @@
+<div class="search-section px-3">
+    <div class="search-section__input">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search absolute left-3 top-2.5 h-4 w-4 text-gray-400" aria-hidden="true"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+        <input type="text" id="servicesSearch" class="form-control search-input" placeholder="{f:translate(key: 'license-services.search-placeholder')}">
+    </div>
+    <select id="servicesCategoryFilter" class="search-section__select form-select w-auto" style="min-width: 220px;">
+        <option value="all" selected><f:translate key="license-services.filter-all-categories" /></option>
+        <f:for each="{servicesData.categories}" as="category">
+            <option value="{category.title}"><f:translate key="license-services.filter-{category.id}" default="{category.title}" /></option>
+        </f:for>
+    </select>
+    <button class="btn btn-primary refresh-data-button" data-type="services">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-rotate-cw h-4 w-4" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path></svg>
+        <f:translate key="license-extensions.get-updates" />
+    </button>
+</div>
+
+<div class="extension-section-wrapper">
+    <f:if condition="{servicesData.categories}">
+        <div class="card">
+            <f:for each="{servicesData.categories}" as="category">
+                <div class="service-category-section extension-section" id="{category.id}">
+                    <div class="card-header px-3">
+                        <div class="extension-section__header">
+                            <div class="extension-section__header-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-{category.icon} h-5 w-5" aria-hidden="true"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"></path></svg>
+                            </div>
+                            <div class="extension-section__header-content">
+                                <div class="extension-section__header-title">{category.title}</div>
+                                <div class="extension-section__header-description">{category.description}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body card-container px-3">
+                        <f:for each="{category.items}" as="item">
+                            <div class="card card-size-small extension-card-wrapper service-card-wrapper" data-name="{item.title}" data-category="{category.title}" data-description="{item.description}">
+                                <div class="card-header">
+                                    <div class="card-header__title">
+                                        <div class="card-header__title-content">
+                                            <h3 class="h4 mb-0"><b>{item.title}</b></h3>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <p>{item.description}</p>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="actions-wrapper align-items-center">
+                                        <f:if condition="{item.tx_mask_pricing_text}">
+                                            <span class="price-text">{item.tx_mask_pricing_text}</span>
+                                        </f:if>
+                                        <f:if condition="{item.slug}">
+                                            <a href="{item.slug}" class="btn btn-link" target="_blank" rel="noopener noreferrer">
+                                                <span>Learn More</span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link h-3.5 w-3.5 mr-1.5" aria-hidden="true"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
+                                            </a>
+                                        </f:if>
+                                    </div>
+                                </div>
+                            </div>
+                        </f:for>
+                    </div>
+                </div>
+            </f:for>
+        </div>
+    </f:if>
+</div>

@@ -12,6 +12,10 @@
   z-index: 9;
 }
 
+.ns-license-module-wrapper .container {
+  max-width: 1370px;
+}
+
 .ns-license-loader .t3js-icon {
   left: 50%;
   top: 50%;
@@ -30,12 +34,6 @@
   padding-right: 5px;
 }
 
-.custom-card,
-.ns-license-table-wrap,
-.card-container {
-  margin-bottom: 50px;
-}
-
 /* Ensure dialog backdrop is visible in TYPO3 v14 */
 .modal-open .modal-backdrop.show {
   background-color: rgba(0, 0, 0, 0.75);
@@ -44,12 +42,18 @@
   left: 0;
   width: 100vw;
   height: 100dvh;
-  z-index: 1050;
+  z-index: 1090;
 }
 
 .ns-license-modal.modal.show {
-  z-index: 1051;
+  z-index: 1091;
   border: 1px solid inherit !important;
+}
+
+.ns-license-modal.modal.show .t3js-modal-content.modal-content{
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - 40px);
 }
 
 .ns-license-modal.modal .modal-dialog {
@@ -77,4 +81,717 @@
 
 .ns-license-modal.modal.show {
   pointer-events: auto;
+}
+
+/* Edit domain modal: ensure content and form controls are clickable (stacked above domains modal) */
+#edit-domain-modal.modal .modal-dialog,
+#edit-domain-modal.modal .modal-content,
+#edit-domain-modal.modal .modal-body,
+#edit-domain-modal.modal form,
+#edit-domain-modal.modal input,
+#edit-domain-modal.modal button,
+#edit-domain-modal.modal .form-control {
+  pointer-events: auto;
+}
+
+/* Navigation Tabs */
+.ns-license-module .ns-license-nav-tabs {
+  background: light-dark(#fff, #333333);
+  border-radius: 3px;
+  border-right: 0;
+  display: flex;
+  gap: 5px;
+  margin-bottom: 20px;
+  padding: 8px;
+}
+
+.ns-license-module .ns-license-nav-tabs .nav-link {
+  align-items: center;
+  border: 1px solid light-dark(#e3e2e2, #4b4b4b);
+  display: flex;
+  gap: 6px;
+}
+
+.ns-license-module .ns-license-nav-tabs .nav-link:hover,
+.ns-license-modal .modal-body .modal-tabs .nav-link:hover {
+  background: light-dark(#f2f2f2, #181818);
+  text-decoration: none;
+}
+
+.ns-license-module .ns-license-nav-tabs .nav-link.active,
+.ns-license-modal .modal-body .modal-tabs .nav-link.active {
+  background: light-dark(oklch(0.97 0 0), #181818);
+  color: light-dark(rgb(23, 33, 53), #ffffff);
+}
+
+.ns-license-modal .modal-body .modal-tabs .nav-link.active:hover,
+.ns-license-module .ns-license-nav-tabs .nav-link.active:hover,
+.ns-license-modal .modal-body .modal-tabs .nav-link.active:hover {
+  background: light-dark(oklch(0.97 0 0), #181818);
+  color: light-dark(rgb(23, 33, 53), #ffffff);
+}
+
+.ns-license-module .meta-info,
+.ns-license-module .actions-wrapper,
+.ns-license-module .extension-card-wrapper .card .card-header,
+.ns-license-module .extension-card-wrapper .card .card-header__title,
+.ns-license-module .extension-card-wrapper.card .card-header,
+.ns-license-module .extension-card-wrapper.card .card-header__title {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ns-license-module .extension-card-wrapper .card-header__title-icon.extension-section__header-icon {
+  background: light-dark(#f5f5f5, #333333);
+}
+
+.ns-license-module .meta-info a.meta-item:hover,
+.ns-license-module .meta-info .meta-item a:hover,
+.ns-license-module .btn.btn-link:hover {
+  text-decoration: underline;
+}
+
+.ns-license-module .meta-info {
+  margin-bottom: 0;
+}
+
+.ns-license-module .actions-wrapper {
+  border-top: 1px solid light-dark(#e3e2e2, #4b4b4b);
+  margin-bottom: 0;
+  padding-top: 10px;
+}
+
+.ns-license-module #shop-pane .actions-wrapper {
+  justify-content: space-between;
+}
+
+.ns-license-module .actions-wrapper .btn-danger {
+  margin-left: auto;
+}
+
+.ns-license-module .meta-info .meta-item {
+  align-items: center;
+  display: flex;
+  gap: 5px;
+}
+
+.ns-license-module .meta-info .meta-item:last-child {
+  margin-left: auto;
+}
+
+.ns-license-module .meta-info .meta-item a {
+  align-items: center;
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+}
+
+.ns-license-module a:hover {
+  text-decoration: none;
+}
+
+.ns-license-module .extension-card-wrapper .card .card-header,
+.ns-license-module .extension-card-wrapper .card .card-header__title {
+  margin-bottom: 0;
+  justify-content: space-between;
+  border-bottom: none;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+}
+
+.ns-license-module #shop-pane .extension-section .extension-card-wrapper .btn {
+  width: 48%;
+}
+
+.ns-license-module .license-key-box {
+  border-radius: 4px;
+  border: 1px solid;
+  margin-bottom: 14px;
+  padding: 10px;
+}
+
+.ns-license-module .license-key-box__expire-days,
+.ns-license-module .license-key-box__ends-days {
+  padding: 10px;
+  margin-bottom: 14px;
+  border-radius: 4px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.ns-license-modal .auth-log-item {
+  border-radius: 4px;
+  border: 1px solid transparent;
+  padding: 12px;
+}
+
+.ns-license-modal .auth-log-item.badge-danger {
+  border-color: #bc3429;
+}
+
+.ns-license-modal .auth-log-item.badge-success {
+  border-color: #30ab5d;
+}
+
+.ns-license-modal .auth-log-item.badge-info {
+  border-color: #abdced;
+}
+
+.ns-license-modal .domains-list__item-content-text input {
+  min-width: 250px;
+}
+
+.ns-license-modal .auth-log-item__header {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.ns-license-modal .auth-log-item__header-content {
+  display: flex;
+  gap: 10px;
+}
+
+.ns-license-modal .auth-log-item__header-actions {
+  text-align: right;
+}
+
+.ns-license-modal .auth-log-item__header-actions .badge {
+  text-transform: uppercase;
+}
+
+.ns-license-module .license-key-box__header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.ns-license-module .extension-section .card-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.ns-license-module .extension-section__header {
+  display: flex;
+  gap: 8px;
+}
+
+.ns-license-module .extension-section__header-icon,
+.ns-license-module .domains-button-wrapper__content-icon,
+.ns-license-modal .modal-ext-icon {
+  background-color: light-dark(#fff, #333333);
+  border-radius: 4px;
+  height: 40px;
+  padding: 8px;
+  width: 40px;
+}
+
+.ns-license-module .card-header__title-icon.extension-section__header-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.ns-license-modal .modal-ext-icon .icon {
+  --icon-size: 22px;
+}
+
+.ns-license-module .card-header__title-icon.extension-section__header-icon {
+  width: 36px;
+  height: 36px;
+}
+
+.ns-license-module .extension-section__header-title,
+.ns-license-module .contact-cta__content-title h3,
+.ns-license-modal .modal-title h3 {
+  color: light-dark(#212121, #ffffff);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.ns-license-module .extension-section-wrapper .actions-wrapper,
+.ns-license-module #free-section .actions-wrapper {
+  justify-content: space-between;
+}
+
+.ns-license-module #free-section .extension-card-wrapper.card .card-header__title,
+.ns-license-module #shop-pane .extension-card-wrapper.card .card-header__title {
+  flex-wrap: nowrap;
+}
+
+.ns-license-module .card-header__title span {
+  font-size: 11px;
+}
+
+.ns-license-module .domains-button {
+  justify-content: space-between;
+  margin-bottom: 14px;
+  text-align: left;
+  width: 100%;
+  border-color: light-dark(#e3e2e2, #4b4b4b);
+}
+
+.ns-license-module .domains-button-wrapper__content {
+  display: flex;
+  gap: 8px;
+}
+
+.ns-license-module .domains-button-wrapper__content-text {
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  gap: 2px;
+}
+
+.ns-license-module .update-version-available {
+  align-items: center;
+  border-radius: 4px;
+  border: 1px solid oklch(0.924 0.12 95.746);
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 10px;
+}
+
+.ns-license-module .update-version-available svg {
+  stroke: oklch(0.555 0.163 48.998);
+}
+
+.ns-license-module .contact-cta {
+  padding: 14px;
+  margin-top: 40px;
+  margin-bottom: 30px;
+}
+
+.ns-license-module .contact-cta__content {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.ns-license-module .contact-cta__content-header {
+  display: flex;
+  gap: 10px;
+}
+
+.ns-license-module .contact-cta__content-icon {
+  align-items: center;
+  background-color: light-dark(#fff, #333333);
+  border-radius: 4px;
+  border: 1px solid light-dark(#bfbfbf, #4b4b4b);
+  display: flex;
+  height: 40px;
+  justify-content: center;
+  padding: 8px;
+  width: 40px;
+}
+
+.ns-license-module .search-section {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.ns-license-module .search-section .search-section__input {
+  position: relative;
+  width: 100%;
+}
+
+.ns-license-module .search-section .search-section__input svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+}
+
+.ns-license-module .search-section .search-section__input .search-input {
+  padding: 10px 10px 10px 32px;
+}
+
+.ns-license-module input,
+.ns-license-module  select {
+  border-color: light-dark(#e3e2e2, #4b4b4b);
+}
+
+
+.ns-license-module .search-section .search-section__select {
+  min-width: 200px;
+}
+
+.ns-license-module .search-section .refresh-data-button {
+  min-width: 130px;
+}
+
+.ns-license-modal .modal-title {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.ns-license-modal .modal-body .modal-tabs {
+  margin-bottom: 14px;
+  width: 100%;
+  gap: 10px;
+}
+
+.ns-license-modal .modal-body .modal-tabs .nav-item {
+  border-radius: 4px;
+  border: 1px solid light-dark(#bfbfbf, #4b4b4b);
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+.ns-license-modal .modal-body .modal-tabs .nav-link {
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  width: 100%;
+  padding: 8px 12px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.ns-license-modal .modal-body .domains-list--production-icon,
+.ns-license-modal .modal-body .domains-list--staging-icon,
+.ns-license-modal .modal-body .domains-list--local-icon {
+  border-radius: 4px;
+  border: 1px solid;
+  padding: 8px;
+}
+
+.ns-license-modal .modal-body .domains-list--production-icon svg,
+.ns-license-module .domains-button-wrapper .domains-button-wrapper__content-icon svg {
+  stroke: #30ab5d;
+}
+
+.ns-license-modal .modal-body .domains-list--staging-icon svg {
+  stroke: #ffc107;
+}
+
+.ns-license-modal .modal-body .domains-list--local-icon svg {
+  stroke: #6c757d;
+}
+
+.ns-license-modal .modal-body .domains-list--production-icon,
+.ns-license-modal .modal-body .domains-list--staging-icon,
+.ns-license-modal .modal-body .domains-list--local-icon {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ns-license-modal .domains-list .domains-list__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border: 1px solid light-dark(#bfbfbf, #4b4b4b);
+  border-radius: 4px;
+}
+
+.ns-license-modal .domains-list .domains-list__item-content,
+.ns-license-modal .domains-list .domains-list__item-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.ns-license-modal .domains-list .domains-list__item-actions {
+  gap: 5px;
+}
+
+.ns-license-modal .domains-list .domains-list__item-content-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.ns-license-modal .domains-list .domains-list__item-content-text .domains-list--active-icon {
+  position: relative;
+  padding-left: 10px;
+}
+
+.ns-license-modal .domains-list .domains-list__item-content-text .domains-list--active-icon:before {
+  content: '';
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  background-color: var(--bs-success);
+  border-radius: 50%;
+}
+
+.ns-license-modal .domains-list__item .domains-list__item-action-delete,
+.ns-license-modal .domains-list__item .domains-list__item-action-edit {
+  border: 1px solid transparent;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.ns-license-modal .domains-list__item .domains-list__item-action-delete {
+  color: var(--bs-danger);
+  box-shadow: none;
+}
+
+.ns-license-modal .domains-list__item .domains-list__item-action-delete:hover {
+  border-color: var(--bs-danger);
+}
+
+.ns-license-modal .domains-list__item .domains-list__item-action-edit {
+  color: var(--bs-success);
+  box-shadow: none;
+}
+
+.ns-license-modal .domains-list__item .domains-list__item-action-edit:hover {
+  border-color: var(--bs-success);
+}
+
+.ns-license-module .actions-wrapper .license-reactivation-latest{
+  margin-left: initial;
+}
+
+.ns-license-module .card {
+  border: none;
+  box-shadow: none;
+  background: none;
+}
+
+.ns-license-module .card.custom-card,
+.ns-license-module .license-activation .card,
+.ns-license-module .extension-section .card {
+  background: light-dark(#fbfbfb, #181818);
+  border-radius: 4px;
+  border: 1px solid light-dark(#e3e2e2, #4b4b4b);
+}
+
+.ns-license-module .install-steps {
+  hyphens: auto;
+  word-break: break-word;
+}
+
+.ns-license-module #premium-section .extension-card-wrapper.extension-active .extension-section__header-icon,
+.ns-license-module #premium-section .extension-card-wrapper.extension-expired .extension-section__header-icon,
+.ns-license-module #premium-section .extension-card-wrapper.extension-trial .extension-section__header-icon {
+  width: 36px;
+  height: 36px;
+}
+
+.ns-license-module #premium-section .extension-card-wrapper.extension-active .extension-section__header-icon svg,
+.ns-license-module #premium-section .extension-card-wrapper.extension-active .extension-section__header-icon img,
+.ns-license-module #premium-section .extension-card-wrapper.extension-expired .extension-section__header-icon svg,
+.ns-license-module #premium-section .extension-card-wrapper.extension-expired .extension-section__header-icon img,
+.ns-license-module #premium-section .extension-card-wrapper.extension-trial .extension-section__header-icon img,
+.ns-license-module #premium-section .extension-card-wrapper.extension-trial .extension-section__header-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+
+.ns-license-module #premium-section .extension-section__header .extension-section__header-icon {
+  background: linear-gradient(to right bottom, rgb(0, 188, 125) 0%, oklch(0.704 0.14 182.503) 100%);
+  color: #fff;
+}
+
+.ns-license-module #premium-section .extension-card-wrapper.extension-active .extension-section__header-icon {
+  background: oklch(0.95 0.052 163.051);
+  color: oklch(0.596 0.145 163.225);
+}
+
+.ns-license-module #premium-section .extension-card-wrapper.extension-expired .extension-section__header-icon {
+  background: oklch(0.936 0.032 17.717);
+  color: oklch(0.637 0.237 25.331);
+}
+
+.ns-license-module #premium-section .extension-card-wrapper.extension-trial .extension-section__header-icon {
+  background: oklch(0.932 0.032 255.585);
+  color: oklch(0.546 0.245 262.881);
+}
+
+.ns-license-module .badge {
+  padding: 4px 10px;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.ns-license-module .badge.badge-info,
+.ns-license-module .alert-info {
+  background: light-dark(oklch(0.97 0.014 254.604), #333333);
+  border-color: light-dark(oklch(0.932 0.032 255.585), #4b4b4b);
+}
+
+.ns-license-module .btn.btn-primary,
+.ns-license-modal .btn.btn-primary {
+  background: oklch(0.932 0.032 255.585);
+  border-color: oklch(0.882 0.059 254.128);
+  color: oklch(0.488 0.243 264.376);
+}
+
+.ns-license-modal .modal-body .domains-list--local-icon,
+.ns-license-module .license-key-box,
+.ns-license-module .btn.btn-default,
+.ns-license-modal .license-key-box,
+.ns-license-modal .btn.btn-default {
+  background: light-dark(oklch(0.967 0.003 264.542), #333333);
+  border-color: light-dark(rgb(229, 231, 235), #4b4b4b);
+} 
+
+.ns-license-module .license-key-box__ends-days,
+.t3js-modal .btn.btn-success,
+.ns-license-modal .modal-body .domains-list--production-icon,
+.ns-license-module .domains-button-wrapper .domains-button-wrapper__content-icon,
+.ns-license-module .badge.badge-success,
+.ns-license-module .btn.btn-success,
+.ns-license-modal .badge.badge-success,
+.ns-license-modal .btn.btn-success,
+.ns-license-module .domains-button-wrapper .domains-button-wrapper__content-icon {
+  background-color: oklch(0.979 0.021 166.113);
+  color: oklch(0.596 0.145 163.225);
+  border-color: oklch(0.905 0.093 164.15);
+}
+
+.btn.btn-danger.t3js-active {
+  background: oklch(0.971 0.013 17.38);
+  color: oklch(0.577 0.245 27.325);
+  border-color: oklch(0.885 0.062 18.334);
+}
+
+.ns-license-module .badge.badge-danger,
+.ns-license-module .btn.btn-danger,
+.ns-license-modal .badge.badge-danger,
+.ns-license-modal .btn.btn-danger,
+.ns-license-module .license-key-box__expire-days {
+  background-color: oklch(0.971 0.013 17.38);
+  color: oklch(0.577 0.245 27.325);
+  border-color: oklch(0.885 0.062 18.334);
+}
+
+.ns-license-module .btn.btn-default:hover,
+.ns-license-modal .btn.btn-default:hover,
+.ns-license-module .btn.btn-danger:hover,
+.t3js-modal .btn.btn-success:hover,
+.ns-license-modal .btn.btn-danger:hover,
+.ns-license-module .btn.btn-success:hover,
+.ns-license-modal .btn.btn-success:hover,
+.ns-license-module .btn.btn-primary:hover,
+.ns-license-modal .btn.btn-primary:hover,
+.ns-license-module .btn.btn.btn-warning:hover,
+.ns-license-modal .btn.btn.btn-warning:hover {
+  background-color: transparent;
+}
+
+.ns-license-modal .modal-body .domains-list--staging-icon,
+.ns-license-module .btn.btn-warning,
+.ns-license-modal .btn.btn-warning,
+.ns-license-module .badge.badge-warning,
+.ns-license-modal .badge.badge-warning,
+.ns-license-module .update-version-available {
+  background-color: oklch(0.987 0.022 95.277);
+  color: oklch(0.555 0.163 48.998);
+  border-color: oklch(0.924 0.12 95.746);
+}
+
+
+.ns-license-module .license-key-box__expire-days {
+  border: 1px solid oklch(0.885 0.062 18.334);
+}
+
+.ns-license-modal .modal-body {
+  background: light-dark(#fff, #333333);
+}
+
+.ns-license-module p,
+.ns-license-modal p,
+.ns-license-modal a,
+.ns-license-module a,
+.footer-links a {
+  color: light-dark(oklch(0.446 0.03 256.802), oklch(0.85 0.02 256));
+}
+
+.ns-license-module .meta-item.meta-item--price {
+  font-size: 16px;
+}
+
+.ns-license-module .price-text {
+  font-size: 14px;
+}
+
+.t3js-module-footer {
+  border-top: 1px solid light-dark(#e3e2e2, #4b4b4b);
+}
+
+.t3js-module-footer .footer-links li {
+  position: relative;
+}
+
+.t3js-module-footer .footer-links li:not(:first-child):before {
+  content: '';
+  display: block;
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 60%;
+  background-color: light-dark(#4b4b4b, #e3e2e2);
+}
+
+.ns-license-module .domains-button:hover {
+  background: transparent;
+}
+
+.modal.fade.t3js-modal.modal-type-template.modal-severity-success,
+.modal.fade.t3js-modal.modal-type-default.modal-severity-danger {
+  left: 150px;
+}
+
+.ns-license-module-wrapper {
+  background: light-dark(#f5f5f5, #181818);
+}
+
+/* Help widget: fixed bottom-right button + dropdown */
+.ns-license-module-wrapper .ns-license-help-widget {
+  position: fixed;
+  bottom: 50px;
+  right: 30px;
+  z-index: 1050;
+}
+
+.ns-license-module-wrapper .ns-license-help-widget__trigger {
+  width: 56px;
+  height: 56px;
+  transition: all 0.3s ease;
+}
+
+.ns-license-module-wrapper .ns-license-help-widget__trigger:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+.ns-license-module-wrapper .ns-license-help-widget__popover {
+  min-width: 250px;
+  margin-bottom: 0.5rem;
+  border-radius: 0.75rem;
+  background: light-dark(#fff, #2d2d2d);
+  border-color: light-dark(#e5e7eb, #404040);
+}
+.ns-license-module-wrapper .ns-license-help-widget .dropdown-item:hover {
+  background: light-dark(#f3f4f6, #374151);
+}
+
+.ns-license-module-wrapper .typo3-messages .alert {
+  margin-left: 16px;
+  margin-right: 16px;
 }

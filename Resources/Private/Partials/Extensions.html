@@ -1,0 +1,25 @@
+<!-- Search and Filter -->
+<div class="search-section px-3">
+    <div class="search-section__input">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search absolute left-3 top-2.5 h-4 w-4 text-gray-400" aria-hidden="true"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+        <input type="text" id="extSearch" class="form-control search-input" placeholder="{f:translate(key: 'license-extensions.search-placeholder')}">
+    </div>
+    <select id="extFilter" class="search-section__select form-select w-auto">
+        <option value="all" selected><f:translate key="license-extensions.filter-all" /></option>
+        <option value="premium"><f:translate key="license-extensions.filter-premium" /></option>
+        <option value="trial"><f:translate key="license-extensions.filter-trial" /></option>
+        <option value="free"><f:translate key="license-extensions.filter-free" /></option>  
+    </select>
+    <button class="btn btn-primary refresh-data-button" data-type="extensions">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-rotate-cw h-4 w-4" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path></svg>
+        <f:translate key="license-extensions.get-updates" />
+    </button>
+</div>
+<div class="card-container">
+    <div class="card w-100">
+        <!-- Premium Extensions Section -->
+        <f:render partial="PremiumExtension" arguments="{extensions:extensions.premium,composer:showUpdateButton}" />
+        <!-- Free Extensions Section -->
+        <f:render partial="FreeExtension" arguments="{extensions:extensions.free}"  />
+    </div>
+</div>

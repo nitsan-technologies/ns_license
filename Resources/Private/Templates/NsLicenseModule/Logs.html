@@ -1,0 +1,59 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+     xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers" data-namespace-typo3-fluid="true">
+<f:if condition="{logs}">
+    <f:for each="{logs}" as="log">
+        <f:switch expression="{log.access_type}">
+            <f:case value="domain_removed">
+                <f:variable name="badgeClass">badge-danger</f:variable>
+            </f:case>
+            <f:case value="domain_limit_reached">
+                <f:variable name="badgeClass">badge-danger</f:variable>
+            </f:case>
+            <f:case value="domain_added">
+                <f:variable name="badgeClass">badge-success</f:variable>
+            </f:case>
+            <f:case value="domain_updated">
+                <f:variable name="badgeClass">badge-info</f:variable>
+            </f:case>
+            <f:defaultCase>
+                <f:variable name="badgeClass">badge-danger</f:variable>
+            </f:defaultCase>
+        </f:switch>
+        <div class="auth-log-item {badgeClass}">
+            <div class="auth-log-item__header">
+                <div class="auth-log-item__header-content">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-alert h-4 w-4 text-red-500" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="M12 8v4"></path><path d="M12 16h.01"></path></svg>
+                    <div class="auth-log-item__header-content-text">
+                        <span>EXT: <f:if condition="{log.extension_key}"><f:then>{log.extension_key}</f:then><f:else>N/A</f:else></f:if></span>
+                        <p class="text-sm mb-1"><f:if condition="{log.domain}"><f:then>{log.domain}</f:then><f:else>N/A</f:else></f:if></p>
+                            <p class="text-xs mb-0">
+                                <f:if condition="{log.message}">
+                                {log.message}
+                                </f:if>
+                            </p>
+                    </div>
+                </div>
+                <div class="auth-log-item__header-actions">
+                    <span class="badge {badgeClass} rounded-pill d-block mb-2">
+                        <f:if condition="{log.access_type}">
+                            <f:then>{log.access_type}</f:then>
+                            <f:else>Error</f:else>
+                        </f:if>
+                    </span>
+                    <span>
+                        <f:if condition="{log.access_date}">
+                            <f:then>
+                                <f:format.date format="d.m.Y ">{log.access_date}</f:format.date>
+                            </f:then>
+                            <f:else>N/A</f:else>
+                        </f:if>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </f:for>
+</f:if>
+<f:if condition="{logs -> f:count()} == 0">
+    <div class="p-4 text-center text-gray-500">No auth logs found.</div>
+</f:if>
+</html>

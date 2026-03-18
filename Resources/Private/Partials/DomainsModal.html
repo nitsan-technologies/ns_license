@@ -1,0 +1,129 @@
+<div id="domains-modal" class="t3js-modal  modal fade modal-type-default modal-severity-default modal-style-default ns-license-modal modal-size-large position-fixed top-50 start-50 translate-middle right-0 left-0 p-0 border-0" tabindex="-1" data-bs-keyboard="true">
+    <div class="modal-dialog">
+        <div class="t3js-modal-content modal-content">
+            <div class="modal-header">
+                <h4 class="t3js-modal-title modal-title">
+                    <div class="modal-ext-icon">
+                        <core:icon identifier="actions-brand-typo3" size="small" />
+                    </div>
+                    <div class="modal-ext-name-content">
+                        <h3 class="modal-ext-name mb-0"><b></b></h3>
+                        <span><f:translate key="license-domains.modal.title" extensionName="ns_license" /></span>
+                    </div>
+                </h4>
+                <button class="t3js-modal-close close bg-transparent border-0" data-bs-dismiss="modal">
+                    <span aria-hidden="true">
+                        <span class="t3js-icon icon icon-size-small icon-state-default icon-actions-close" data-identifier="actions-close">
+                            <span class="icon-markup">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M11.9 5.5L9.4 8l2.5 2.5c.2.2.2.5 0 .7l-.7.7c-.2.2-.5.2-.7 0L8 9.4l-2.5 2.5c-.2.2-.5.2-.7 0l-.7-.7c-.2-.2-.2-.5 0-.7L6.6 8 4.1 5.5c-.2-.2-.2-.5 0-.7l.7-.7c.2-.2.5-.2.7 0L8 6.6l2.5-2.5c.2-.2.5-.2.7 0l.7.7c.2.2.2.5 0 .7z" class="icon-color"></path>
+                                </svg>
+                            </span>
+                        </span>
+                    </span>
+                    <span class="sr-only"></span>
+                </button>
+            </div>
+            <div class="t3js-modal-body modal-body">
+                <!-- Tabs -->
+                <ul class="nav nav-tab modal-tabs" id="domainTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="domains-tab" data-bs-toggle="tab" data-bs-target="#domains-tab-pane" type="button" role="tab">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+                            <f:translate key="license-domains.tab.domains" extensionName="ns_license" />
+                            <span class="badge badge-default rounded-pill" data-badge="0">0</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="auth-tab" data-bs-toggle="tab" data-bs-target="#auth-tab-pane" type="button" role="tab">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-alert h-4 w-4" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="M12 8v4"></path><path d="M12 16h.01"></path></svg>
+                            <f:translate key="license-domains.tab.auth_logs" extensionName="ns_license" />
+                            <span class="badge badge-danger rounded-pill" data-badge="0">0</span>
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="domainTabsContent">
+                    <!-- Domains Tab Pane -->
+                    <div class="tab-pane fade show active" id="domains-tab-pane" role="tabpanel">
+                        <!-- Search and Filter -->
+                        <div class="d-flex gap-2 mb-3">
+                            <div class="flex-grow-1 position-relative">
+                                <i data-lucide="search" class="search-icon"></i>
+                                <input type="text" id="domains-search-input" class="form-control search-input h-100" 
+                                    placeholder="{f:translate(key: 'license-domains.search_placeholder', extensionName: 'ns_license')}" required>
+                            </div>
+                            <select id="domains-environment-filter" class="form-select w-auto" style="min-width: 160px;">
+                                <option value="all"><f:translate key="license-domains.filter.environment.all" extensionName="ns_license" /></option>
+                                <option value="production"><f:translate key="license-domains.filter.environment.production" extensionName="ns_license" /></option>
+                                <option value="staging"><f:translate key="license-domains.filter.environment.staging" extensionName="ns_license" /></option>
+                                <option value="local"><f:translate key="license-domains.filter.environment.local" extensionName="ns_license" /></option>
+                            </select>
+                            <button type="button" class="btn btn-success t3js-add-domain-modal-trigger"
+                                    data-add-domain-title="{f:translate(key: 'license-domains.add_modal.title', extensionName: 'ns_license')}"
+                                    data-add-domain-cancel="{f:translate(key: 'license-activation.update_extension_btn_cancel', extensionName: 'ns_license')}"
+                                    data-add-domain-submit="{f:translate(key: 'license-domains.button.add_domain', extensionName: 'ns_license')}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus h-4 w-4 mr-2" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+                                 <f:translate key="license-domains.button.add_domain" extensionName="ns_license" />
+                            </button>
+                        </div>
+
+                        <!-- Domains Grid -->
+                        <div class="row g-3 domains-list">
+                            <!-- Domains will be populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Auth Logs Tab Pane -->
+                    <div class="tab-pane fade" id="auth-tab-pane" role="tabpanel">
+                        <!-- Search and Filter -->
+                        <div class="d-flex gap-2 mb-3">
+                            <div class="flex-grow-1 position-relative">
+                                <i data-lucide="search" class="search-icon"></i>
+                                <input type="text" class="form-control search-input" placeholder="{f:translate(key: 'license-auth-logs.search_placeholder', extensionName: 'ns_license')}">
+                            </div>
+                        </div>
+
+                        <!-- Logs List -->
+                        <div class="d-flex flex-column gap-3 auth-logs-list">
+                            <!-- Auth logs will be populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="t3js-modal-footer modal-footer">
+                <button class="btn btn-gray t3js-active btn-default" data-bs-dismiss="modal">
+                    <span><f:translate key="license-activation.update_extension_btn_cancel" extensionName="ns_license"/></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Domain form template for TYPO3 Modal.advanced (opens on top of Domains modal) -->
+<div id="add-domain-modal-template" style="display:none" aria-hidden="true">
+    <form id="add-domain-form" class="js-add-domain-form">
+        <input type="hidden" id="add-domain-ext-key" value="">
+        <div class="mb-3">
+            <label class="form-label text-xs">
+                <f:translate key="license-domains.add_modal.field.domain.label" extensionName="ns_license" />
+            </label>
+            <input type="text" id="add-domain-input" class="form-control" placeholder="{f:translate(key: 'license-domains.add_modal.field.domain.placeholder', extensionName: 'ns_license')}" required>
+            <small class="form-text text-muted">
+                <f:translate key="license-domains.add_modal.field.domain.help" extensionName="ns_license" />
+            </small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label text-xs">
+                <f:translate key="license-domains.add_modal.field.environment.label" extensionName="ns_license" />
+            </label>
+            <select id="add-domain-environment" class="form-select" required>
+                <option value="">{f:translate(key: 'license-domains.add_modal.field.environment.placeholder', extensionName: 'ns_license')}</option>
+                <option value="production"><f:translate key="license-domains.filter.environment.production" extensionName="ns_license" /></option>
+                <option value="staging"><f:translate key="license-domains.filter.environment.staging" extensionName="ns_license" /></option>
+                <option value="local"><f:translate key="license-domains.filter.environment.local" extensionName="ns_license" /></option>
+            </select>
+        </div>
+    </form>
+</div>
+

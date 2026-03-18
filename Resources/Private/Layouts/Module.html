@@ -1,0 +1,139 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+ xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers" data-namespace-typo3-fluid="true">
+    <div class="module {moduleClass} ns-license-module-wrapper" data-module-id="{moduleId}" data-module-name="{moduleName}">
+    
+        <f:render partial="DocHeader" arguments="{docHeader:docHeader}" />
+        <div class="module-body t3js-module-body ns-license-module p-0 ">
+            <div class="container">
+    
+                <!-- License loader overlay (shown on form submit / reload) -->
+                <div id="nsLicenseLoader" class="ns-license-loader" style="display: none;" aria-hidden="true">
+                    <div class="t3js-icon">
+                        <div class="spinner-border text-light" role="status" style="width: 3rem; height: 3rem;">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- My Extensions Section -->
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card custom-card mt-4 mx-3">
+                            <div class="card-header">
+                                <h5>
+                                    <f:if condition="{showUpdateButton}">
+                                        <f:then><f:translate key="license-activation.btn-activate-composer" extensionName="ns_license" /></f:then>
+                                        <f:else><f:translate key="license-activation.btn-activate" extensionName="ns_license" /></f:else>
+                                    </f:if>
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="ns-license-activation-form">
+                                    <f:form action="activation" class="ns-license-form ns-ext-form">
+                                        <div class="form-group d-flex gap-3">
+                                            <f:form.textfield
+                                                name="license"
+                                                class="form-control"
+                                                id="license"
+                                                required="required"
+                                                placeholder="{f:translate(key: 'license-activation.licensepLaceholder')}"
+                                            />
+                                            <f:variable name="activateButtonLabel"><f:if condition="{showUpdateButton}"><f:then><f:translate key="license-activation.btn-activate-composer" extensionName="ns_license" /></f:then><f:else><f:translate key="license-activation.btn-activate" extensionName="ns_license" /></f:else></f:if></f:variable>
+                                            <f:form.submit class="btn btn-primary" value="{activateButtonLabel}" />
+                                        </div>
+                                        <div class="mb-3 form-check form-check-type-toggle">
+                                            <f:form.checkbox id="overwrite" name="overwrite" value="1" class="form-check-input mt-0" />
+                                            <label class="customform-check-label form-check-label" for="overwrite"><f:translate key="license-activation.overwriteExtension" />?</label>
+                                        </div>
+                                    </f:form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <f:flashMessages />
+                <!-- Navigation Tabs -->
+                <ul class="nav nav-pills ns-license-nav-tabs mx-3" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="my-extensions-tab" data-bs-toggle="tab" data-bs-target="#extensions-pane" type="button" role="tab" aria-controls="extensions-pane" aria-selected="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-package" aria-hidden="true"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"></path><path d="M12 22V12"></path><polyline points="3.29 7 12 12 20.71 7"></polyline><path d="m7.5 4.27 9 5.15"></path></svg>
+                            <f:translate key="license-tabs.my-extensions" />
+                            <f:variable name="premiumCount">{extensions.premium -> f:count()}</f:variable>
+                            <f:variable name="freeCount">{extensions.free -> f:count()}</f:variable>
+                            <span class="badge badge-default rounded-pill ms-2">{premiumCount + freeCount}</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link t3js-shop-tab" id="shop-tab" data-bs-toggle="tab" data-bs-target="#shop-pane" data-shop-url="{f:uri.action(action: 'getShopData', absolute: 1)}" type="button" role="tab" aria-controls="shop-pane" aria-selected="false">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-bag" aria-hidden="true"><path d="M16 10a4 4 0 0 1-8 0"></path><path d="M3.103 6.034h17.794"></path><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"></path></svg>
+                            <f:translate key="license-tabs.shop" />
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link t3js-services-tab" id="services-tab" data-bs-toggle="tab" data-bs-target="#services-pane" data-services-url="{f:uri.action(action: 'getServicesData', absolute: 1)}" type="button" role="tab" aria-controls="services-pane" aria-selected="false">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wrench" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z"></path></svg>
+                            <f:translate key="license-tabs.services" />
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" href="https://t3planet.de/en/typo3-saas" target="_blank">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-rocket" aria-hidden="true"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"></path><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"></path></svg>
+                            <f:translate key="license-tabs.website-builder" />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link text-gray-400" aria-hidden="true"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
+                        </a>
+                    </li>
+                </ul>
+                
+                <f:render section="Content" arguments="{_all}" optional="true" />
+            </div>
+        </div>
+        <div class="module-footer t3js-module-footer p-4 py-3">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="footer-description">
+                        <p>© 2026 TYPO3 License Manager. All rights reserved.</p>
+                    </div>
+                    <ul class="btn-group footer-links list-unstyled mb-0 gap-3">
+                        <li>
+                            <a class="btn btn-link" href="https://t3planet.de/en/privacy-policy" target="_blank">Privacy Policy</a>
+                        </li>
+                        <li>
+                            <a class="btn btn-link" href="https://t3planet.de/en/terms" target="_blank">Terms of Service</a>
+                        </li>
+                        <li>
+                            <a class="btn btn-link" href="https://t3planet.de/en/contact" target="_blank">Contact</a>
+                        </li>
+                        <li>
+                            <a class="btn btn-link" href="https://docs.t3planet.de/en/latest/License/Index.html" target="_blank">Documentation</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <f:render partial="DeactivationModal" arguments="{_all}" optional="true" />
+        <f:render partial="ActivationModal" arguments="{_all}" optional="true" />
+        <f:render partial="DomainsModal" arguments="{_all}" optional="true" />
+        <!-- Help widget: fixed bottom-right -->
+        <div class="ns-license-help-widget dropdown">
+            <button type="button" class="ns-license-help-widget__trigger btn btn-primary rounded-circle p-0 shadow" aria-label="Need help?" aria-expanded="false" aria-haspopup="true" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"></path></svg>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end ns-license-help-widget__popover shadow-lg border p-0">
+                <div class="p-3 border-bottom">
+                    <h4 class="h6 mb-1 fw-bold">Need Help?</h4>
+                    <p class="small text-muted mb-0">Our support team is here to assist you</p>
+                </div>
+                <div class="p-2">
+                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="https://docs.t3planet.de/en/latest/License/Index.html" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg>
+                        Knowledge Base
+                    </a>
+                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="https://t3planet.de/en/contact" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"></path><rect x="2" y="4" width="20" height="16" rx="2"></rect></svg>
+                        Email Support
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</html>
