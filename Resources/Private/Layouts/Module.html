@@ -39,7 +39,7 @@
                                                 placeholder="{f:translate(key: 'license-activation.licensepLaceholder')}"
                                             />
                                             <f:variable name="activateButtonLabel"><f:if condition="{showUpdateButton}"><f:then><f:translate key="license-activation.btn-activate-composer" extensionName="ns_license" /></f:then><f:else><f:translate key="license-activation.btn-activate" extensionName="ns_license" /></f:else></f:if></f:variable>
-                                            <f:form.submit class="btn btn-primary" value="{activateButtonLabel}" />
+                                            <f:form.submit name="submit" class="btn btn-primary" value="{activateButtonLabel}" />
                                         </div>
                                         <div class="mb-3 form-check form-check-type-toggle">
                                             <f:form.checkbox id="overwrite" name="overwrite" value="1" class="form-check-input mt-0" />

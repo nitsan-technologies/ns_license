@@ -40,7 +40,6 @@
                         </div>
                         <div class="extension-section__header-content">
                             <div class="extension-section__header-title">{section.title}</div>
-                            <div class="extension-section__header-description">{section.description}</div>
                         </div>
                     </div>
                     <div class="extension-section__header-status">
@@ -92,7 +91,7 @@
                                     <div class="card-header__title-content">
                                         <h3 class="h4 mb-0"><b>{item.name}</b></h3>
                                         <f:if condition="{item.extensionKey}">
-                                            <span>{item.extensionKey} • {item.version}</span>
+                                            <span>{item.extensionKey}</span>
                                         </f:if>
                                     </div>
                                 </div>
@@ -110,11 +109,6 @@
                                         <div class="meta-item">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download h-3.5 w-3.5" aria-hidden="true"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></svg>
                                             <span>{item.downloads}</span>
-                                        </div>
-                                    </f:if>
-                                    <f:if condition="{item.price}">
-                                        <div class="meta-item meta-item--price">
-                                            <span>{item.price}</span>
                                         </div>
                                     </f:if>
                                 </div>
