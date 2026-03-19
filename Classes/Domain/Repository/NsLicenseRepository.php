@@ -137,7 +137,7 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
             ->where(
                 $queryBuilder->expr()->eq('extension_key', $queryBuilder->createNamedParameter($data->extension_key)),
             )
-            ->set('name', $data->name ?? '') 
+            ->set('name', $data->name ?? '')
             ->set('email', $data->email ?? '')
             ->set('order_id', $data->order_id ?? '')
             ->set('license_key', $data->license_key ?? '')
@@ -482,6 +482,25 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
             ->set('expiration_date', $expirationDate)
             ->executeStatement();
         
+        return true;
+    }
+
+    /**
+     * Mark license as expired by prefixing order_id with EXPIRED_.
+     */
+    public function markExpired(string $licenseKey, string $extensionKey, string $newOrderId): bool
+    {
+        $queryBuilder = $this->getQueryBuilder('ns_product_license');
+        $queryBuilder
+            ->update('ns_product_license')
+            ->where(
+                $queryBuilder->expr()->and(
+                    $queryBuilder->expr()->eq('license_key', $queryBuilder->createNamedParameter($licenseKey)),
+                    $queryBuilder->expr()->eq('extension_key', $queryBuilder->createNamedParameter($extensionKey)),
+                ),
+            )
+            ->set('order_id', $newOrderId)
+            ->executeStatement();
         return true;
     }
 

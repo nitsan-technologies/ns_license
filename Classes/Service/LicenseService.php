@@ -70,7 +70,8 @@ final class LicenseService
                             return true;
                         }
                         if (isset($licenseData['expiration_date']) && (int)$licenseData['expiration_date'] <= time()) {
-                            $this->updateFiles($extFolder, $extKey);
+                            $this->nsLicenseRepository->markExpired($extData[0]['license_key'],$extKey,'EXPIRED_'.$extData[0]['order_id']);
+                            $this->updateFiles($extFolder);
                             return false;
                         }
                         if (!empty($licenseData['status'])) {
@@ -79,12 +80,13 @@ final class LicenseService
                             return true;
                         }
                         if (isset($licenseData['status']) && !$licenseData['status']) {
-                            $this->updateFiles($extFolder, $extKey);
+                            $this->nsLicenseRepository->markExpired($extData[0]['license_key'],$extKey,$extData[0]['order_id'].'EXPIRED_');
+                            $this->updateFiles($extFolder);
                             return false;
                         }
                     }
                 } else {
-                    $this->updateFiles($extFolder, $extKey);
+                    $this->updateFiles($extFolder);
                     return false;
                 }
             }
@@ -93,7 +95,7 @@ final class LicenseService
     }
 
  
-    public function updateFiles($extFolder, $extension)
+    public function updateFiles($extFolder)
     {
         if (is_dir($extFolder . 'Configuration/Backend') && file_exists($extFolder . 'Configuration/Backend/Modules.php')) {
             rename($extFolder . 'Configuration/Backend/Modules.php', $extFolder . 'Configuration/Backend/Modules..php');
@@ -118,44 +120,6 @@ final class LicenseService
                     }
                 }
             }
-        }
-
-        try {
-            $this->unloadExtension($extension);
-        } catch (\Exception $e) {
-            $message = GeneralUtility::makeInstance(
-                FlashMessage::class,
-                $e->getMessage(),
-                $extension,
-                ContextualFeedbackSeverity::ERROR,
-            );
-            $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
-            $messageQueue = $flashMessageService->getMessageQueueByIdentifier();
-            $messageQueue->addMessage($message);
-        }
-    }
-
-    /**
-     * Wrapper function for unloading extensions.
-     *
-     * @param string $extensionKey
-     */
-    protected function unloadExtension($extensionKey)
-    {
-        try {
-            ExtensionManagementUtility::unloadExtension($extensionKey);
-            GeneralUtility::makeInstance(ClearCacheService::class)->clearAll();
-            GeneralUtility::makeInstance(OpcodeCacheService::class)->clearAllActive();
-        } catch (\Exception $e) {
-            $message = GeneralUtility::makeInstance(
-                FlashMessage::class,
-                $e->getMessage(),
-                $extensionKey,
-                ContextualFeedbackSeverity::ERROR,
-            );
-            $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
-            $messageQueue = $flashMessageService->getMessageQueueByIdentifier();
-            $messageQueue->addMessage($message);
         }
     }
 

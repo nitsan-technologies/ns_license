@@ -210,7 +210,7 @@ class NsLicenseModuleController extends ActionController
         $this->licenseService->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['extension']['license_key'] . '&deactivate=1');
         $this->nsLicenseRepository->deactivate($params['extension']['license_key'], $params['extension']['extension_key']);
         $extFolder = $this->extensionListService->getExtensionFolder($params['extension']['extension_key']);
-        $this->licenseService->updateFiles($extFolder, $params['extension']['extension_key']);
+        $this->licenseService->updateFiles($extFolder);
         $this->addFlashMessage(LocalizationUtility::translate('license-activation.deactivation', 'NsLicense'), 'EXT:' . $params['extension']['extension_key'], ContextualFeedbackSeverity::OK);
         return $this->redirect('list');
     }
