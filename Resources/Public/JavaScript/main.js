@@ -56,15 +56,6 @@ document.addEventListener('click', (e) => {
   if (loader) loader.style.display = '';
 });
 
-// Extend Trial (t3js-modal-trigger with data-href): show loader when button is clicked (modal opens on top; loader visible until redirect)
-document.addEventListener('click', (e) => {
-  const trigger = e.target.closest('.t3js-modal-trigger[data-href]');
-  if (!trigger) return;
-  const href = trigger.getAttribute('data-href') || '';
-  if (href.indexOf('extendTrial') === -1) return;
-  const loader = document.getElementById('nsLicenseLoader');
-  if (loader) loader.style.display = '';
-});
 
 /**
  * Copy text to clipboard (fallback for older browsers).

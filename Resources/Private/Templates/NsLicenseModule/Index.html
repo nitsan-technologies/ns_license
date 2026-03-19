@@ -3,6 +3,9 @@
 <f:layout name="Module" />
 
 <f:section name="Content">
+    <f:if condition="{t3version} == 12 || {t3version} == 14">
+        <f:be.pageRenderer includeCssFiles="{0:'EXT:ns_license/Resources/Public/css/custom-12.css'}" />
+    </f:if>
     <f:be.pageRenderer includeJavaScriptModules="{0:'@nitsan/ns-license/main.js', 1:'@nitsan/ns-license/filter.js',2:'@nitsan/ns-license/domains.js'}" />
       <!-- Tab Content -->
       <div class="tab-content" id="license-tab-content">
@@ -10,12 +13,11 @@
         <div class="tab-pane fade show active" id="extensions-pane" role="tabpanel" aria-labelledby="my-extensions-tab">
             <f:if condition="{extensions.premium} || {extensions.free}">
                 <f:then><f:render partial="Extensions" arguments="{_all}" /></f:then>
-                <f:else><p class="mt-3 text-muted"><f:translate key="fetchData.error.no_license_keys" /></p></f:else>
+                <f:else><p class="mt-3 text-muted mx-3"><f:translate key="fetchData.error.no_license_keys" /></p></f:else>
             </f:if>
-        </div>
-
+        </div>        
         <!-- Shop Tab Pane -->
-        <div class="tab-pane fade" id="shop-pane" role="tabpanel" aria-labelledby="shop-tab" 
+        <div class="tab-pane fade mt-4" id="shop-pane" role="tabpanel" aria-labelledby="shop-tab" 
              data-shop-url="{f:uri.action(action: 'getShopData', absolute: 1)}"
              data-loading-label="{f:translate(key: 'license-loading.shop')}"
              data-error-url-not-found="{f:translate(key: 'license-loading.error.shop-url-not-found')}"
@@ -31,7 +33,7 @@
         </div>
 
         <!-- Services Tab Pane -->
-        <div class="tab-pane fade" id="services-pane" role="tabpanel" aria-labelledby="services-tab" 
+        <div class="tab-pane fade mt-4" id="services-pane" role="tabpanel" aria-labelledby="services-tab" 
              data-services-url="{f:uri.action(action: 'getServicesData', absolute: 1)}"
              data-loading-label="{f:translate(key: 'license-loading.services')}"
              data-error-url-not-found="{f:translate(key: 'license-loading.error.services-url-not-found')}"

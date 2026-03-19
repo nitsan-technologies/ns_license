@@ -62,7 +62,7 @@
                 <source>Deactivate</source>
             </trans-unit>
             <trans-unit id="license-reactivation.action">
-                <source>Repair &amp; Reactivate</source>
+                <source>Repair</source>
             </trans-unit>
             <trans-unit id="license-activation.updateTo">
                 <source>Update to</source>

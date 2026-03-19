@@ -17,13 +17,13 @@
 
 <div class="extension-section-wrapper">
     <f:if condition="{servicesData.categories}">
-        <div class="card">
+        <div class="card card-extensions-container">
             <f:for each="{servicesData.categories}" as="category">
                 <div class="service-category-section extension-section" id="{category.id}">
                     <div class="card-header px-3">
                         <div class="extension-section__header">
                             <div class="extension-section__header-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-{category.icon} h-5 w-5" aria-hidden="true"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"></path></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-{category.icon} h-5 w-5" aria-hidden="true"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"></path></svg>
                             </div>
                             <div class="extension-section__header-content">
                                 <div class="extension-section__header-title">{category.title}</div>

@@ -1,0 +1,13 @@
+/* TYPO3 v12 specific stylesheet entry.
+ * Starts by importing the shared stylesheet; add v12 overrides below as needed.
+ */
+@import url('./custom.css');
+
+.ns-license-module-wrapper .module-docheader-bar-column-left  {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.ns-license-module-wrapper .module-docheader-navigation {
+    position: sticky;
+}
