@@ -189,11 +189,11 @@
                                             </f:else>
                                         </f:if>
                                     </f:if>
-                                    <f:if condition="{extension.details.is_life_time}">
+                                    <f:if condition="!{extension.details.is_life_time}">
 
                                         <f:if condition="!{extension.trial}">
                                             <f:then>
-                                                <f:if condition="!{extension.details.trial_extended}">
+                                                <f:if condition="!{extension.details.trial_extended} && {extension.details.days} <= 0">
                                                     <f:then>
                                                         <button type="button"
                                                             class="btn btn-info t3js-modal-trigger"

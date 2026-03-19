@@ -13,43 +13,6 @@
                         </div>
                     </div>
                 </div>
-    
-                <!-- My Extensions Section -->
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="card custom-card mt-4 mx-3">
-                            <div class="card-header">
-                                <h5>
-                                    <f:if condition="{showUpdateButton}">
-                                        <f:then><f:translate key="license-activation.btn-activate-composer" extensionName="ns_license" /></f:then>
-                                        <f:else><f:translate key="license-activation.btn-activate" extensionName="ns_license" /></f:else>
-                                    </f:if>
-                                </h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="ns-license-activation-form">
-                                    <f:form action="activation" class="ns-license-form ns-ext-form">
-                                        <div class="form-group d-flex gap-3">
-                                            <f:form.textfield
-                                                name="license"
-                                                class="form-control"
-                                                id="license"
-                                                required="required"
-                                                placeholder="{f:translate(key: 'license-activation.licensepLaceholder')}"
-                                            />
-                                            <f:variable name="activateButtonLabel"><f:if condition="{showUpdateButton}"><f:then><f:translate key="license-activation.btn-activate-composer" extensionName="ns_license" /></f:then><f:else><f:translate key="license-activation.btn-activate" extensionName="ns_license" /></f:else></f:if></f:variable>
-                                            <f:form.submit name="submit" class="btn btn-primary" value="{activateButtonLabel}" />
-                                        </div>
-                                        <div class="mb-3 form-check form-check-type-toggle">
-                                            <f:form.checkbox id="overwrite" name="overwrite" value="1" class="form-check-input mt-0" />
-                                            <label class="customform-check-label form-check-label" for="overwrite"><f:translate key="license-activation.overwriteExtension" />?</label>
-                                        </div>
-                                    </f:form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <f:flashMessages />
                 <f:render section="Content" arguments="{_all}" optional="true" />
             </div>
