@@ -585,8 +585,8 @@
 }
 
 .ns-license-module .license-activation .actions-wrapper .btn {
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-left: 8px;
+  padding-right: 8px;
 }
 
 .ns-license-module .install-steps {
@@ -761,6 +761,7 @@
   transform: translateY(-1px);
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
+
 .ns-license-module-wrapper .ns-license-help-widget__popover {
   min-width: 250px;
   margin-bottom: 0.5rem;
@@ -768,6 +769,7 @@
   background: light-dark(#fff, #2d2d2d);
   border-color: light-dark(#e5e7eb, #404040);
 }
+
 .ns-license-module-wrapper .ns-license-help-widget .dropdown-item:hover,
 .ns-license-module-wrapper .ns-license-help-widget .dropdown-item:focus,
 .ns-license-module-wrapper .ns-license-help-widget .dropdown-item:active {

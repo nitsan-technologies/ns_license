@@ -376,6 +376,19 @@
             <trans-unit id="license-services.learn-more">
                 <source>Learn More</source>
             </trans-unit>
+            <!-- Footer Labels -->
+            <trans-unit id="license-footer.developed-by">
+                <source>Developed with 💙 by Team T3Planet.</source>
+            </trans-unit>
+            <trans-unit id="license-footer.demo-guide">
+                <source>Demo Guide</source>
+            </trans-unit>
+            <trans-unit id="license-footer.documentation">
+                <source>Documentation</source>
+            </trans-unit>
+            <trans-unit id="license-footer.support">
+                <source>Support</source>
+            </trans-unit>
             <!-- Loading Labels -->
             <trans-unit id="license-loading.loading">
                 <source>Loading...</source>
