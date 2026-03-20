@@ -284,6 +284,10 @@
   width: 24px;
 }
 
+.ns-license-module .extension-section__header-icon img {
+  filter: grayscale(100%);
+}
+
 .ns-license-module .card-header__title-icon.extension-section__header-icon svg {
   width: 26px;
   height: 26px;
@@ -619,6 +623,7 @@
   border-color: light-dark(oklch(0.932 0.032 255.585), #4b4b4b);
 }
 
+.ns-license-module .badge.badge-primary,
 .ns-license-module .btn.btn-info,
 .ns-license-modal .btn.btn-info {
   background: oklch(0.932 0.032 255.585);
@@ -763,8 +768,13 @@
   background: light-dark(#fff, #2d2d2d);
   border-color: light-dark(#e5e7eb, #404040);
 }
-.ns-license-module-wrapper .ns-license-help-widget .dropdown-item:hover {
+.ns-license-module-wrapper .ns-license-help-widget .dropdown-item:hover,
+.ns-license-module-wrapper .ns-license-help-widget .dropdown-item:focus,
+.ns-license-module-wrapper .ns-license-help-widget .dropdown-item:active {
   background: light-dark(#f3f4f6, #374151);
+  color: light-dark(#000000, #ffffff);
+  border-color: light-dark(#e5e7eb, #404040);
+  outline: none;
 }
 
 .ns-license-module-wrapper .typo3-messages .alert {
