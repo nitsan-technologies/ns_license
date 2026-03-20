@@ -13,7 +13,7 @@
 }
 
 .ns-license-module-wrapper .container {
-  max-width: 1360px;
+  max-width: 1320px;
 }
 
 .ns-license-loader .t3js-icon {
@@ -142,9 +142,9 @@
   gap: 8px;
 }
 
-.ns-license-module .extension-card-wrapper .card-header__title-icon.extension-section__header-icon {
+/* .ns-license-module .extension-card-wrapper .card-header__title-icon.extension-section__header-icon {
   background: light-dark(#f5f5f5, #333333);
-}
+} */
 
 .ns-license-module .meta-info a.meta-item:hover,
 .ns-license-module .meta-info .meta-item a:hover,
@@ -198,10 +198,6 @@
   border-bottom: none;
   align-items: flex-start;
   flex-wrap: nowrap;
-}
-
-.ns-license-module #shop-pane .extension-section .extension-card-wrapper .btn {
-  width: 48%;
 }
 
 .ns-license-module .license-key-box {
@@ -284,8 +280,8 @@
 .ns-license-module .extension-section__header-icon,
 .ns-license-modal .modal-ext-icon {
   border-radius: 4px;
-  height: 40px;
-  width: 40px;
+  height: 24px;
+  width: 24px;
 }
 
 .ns-license-module .card-header__title-icon.extension-section__header-icon svg {
@@ -294,12 +290,16 @@
 }
 
 .ns-license-modal .modal-ext-icon .icon {
-  --icon-size: 36px;
+  --icon-size: 28px;
+}
+
+.ns-license-module .card.custom-card {
+  box-shadow: none;
 }
 
 .ns-license-module .card-header__title-icon.extension-section__header-icon {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
 }
 
 .ns-license-module .extension-section__header-title,
