@@ -52,7 +52,7 @@ class ExtensionListService
                     $package = $this->getPackage($extDetails['extension_key']);
                     $packageMetaData = $package ? $package->getPackageMetaData() : [];
                     $version = $packageMetaData ? $packageMetaData->getVersion() : '';
-                    if ($this->typo3Version === 12) {
+                    if ($this->typo3Version === 12 && $package) {
                         $icon = ExtensionManagementUtility::getExtensionIcon($package->getPackagePath());
                     } else {
                         $icon = $package ? $package->getPackageIcon() : '';
@@ -76,14 +76,14 @@ class ExtensionListService
                             'trial' => isset($extDetails['order_id']) && str_starts_with($extDetails['order_id'],'TRIAL') ? true : false
                         ];
                     } else {
-                        $extensions['free'][$package->getPackageKey()] = [
-                            'packagePath' => $package->getPackagePath(),
-                            'key' => $package->getPackageKey(),
+                        $extensions['free'][$extDetails['extension_key']] = [
+                            'packagePath' => $package ? $package->getPackagePath() : '',
+                            'key' => $extDetails['extension_key'],
                             'version' => $version,
                             'state' => str_starts_with($version, 'dev-') ? 'alpha' : 'stable',
                             'icon' => $icon ? PathUtility::getAbsoluteWebPath($package->getPackagePath() . $icon) : '',
-                            'title' => $packageMetaData->getTitle(),
-                            'description' => $packageMetaData->getDescription(),
+                            'title' =>  $package ? $packageMetaData->getTitle() : '',
+                            'description' => $package ? $packageMetaData->getDescription() : '',
                             'details' => $extDetails,
                         ];
                     }
