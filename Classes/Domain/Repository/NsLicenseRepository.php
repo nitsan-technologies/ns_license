@@ -28,7 +28,7 @@ class NsLicenseRepository
      * @throws \Doctrine\DBAL\Driver\Exception
      * @throws Exception
      */
-    public function insertNewData($data, $extVersion = null)
+    public function insertNewData($data, $extVersion = null, $csVersion = null)
     {
         $isAvailable = $this->fetchData($data->extension_key);
         $queryBuilder = $this->getQueryBuilder('ns_product_license');
@@ -45,6 +45,21 @@ class NsLicenseRepository
             if (is_null($extVersion)) {
                 $extVersion = $key;
             }
+            $csVersion = '';
+            $csLTSVersion = '';
+           
+            $csDownloadUrl = $data->cs_download_url ?? [];
+            if($data->extension_key === 'ns_t3ac' || $data->extension_key === 'ns_t3as' && $csDownloadUrl){
+                if (PHP_VERSION > 8) {
+                    $csDownloadUrl = $data->cs_download_url ? get_mangled_object_vars($data->cs_download_url) : [];
+                }
+                end($csDownloadUrl);
+                $csLTSVersion = key($csDownloadUrl);
+                if (is_null($csVersion)) {
+                    $csVersion = $csLTSVersion;
+                }
+            } 
+
             $row = $queryBuilder
                 ->insert('ns_product_license')
                 ->values([
@@ -65,7 +80,11 @@ class NsLicenseRepository
                     'license_type' => $data->license_type ?? '',
                     'rating' => $data->rating ?? 0,
                     'downloads' => $data->downloads ?? 0,
-                    'username' => $data->user_name ?? ''
+                    'username' => $data->user_name ?? '',
+                    'trial_extended' => (int)$data->trial_extended ?? 0,
+                    'cs_version' => $csVersion,
+                    'cs_lts_version' => $csLTSVersion
+
                 ])
                 ->executeStatement();
         }
@@ -153,11 +172,30 @@ class NsLicenseRepository
             ->set('rating', $data->rating ?? 0)
             ->set('downloads', $data->downloads ?? 0)
             ->set('license_type', $data->license_type ?? 0)
-            ->set('trial_extended', $data->trial_extended ?? 0);
+            ->set('description', $data->description ?? '')
+            ->set('trial_extended', (int)$data->trial_extended ?? 0);
             
             if ($ltsCheck == 1) {
                 $queryBuilder->set('version', $key);
             }
+
+            if($data->extension_key === 'ns_t3ac' || $data->extension_key === 'ns_t3as'){
+
+                $csDownloadUrl = $data->cs_download_url;
+                if (PHP_VERSION > 8) {
+                    if ($data->extension_download_url) {
+                        $csDownloadUrl = get_mangled_object_vars($data->cs_download_url);
+                    }
+                }
+                end($csDownloadUrl);
+                $version = key($csDownloadUrl);
+                if ($ltsCheck == 1) {
+                    $queryBuilder->set('cs_version', $version);
+                }
+                
+                $queryBuilder->set('cs_lts_version', $version);
+            }
+            
             $queryBuilder->set('lts_version', $key)
                 ->executeStatement();
         }

@@ -264,7 +264,7 @@ class NsLicenseModuleController extends ActionController
                         setcookie('NsLicense', $disableExtensions, time() + 3600, '/', '', 0);
                     }
                 }
-
+    
                 if (!empty($licenseData['existing'])) {
                     $extVersion = GeneralUtility::makeInstance(PackageManager::class, $this->dependencyOrderingService)->getPackage($licenseData['extension_key'])->getPackageMetaData()->getVersion();
                     $this->nsLicenseRepository->insertNewData(json_decode(json_encode($licenseData)), $extVersion);
@@ -274,22 +274,24 @@ class NsLicenseModuleController extends ActionController
 
                 $isAvailable = $this->nsLicenseRepository->fetchData($licenseData['extension_key'] ?? '');
                 if ($isAvailable && $params['overwrite'] == 1) {
-                    $extensionDownloadUrl = $licenseData['extension_download_url'] ?? [];
-                    if (!is_array($extensionDownloadUrl)) {
-                        $extensionDownloadUrl = $extensionDownloadUrl ? (array)$extensionDownloadUrl : [];
-                    }
-
-                    $ltsext = end($extensionDownloadUrl);
-                    $extKey = ($licenseData['extension_key'] ?? '') . '.zip';
-                    $extKeyPath = $this->siteRoot . 'typo3temp/' . $extKey;
-                    if (!$this->isComposerMode) {
-                        $this->downloadZipFile($ltsext, $licenseData['license_key'] ?? '', $extKeyPath, $licenseData['user_name'] ?? '', $licenseData['extension_key'] ?? '');
-                    }
                     try {
                         if (!$this->isComposerMode) {
-                            $extKey = str_replace('.zip', '', $extKey);
-                            $this->extensionArchiveService->extractExtensionFromZipFile($extKeyPath, $extKey, ($params['overwrite'] ? true : false));
-                            unlink($extKeyPath);
+                            $overwrite = (bool)($params['overwrite'] ?? false);
+                            // Install dependency first (static URL from API), then main extension.
+                            $this->installExtensionFromDownloadUrls(
+                                $licenseData['cs_download_url'] ?? [],
+                                $licenseData,
+                                'ns_t3cs',
+                                $overwrite,
+                                false
+                            );
+                            $this->installExtensionFromDownloadUrls(
+                                $licenseData['extension_download_url'] ?? [],
+                                $licenseData,
+                                (string)($licenseData['extension_key'] ?? ''),
+                                $overwrite,
+                                true
+                            );
                         }
 
                         // Rename the static data dump file after update the extension for theme...
@@ -326,24 +328,26 @@ class NsLicenseModuleController extends ActionController
 
                     // OPTION 2. Overriding > Else let's continue to download extension
                     else {
-                        $extKeyPath = '';
                         if (!$this->isComposerMode) {
-                            $extensionDownloadUrl = $licenseData['extension_download_url'] ?? [];
-                            if (!is_array($extensionDownloadUrl)) {
-                                $extensionDownloadUrl = $extensionDownloadUrl ? (array)$extensionDownloadUrl : [];
-                            }
-
-                            $ltsext = end($extensionDownloadUrl);
-                            $extKey = ($licenseData['extension_key'] ?? '') . '.zip';
-                            $extKeyPath = $this->siteRoot . 'typo3temp/' . $extKey;
-                            $this->downloadZipFile($ltsext, $licenseData['license_key'] ?? '', $extKeyPath, $licenseData['user_name'] ?? '', $licenseData['extension_key'] ?? '');
+                            $overwrite = (bool)($params['overwrite'] ?? false);
                         }
-
                         try {
                             if (!$this->isComposerMode) {
-                                $extKey = str_replace('.zip', '', $extKey);
-                                $this->extensionArchiveService->extractExtensionFromZipFile($extKeyPath, $extKey, ($params['overwrite'] ? true : false));
-                                unlink($extKeyPath);
+                                // Install dependency first (static URL from API), then main extension.
+                                $this->installExtensionFromDownloadUrls(
+                                    $licenseData['cs_download_url'] ?? [],
+                                    $licenseData,
+                                    'ns_t3cs',
+                                    $overwrite,
+                                    false
+                                );
+                                $this->installExtensionFromDownloadUrls(
+                                    $licenseData['extension_download_url'] ?? [],
+                                    $licenseData,
+                                    (string)($licenseData['extension_key'] ?? ''),
+                                    $overwrite,
+                                    true
+                                );
                             }
                             // Let's flush all the cache to change the version number
                             $this->cacheManager->flushCaches();
@@ -889,6 +893,53 @@ class NsLicenseModuleController extends ActionController
             if (isset($params['action'])) {
                 return $this->redirect('list');
             }
+        }
+    }
+
+    /**
+     * Download and extract an extension from a download-url map.
+     * Uses the same flow for main extension and dependency extension.
+     *
+     * @param mixed $downloadUrls
+     * @param array $licenseData
+     * @param string $targetExtensionKey
+     * @param bool $overwrite
+     * @param bool $required If true and URL missing, throws exception
+     */
+    protected function installExtensionFromDownloadUrls(
+        $downloadUrls,
+        array $licenseData,
+        string $targetExtensionKey,
+        bool $overwrite,
+        bool $required = false
+    ): void {
+        if ($targetExtensionKey === '') {
+            return;
+        }
+        
+        if (!is_array($downloadUrls)) {
+            $downloadUrls = $downloadUrls ? (array)$downloadUrls : [];d
+        }
+        $downloadgugrl = end($downloadUrls);
+        if (!$downloadUrl) {
+            if ($required) {
+                throw new \RuntimeException('Unable to open zip');
+            }
+            return;
+        }
+
+        $zipName = $targetExtensionKey . '.zip';
+        $zipPath = $this->siteRoot . 'typo3temp/' . $zipName;
+        $this->downloadZipFile(
+            (string)$downloadUrl,
+            (string)($licenseData['license_key'] ?? ''),
+            $zipPath,
+            (string)($licenseData['user_name'] ?? ''),
+            $targetExtensionKey
+        );
+        $this->extensionArchiveService->extractExtensionFromZipFile($zipPath, $targetExtensionKey, $overwrite);
+        if (file_exists($zipPath)) {
+            unlink($zipPath);
         }
     }
 
