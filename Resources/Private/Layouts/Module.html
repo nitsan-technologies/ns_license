@@ -42,26 +42,26 @@
         <f:render partial="DomainsModal" arguments="{_all}" optional="true" />
         <!-- Help widget: fixed bottom-right -->
         <div class="ns-license-help-widget dropdown">
-            <button type="button" class="ns-license-help-widget__trigger btn btn-primary rounded-circle p-0 shadow" aria-label="Need help?" aria-expanded="false" aria-haspopup="true" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+            <button type="button" class="ns-license-help-widget__trigger btn btn-primary rounded-circle p-0 shadow" aria-label="{f:translate(key: 'license-help-widget.aria-label', extensionName: 'ns_license')}" aria-expanded="false" aria-haspopup="true" data-bs-toggle="dropdown" data-bs-auto-close="outside">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"></path></svg>
             </button>
             <div class="dropdown-menu dropdown-menu-end ns-license-help-widget__popover shadow-lg border p-0">
                 <div class="p-3 border-bottom">
-                    <h4 class="h6 mb-1 fw-bold">Need Help?</h4>
-                    <p class="small text-muted mb-0">Our support team is here to assist you</p>
+                    <h4 class="h6 mb-1 fw-bold"><f:translate key="license-help-widget.title" extensionName="ns_license" /></h4>
+                    <p class="small text-muted mb-0"><f:translate key="license-help-widget.description" extensionName="ns_license" /></p>
                 </div>
                 <div class="p-2">
                     <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="https://docs.t3planet.de/en/latest/License/Index.html" target="_blank">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg>
-                        Knowledge Base
+                        <f:translate key="license-help-widget.knowledge-base" extensionName="ns_license" />
                     </a>
                     <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="https://t3planet.de/en/contact" target="_blank">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"></path><rect x="2" y="4" width="20" height="16" rx="2"></rect></svg>
-                        Email Support
+                        <f:translate key="license-help-widget.email-support" extensionName="ns_license" />
                     </a>
                     <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="https://www.trustpilot.com/evaluate/t3terminal.com" target="_blank">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg>
-                        Rate Us
+                        <f:translate key="license-help-widget.rate-us" extensionName="ns_license" />
                     </a>
                 </div>
             </div>
