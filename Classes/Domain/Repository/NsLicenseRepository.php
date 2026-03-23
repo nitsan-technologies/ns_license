@@ -21,7 +21,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 /**
  * The repository for NsLicense
  */
-class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
+class NsLicenseRepository
 {
     /**
      * @throws DBALException

@@ -10,6 +10,7 @@ use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use NITSAN\NsLicense\Service\LicenseService;
 use NITSAN\NsLicense\Service\ExtensionListService;
+use NITSAN\NsLicense\Service\ExtensionArchiveService;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
@@ -73,6 +74,7 @@ class NsLicenseModuleController extends ActionController
         protected readonly NsLicenseRepository $nsLicenseRepository,
         protected readonly LicenseService $licenseService,
         protected readonly ExtensionListService $extensionListService,
+        protected readonly ExtensionArchiveService $extensionArchiveService,
         protected readonly DependencyOrderingService $dependencyOrderingService,
     ) {}
 
@@ -96,7 +98,6 @@ class NsLicenseModuleController extends ActionController
 
     public function listAction(): ResponseInterface
     {
-        $this->cacheManager->flushCaches();
         $extensions = $this->extensionListService->fetchExtensions();
         $view = $this->initializeModuleTemplate($this->request);
         $view->assign('activeTab', 'list');
@@ -172,7 +173,7 @@ class NsLicenseModuleController extends ActionController
                 return $this->redirect('list');
             }
             // Let's take backup to /uploads/ns_license/
-            $this->getBackupToUploadFolder($extKey);
+            $this->extensionArchiveService->getBackupToUploadFolder($extKey);
             $params['extension']['license'] = $params['extension']['license_key'];
             $params['extension']['overwrite'] = true;
             $params['extension']['isUpdateAction'] = true;
@@ -284,12 +285,12 @@ class NsLicenseModuleController extends ActionController
                     $extKey = ($licenseData['extension_key'] ?? '') . '.zip';
                     $extKeyPath = $this->siteRoot . 'typo3temp/' . $extKey;
                     if (!$this->isComposerMode) {
-                        $this->downloadZipFile($ltsext, $licenseData['license_key'] ?? '', $extKeyPath, $licenseData['user_name'] ?? '', $licenseData['extension_key'] ?? '');
+                        $this->extensionArchiveService->downloadZipFile($ltsext, $licenseData['license_key'] ?? '', $extKeyPath, $licenseData['user_name'] ?? '', $licenseData['extension_key'] ?? '');
                     }
                     try {
                         if (!$this->isComposerMode) {
                             $extKey = str_replace('.zip', '', $extKey);
-                            $this->extractExtensionFromZipFile($extKeyPath, $extKey, ($params['overwrite'] ? true : false));
+                            $this->extensionArchiveService->extractExtensionFromZipFile($extKeyPath, $extKey, ($params['overwrite'] ? true : false));
                             unlink($extKeyPath);
                         }
 
@@ -337,13 +338,13 @@ class NsLicenseModuleController extends ActionController
                             $ltsext = end($extensionDownloadUrl);
                             $extKey = ($licenseData['extension_key'] ?? '') . '.zip';
                             $extKeyPath = $this->siteRoot . 'typo3temp/' . $extKey;
-                            $this->downloadZipFile($ltsext, $licenseData['license_key'] ?? '', $extKeyPath, $licenseData['user_name'] ?? '', $licenseData['extension_key'] ?? '');
+                            $this->extensionArchiveService->downloadZipFile($ltsext, $licenseData['license_key'] ?? '', $extKeyPath, $licenseData['user_name'] ?? '', $licenseData['extension_key'] ?? '');
                         }
 
                         try {
                             if (!$this->isComposerMode) {
                                 $extKey = str_replace('.zip', '', $extKey);
-                                $this->extractExtensionFromZipFile($extKeyPath, $extKey, ($params['overwrite'] ? true : false));
+                                $this->extensionArchiveService->extractExtensionFromZipFile($extKeyPath, $extKey, ($params['overwrite'] ? true : false));
                                 unlink($extKeyPath);
                             }
                             // Let's flush all the cache to change the version number
@@ -469,100 +470,7 @@ class NsLicenseModuleController extends ActionController
         // Successfully redirect to license listing
         return $this->redirect('list');
     }
-
-    /**
-     * Extracts a given zip file and installs the extension.
-     *
-     * @param string $uploadedFile Path to uploaded file
-     * @param bool   $overwrite    Overwrite existing extension if TRUE
-     *
-     * @throws ExtensionManagerException
-     */
-    protected function extractExtensionFromZipFile(string $uploadedFile, string $extensionKey, bool $overwrite = false): string
-    {
-        $isExtensionAvailable = $this->managementService->isAvailable($extensionKey);
-        if (!$overwrite && $isExtensionAvailable) {
-            throw new ExtensionManagerException('Extension is already available and overwriting is disabled.', 1342864311);
-        }
-        if ($isExtensionAvailable) {
-            $this->copyExtensionFolderToTempFolder($extensionKey);
-        }
-
-        $this->fileHandlingUtility->unzipExtensionFromFile($uploadedFile, $extensionKey);
-
-        return $extensionKey;
-    }
-
-    /**
-     * Copies current extension folder to typo3temp directory as backup.
-     *
-     * @param string $extensionKey
-     *
-     * @throws \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException
-     */
-    protected function copyExtensionFolderToTempFolder($extensionKey)
-    {
-        $this->extensionBackupPath = Environment::getVarPath() . '/transient/' . $extensionKey . substr(sha1($extensionKey . microtime()), 0, 7) . '/';
-        GeneralUtility::mkdir($this->extensionBackupPath);
-        GeneralUtility::copyDirectory(
-            $this->fileHandlingUtility->getExtensionDir($extensionKey),
-            $this->extensionBackupPath,
-        );
-    }
-
-    /**
-     * downloadZipFile.
-     *
-     * @param string $extensionDownloadUrl
-     * @param string $license
-     * @param string $extKeyPath
-     * @param string $userName
-     */
-    public function downloadZipFile($extensionDownloadUrl, $license, $extKeyPath, $userName, $extKey)
-    {
-        $authorization = 'Basic ' . base64_encode($userName . ':' . $license);
-        try {
-            $response = $this->requestFactory->request(
-                $extensionDownloadUrl,
-                'POST',
-                ['headers' => ['Authorization' => $authorization]],
-            );
-
-            $rawResponse = $response->getBody()->getContents();
-            file_put_contents($extKeyPath, $rawResponse);
-
-            // Let's take backup to /uploads/ns_license/
-            $this->getBackupToUploadFolder($extKey);
-        } catch (\Throwable $e) {
-            $this->addFlashMessage($e->getMessage(), 'Your server has an issue connecting with our license system; Please get in touch with your server administrator with the below error message.', ContextualFeedbackSeverity::ERROR);
-            // Let's only redirect if we are at TYPO3 backend module (ignore at Login)
-            $params = $this->request->getArguments();
-            if (isset($params['action'])) {
-                return $this->redirect('list');
-            }
-        }
-    }
-
    
-    /**
-     * getBackupToUploadFolder.
-     *
-     * @param string $extKey
-     */
-    public function getBackupToUploadFolder($extKey)
-    {
-        $souceFolder = $this->extensionListService->getExtensionFolder($extKey);
-        if (is_dir($souceFolder)) {
-            $versionId = $this->extensionListService->getVersionFromEmconf($extKey);
-            $uploadFolder = $this->siteRoot . 'uploads/ns_license/' . $extKey . '/' . $versionId . '/';
-            try {
-                GeneralUtility::rmdir($uploadFolder, true);
-                GeneralUtility::mkdir_deep($uploadFolder);
-                GeneralUtility::copyDirectory($souceFolder, $uploadFolder);
-            } catch (\Exception $e) {
-            }
-        }
-    }
 
     /**
      * Add domain action 
@@ -683,7 +591,7 @@ class NsLicenseModuleController extends ActionController
             }
 
             // Remove domain from API server first (POST)
-            $serverResult = $this->licenseService->removeDomainFromServer($licenseKey, $domain, '', $environment);
+            $serverResult = $this->licenseService->removeDomainFromServer($licenseKey, $domain, $environment);
             if (!$serverResult || !isset($serverResult['success']) || !$serverResult['success']) {
                 return new JsonResponse([
                     'success' => false,
@@ -755,7 +663,7 @@ class NsLicenseModuleController extends ActionController
                 ], 400);
             }
 
-            $serverResult = $this->licenseService->updateDomainOnServer($licenseKey, $oldDomain, $newDomain, $environment, '');
+            $serverResult = $this->licenseService->updateDomainOnServer($licenseKey, $oldDomain, $newDomain, $environment);
             if (!$serverResult || !isset($serverResult['success']) || !$serverResult['success']) {
                 return new JsonResponse([
                     'success' => false,

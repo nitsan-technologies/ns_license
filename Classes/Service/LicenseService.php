@@ -9,12 +9,9 @@ use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Information\Typo3Version;
-use TYPO3\CMS\Core\Service\OpcodeCacheService;
-use TYPO3\CMS\Install\Service\ClearCacheService;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Service\DependencyOrderingService;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use NITSAN\NsLicense\Domain\Repository\NsLicenseRepository;
 use NITSAN\NsLicense\Service\ExtensionListService;
 use NITSAN\NsLicense\Service\ComposerApiClient;
@@ -291,11 +288,10 @@ final class LicenseService
      *
      * @param string $licenseKey
      * @param string $domain
-     * @param string $extensionKey
      * @param string $environment production, staging, or local
      * @return array|null Returns response with success and message, or null on error
      */
-    public function removeDomainFromServer(string $licenseKey, string $domain, string $extensionKey = '', string $environment = 'production'): ?array
+    public function removeDomainFromServer(string $licenseKey, string $domain, string $environment = 'production'): ?array
     {
         $apiBaseUrl = $this->getApiBaseUrl();
         $url = $apiBaseUrl . 'RemoveDomainFromLicense.php';
@@ -341,10 +337,9 @@ final class LicenseService
      * @param string $oldDomain
      * @param string $newDomain
      * @param string $environment production, staging, or local
-     * @param string $extensionKey
      * @return array|null
      */
-    public function updateDomainOnServer(string $licenseKey, string $oldDomain, string $newDomain, string $environment, string $extensionKey = ''): ?array
+    public function updateDomainOnServer(string $licenseKey, string $oldDomain, string $newDomain, string $environment): ?array
     {
         $apiBaseUrl = $this->getApiBaseUrl();
         $url = $apiBaseUrl . 'UpdateDomainInLicense.php';
@@ -535,8 +530,6 @@ final class LicenseService
                 'message' => 'Server connection error: ' . $e->getMessage()
             ];
         } catch (\Throwable $e) {
-            debug($e);die();
-
             return [
                 'status' => false,
                 'error_code' => 'error',
