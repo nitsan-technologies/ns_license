@@ -500,6 +500,25 @@
             <trans-unit id="license-expired">
                 <source>License Expired</source>
             </trans-unit>
+            <!-- Help Widget Labels -->
+            <trans-unit id="license-help-widget.aria-label">
+                <source>Need help?</source>
+            </trans-unit>
+            <trans-unit id="license-help-widget.title">
+                <source>Need Help?</source>
+            </trans-unit>
+            <trans-unit id="license-help-widget.description">
+                <source>Our support team is here to assist you</source>
+            </trans-unit>
+            <trans-unit id="license-help-widget.knowledge-base">
+                <source>Knowledge Base</source>
+            </trans-unit>
+            <trans-unit id="license-help-widget.email-support">
+                <source>Email Support</source>
+            </trans-unit>
+            <trans-unit id="license-help-widget.rate-us">
+                <source>Rate Us</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>
