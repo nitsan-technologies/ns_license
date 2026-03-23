@@ -174,19 +174,11 @@
                                     </f:if>
                                     <f:if condition="!{composer}">
                                         <f:if condition="{extension.isUpdateAvail}">
-                                            <f:then>
-                                                <f:link.action data="{bs-toggle:'modal', bs-target:'#activation-modal'}" action="update"  class="btn btn-default license-activation-latest" 
-                                                    arguments="{extension: {extension_key: extension.key, license_key: extension.details.license_key}}">
-                                                    <core:icon identifier="actions-synchronize" size="small" />
-                                                    <f:translate key="license-activation.updateTo" /> {extension.details.lts_version}
-                                                </f:link.action>
-                                            </f:then>
-                                            <f:else>
-                                                <a href="javascript:;" class="btn btn-default disabled btn-uptodate">
-                                                    <core:icon identifier="actions-synchronize" size="small" />
-                                                    <f:translate key="license-activation.latest" />
-                                                </a>
-                                            </f:else>
+                                            <f:link.action data="{bs-toggle:'modal', bs-target:'#activation-modal'}" action="update"  class="btn btn-default license-activation-latest" 
+                                                arguments="{extension: {extension_key: extension.key, license_key: extension.details.license_key}}">
+                                                <core:icon identifier="actions-synchronize" size="small" />
+                                                <f:translate key="license-activation.updateTo" /> {extension.details.lts_version}
+                                            </f:link.action>
                                         </f:if>
                                     </f:if>
                                     <f:if condition="!{extension.details.is_life_time}">

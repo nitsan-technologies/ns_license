@@ -49,8 +49,6 @@ class NsLicenseModuleController extends ActionController
     protected $composerSiteRoot = false;
 
     protected int $typo3Version = 0;
-
-    protected string $extensionBackupPath;
     
     /**
      * @var mixed|object|\Psr\Log\LoggerAwareInterface|CacheManager|(CacheManager&\Psr\Log\LoggerAwareInterface)|(CacheManager&\TYPO3\CMS\Core\SingletonInterface)|\TYPO3\CMS\Core\SingletonInterface|null
@@ -242,7 +240,7 @@ class NsLicenseModuleController extends ActionController
             } else {
                 $licenseData = $this->licenseService->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license'] . '&typo3_version=' . $this->typo3Version);
             }
-                
+          
             if (isset($params['extension']) && is_array($licenseData)) {
                 if ($params['extension']['isUpdateAction'] && empty($licenseData['isUpdatable'])) {
                     $this->addFlashMessage(LocalizationUtility::translate('errorMessage.license_expired', 'NsLicense'), 'Your annual License key is expired', ContextualFeedbackSeverity::ERROR);
@@ -285,7 +283,7 @@ class NsLicenseModuleController extends ActionController
                     $extKey = ($licenseData['extension_key'] ?? '') . '.zip';
                     $extKeyPath = $this->siteRoot . 'typo3temp/' . $extKey;
                     if (!$this->isComposerMode) {
-                        $this->extensionArchiveService->downloadZipFile($ltsext, $licenseData['license_key'] ?? '', $extKeyPath, $licenseData['user_name'] ?? '', $licenseData['extension_key'] ?? '');
+                        $this->downloadZipFile($ltsext, $licenseData['license_key'] ?? '', $extKeyPath, $licenseData['user_name'] ?? '', $licenseData['extension_key'] ?? '');
                     }
                     try {
                         if (!$this->isComposerMode) {
@@ -338,7 +336,7 @@ class NsLicenseModuleController extends ActionController
                             $ltsext = end($extensionDownloadUrl);
                             $extKey = ($licenseData['extension_key'] ?? '') . '.zip';
                             $extKeyPath = $this->siteRoot . 'typo3temp/' . $extKey;
-                            $this->extensionArchiveService->downloadZipFile($ltsext, $licenseData['license_key'] ?? '', $extKeyPath, $licenseData['user_name'] ?? '', $licenseData['extension_key'] ?? '');
+                            $this->downloadZipFile($ltsext, $licenseData['license_key'] ?? '', $extKeyPath, $licenseData['user_name'] ?? '', $licenseData['extension_key'] ?? '');
                         }
 
                         try {
@@ -859,6 +857,39 @@ class NsLicenseModuleController extends ActionController
         }
         $view->assign('logs', $filteredLogs);
         return $view->renderResponse('NsLicenseModule/Logs');
+    }
+
+     /**
+     * downloadZipFile.
+     *
+     * @param string $extensionDownloadUrl
+     * @param string $license
+     * @param string $extKeyPath
+     * @param string $userName
+     */
+    public function downloadZipFile($extensionDownloadUrl, $license, $extKeyPath, $userName, $extKey)
+    {
+        $authorization = 'Basic ' . base64_encode($userName . ':' . $license);
+        try {
+            $response = $this->requestFactory->request(
+                $extensionDownloadUrl,
+                'POST',
+                ['headers' => ['Authorization' => $authorization]],
+            );
+
+            $rawResponse = $response->getBody()->getContents();
+            file_put_contents($extKeyPath, $rawResponse);
+
+            // Let's take backup to /uploads/ns_license/
+            $this->extensionArchiveService->getBackupToUploadFolder($extKey);
+        } catch (\Throwable $e) {
+            $this->addFlashMessage($e->getMessage(), 'Your server has an issue connecting with our license system; Please get in touch with your server administrator with the below error message.', ContextualFeedbackSeverity::ERROR);
+            // Let's only redirect if we are at TYPO3 backend module (ignore at Login)
+            $params = $this->request->getArguments();
+            if (isset($params['action'])) {
+                return $this->redirect('list');
+            }
+        }
     }
 
     /**

@@ -5,19 +5,28 @@ declare(strict_types=1);
 namespace NITSAN\NsLicense\Service;
 
 use TYPO3\CMS\Core\Core\Environment;
-use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException;
 use TYPO3\CMS\Extensionmanager\Service\ExtensionManagementService;
 use TYPO3\CMS\Extensionmanager\Utility\FileHandlingUtility;
+use NITSAN\NsLicense\Service\ExtensionListService;
+
 
 final class ExtensionArchiveService
 {
+    protected $siteRoot;
+
+    protected string $extensionBackupPath;
+
     public function __construct(
-        private readonly RequestFactory $requestFactory,
         private readonly FileHandlingUtility $fileHandlingUtility,
         private readonly ExtensionManagementService $managementService,
-    ) {}
+        private readonly ExtensionListService $extensionListService,
+
+    ) {
+        $this->siteRoot = \TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/';
+        $this->siteRoot = rtrim($this->siteRoot, '/') . '/';
+    }
 
      /**
      * Extracts a given zip file and installs the extension.
@@ -59,38 +68,7 @@ final class ExtensionArchiveService
         );
     }
     
-    /**
-     * downloadZipFile.
-     *
-     * @param string $extensionDownloadUrl
-     * @param string $license
-     * @param string $extKeyPath
-     * @param string $userName
-     */
-    public function downloadZipFile($extensionDownloadUrl, $license, $extKeyPath, $userName, $extKey)
-    {
-        $authorization = 'Basic ' . base64_encode($userName . ':' . $license);
-        try {
-            $response = $this->requestFactory->request(
-                $extensionDownloadUrl,
-                'POST',
-                ['headers' => ['Authorization' => $authorization]],
-            );
-
-            $rawResponse = $response->getBody()->getContents();
-            file_put_contents($extKeyPath, $rawResponse);
-
-            // Let's take backup to /uploads/ns_license/
-            $this->getBackupToUploadFolder($extKey);
-        } catch (\Throwable $e) {
-            $this->addFlashMessage($e->getMessage(), 'Your server has an issue connecting with our license system; Please get in touch with your server administrator with the below error message.', ContextualFeedbackSeverity::ERROR);
-            // Let's only redirect if we are at TYPO3 backend module (ignore at Login)
-            $params = $this->request->getArguments();
-            if (isset($params['action'])) {
-                return $this->redirect('list');
-            }
-        }
-    }
+   
 
     /**
      * getBackupToUploadFolder.
