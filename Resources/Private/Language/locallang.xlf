@@ -510,6 +510,9 @@
             <trans-unit id="license-help-widget.description">
                 <source>Our support team is here to assist you</source>
             </trans-unit>
+            <trans-unit id="license-help-widget.live-chat">
+                <source>Live Chat</source>
+            </trans-unit>
             <trans-unit id="license-help-widget.knowledge-base">
                 <source>Knowledge Base</source>
             </trans-unit>
