@@ -15,7 +15,7 @@ class ComposerApiClient
 {
     private RequestFactory $requestFactory;
 
-    public function __construct(RequestFactory $requestFactory = null)
+    public function __construct(?RequestFactory $requestFactory = null)
     {
         $this->requestFactory = $requestFactory ?? GeneralUtility::makeInstance(RequestFactory::class);
     }
