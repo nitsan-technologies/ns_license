@@ -790,3 +790,7 @@
 .ns-license-module .t3js-copy-license-key:hover svg {
   transform: scale(1.05);
 }
+
+.ns-license-module .ns-license-activation-form .ns-ext-form .btn {
+  min-width: 300px;
+}
