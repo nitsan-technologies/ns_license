@@ -59,7 +59,7 @@ class NsLicenseRepository
                     $csVersion = $csLTSVersion;
                 }
             } 
-
+          
             $row = $queryBuilder
                 ->insert('ns_product_license')
                 ->values([
@@ -82,7 +82,7 @@ class NsLicenseRepository
                     'rating' => $data->rating ?? 0,
                     'downloads' => $data->downloads ?? 0,
                     'username' => $data->user_name ?? '',
-                    'trial_extended' => (int)$data->trial_extended ?? 0,
+                    'trial_extended' => (int)$data->trial_extended,
                     'cs_version' => $csVersion,
                     'cs_lts_version' => $csLTSVersion
 
@@ -180,7 +180,7 @@ class NsLicenseRepository
                 $queryBuilder->set('version', $key);
             }
 
-            if(($data->extension_key === 'ns_t3ac' || $data->extension_key === 'ns_t3as') && $data->cs_download_url){
+            if(($data->extension_key === 'ns_t3ac' || $data->extension_key === 'ns_t3as') && isset($data->cs_download_url)){
                 $csDownloadUrl = $data->cs_download_url;
                 if (PHP_VERSION > 8) {
                     if ($data->cs_download_url) {
