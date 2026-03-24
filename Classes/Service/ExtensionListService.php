@@ -114,10 +114,17 @@ class ExtensionListService
                 $extensions['premium'][$key]['domains'] = $totalDomains;
 
                 $extVersion = $extensions['premium'][$key]['details']['version'];
+                   
 
                 if (isset($extDetails['lts_version']) && $extensions['premium'][$key]['version']) {
                     if (version_compare($extDetails['lts_version'], $extVersion, '>')) {
                         $extensions['premium'][$key]['details']['isUpdateAvail'] = true;
+                    }
+                    if($extension['key'] == 'ns_t3ac' || ($extension['key'] == 'ns_t3as')){
+                        $csVersion = $extensions['premium'][$key]['details']['cs_version'];
+                        if (version_compare($extDetails['cs_lts_version'], $csVersion, '>')) {
+                            $extensions['premium'][$key]['details']['isUpdateAvail'] = true;
+                        }
                     }
                 }
 
