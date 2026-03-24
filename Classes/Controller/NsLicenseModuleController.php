@@ -240,7 +240,6 @@ class NsLicenseModuleController extends ActionController
             } else {
                 $licenseData = $this->licenseService->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license'] . '&typo3_version=' . $this->typo3Version);
             }
-          
             if (isset($params['extension']) && is_array($licenseData)) {
                 if ($params['extension']['isUpdateAction'] && empty($licenseData['isUpdatable'])) {
                     $this->addFlashMessage(LocalizationUtility::translate('errorMessage.license_expired', 'NsLicense'), 'Your annual License key is expired', ContextualFeedbackSeverity::ERROR);
@@ -918,10 +917,10 @@ class NsLicenseModuleController extends ActionController
         }
         
         if (!is_array($downloadUrls)) {
-            $downloadUrls = $downloadUrls ? (array)$downloadUrls : [];d
+            $downloadUrls = $downloadUrls ? (array)$downloadUrls : [];
         }
         $downloadgugrl = end($downloadUrls);
-        if (!$downloadUrl) {
+        if (!$downloadgugrl) {
             if ($required) {
                 throw new \RuntimeException('Unable to open zip');
             }
