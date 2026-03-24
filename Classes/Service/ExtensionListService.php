@@ -43,7 +43,7 @@ class ExtensionListService
      */
     public function fetchExtensions(): array
     {
-        $extensions = ['premium' => [], 'free' => []];
+        $extensions = ['premium' => []];
         $licenseRecords = $this->nsLicenseRepository->fetchData();
 
         if ($licenseRecords !== []) {
@@ -57,7 +57,12 @@ class ExtensionListService
                     } else {
                         $icon = $package ? $package->getPackageIcon() : '';
                     }
-
+                    $description = '';
+                    if ($extDetails['description']){
+                        $description = $extDetails['description'] ?? '';
+                    }elseif ($packageMetaData){
+                        $description = $packageMetaData->getDescription();
+                    }
                     if (isset($extDetails['license_key']) && $extDetails['license_key']) {
                         $domains = isset($extDetails['domains']) ? GeneralUtility::trimExplode(',', $extDetails['domains']) : [];
                         $composerPackage = 'nitsan/' . str_replace('_', '-', $extDetails['extension_key']);
@@ -69,22 +74,11 @@ class ExtensionListService
                             'state' => str_starts_with($version, 'dev-') ? 'alpha' : 'stable',
                             'icon' => $icon ? PathUtility::getAbsoluteWebPath($package->getPackagePath() . $icon) : '',
                             'title' => $packageMetaData ? $packageMetaData->getTitle() : '',
-                            'description' => $packageMetaData ? $packageMetaData->getDescription() : '',
+                            'description' => $description,
                             'is_premium' => true,
                             'details' => $extDetails,
                             'domains' => count($domains),
                             'trial' => isset($extDetails['order_id']) && str_starts_with($extDetails['order_id'],'TRIAL') ? true : false
-                        ];
-                    } else {
-                        $extensions['free'][$extDetails['extension_key']] = [
-                            'packagePath' => $package ? $package->getPackagePath() : '',
-                            'key' => $extDetails['extension_key'],
-                            'version' => $version,
-                            'state' => str_starts_with($version, 'dev-') ? 'alpha' : 'stable',
-                            'icon' => $icon ? PathUtility::getAbsoluteWebPath($package->getPackagePath() . $icon) : '',
-                            'title' =>  $package ? $packageMetaData->getTitle() : '',
-                            'description' => $package ? $packageMetaData->getDescription() : '',
-                            'details' => $extDetails,
                         ];
                     }
                 }

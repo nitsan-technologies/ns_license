@@ -67,6 +67,7 @@ class NsLicenseRepository
                     'email' => $data->email ?? '',
                     'order_id' => $data->order_id ?? 'FREE',
                     'license_key' => $data->license_key ?? '',
+                    'description'=> $data->description ?? '',
                     'extension_key' => $data->extension_key,
                     'product_link' => $data->product_link,
                     'documentation_link' => $data->documentation_link,
@@ -179,11 +180,10 @@ class NsLicenseRepository
                 $queryBuilder->set('version', $key);
             }
 
-            if($data->extension_key === 'ns_t3ac' || $data->extension_key === 'ns_t3as'){
-
+            if(($data->extension_key === 'ns_t3ac' || $data->extension_key === 'ns_t3as') && $data->cs_download_url){
                 $csDownloadUrl = $data->cs_download_url;
                 if (PHP_VERSION > 8) {
-                    if ($data->extension_download_url) {
+                    if ($data->cs_download_url) {
                         $csDownloadUrl = get_mangled_object_vars($data->cs_download_url);
                     }
                 }

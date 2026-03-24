@@ -66,12 +66,20 @@
                                     {f:if(condition: extension.details.license_key, then: '{extension.details.license_key}', else: '-')}
                                     </code>
                                 </div>
-                                <f:if condition="!{extension.packagePath} && {composer}">
+                                {extension.packagePath}
+                                <f:if condition="!{extension.packagePath} || {composer}">
                                     <div class="alert alert-info mt-3 mb-3 p-2 install-steps">
                                         <strong><f:translate key="license-activation.activated_composer_steps_title" extensionName="ns_license" /></strong><br />
                                         <small class="d-block mt-2">
                                             <f:format.raw>
-                                                <f:translate key="license-activation.activated_composer_step1" extensionName="ns_license" arguments="{0: extension.composerPackage}"/>
+                                                <f:if condition="{extension.key} == 'ns_t3ac' || {extension.key} == 'ns_t3as'">
+                                                    <f:then>
+                                                        <f:translate key="license-activation.activated_composer_stepcs" extensionName="ns_license" arguments="{0: extension.composerPackage}"/>
+                                                    </f:then>
+                                                    <f:else>
+                                                        <f:translate key="license-activation.activated_composer_step1" extensionName="ns_license" arguments="{0: extension.composerPackage}"/>
+                                                    </f:else>
+                                                </f:if>
                                                 <f:translate key="license-activation.activated_composer_step2" extensionName="ns_license"/>
                                                 {extension.details.username} {extension.details.license_key}
                                                 <f:translate key="license-activation.activated_composer_step3"

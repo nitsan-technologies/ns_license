@@ -24,7 +24,6 @@ use NITSAN\NsLicense\Domain\Repository\NsLicenseRepository;
 use TYPO3\CMS\Extensionmanager\Utility\FileHandlingUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Extensionmanager\Service\ExtensionManagementService;
-use TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException;
 
 /***
  *
@@ -915,11 +914,11 @@ class NsLicenseModuleController extends ActionController
         if ($targetExtensionKey === '') {
             return;
         }
-        
         if (!is_array($downloadUrls)) {
             $downloadUrls = $downloadUrls ? (array)$downloadUrls : [];
         }
         $downloadgugrl = end($downloadUrls);
+
         if (!$downloadgugrl) {
             if ($required) {
                 throw new \RuntimeException('Unable to open zip');
@@ -930,7 +929,7 @@ class NsLicenseModuleController extends ActionController
         $zipName = $targetExtensionKey . '.zip';
         $zipPath = $this->siteRoot . 'typo3temp/' . $zipName;
         $this->downloadZipFile(
-            (string)$downloadUrl,
+            (string)$downloadgugrl,
             (string)($licenseData['license_key'] ?? ''),
             $zipPath,
             (string)($licenseData['user_name'] ?? ''),
