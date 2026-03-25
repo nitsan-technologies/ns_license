@@ -88,7 +88,7 @@
                                     </div>
                                 </f:if>
                                 <!-- Domains Button -->
-                                <f:if condition="{extension.details.domains}">
+                                <f:if condition="{extension.details.domains} || {extension.details.local_domains} || {extension.details.staging_domains}">
                                     <button type="button" class="btn btn-default domains-button t3js-domains-modal-trigger" 
                                     data-bs-toggle="modal"
                                     data-ext-key="{extension.key}" 
