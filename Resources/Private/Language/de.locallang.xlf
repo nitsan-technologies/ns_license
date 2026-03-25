@@ -6,99 +6,131 @@
             <!-- License LLL Start-->
             <trans-unit id="license-activation">
                 <source>License Manager</source>
+                <target>Lizenzmanager</target>
             </trans-unit>
             <trans-unit id="license-activation.product">
                 <source>Product</source>
+                <target>Produkt</target>
             </trans-unit>
             <trans-unit id="license-activation.documentation">
                 <source>Documentation</source>
+                <target>Dokumentation</target>
             </trans-unit>
             <trans-unit id="license-activation.allow">
                 <source>Allow</source>
+                <target>Zulassen</target>
             </trans-unit>
             <trans-unit id="license-activation.domains">
                 <source>Domains</source>
+                <target>Domänen</target>
             </trans-unit>
             <trans-unit id="license-activation.no_domains">
                 <source>Click `Check Updates` button to get latest list</source>
+                <target>Klicken Sie auf die Schaltfläche `Check Updates`, um die aktuelle Liste zu erhalten</target>
             </trans-unit>
             <trans-unit id="license-activation.licenseType">
                 <source>License</source>
+                <target>Lizenz</target>
             </trans-unit>
             <trans-unit id="license-activation.licenseType.life_time">
                 <source>Lifetime</source>
+                <target>Lebenslang</target>
             </trans-unit>
             <trans-unit id="license-activation.licenseType.annual">
                 <source>Annual</source>
+                <target>Jährlich</target>
             </trans-unit>
             <trans-unit id="license-activation.expiration_date">
                 <source>Expiry Date</source>
+                <target>Ablaufdatum</target>
             </trans-unit>
             <trans-unit id="license-activation.expiration_date.na">
                 <source>N/A</source>
+                <target>k.A.</target>
             </trans-unit>
             <trans-unit id="license-activation.expiration_date.expired">
                 <source>Expired</source>
+                <target>Abgelaufen</target>
             </trans-unit>
             <trans-unit id="license-activation.badge.licensed">
                 <source>Licensed</source>
+                <target>Lizenziert</target>
             </trans-unit>
             <trans-unit id="license-activation.badge.trial">
                 <source>Trial</source>
+                <target>Test</target>
             </trans-unit>
             <trans-unit id="license-activation.extkey">
                 <source>Extension Key</source>
+                <target>Erweiterungsschlüssel</target>
             </trans-unit>
             <trans-unit id="license-activation.version">
                 <source>Version</source>
+                <target>Version</target>
             </trans-unit>
             <trans-unit id="license-activation.license">
                 <source>License Key</source>
+                <target>Lizenzschlüssel</target>
             </trans-unit>
             <trans-unit id="license-activation.action">
                 <source>Action</source>
+                <target>Aktion</target>
             </trans-unit>
             <trans-unit id="license-deactivation.action">
                 <source>Deactivate</source>
+                <target>Deaktivieren</target>
             </trans-unit>
             <trans-unit id="license-reactivation.action">
                 <source>Repair</source>
+                <target>Reparieren</target>
             </trans-unit>
             <trans-unit id="license-activation.updateTo">
                 <source>Update to</source>
+                <target>Aktualisieren auf</target>
             </trans-unit>
             <trans-unit id="license-activation.latest">
                 <source>Up to Date</source>
+                <target>Aktuell</target>
             </trans-unit>
             <trans-unit id="license-activation.Updates">
                 <source>Check Updates</source>
+                <target>Updates prüfen</target>
             </trans-unit>
             <trans-unit id="license-activation.licenseKey">
                 <source>Enter Your License Key</source>
+                <target>Geben Sie Ihren Lizenzschlüssel ein</target>
             </trans-unit>
             <trans-unit id="license-activation.noRecordTitle">
                 <source>No License Found</source>
+                <target>Keine Lizenz gefunden</target>
             </trans-unit>
             <trans-unit id="license-activation.noRecordDescription">
                 <source>Purchase premium TYPO3 extensions from the T3Planet Store.</source>
+                <target>Kaufen Sie Premium-TYPO3-Erweiterungen im T3Planet Store.</target>
             </trans-unit>
             <trans-unit id="license-activation.overwriteExtension">
                 <source>Overwrite Your Existing Extension</source>
+                <target>Ihre bestehende Erweiterung überschreiben</target>
             </trans-unit>
             <trans-unit id="license-activation.licensepLaceholder">
                 <source>Paste your license key here</source>
+                <target>Fügen Sie Ihren Lizenzschlüssel hier ein</target>
             </trans-unit>
             <trans-unit id="license-activation.btn-activate">
                 <source>Activate License &amp; Download Extension</source>
+                <target>Lizenz aktivieren &amp; Erweiterung herunterladen</target>
             </trans-unit>
             <trans-unit id="license-activation.btn-activate-composer">
                 <source>Activate License (install via Composer)</source>
+                <target>Lizenz aktivieren (über Composer installieren)</target>
             </trans-unit>
             <trans-unit id="license-activation.activated_composer_success">
                 <source>Your license key is successfully activated. The extension is not downloaded in Composer mode — run the Composer commands below to install it.</source>
+                <target>Ihr Lizenzschlüssel wurde erfolgreich aktiviert. Die Erweiterung wird im Composer-Modus nicht heruntergeladen – führen Sie die folgenden Composer-Befehle aus, um sie zu installieren.</target>
             </trans-unit>
             <trans-unit id="license-activation.activated_composer_steps_title">
                 <source>Next: Install via Composer</source>
+                <target>Weiter: Über Composer installieren</target>
             </trans-unit>
             <trans-unit id="license-activation.activated_composer_step1">
                 <source><![CDATA[
@@ -109,17 +141,9 @@
                     }' <br /><br />]]>
                 </source>
             </trans-unit>
-            <trans-unit id="license-activation.activated_composer_stepcs">
-                <source><![CDATA[
-                   <strong> Step1. </strong> composer config repositories.t3planet '{<br />
-                    "type": "composer",<br />
-                    "url": "https://composer.t3planet.cloud",<br />
-                    "only": ["%s" ,"nitsan/ns-t3cs"]<br />
-                    }' <br /><br />]]>
-                </source>
-            </trans-unit>
             <trans-unit id="license-activation.activated_composer_step2">
                 <source>&lt;strong&gt; Step2.&lt;/strong&gt; composer config http-basic.composer.t3planet.cloud</source>
+                <target>&lt;strong&gt; Schritt2.&lt;/strong&gt; composer config http-basic.composer.t3planet.cloud</target>
             </trans-unit>
             <trans-unit id="license-activation.activated_composer_step3">
                 <source><![CDATA[<br /><br />  <strong> Step3. </strong> composer req %s --with-all-dependencies<br /><br /> <b>See:</b> https://docs.t3planet.de/en/latest/License/LicenseActivation/Index.html]]></source>
@@ -127,409 +151,512 @@
 
             <trans-unit id="license-activation.update_extension">
                 <source>Attention Please!</source>
+                <target>Bitte beachten!</target>
             </trans-unit>
             <trans-unit id="license-activation.update_extension_msg">
                 <source>Are you sure that you want to overwrite the existing TYPO3 extension? Before proceeding, we suggest you backup your existing TYPO3 extension. Otherwise, no worries, your extension's current version will be backup at the `/uploads/ns_license/` directory.</source>
+                <target>Möchten Sie wirklich die bestehende TYPO3-Erweiterung überschreiben? Bevor Sie fortfahren, empfehlen wir Ihnen, Ihre aktuelle TYPO3-Erweiterung zu sichern. Andernfalls keine Sorge: Die aktuelle Version Ihrer Erweiterung wird im Verzeichnis `/uploads/ns_license/` gesichert.</target>
             </trans-unit>
             <trans-unit id="license-activation.update_extension_btn_cancel">
                 <source>Cancel</source>
+                <target>Abbrechen</target>
             </trans-unit>
             <trans-unit id="license-activation.update_extension_btn_update">
                 <source>Update Now</source>
+                <target>Jetzt aktualisieren</target>
             </trans-unit>
             <trans-unit id="license-activation.deactivation">
                 <source>The extension is successfully deactivated.</source>
+                <target>Die Erweiterung wurde erfolgreich deaktiviert.</target>
             </trans-unit>
             <trans-unit id="license-activation.reactivation">
                 <source>The extension has been successfully reactivated and repaired.</source>
+                <target>Die Erweiterung wurde erfolgreich reaktiviert und repariert.</target>
             </trans-unit>
             <trans-unit id="license-activation.activated">
                 <source>Your license key is successfully activated.</source>
+                <target>Ihr Lizenzschlüssel wurde erfolgreich aktiviert.</target>
             </trans-unit>
             <trans-unit id="license-activation.overwrite_message">
                 <source>The extension is already available. If you still want to install it, check the "overwrite extension" checkbox.</source>
+                <target>Die Erweiterung ist bereits verfügbar. Wenn Sie sie trotzdem installieren möchten, aktivieren Sie das Kontrollkästchen „Erweiterung überschreiben“.</target>
             </trans-unit>
             <trans-unit id="license-activation.downloaded_successfully">
                 <source>The extension is successfully downloaded! Please activate the extension. Read more at https://docs.t3planet.com/en/latest/License/LicenseActivation/Index.html</source>
+                <target>Die Erweiterung wurde erfolgreich heruntergeladen! Bitte aktivieren Sie die Erweiterung. Mehr erfahren unter https://docs.t3planet.com/en/latest/License/LicenseActivation/Index.html</target>
             </trans-unit>
             <trans-unit id="license-activation.downloaded_successfully_from_update">
                 <source>Your extension is successfully updated. No worries, we have taken a backup of your last version at this path /uploads/ns_license/</source>
+                <target>Ihre Erweiterung wurde erfolgreich aktualisiert. Keine Sorge: Wir haben eine Sicherung Ihrer letzten Version im Pfad /uploads/ns_license/ erstellt.</target>
             </trans-unit>
             <!-- Errors -->
             <trans-unit id="errorMessage.license_not_entered">
                 <source>Please enter a valid License key.</source>
+                <target>Bitte geben Sie einen gültigen Lizenzschlüssel ein.</target>
             </trans-unit>
             <trans-unit id="errorMessage.license_not_found">
                 <source>License key not found for this extension</source>
+                <target>Lizenzschlüssel nicht für diese Erweiterung gefunden</target>
             </trans-unit>
             <trans-unit id="errorMessage.license_expired">
                 <source>Your annual license has expired. To continue receiving updates and support, please renew your license. For help, contact support at https://t3planet.com/support </source>
+                <target>Ihre jährliche Lizenz ist abgelaufen. Um weiterhin Updates und Support zu erhalten, verlängern Sie bitte Ihre Lizenz. Bei Fragen kontaktieren Sie den Support unter https://t3planet.com/support </target>
             </trans-unit>
             <trans-unit id="errorMessage.error1">
                 <source>Your provided license key is not valid.</source>
+                <target>Der bereitgestellte Lizenzschlüssel ist ungültig.</target>
             </trans-unit>
             <trans-unit id="errorMessage.error2">
                 <source>This license key is already registered on other domains. It cannot be used on more than %s domains.</source>
+                <target>Dieser Lizenzschlüssel ist bereits auf anderen Domains registriert. Er kann nicht auf mehr als %s Domains verwendet werden.</target>
             </trans-unit>
             <trans-unit id="errorMessage.error3">
                 <source>Your order is currently pending. For any questions, please submit a support ticket at https://t3planet.com/support.</source>
+                <target>Ihre Bestellung befindet sich aktuell in Bearbeitung. Für Fragen senden Sie bitte ein Support-Ticket unter https://t3planet.com/support.</target>
             </trans-unit>
             <trans-unit id="errorMessage.error4">
                 <source>Your license key is valid, but your purchased extension %s is not compatible yet with TYPO3 v%s</source>
+                <target>Ihr Lizenzschlüssel ist gültig, aber die gekaufte Erweiterung %s ist noch nicht mit TYPO3 v%s kompatibel.</target>
             </trans-unit>
             <trans-unit id="errorMessage.invalid_data">
                 <source>Invalid input data</source>
+                <target>Ungültige Eingabedaten</target>
             </trans-unit>
             <trans-unit id="errorMessage.invalid_environment">
                 <source>Invalid environment selected. Please choose Production, Staging, or Local.</source>
+                <target>Ungültige Umgebung ausgewählt. Bitte wählen Sie Production, Staging oder Local.</target>
             </trans-unit>
             <trans-unit id="errorMessage.extension_key_required">
                 <source>Extension key is required</source>
+                <target>Der Erweiterungsschlüssel ist erforderlich</target>
             </trans-unit>
             <trans-unit id="errorMessage.default">
                 <source>Sorry! Something is wrong to connect at our License system server, Please try again or submit support ticket at https://t3planet.com/support</source>
+                <target>Entschuldigung! Beim Verbindungsaufbau zu unserem Lizenzsystem-Server ist etwas schiefgelaufen. Bitte versuchen Sie es erneut oder senden Sie ein Support-Ticket unter https://t3planet.com/support</target>
             </trans-unit>
             <trans-unit id="license-activation.footerTitle">
                 <source>Need Help With Domain Registration?</source>
+                <target>Benötigen Sie Hilfe bei der Domainregistrierung?</target>
             </trans-unit>
             <trans-unit id="license-activation.footerTowTitle">
                 <source>How Does the License Work?</source>
+                <target>Wie funktioniert die Lizenz?</target>
             </trans-unit>
             <trans-unit id="license-activation.footerDescription">
                 <source>To use your license on local, staging, or testing environments, contact our support team to register those domains.</source>
+                <target>Um Ihre Lizenz in lokalen, Staging- oder Testumgebungen zu nutzen, kontaktieren Sie unser Support-Team, damit diese Domains registriert werden.</target>
             </trans-unit>
             <trans-unit id="license-activation.footerTwoDescription">
                 <source>Learn how to obtain, activate, download, and install your purchased TYPO3 extensions with step-by-step guidance.</source>
+                <target>Erfahren Sie, wie Sie Ihre gekauften TYPO3-Erweiterungen erhalten, aktivieren, herunterladen und installieren – Schritt für Schritt.</target>
             </trans-unit>
             <trans-unit id="license-activation.footerButton">
                 <source>Submit Your Ticket</source>
+                <target>Ticket einreichen</target>
             </trans-unit>
             <trans-unit id="license-activation.licenseButton">
                 <source>How License Works</source>
+                <target>So funktioniert die Lizenz</target>
             </trans-unit>
             <trans-unit id="license.key.up_to_date">
                 <source>Your extension is up to date</source>
+                <target>Ihre Erweiterung ist auf dem neuesten Stand</target>
             </trans-unit>
             <trans-unit id="license.key.update">
                 <source>Good news! New version of this extension is available, Please click on "Update to x.x.x" button to get latest version.</source>
+                <target>Gute Nachrichten! Eine neue Version dieser Erweiterung ist verfügbar. Klicken Sie auf die Schaltfläche „Update auf x.x.x“, um die neueste Version zu erhalten.</target>
             </trans-unit>
             <trans-unit id="license-deactivation.confirmation">
                 <source>Caution!</source>
+                <target>Vorsicht!</target>
             </trans-unit>
             <trans-unit id="license-deactivation.confirmation.message">
                 <source>Do you want to deactivate the license key from this domain? The TYPO3 extension will not more work on this domain.</source>
+                <target>Möchten Sie den Lizenzschlüssel für diese Domain deaktivieren? Die TYPO3-Erweiterung funktioniert dann nicht mehr auf dieser Domain.</target>
             </trans-unit>
             <trans-unit id="license-deactivation.button">
                 <source>Deactivate Now!</source>
+                <target>Jetzt deaktivieren!</target>
             </trans-unit>
             <trans-unit id="license-activation.extension_repair">
                 <source>Your license key is successfully activated. The extension is successfully re-activated.</source>
+                <target>Ihr Lizenzschlüssel wurde erfolgreich aktiviert. Die Erweiterung wurde erfolgreich reaktiviert.</target>
             </trans-unit>
             <!-- Tab Labels -->
             <trans-unit id="license-tabs.my-extensions">
                 <source>My Extensions</source>
+                <target>Meine Erweiterungen</target>
             </trans-unit>
             <trans-unit id="license-tabs.shop">
                 <source>T3Planet Shop</source>
+                <target>T3Planet-Shop</target>
             </trans-unit>
             <trans-unit id="license-tabs.services">
                 <source>TYPO3 Services</source>
+                <target>TYPO3-Services</target>
             </trans-unit>
             <trans-unit id="license-tabs.website-builder">
                 <source>Website Builder</source>
+                <target>Website-Builder</target>
             </trans-unit>
             <!-- Extensions Filter Labels -->
             <trans-unit id="license-extensions.search-placeholder">
                 <source>Search my extensions...</source>
+                <target>Meine Erweiterungen durchsuchen...</target>
             </trans-unit>
             <trans-unit id="license-extensions.filter-all">
                 <source>All Extensions</source>
+                <target>Alle Erweiterungen</target>
             </trans-unit>
             <trans-unit id="license-extensions.filter-premium">
                 <source>Premium Only</source>
+                <target>Nur Premium</target>
             </trans-unit>
             <trans-unit id="license-extensions.filter-trial">
                 <source>Trial Only</source>
+                <target>Nur Test</target>
             </trans-unit>
             <trans-unit id="license-extensions.filter-free">
                 <source>Free Only</source>
+                <target>Nur Free</target>
             </trans-unit>
             <trans-unit id="license-extensions.section-title-free">
                 <source>Free Extensions</source>
+                <target>Kostenlose Erweiterungen</target>
             </trans-unit>
             <trans-unit id="license-extensions.get-updates">
                 <source>Get Updates</source>
+                <target>Updates abrufen</target>
             </trans-unit>
             <trans-unit id="license-shop.all-extensions">
                 <source>All Extensions</source>
+                <target>Alle Erweiterungen</target>
             </trans-unit>
             <trans-unit id="license-shop.all-templates">
                 <source>All Templates</source>
+                <target>Alle Templates</target>
             </trans-unit>
             <trans-unit id="license-shop.all-sections">
                 <source>All Sections</source>
+                <target>Alle Abschnitte</target>
             </trans-unit>
             <trans-unit id="license-shop.know-more">
                 <source>Get Free Extension</source>
+                <target>Kostenlose Erweiterung herunterladen</target>
             </trans-unit>
             <trans-unit id="license-shop.live-demo">
                 <source>Live Demo</source>
+                <target>Live-Demo</target>
             </trans-unit>
             <!-- Services Filter Labels -->
             <trans-unit id="license-services.search-placeholder">
                 <source>Search TYPO3 Services...</source>
+                <target>TYPO3 Services durchsuchen...</target>
             </trans-unit>
             <trans-unit id="license-services.filter-all-categories">
                 <source>All Categories</source>
+                <target>Alle Kategorien</target>
             </trans-unit>
             <trans-unit id="license-services.filter-support-products">
                 <source>For Support Products</source>
+                <target>Für Support-Produkte</target>
             </trans-unit>
             <trans-unit id="license-services.filter-decision-makers">
                 <source>For Decision Makers</source>
+                <target>Für Entscheider</target>
             </trans-unit>
             <trans-unit id="license-services.filter-marketers">
                 <source>For Marketers</source>
+                <target>Für Marketing</target>
             </trans-unit>
             <trans-unit id="license-services.filter-developers">
                 <source>For Developers</source>
+                <target>Für Entwickler</target>
             </trans-unit>
             <trans-unit id="license-services.filter-administrators">
                 <source>For Administrators</source>
+                <target>Für Administratoren</target>
             </trans-unit>
             <trans-unit id="license-services.filter-cms-migration">
                 <source>For CMS Migration</source>
+                <target>Für CMS-Migration</target>
             </trans-unit>
             <trans-unit id="license-services.get-updates">
                 <source>Get Updates</source>
+                <target>Updates abrufen</target>
             </trans-unit>
             <trans-unit id="license-documentation">
                 <source>Documentation</source>
+                <target>Dokumentation</target>
             </trans-unit>
             <trans-unit id="license-domains-active">
                 <source>Domains Active</source>
+                <target>Domains aktiv</target>
             </trans-unit>
             <trans-unit id="license-click-to-manage-domains">
                 <source>Manage Domains</source>
+                <target>Domains verwalten</target>
             </trans-unit>
             <trans-unit id="license-new-update-version-available">
                 <source>New Update version available: v%s</source>
+                <target>Neue Update-Version verfügbar: v%s</target>
             </trans-unit>
             <trans-unit id="license-activation.description">
                 <source>Manage your licenses and discover new extensions</source>
+                <target>Verwalten Sie Ihre Lizenzen und entdecken Sie neue Erweiterungen</target>
             </trans-unit>
             <trans-unit id="license.trial.extend">
                 <source>Extend Trial</source>
+                <target>Test verlängern</target>
             </trans-unit>
             <trans-unit id="license.trial.extended_successfully">
                 <source>Trial period extended by 15 days</source>
+                <target>Testzeitraum um 15 Tage verlängert</target>
             </trans-unit>
             <trans-unit id="license.trial.extend_failed">
                 <source>Failed to extend trial</source>
+                <target>Testzeitraum konnte nicht verlängert werden</target>
             </trans-unit>
             <trans-unit id="license.trial.already_extended">
                 <source>Trial has already been extended</source>
+                <target>Der Test wurde bereits verlängert</target>
             </trans-unit>
             <trans-unit id="license.trial.lifetime_not_eligible">
                 <source>Lifetime licenses are not eligible for trial extension.</source>
+                <target>Lebenslange Lizenzen sind nicht für eine Testverlängerung geeignet.</target>
             </trans-unit>
             <trans-unit id="license.trial.extend_once_only">
                 <source>Trial can only be extended once</source>
+                <target>Der Test kann nur einmal verlängert werden</target>
             </trans-unit>
             <trans-unit id="license.trial.confirm_message">
                 <source>Extend your trial period by 15 days?</source>
+                <target>Testzeitraum um 15 Tage verlängern?</target>
             </trans-unit>
             <trans-unit id="license.trial.extend_error_exception">
                 <source>Failed to extend trial: %s</source>
+                <target>Testzeitraum konnte nicht verlängert werden: %s</target>
             </trans-unit>
             <!-- Add domain -->
             <trans-unit id="license.domain.added_successfully">
                 <source>%s domain has been added successfully.</source>
+                <target>%s Domain wurde erfolgreich hinzugefügt.</target>
             </trans-unit>
             <trans-unit id="license.domain.already_exists">
                 <source>%s domain is already registered for this license.</source>
+                <target>%s Domain ist bereits für diese Lizenz registriert.</target>
             </trans-unit>
             <trans-unit id="license.domain.deleted_successfully">
                 <source>%s domain has been removed successfully.</source>
+                <target>%s Domain wurde erfolgreich entfernt.</target>
             </trans-unit>
             <trans-unit id="license.domain.not_found">
                 <source>Domain was not found for this license.</source>
+                <target>Domain wurde für diese Lizenz nicht gefunden.</target>
             </trans-unit>
             <trans-unit id="license.domain.updated_successfully">
                 <source>%s domain has been updated successfully.</source>
+                <target>%s Domain wurde erfolgreich aktualisiert.</target>
             </trans-unit>
             <trans-unit id="license-domains.edit_modal.title">
                 <source>Edit Domain</source>
+                <target>Domain bearbeiten</target>
             </trans-unit>
             <trans-unit id="license-domains.edit_modal.subtitle">
                 <source>Update the registered domain name</source>
+                <target>Den registrierten Domainnamen aktualisieren</target>
             </trans-unit>
             <trans-unit id="license-domains.edit_modal.field.current_domain">
                 <source>Current domain</source>
+                <target>Aktuelle Domain</target>
             </trans-unit>
             <trans-unit id="license-domains.edit_modal.field.new_domain">
                 <source>New domain</source>
+                <target>Neue Domain</target>
             </trans-unit>
             <trans-unit id="license-domains.button.save_domain">
                 <source>Save</source>
+                <target>Speichern</target>
             </trans-unit>
             <trans-unit id="license-services.need-custom-solution">
                 <source>Need a Custom Solution?</source>
+                <target>Benötigen Sie eine individuelle Lösung?</target>
             </trans-unit>
             <trans-unit id="license-services.custom-solution-description">
                 <source>Get a free consultation from our TYPO3 experts</source>
+                <target>Erhalten Sie eine kostenlose Beratung von unseren TYPO3-Experten</target>
             </trans-unit>
             <trans-unit id="license-services.contact-us">
                 <source>Contact Us</source>
+                <target>Kontaktieren Sie uns</target>
             </trans-unit>
             <trans-unit id="license-services.learn-more">
                 <source>Learn More</source>
+                <target>Mehr erfahren</target>
             </trans-unit>
             <!-- Footer Labels -->
             <trans-unit id="license-footer.developed-by">
                 <source>Developed with 💙 by Team T3Planet.</source>
+                <target>Entwickelt mit 💙 von Team T3Planet.</target>
             </trans-unit>
             <trans-unit id="license-footer.demo-guide">
                 <source>Demo Guide</source>
+                <target>Demo-Anleitung</target>
             </trans-unit>
             <trans-unit id="license-footer.documentation">
                 <source>Documentation</source>
+                <target>Dokumentation</target>
             </trans-unit>
             <trans-unit id="license-footer.support">
                 <source>Support</source>
+                <target>Unterstützung</target>
             </trans-unit>
             <!-- Loading Labels -->
             <trans-unit id="license-loading.loading">
                 <source>Loading...</source>
+                <target>Lädt...</target>
             </trans-unit>
             <trans-unit id="license-loading.shop">
                 <source>Loading shop data...</source>
+                <target>Shop-Daten werden geladen...</target>
             </trans-unit>
             <trans-unit id="license-loading.services">
                 <source>Loading services data...</source>
+                <target>Service-Daten werden geladen...</target>
             </trans-unit>
             <trans-unit id="license-loading.error.shop-url-not-found">
                 <source>Shop URL not found.</source>
+                <target>Shop-URL nicht gefunden.</target>
             </trans-unit>
             <trans-unit id="license-loading.error.shop-failed">
                 <source>Failed to load shop data. Please try again.</source>
+                <target>Shop-Daten konnten nicht geladen werden. Bitte versuchen Sie es erneut.</target>
             </trans-unit>
             <trans-unit id="license-loading.error.shop-error">
                 <source>Error loading shop data. Please refresh the page.</source>
+                <target>Fehler beim Laden der Shop-Daten. Bitte aktualisieren Sie die Seite.</target>
             </trans-unit>
             <trans-unit id="license-loading.error.services-url-not-found">
                 <source>Services URL not found.</source>
+                <target>Service-URL nicht gefunden.</target>
             </trans-unit>
             <trans-unit id="license-loading.error.services-failed">
                 <source>Failed to load services data. Please try again.</source>
+                <target>Service-Daten konnten nicht geladen werden. Bitte versuchen Sie es erneut.</target>
             </trans-unit>
             <trans-unit id="license-loading.error.services-error">
                 <source>Error loading services data. Please refresh the page.</source>
+                <target>Fehler beim Laden der Service-Daten. Bitte aktualisieren Sie die Seite.</target>
             </trans-unit>
             <trans-unit id="license.renew">
                 <source>Renew</source>
+                <target>Erneuern</target>
             </trans-unit>
             <trans-unit id="license.buy">
                 <source>Buy</source>
+                <target>Kaufen</target>
             </trans-unit>
             <!-- Domains & Auth Logs Modal -->
             <trans-unit id="license-domains.modal.title">
                 <source>Manage domains and view authentication logs</source>
+                <target>Domains verwalten und Authentifizierungsprotokolle ansehen</target>
             </trans-unit>
             <trans-unit id="license-domains.tab.domains">
                 <source>Domains</source>
+                <target>Domänen</target>
             </trans-unit>
             <trans-unit id="license-domains.tab.auth_logs">
                 <source>Authentication Logs</source>
+                <target>Authentifizierungsprotokolle</target>
             </trans-unit>
             <trans-unit id="license-domains.search_placeholder">
                 <source>Search domains...</source>
+                <target>Domains durchsuchen...</target>
             </trans-unit>
             <trans-unit id="license-domains.filter.environment.all">
                 <source>All Environments</source>
+                <target>Alle Umgebungen</target>
             </trans-unit>
             <trans-unit id="license-domains.filter.environment.production">
                 <source>Production</source>
+                <target>Produktion</target>
             </trans-unit>
             <trans-unit id="license-domains.filter.environment.staging">
                 <source>Staging</source>
+                <target>Zwischenumgebung</target>
             </trans-unit>
             <trans-unit id="license-domains.filter.environment.local">
                 <source>Local</source>
+                <target>Lokal</target>
             </trans-unit>
             <trans-unit id="license-domains.button.add_domain">
                 <source>Add Domain</source>
+                <target>Domain hinzufügen</target>
             </trans-unit>
             <trans-unit id="license-auth-logs.search_placeholder">
                 <source>Search logs...</source>
+                <target>Logs durchsuchen...</target>
             </trans-unit>
             <trans-unit id="license-domains.add_modal.title">
                 <source>New Domain</source>
+                <target>Neue Domain</target>
             </trans-unit>
             <trans-unit id="license-domains.add_modal.subtitle">
                 <source>Add a new domain to your license</source>
+                <target>Fügen Sie eine neue Domain zu Ihrer Lizenz hinzu</target>
             </trans-unit>
             <trans-unit id="license-domains.add_modal.field.domain.label">
                 <source>Domain</source>
+                <target>Domäne</target>
             </trans-unit>
             <trans-unit id="license-domains.add_modal.field.domain.placeholder">
                 <source>example.com</source>
+                <target>beispiel.de</target>
             </trans-unit>
             <trans-unit id="license-domains.add_modal.field.domain.help">
                 <source>Enter the domain name without http:// or https://</source>
+                <target>Geben Sie den Domainnamen ohne http:// oder https:// ein</target>
             </trans-unit>
             <trans-unit id="license-domains.add_modal.field.environment.label">
                 <source>Environment</source>
+                <target>Umgebung</target>
             </trans-unit>
             <trans-unit id="license-domains.add_modal.field.environment.placeholder">
                 <source>Select environment</source>
+                <target>Umgebung auswählen</target>
             </trans-unit>
             <trans-unit id="license-expire-days">
                 <source>License Expires in %s Days</source>
+                <target>Lizenz läuft in %s Tagen ab</target>
             </trans-unit>
             <!-- Fetch data (shop / services / extensions) -->
             <trans-unit id="fetchData.success.data_updated">
                 <source>Data updated successfully</source>
+                <target>Daten erfolgreich aktualisiert</target>
             </trans-unit>
             <trans-unit id="fetchData.success.extension_logs_updated">
                 <source>Extension logs updated successfully</source>
+                <target>Erweiterungs-Logs erfolgreich aktualisiert</target>
             </trans-unit>
             <trans-unit id="fetchData.success.shop_updated">
                 <source>Shop data updated successfully</source>
+                <target>Shop-Daten erfolgreich aktualisiert</target>
             </trans-unit>
             <trans-unit id="fetchData.success.services_updated">
                 <source>Services data updated successfully</source>
+                <target>Service-Daten erfolgreich aktualisiert</target>
             </trans-unit>
             <trans-unit id="fetchData.error.failed">
                 <source>Failed to retrieve data. Please try again.</source>
+                <target>Daten konnten nicht abgerufen werden. Bitte versuchen Sie es erneut.</target>
             </trans-unit>
             <trans-unit id="fetchData.error.no_license_keys">
                 <source>No license keys found. Add a license first to fetch details</source>
+                <target>Keine Lizenzschlüssel gefunden. Fügen Sie zuerst eine Lizenz hinzu, um Details abzurufen</target>
             </trans-unit>
             <trans-unit id="license-expired">
                 <source>License Expired</source>
-            </trans-unit>
-            <!-- Help Widget Labels -->
-            <trans-unit id="license-help-widget.aria-label">
-                <source>Need help?</source>
-            </trans-unit>
-            <trans-unit id="license-help-widget.title">
-                <source>Need Help?</source>
-            </trans-unit>
-            <trans-unit id="license-help-widget.description">
-                <source>Our support team is here to assist you</source>
-            </trans-unit>
-            <trans-unit id="license-help-widget.live-chat">
-                <source>Live Chat</source>
-            </trans-unit>
-            <trans-unit id="license-help-widget.knowledge-base">
-                <source>Knowledge Base</source>
-            </trans-unit>
-            <trans-unit id="license-help-widget.email-support">
-                <source>Email Support</source>
-            </trans-unit>
-            <trans-unit id="license-help-widget.rate-us">
-                <source>Rate Us</source>
+                <target>Lizenz abgelaufen</target>
             </trans-unit>
         </body>
     </file>

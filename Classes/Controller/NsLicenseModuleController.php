@@ -3,30 +3,27 @@
 namespace NITSAN\NsLicense\Controller;
 
 use TYPO3\CMS\Core\Core\Environment;
-use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Http\RequestFactory;
-use TYPO3\CMS\Core\Imaging\IconFactory;
-use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use NITSAN\NsLicense\Service\LicenseService;
+use NITSAN\NsLicense\Service\ExtensionListService;
+use NITSAN\NsLicense\Service\ExtensionArchiveService;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
-use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Service\DependencyOrderingService;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
-use TYPO3\CMS\Extensionmanager\Utility\InstallUtility;
+use TYPO3\CMS\Core\Http\JsonResponse;
 use NITSAN\NsLicense\Domain\Repository\NsLicenseRepository;
 use TYPO3\CMS\Extensionmanager\Utility\FileHandlingUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Extensionmanager\Service\ExtensionManagementService;
-use TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException;
 
 /***
  *
@@ -35,7 +32,7 @@ use TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException;
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
  *
- *  (c) 2020
+ *  (c) 2026
  *
  ***/
 
@@ -50,42 +47,31 @@ class NsLicenseModuleController extends ActionController
 
     protected $composerSiteRoot = false;
 
-    /**
-     * @var int
-     */
     protected int $typo3Version = 0;
-    /**
-     * @var mixed|object|\Psr\Log\LoggerAwareInterface|PackageManager|(PackageManager&\Psr\Log\LoggerAwareInterface)|(PackageManager&\TYPO3\CMS\Core\SingletonInterface)|\TYPO3\CMS\Core\SingletonInterface|null
-     */
-    private mixed $packageManager;
+    
     /**
      * @var mixed|object|\Psr\Log\LoggerAwareInterface|CacheManager|(CacheManager&\Psr\Log\LoggerAwareInterface)|(CacheManager&\TYPO3\CMS\Core\SingletonInterface)|\TYPO3\CMS\Core\SingletonInterface|null
      */
     private mixed $cacheManager;
 
-    protected string $extensionBackupPath;
 
     /**
      * @param ModuleTemplateFactory $moduleTemplateFactory
-     * @param IconFactory $iconFactory
-     * @param PageRenderer $pageRenderer
      * @param RequestFactory $requestFactory
      * @param FileHandlingUtility $fileHandlingUtility
      * @param ExtensionManagementService $managementService
-     * @param InstallUtility $installUtility
      * @param ContentObjectRenderer $contentObject
      */
     public function __construct(
         protected readonly ModuleTemplateFactory $moduleTemplateFactory,
-        protected readonly IconFactory $iconFactory,
-        protected readonly PageRenderer $pageRenderer,
         protected readonly RequestFactory $requestFactory,
         protected readonly FileHandlingUtility $fileHandlingUtility,
         protected readonly ExtensionManagementService $managementService,
-        protected readonly InstallUtility $installUtility,
         protected readonly ContentObjectRenderer $contentObject,
         protected readonly NsLicenseRepository $nsLicenseRepository,
         protected readonly LicenseService $licenseService,
+        protected readonly ExtensionListService $extensionListService,
+        protected readonly ExtensionArchiveService $extensionArchiveService,
         protected readonly DependencyOrderingService $dependencyOrderingService,
     ) {}
 
@@ -96,130 +82,74 @@ class NsLicenseModuleController extends ActionController
     {
         // Call from Default ActionController
         parent::initializeAction();
-
         // Initial common properties
         // @extensionScannerIgnoreLine
-        $this->packageManager = GeneralUtility::makeInstance(PackageManager::class);
         $this->cacheManager = GeneralUtility::makeInstance(CacheManager::class);
-
         $this->siteRoot = \TYPO3\CMS\Core\Core\Environment::getPublicPath() . '/';
-        $this->composerSiteRoot = \TYPO3\CMS\Core\Core\Environment::getProjectPath() . '/';
         $this->isComposerMode = Environment::isComposerMode();
-
-        //TYPO3 version
         $versionInformation = GeneralUtility::makeInstance(Typo3Version::class);
         $this->typo3Version = $versionInformation->getMajorVersion();
-        // $this->typo3Version = 12;
-
-        // Compulsory add "/" at the end
         $this->siteRoot = rtrim($this->siteRoot, '/') . '/';
     }
 
-    /**
-     * action list.
-     */
+
     public function listAction(): ResponseInterface
     {
-        // Let's flush all the cache to change the version number
-        $this->cacheManager->flushCaches();
-
-        $extensions = $this->nsLicenseRepository->fetchData();
-        foreach ($extensions as $key => $extension) {
-            if ($extension['is_life_time'] != 1) {
-                $extensions[$key]['days'] = (int) floor((($extension['expiration_date'] - time()) + 86400) / 86400);
-            }
-            if (!empty($extension['domains'])) {
-                $extensions[$key]['domains'] = str_replace(',', ' | ', $extensions[$key]['domains']);
-            }
-
-            // Get latest version from extension ext_emconf.php
-            $extensions[$key]['version'] = $this->getVersionFromEmconf($extensions[$key]['extension_key']);
-            if (version_compare($extensions[$key]['lts_version'], $extensions[$key]['version'], '>')) {
-                $extensions[$key]['isUpdateAvail'] = true;
-            }
-            // Check if required repair
-            $extFolder = $this->licenseService->getExtensionFolder($extensions[$key]['extension_key']);
-            $extensions[$key]['isRepareRequired'] = $this->checkRepairFiles($extFolder, $extensions[$key]['extension_key']);
-        }
+        $extensions = $this->extensionListService->fetchExtensions();
         $view = $this->initializeModuleTemplate($this->request);
-        $showUpdateButton = '1';
+        $view->assign('activeTab', 'list');
+        $view->assign('t3version', $this->typo3Version);
         if ($this->isComposerMode) {
-            $showUpdateButton = '0';
+            $view->assign('showUpdateButton', 1);
         }
-        $view->assign('showUpdateButton', $showUpdateButton);
         $view->assign('extensions', $extensions);
-        return $view->renderResponse('NsLicenseModule/List');
+        return $view->renderResponse('NsLicenseModule/Index');
+    }
+
+    /**
+     * Shop action - displays shop data
+     * @return ResponseInterface
+     */
+    public function getShopDataAction(): ResponseInterface
+    {
+        $view = $this->initializeModuleTemplate($this->request);
+        $shopData = $this->loadSyncData('shop');
+        $view->assign('shopData', $shopData);
+        return $view->renderResponse('NsLicenseModule/Shop');
+    }
+
+    /**
+     * Services action - displays services data
+     * @return ResponseInterface
+     */
+    public function getServicesDataAction(): ResponseInterface
+    {
+        $view = $this->initializeModuleTemplate($this->request);
+        if ($this->isComposerMode) {
+            $view->assign('showUpdateButton', 1);
+        }
+        $categories = $this->loadSyncData('services');
+        $view->assign('servicesData', ['categories' => is_array($categories) ? $categories : []]);
+        return $view->renderResponse('NsLicenseModule/Services');
+    }
+
+    /**
+     * Load synchronized data from database
+     * @param string $type 'shop', 'services', or 'extensions'
+     * @return array
+     */
+    protected function loadSyncData(string $type): array
+    {
+        try {
+            return $this->nsLicenseRepository->getSyncData($type);
+        } catch (\Exception $e) {
+            return [];
+        }
     }
 
     public function connectToServer($extKey = null, $reload = 0, $checkType = '')
     {
         $this->licenseService->connectToServer($extKey, $reload, $checkType);
-    }
-
-    /**
-     * action list.
-     */
-    public function checkUpdateAction(): ResponseInterface
-    {
-        $params = $this->request->getArguments();
-        if (isset($params['extKey'])) {
-            // Let's flush all the cache to change the version number
-            $this->cacheManager->flushCaches();
-
-            // Try to validate license key with system
-            $this->licenseService->connectToServer($params['extKey'], 1);
-
-            // Fetch latest LTS version from APIs
-            $extData = $this->nsLicenseRepository->fetchData($params['extKey']);
-
-            // Finally compare version with ext_emconf + latest available version
-            $versionId = $this->getVersionFromEmconf($params['extKey']);
-            if (version_compare($versionId, $extData[0]['lts_version'], '==')) {
-                $severity = ContextualFeedbackSeverity::OK;
-                $message = LocalizationUtility::translate('license.key.up_to_date', 'NsLicense');
-            } else {
-                $message = LocalizationUtility::translate('license.key.update', 'NsLicense');
-                $severity = ContextualFeedbackSeverity::OK;
-                if ($this->isComposerMode) {
-                    $message = LocalizationUtility::translate('license.key.update.composer', 'NsLicense');
-                    $severity = ContextualFeedbackSeverity::INFO;
-                }
-
-            }
-            $this->addFlashMessage($message, $params['extKey'], $severity);
-        }
-        return $this->redirect('list');
-    }
-
-
-    /**
-     * checkRepairFiles.
-     */
-    public function checkRepairFiles($extFolder, $extension)
-    {
-        $isRepair = false;
-        if (file_exists($extFolder . 'ext_tables..php')) {
-            $isRepair = true;
-        }
-        if (file_exists($extFolder . 'Configuration./TCA/Overrides/sys_template..php')) {
-            $isRepair = true;
-        }
-        if (file_exists($extFolder . 'Configuration/Backend/Modules..php')) {
-            $isRepair = true;
-        }
-        if (is_dir($extFolder . 'Resources/Private/Language')) {
-            $languageDir = $extFolder . 'Resources/Private/Language/';
-            $files = scandir($languageDir);
-            if (is_array($files)) {
-                foreach ($files as $file) {
-                    if ($file !== '.' && $file !== '..' && pathinfo($file, PATHINFO_EXTENSION) === 'xlf' && strpos($file, '..xlf') !== false) {
-                        $isRepair = true;
-                        break;
-                    }
-                }
-            }
-        }
-        return $isRepair;
     }
 
     /**
@@ -234,14 +164,13 @@ class NsLicenseModuleController extends ActionController
             if (!isset($params['action'])) {
                 return $this->redirect('list');
             }
-            if (!is_null($updateStatus) && !$updateStatus->status) {
+           
+            if (!is_null($updateStatus) && !$updateStatus['status']) {
                 $this->addFlashMessage(LocalizationUtility::translate('errorMessage.license_expired', 'NsLicense'), 'Your annual License key is expired', ContextualFeedbackSeverity::ERROR);
                 return $this->redirect('list');
             }
-
             // Let's take backup to /uploads/ns_license/
-            $this->getBackupToUploadFolder($extKey);
-
+            $this->extensionArchiveService->getBackupToUploadFolder($extKey);
             $params['extension']['license'] = $params['extension']['license_key'];
             $params['extension']['overwrite'] = true;
             $params['extension']['isUpdateAction'] = true;
@@ -273,13 +202,13 @@ class NsLicenseModuleController extends ActionController
     /**
      * action deactivation.
      */
-    public function deactivationAction(): ResponseInterface
+    protected function deactivationAction(): ResponseInterface
     {
         $params = $this->request->getArguments();
-        $licenseData = $this->licenseService->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['extension']['license_key'] . '&deactivate=1');
+        $this->licenseService->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['extension']['license_key'] . '&deactivate=1');
         $this->nsLicenseRepository->deactivate($params['extension']['license_key'], $params['extension']['extension_key']);
-        $extFolder = $this->licenseService->getExtensionFolder($params['extension']['extension_key']);
-        $this->licenseService->updateFiles($extFolder, $params['extension']['extension_key']);
+        $extFolder = $this->extensionListService->getExtensionFolder($params['extension']['extension_key']);
+        $this->licenseService->updateFiles($extFolder);
         $this->addFlashMessage(LocalizationUtility::translate('license-activation.deactivation', 'NsLicense'), 'EXT:' . $params['extension']['extension_key'], ContextualFeedbackSeverity::OK);
         return $this->redirect('list');
     }
@@ -290,9 +219,9 @@ class NsLicenseModuleController extends ActionController
     public function reactivationAction()
     {
         $params = $this->request->getArguments();
-        $extFolder = $this->licenseService->getExtensionFolder($params['extension']['extension_key']);
-        $this->licenseService->updateRepairFiles($extFolder, $params['extension']['extension_key']);
-        $this->addFlashMessage(LocalizationUtility::translate('license-activation.reactivation', 'NsLicense'), 'EXT:' . $params['extension']['extension_key'], ContextualFeedbackSeverity::OK);
+        $extFolder = $this->extensionListService->getExtensionFolder($params['extension']);
+        $this->licenseService->updateRepairFiles($extFolder, $params['extension']);
+        $this->addFlashMessage(LocalizationUtility::translate('license-activation.reactivation', 'NsLicense'), 'EXT:' . $params['extension'], ContextualFeedbackSeverity::OK);
         return $this->redirect('list');
     }
 
@@ -310,61 +239,65 @@ class NsLicenseModuleController extends ActionController
             } else {
                 $licenseData = $this->licenseService->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license'] . '&typo3_version=' . $this->typo3Version);
             }
-            if (isset($params['extension'])) {
-                if ($params['extension']['isUpdateAction'] && !$licenseData->isUpdatable) {
+            if (isset($params['extension']) && is_array($licenseData)) {
+                if ($params['extension']['isUpdateAction'] && empty($licenseData['isUpdatable'])) {
                     $this->addFlashMessage(LocalizationUtility::translate('errorMessage.license_expired', 'NsLicense'), 'Your annual License key is expired', ContextualFeedbackSeverity::ERROR);
                     return $this->redirect('list');
                 }
             }
-            if (isset($params['action'])) {
-                if ($params['action'] === 'activation' && isset($licenseData->isUpdatable) && !$licenseData->isUpdatable) {
+            if (isset($params['action']) && is_array($licenseData)) {
+                if ($params['action'] === 'activation' && isset($licenseData['isUpdatable']) && !$licenseData['isUpdatable']) {
                     $this->addFlashMessage(LocalizationUtility::translate('errorMessage.license_expired', 'NsLicense'), 'Your annual License key is expired', ContextualFeedbackSeverity::ERROR);
                     return $this->redirect('list');
                 }
             }
-            if (isset($licenseData, $licenseData->status) && $licenseData->status) {
+
+            if (is_array($licenseData) && !empty($licenseData['status'])) {
                 if (isset($_COOKIE['NsLicense']) && $_COOKIE['NsLicense'] != '') {
                     $disableExtensions = explode(',', $_COOKIE['NsLicense']);
-                    $key = array_search($licenseData->extension_key, $disableExtensions);
+                    $key = array_search($licenseData['extension_key'] ?? '', $disableExtensions);
                     if ($key) {
                         unset($disableExtensions[$key]);
                         $disableExtensions = implode(',', $disableExtensions);
                         setcookie('NsLicense', $disableExtensions, time() + 3600, '/', '', 0);
                     }
                 }
-                if (isset($licenseData->existing) && $licenseData->existing) {
-                    $extVersion = GeneralUtility::makeInstance(PackageManager::class, $this->dependencyOrderingService)->getPackage($licenseData->extension_key)->getPackageMetaData()->getVersion();
-                    $this->nsLicenseRepository->insertNewData($licenseData, $extVersion);
-                    $this->addFlashMessage('EXT:' . $licenseData->extension_key . LocalizationUtility::translate('license-activation.activated', 'NsLicense'), 'EXT:' . $licenseData->extension_key, ContextualFeedbackSeverity::OK);
+    
+                if (!empty($licenseData['existing'])) {
+                    $extVersion = GeneralUtility::makeInstance(PackageManager::class, $this->dependencyOrderingService)->getPackage($licenseData['extension_key'])->getPackageMetaData()->getVersion();
+                    $this->nsLicenseRepository->insertNewData(json_decode(json_encode($licenseData)), $extVersion);
+                    $this->addFlashMessage('EXT:' . ($licenseData['extension_key'] ?? '') . LocalizationUtility::translate('license-activation.activated', 'NsLicense'), 'EXT:' . ($licenseData['extension_key'] ?? ''), ContextualFeedbackSeverity::OK);
                     return $this->redirect('list');
                 }
-                $isAvailable = $this->nsLicenseRepository->fetchData($licenseData->extension_key);
-                if ($isAvailable && $params['overwrite'] == 1) {
-                    $extensionDownloadUrl = $licenseData->extension_download_url;
-                    if (PHP_VERSION > 8) {
-                        if ($extensionDownloadUrl) {
-                            $extensionDownloadUrl = get_mangled_object_vars($licenseData->extension_download_url);
-                        }
-                    }
 
-                    $ltsext = end($extensionDownloadUrl);
-                    $extKey = $licenseData->extension_key . '.zip';
-                    $extKeyPath = $this->siteRoot . 'typo3temp/' . $extKey;
-                    if (!$this->isComposerMode) {
-                        $this->downloadZipFile($ltsext, $licenseData->license_key, $extKeyPath, $licenseData->user_name, $licenseData->extension_key);
-                    }
+                $isAvailable = $this->nsLicenseRepository->fetchData($licenseData['extension_key'] ?? '');
+                if ($isAvailable && $params['overwrite'] == 1) {
                     try {
                         if (!$this->isComposerMode) {
-                            $extKey = str_replace('.zip', '', $extKey);
-                            $this->extractExtensionFromZipFile($extKeyPath, $extKey, ($params['overwrite'] ? true : false));
-                            unlink($extKeyPath);
+                            $overwrite = (bool)($params['overwrite'] ?? false);
+                            // Install dependency first (static URL from API), then main extension.
+                            $this->installExtensionFromDownloadUrls(
+                                $licenseData['cs_download_url'] ?? [],
+                                $licenseData,
+                                'ns_t3cs',
+                                $overwrite,
+                                false
+                            );
+                            $this->installExtensionFromDownloadUrls(
+                                $licenseData['extension_download_url'] ?? [],
+                                $licenseData,
+                                (string)($licenseData['extension_key'] ?? ''),
+                                $overwrite,
+                                true
+                            );
                         }
 
                         // Rename the static data dump file after update the extension for theme...
-                        if (str_contains($licenseData->extension_key, 'ns_')   && $licenseData->extension_key != 'ns_license' && $licenseData->extension_key != 'ns_basetheme') {
-                            if (str_contains($licenseData->extension_key, 'ns_theme_')) {
+                        $extKeyVal = $licenseData['extension_key'] ?? '';
+                        if (str_contains($extKeyVal, 'ns_') && $extKeyVal != 'ns_license' && $extKeyVal != 'ns_basetheme') {
+                            if (str_contains($extKeyVal, 'ns_theme_')) {
                                 // Check SQL import file, and rename it
-                                $extFolder = $this->licenseService->getExtensionFolder($licenseData->extension_key);
+                                $extFolder = $this->extensionListService->getExtensionFolder($extKeyVal);
                                 if (file_exists($extFolder . 'ext_tables_static+adt.sql')) {
                                     @rename($extFolder . 'ext_tables_static+adt.sql', $extFolder . 'ext_tables_static+adt..sql');
                                 }
@@ -375,77 +308,80 @@ class NsLicenseModuleController extends ActionController
                         $this->cacheManager->flushCaches();
                     } catch (\Exception $e) {
                         if (str_contains($e->getMessage(), 'Unable to open zip')) {
-                            $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense', [$licenseData->extension_key, $this->typo3Version]), $licenseData->extension_key, ContextualFeedbackSeverity::ERROR);
+                            $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense', [$licenseData['extension_key'] ?? '', $this->typo3Version]), $licenseData['extension_key'] ?? '', ContextualFeedbackSeverity::ERROR);
                         } else {
-                            $this->addFlashMessage(LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'), $licenseData->extension_key, ContextualFeedbackSeverity::ERROR);
+                            $this->addFlashMessage(LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'), $licenseData['extension_key'] ?? '', ContextualFeedbackSeverity::ERROR);
                         }
                         return $this->redirect('list');
                     }
-                    $this->nsLicenseRepository->updateData($licenseData, 1);
+                    $this->nsLicenseRepository->updateData(json_decode(json_encode($licenseData)), 1);
                 } elseif (!$isAvailable) {
                     // OPTION 1. Repairing > Let's just repair, If the product already there in typo3conf/ext + needs repair
-                    $extFolder = $this->licenseService->getExtensionFolder($licenseData->extension_key);
+                    $extFolder = $this->extensionListService->getExtensionFolder($licenseData['extension_key'] ?? '');
 
                     // Check if Update Repair
-                    if ($this->licenseService->updateRepairFiles($extFolder, $licenseData->extension_key)) {
+                    if ($this->licenseService->updateRepairFiles($extFolder, $licenseData['extension_key'] ?? '')) {
                         $isRepair = 'Yes';
                     }
 
                     // OPTION 2. Overriding > Else let's continue to download extension
                     else {
-                        $extKeyPath = '';
                         if (!$this->isComposerMode) {
-                            $extensionDownloadUrl = $licenseData->extension_download_url;
-                            if (PHP_VERSION > 8) {
-                                if ($extensionDownloadUrl) {
-                                    $extensionDownloadUrl = get_mangled_object_vars($licenseData->extension_download_url);
-                                }
-                            }
-
-                            $ltsext = end($extensionDownloadUrl);
-                            $extKey = $licenseData->extension_key . '.zip';
-                            $extKeyPath = $this->siteRoot . 'typo3temp/' . $extKey;
-                            $this->downloadZipFile($ltsext, $licenseData->license_key, $extKeyPath, $licenseData->user_name, $licenseData->extension_key);
+                            $overwrite = (bool)($params['overwrite'] ?? false);
                         }
-
                         try {
                             if (!$this->isComposerMode) {
-                                $extKey = str_replace('.zip', '', $extKey);
-                                $this->extractExtensionFromZipFile($extKeyPath, $extKey, ($params['overwrite'] ? true : false));
-                                unlink($extKeyPath);
+                                // Install dependency first (static URL from API), then main extension.
+                                $this->installExtensionFromDownloadUrls(
+                                    $licenseData['cs_download_url'] ?? [],
+                                    $licenseData,
+                                    'ns_t3cs',
+                                    $overwrite,
+                                    false
+                                );
+                                $this->installExtensionFromDownloadUrls(
+                                    $licenseData['extension_download_url'] ?? [],
+                                    $licenseData,
+                                    (string)($licenseData['extension_key'] ?? ''),
+                                    $overwrite,
+                                    true
+                                );
                             }
                             // Let's flush all the cache to change the version number
                             $this->cacheManager->flushCaches();
                         } catch (\Exception $e) {
                             if (str_contains($e->getMessage(), 'Unable to open zip')) {
-                                $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense', [$licenseData->extension_key, $this->typo3Version]), $licenseData->extension_key, ContextualFeedbackSeverity::ERROR);
+                                $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense', [$licenseData['extension_key'] ?? '', $this->typo3Version]), $licenseData['extension_key'] ?? '', ContextualFeedbackSeverity::ERROR);
                             } else {
-                                $this->addFlashMessage(LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'), $licenseData->extension_key, ContextualFeedbackSeverity::ERROR);
+                                $this->addFlashMessage(LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'), $licenseData['extension_key'] ?? '', ContextualFeedbackSeverity::ERROR);
                             }
                             return $this->redirect('list');
                         }
                     }
-                    if ($this->isComposerMode && empty($licenseData->extension_download_url)) {
-                        $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense', [$licenseData->extension_key, $this->typo3Version]), $licenseData->extension_key, ContextualFeedbackSeverity::ERROR);
+                    if ($this->isComposerMode && empty($licenseData['extension_download_url'])) {
+                        $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense', [$licenseData['extension_key'] ?? '', $this->typo3Version]), $licenseData['extension_key'] ?? '', ContextualFeedbackSeverity::ERROR);
                         return $this->redirect('list');
                     }
-                    $this->nsLicenseRepository->insertNewData($licenseData);
+                    $this->nsLicenseRepository->insertNewData(json_decode(json_encode($licenseData)));
                 } else {
-                    $this->addFlashMessage(LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'), 'EXT:' . $licenseData->extension_key, ContextualFeedbackSeverity::ERROR);
+                    $this->addFlashMessage(LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'), 'EXT:' . ($licenseData['extension_key'] ?? ''), ContextualFeedbackSeverity::ERROR);
                     return $this->redirect('list');
                 }
 
                 // Is it from Update version?
                 if ($fromWhere == 'fromUpdate') {
-                    $this->addFlashMessage(LocalizationUtility::translate('license-activation.downloaded_successfully_from_update', 'NsLicense'), 'EXT:' . $licenseData->extension_key, ContextualFeedbackSeverity::OK);
+                    $this->addFlashMessage(LocalizationUtility::translate('license-activation.downloaded_successfully_from_update', 'NsLicense'), 'EXT:' . ($licenseData['extension_key'] ?? ''), ContextualFeedbackSeverity::OK);
                 }
 
                 // Seems from New license key registration
                 else {
                     if ($isRepair == 'Yes') {
-                        $this->addFlashMessage(LocalizationUtility::translate('license-activation.extension_repair', 'NsLicense'), 'EXT:' . $licenseData->extension_key, ContextualFeedbackSeverity::OK);
+                        $this->addFlashMessage(LocalizationUtility::translate('license-activation.extension_repair', 'NsLicense'), 'EXT:' . ($licenseData['extension_key'] ?? ''), ContextualFeedbackSeverity::OK);
                     } else {
-                        $this->addFlashMessage(LocalizationUtility::translate('license-activation.downloaded_successfully', 'NsLicense'), 'EXT:' . $licenseData->extension_key, ContextualFeedbackSeverity::OK);
+                        $messageKey = $this->isComposerMode
+                            ? 'license-activation.activated_composer_success'
+                            : 'license-activation.downloaded_successfully';
+                        $this->addFlashMessage(LocalizationUtility::translate($messageKey, 'NsLicense'), 'EXT:' . ($licenseData['extension_key'] ?? ''), ContextualFeedbackSeverity::OK);
                     }
                 }
 
@@ -453,7 +389,7 @@ class NsLicenseModuleController extends ActionController
                 if (isset($params['extension_key']) && $params['extension_key'] == 'ns_revolution_slider') {
 
                     $versionOriginalId = $params['version'];
-                    $this->getVersionFromEmconf($params['extension_key']);
+                    $this->extensionListService->getVersionFromEmconf($params['extension_key']);
 
                     // Setup Plugin
                     $pluginsFolder = $this->siteRoot . 'uploads/ns_license/ns_revolution_slider/' . $versionOriginalId . '/vendor/wp/wp-content/plugins/';
@@ -516,18 +452,16 @@ class NsLicenseModuleController extends ActionController
                     if (Environment::isComposerMode()) {
                         $this->nsLicenseRepository->updateSchema();
                     }
-                    //$rsInstallUtility = GeneralUtility::makeInstance(\NITSAN\NsRevolutionSlider\Slots\InstallUtility::class);
-                    //$rsInstallUtility->schemaUpdate();
                 }
 
                 // Successfully redirect to license listing
                 return $this->redirect('list');
             }
-            $title = $licenseData->extKey ?? 'ERROR';
+            $title = is_array($licenseData) ? ($licenseData['extKey'] ?? 'ERROR') : 'ERROR';
             $message = LocalizationUtility::translate('errorMessage.default', 'NsLicense');
-            if ($licenseData->error_code) {
-                $license_type = $licenseData->license_type ?? '';
-                $message = LocalizationUtility::translate('errorMessage.' . $licenseData->error_code, 'NsLicense', [$license_type]);
+            if (is_array($licenseData) && !empty($licenseData['error_code'])) {
+                $license_type = $licenseData['license_type'] ?? '';
+                $message = LocalizationUtility::translate('errorMessage.' . $licenseData['error_code'], 'NsLicense', [$license_type]);
             }
             $this->addFlashMessage($message, $title, ContextualFeedbackSeverity::ERROR);
             return $this->redirect('list');
@@ -536,48 +470,398 @@ class NsLicenseModuleController extends ActionController
         // Successfully redirect to license listing
         return $this->redirect('list');
     }
+   
 
     /**
-     * Extracts a given zip file and installs the extension.
-     *
-     * @param string $uploadedFile Path to uploaded file
-     * @param bool   $overwrite    Overwrite existing extension if TRUE
-     *
-     * @throws ExtensionManagerException
+     * Add domain action 
+     * 
+     * @param ServerRequestInterface $request
+     * @return JsonResponse
      */
-    protected function extractExtensionFromZipFile(string $uploadedFile, string $extensionKey, bool $overwrite = false): string
+    public function addDomainAction(ServerRequestInterface $request): JsonResponse
     {
-        $isExtensionAvailable = $this->managementService->isAvailable($extensionKey);
-        if (!$overwrite && $isExtensionAvailable) {
-            throw new ExtensionManagerException('Extension is already available and overwriting is disabled.', 1342864311);
+        $requestArguments = $request->getParsedBody();
+        $extensionKey = $requestArguments['extension_key'] ?? '';
+        $domain = $requestArguments['domain'] ?? '';
+        $environment = $requestArguments['environment'] ?? 'production';
+       
+        // Validate inputs
+        if (empty($extensionKey) || empty($domain) || empty($environment)) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => LocalizationUtility::translate('errorMessage.invalid_data', 'NsLicense', ['Invalid input data'])
+            ], 400);
         }
-        if ($isExtensionAvailable) {
-            $this->copyExtensionFolderToTempFolder($extensionKey);
+        
+        // Sanitize domain (remove http://, https://, trailing slashes)
+        $domain = preg_replace('#^https?://#', '', $domain);
+        $domain = rtrim($domain, '/');
+        
+        // Validate environment
+        if (!in_array($environment, ['production', 'staging', 'local'])) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => LocalizationUtility::translate('errorMessage.invalid_environment', 'NsLicense', ['Invalid environment'])
+            ], 400);
         }
-
-        $this->fileHandlingUtility->unzipExtensionFromFile($uploadedFile, $extensionKey);
-
-        return $extensionKey;
+        
+        try {
+            // Get license key for the extension
+            $licenseData = $this->nsLicenseRepository->fetchData($extensionKey);
+            if (empty($licenseData) || empty($licenseData[0]['license_key'])) {
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => LocalizationUtility::translate('errorMessage.license_not_found', 'NsLicense', ['License key not found for this extension'])
+                ], 400);
+            }
+            $licenseKey = $licenseData[0]['license_key'];
+            // First, add domain to server using license key
+            $serverResult = $this->licenseService->addDomainToServer($licenseKey, $domain, $extensionKey, $environment);
+           
+            if (!$serverResult || !isset($serverResult['success']) || !$serverResult['success']) {
+                $errorMessage = $serverResult['message'] ?? 'Failed to add domain to server';
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $errorMessage,
+                    'error_code' => $serverResult['error_code'] ?? 'server_error'
+                ]);
+            }
+            
+            // Add domain to local database
+            $result = $this->nsLicenseRepository->addDomain($extensionKey, $domain, $environment);
+            
+            if ($result) {
+                $this->licenseService->fetchData('extensions');
+                $message = LocalizationUtility::translate('license.domain.added_successfully', 'NsLicense', [$domain]);
+                return new JsonResponse([
+                    'success' => true,
+                    'message' => $message
+                ]);
+            } else {
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => LocalizationUtility::translate('license.domain.already_exists', 'NsLicense', [$domain])
+                ], 400);
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => LocalizationUtility::translate('errorMessage.default', 'NsLicense') . ': ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
-     * Copies current extension folder to typo3temp directory as backup.
+     * Delete domain action
      *
-     * @param string $extensionKey
-     *
-     * @throws \TYPO3\CMS\Extensionmanager\Exception\ExtensionManagerException
+     * @param ServerRequestInterface $request
+     * @return JsonResponse
      */
-    protected function copyExtensionFolderToTempFolder($extensionKey)
+    public function deleteDomainAction(ServerRequestInterface $request): JsonResponse
     {
-        $this->extensionBackupPath = Environment::getVarPath() . '/transient/' . $extensionKey . substr(sha1($extensionKey . microtime()), 0, 7) . '/';
-        GeneralUtility::mkdir($this->extensionBackupPath);
-        GeneralUtility::copyDirectory(
-            $this->fileHandlingUtility->getExtensionDir($extensionKey),
-            $this->extensionBackupPath,
-        );
+        $requestArguments = $request->getParsedBody();
+        $licenseKey = $requestArguments['license_key'] ?? '';
+        $domain = $requestArguments['domain'] ?? '';
+        $environment = $requestArguments['environment'] ?? 'production';
+
+        if (empty($licenseKey) || empty($domain)) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => LocalizationUtility::translate('errorMessage.invalid_data', 'NsLicense', ['Invalid input data'])
+            ], 400);
+        }
+
+        $domain = preg_replace('#^https?://#', '', $domain);
+        $domain = rtrim($domain, '/');
+
+        if (!in_array($environment, ['production', 'staging', 'local'])) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => LocalizationUtility::translate('errorMessage.invalid_environment', 'NsLicense', ['Invalid environment'])
+            ], 400);
+        }
+
+        try {
+            $licenseData = $this->nsLicenseRepository->fetchDataByLicenseKey($licenseKey);
+            if (empty($licenseData)) {
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => LocalizationUtility::translate('errorMessage.license_not_found', 'NsLicense', ['License key not found'])
+                ], 400);
+            }
+
+            // Remove domain from API server first (POST)
+            $serverResult = $this->licenseService->removeDomainFromServer($licenseKey, $domain, $environment);
+            if (!$serverResult || !isset($serverResult['success']) || !$serverResult['success']) {
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $serverResult['message'] ?? 'Failed to remove domain from server',
+                    'error_code' => $serverResult['error_code'] ?? 'server_error'
+                ], 400);
+            }
+
+            // Remove from local database by license key
+            $result = $this->nsLicenseRepository->removeDomainByLicenseKey($licenseKey, $domain, $environment);
+
+            if ($result) {
+                $this->licenseService->fetchData('extensions');
+                $message = LocalizationUtility::translate('license.domain.deleted_successfully', 'NsLicense', [$domain]);
+                return new JsonResponse([
+                    'success' => true,
+                    'message' => $message
+                ]);
+            }
+
+            return new JsonResponse([
+                'success' => false,
+                'message' => LocalizationUtility::translate('license.domain.not_found', 'NsLicense', [])
+            ], 400);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => LocalizationUtility::translate('errorMessage.default', 'NsLicense') . ': ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
+     * Update (edit) domain action 
+     *
+     * @param ServerRequestInterface $request
+     * @return JsonResponse
+     */
+    public function updateDomainAction(ServerRequestInterface $request): JsonResponse
+    {
+        $requestArguments = $request->getParsedBody();
+        $licenseKey = $requestArguments['license_key'] ?? '';
+        $oldDomain = $requestArguments['old_domain'] ?? '';
+        $newDomain = $requestArguments['new_domain'] ?? '';
+        $environment = $requestArguments['environment'] ?? 'production';
+
+        if (empty($licenseKey) || empty($oldDomain) || empty($newDomain)) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => LocalizationUtility::translate('errorMessage.invalid_data', 'NsLicense', ['Invalid input data'])
+            ], 400);
+        }
+
+        $oldDomain = preg_replace('#^https?://#', '', $oldDomain);
+        $oldDomain = rtrim($oldDomain, '/');
+        $newDomain = preg_replace('#^https?://#', '', $newDomain);
+        $newDomain = rtrim($newDomain, '/');
+
+        if (!in_array($environment, ['production', 'staging', 'local'])) {
+            $environment = 'production';
+        }
+
+        try {
+            $licenseData = $this->nsLicenseRepository->fetchDataByLicenseKey($licenseKey);
+            if (empty($licenseData)) {
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => LocalizationUtility::translate('errorMessage.license_not_found', 'NsLicense', ['License key not found'])
+                ], 400);
+            }
+
+            $serverResult = $this->licenseService->updateDomainOnServer($licenseKey, $oldDomain, $newDomain, $environment);
+            if (!$serverResult || !isset($serverResult['success']) || !$serverResult['success']) {
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $serverResult['message'] ?? 'Failed to update domain on server',
+                    'error_code' => $serverResult['error_code'] ?? 'server_error'
+                ], 400);
+            }
+
+            $result = $this->nsLicenseRepository->updateDomainByLicenseKey($licenseKey, $oldDomain, $newDomain, $environment);
+
+            if ($result) {
+                $this->licenseService->fetchData('extensions');
+                $message = LocalizationUtility::translate('license.domain.updated_successfully', 'NsLicense', [$oldDomain]);
+                return new JsonResponse([
+                    'success' => true,
+                    'message' => $message
+                ]);
+            }
+
+            return new JsonResponse([
+                'success' => false,
+                'message' => LocalizationUtility::translate('license.domain.not_found', 'NsLicense', [])
+            ], 400);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => LocalizationUtility::translate('errorMessage.default', 'NsLicense') . ': ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Extend trial action
+     * 
+     * @return ResponseInterface
+     */
+    public function extendTrialAction(): ResponseInterface
+    {
+        $params = $this->request->getArguments();
+        $extensionKey = $params['extension'] ?? '';
+        // Validate inputs
+        if (empty($extensionKey)) {
+            $message = LocalizationUtility::translate('errorMessage.extension_key_required', 'NsLicense') ?? 'Extension key is required';
+            $this->addFlashMessage(
+                $message,
+                $message,
+                ContextualFeedbackSeverity::ERROR
+            );
+            return $this->redirect('list');
+        }
+        
+        try {
+            // Get license key for the extension
+            $licenseData = $this->nsLicenseRepository->fetchData($extensionKey);
+
+            if (empty($licenseData) || empty($licenseData[0]['license_key'])) {
+                $message = LocalizationUtility::translate('errorMessage.license_not_found', 'NsLicense') ?? 'License key not found for this extension';
+                $this->addFlashMessage(
+                    $message,
+                    $message,
+                    ContextualFeedbackSeverity::ERROR
+                );
+                return $this->redirect('list');
+            }
+            $licenseKey = $licenseData[0]['license_key'];
+            
+            // Extend trial period using service
+            $result = $this->licenseService->extendTrialPeriod($licenseKey);
+            
+            if ($result && isset($result['status']) && $result['status']) {
+                $message = LocalizationUtility::translate('license.trial.extended_successfully', 'NsLicense') ?? 'Trial extended successfully by 30 days';
+                $this->addFlashMessage(
+                    $message,
+                    $message,
+                    ContextualFeedbackSeverity::OK
+                );
+            } else {
+                $errorMessage = $result['message'] ?? (LocalizationUtility::translate('license.trial.extend_failed', 'NsLicense') ?? 'Failed to extend trial');
+                $errorCode = $result['error_code'] ?? 'error';
+                
+                // Special handling for already extended error
+                if ($errorCode === 'error5') {
+                    $errorMessage = LocalizationUtility::translate('license.trial.already_extended', 'NsLicense') ?? 'Trial has already been extended';
+                }
+                
+                $this->addFlashMessage(
+                    $errorMessage,
+                    $errorMessage,
+                    ContextualFeedbackSeverity::ERROR
+                );
+            }
+        } catch (\Exception $e) {
+            $message = LocalizationUtility::translate('license.trial.extend_error_exception', 'NsLicense', [$e->getMessage()]) ?? 'Failed to extend trial: ' . $e->getMessage();
+            $this->addFlashMessage(
+                $message,
+                $message,
+                ContextualFeedbackSeverity::ERROR
+            );
+        }
+        
+        return $this->redirect('list');
+    }
+
+    /**
+     * Fetch and update data from API based on type
+     * Supports types: 'shop', 'services', 'extensions'
+     * 
+     * @param ServerRequestInterface $request
+     * @return JsonResponse
+     */
+    public function fetchDataAction(ServerRequestInterface $request): JsonResponse
+    {
+        try {
+            $params = $request->getParsedBody() ?? [];
+            $type = $params['type'] ?? 'shop';
+            
+            // Validate type
+            if (!in_array($type, ['shop', 'services', 'extensions'])) {
+                $type = 'shop'; // Default to shop
+            }
+            
+            $result = $this->licenseService->fetchData($type);
+            
+            // Check success based on type
+            $isSuccess = false;
+            $successMessageKey = 'fetchData.success.data_updated';
+            
+            if ($type === 'extensions') {
+                $isSuccess = $result && isset($result['status']) && $result['status'] && isset($result['logs']);
+                $successMessageKey = 'fetchData.success.extension_logs_updated';
+            } elseif ($type === 'shop') {
+                $isSuccess = $result && isset($result['sections']) && is_array($result['sections']);
+                $successMessageKey = 'fetchData.success.shop_updated';
+            } else {
+                // services: https://t3planet.de/?type=997979 returns { "services": { "records": [...] } }; sanitized to categories with title, description, slug, tx_mask_pricing_text
+                $isSuccess = $result && isset($result['categories']) && is_array($result['categories']);
+                $successMessageKey = 'fetchData.success.services_updated';
+            }
+            
+            if ($isSuccess) {
+                $successMessage = LocalizationUtility::translate($successMessageKey, 'NsLicense')
+                    ?? 'Data updated successfully';
+                return new JsonResponse([
+                    'success' => true,
+                    'message' => $successMessage,
+                    'data' => $result
+                ]);
+            } else {
+                $errorCode = $result['error_code'] ?? 'error';
+                if ($errorCode === 'no_license_keys') {
+                    $errorMessage = LocalizationUtility::translate('fetchData.error.no_license_keys', 'NsLicense')
+                        ?? 'No license keys found. Add a license first to fetch details';
+                } else {
+                    $errorMessage = !empty($result['message'])
+                        ? $result['message']
+                        : (LocalizationUtility::translate('fetchData.error.failed', 'NsLicense') ?? 'Failed to fetch data from API');
+                }
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => $errorMessage,
+                    'error_code' => $errorCode
+                ]);
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Fetch extension logs by extension key
+     * @param ServerRequestInterface $request
+     */
+    public function fetchExtensionLogsAction(): ResponseInterface
+    {
+        $filteredLogs = [];
+        $params = $this->request->getParsedBody() ?? [];
+        $licenseKey = $params['license_key'] ?? '';
+
+        $view = $this->initializeModuleTemplate($this->request);
+        if (empty($licenseKey)) {
+            return $view->renderResponse('NsLicenseModule/Logs');
+        }
+        $extensionLogs = $this->loadSyncData('extensions');
+        if (!empty($licenseKey) && is_array($extensionLogs)) {
+            foreach ($extensionLogs as $log) {
+                if (isset($log['license_key']) && $log['license_key'] === $licenseKey) {
+                    $filteredLogs[] = $log;
+                }
+            }
+        }
+        $view->assign('logs', $filteredLogs);
+        return $view->renderResponse('NsLicenseModule/Logs');
+    }
+
+     /**
      * downloadZipFile.
      *
      * @param string $extensionDownloadUrl
@@ -599,7 +883,7 @@ class NsLicenseModuleController extends ActionController
             file_put_contents($extKeyPath, $rawResponse);
 
             // Let's take backup to /uploads/ns_license/
-            $this->getBackupToUploadFolder($extKey);
+            $this->extensionArchiveService->getBackupToUploadFolder($extKey);
         } catch (\Throwable $e) {
             $this->addFlashMessage($e->getMessage(), 'Your server has an issue connecting with our license system; Please get in touch with your server administrator with the below error message.', ContextualFeedbackSeverity::ERROR);
             // Let's only redirect if we are at TYPO3 backend module (ignore at Login)
@@ -611,40 +895,49 @@ class NsLicenseModuleController extends ActionController
     }
 
     /**
-     * getVersionFromEmconf.
+     * Download and extract an extension from a download-url map.
+     * Uses the same flow for main extension and dependency extension.
      *
-     * @param string $extKey
+     * @param mixed $downloadUrls
+     * @param array $licenseData
+     * @param string $targetExtensionKey
+     * @param bool $overwrite
+     * @param bool $required If true and URL missing, throws exception
      */
-    public function getVersionFromEmconf($extKey)
-    {
-        $versionId = '';
-        // Let's grab mannualy the Version Id
-        $extFolder = $this->licenseService->getExtensionFolder($extKey);
-        if (is_file($extFolder . 'ext_emconf.php')) {
-            include $extFolder . 'ext_emconf.php';
-            $arrEmConf = (isset($EM_CONF[$extKey])) ? $EM_CONF[$extKey] : $EM_CONF[null];
-            $versionId = $arrEmConf['version'];
+    protected function installExtensionFromDownloadUrls(
+        $downloadUrls,
+        array $licenseData,
+        string $targetExtensionKey,
+        bool $overwrite,
+        bool $required = false
+    ): void {
+        if ($targetExtensionKey === '') {
+            return;
         }
-        return $versionId;
-    }
+        if (!is_array($downloadUrls)) {
+            $downloadUrls = $downloadUrls ? (array)$downloadUrls : [];
+        }
+        $downloadgugrl = end($downloadUrls);
 
-    /**
-     * getBackupToUploadFolder.
-     *
-     * @param string $extKey
-     */
-    public function getBackupToUploadFolder($extKey)
-    {
-        $souceFolder = $this->licenseService->getExtensionFolder($extKey);
-        if (is_dir($souceFolder)) {
-            $versionId = $this->getVersionFromEmconf($extKey);
-            $uploadFolder = $this->siteRoot . 'uploads/ns_license/' . $extKey . '/' . $versionId . '/';
-            try {
-                GeneralUtility::rmdir($uploadFolder, true);
-                GeneralUtility::mkdir_deep($uploadFolder);
-                GeneralUtility::copyDirectory($souceFolder, $uploadFolder);
-            } catch (\Exception $e) {
+        if (!$downloadgugrl) {
+            if ($required) {
+                throw new \RuntimeException('Unable to open zip');
             }
+            return;
+        }
+
+        $zipName = $targetExtensionKey . '.zip';
+        $zipPath = $this->siteRoot . 'typo3temp/' . $zipName;
+        $this->downloadZipFile(
+            (string)$downloadgugrl,
+            (string)($licenseData['license_key'] ?? ''),
+            $zipPath,
+            (string)($licenseData['user_name'] ?? ''),
+            $targetExtensionKey
+        );
+        $this->extensionArchiveService->extractExtensionFromZipFile($zipPath, $targetExtensionKey, $overwrite);
+        if (file_exists($zipPath)) {
+            unlink($zipPath);
         }
     }
 

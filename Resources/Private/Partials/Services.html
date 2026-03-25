@@ -1,0 +1,91 @@
+<div class="search-section px-3">
+    <div class="search-section__input">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search absolute left-3 top-2.5 h-4 w-4 text-gray-400" aria-hidden="true"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+        <input type="text" id="servicesSearch" class="form-control search-input" placeholder="{f:translate(key: 'license-services.search-placeholder')}">
+    </div>
+    <select id="servicesCategoryFilter" class="search-section__select form-select w-auto" style="min-width: 220px;">
+        <option value="all" selected><f:translate key="license-services.filter-all-categories" /></option>
+        <f:for each="{servicesData.categories}" as="category">
+            <option value="{category.title}"><f:translate key="license-services.filter-{category.id}" default="{category.title}" /></option>
+        </f:for>
+    </select>
+    <button class="btn btn-primary refresh-data-button" data-type="services">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-rotate-cw h-4 w-4" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path></svg>
+        <f:translate key="license-extensions.get-updates" />
+    </button>
+</div>
+
+<div class="extension-section-wrapper">
+    <f:if condition="{servicesData.categories}">
+        <div class="card card-extensions-container">
+            <f:for each="{servicesData.categories}" as="category">
+                <div class="service-category-section extension-section" id="{category.id}">
+                    <div class="card-header px-3">
+                        <div class="extension-section__header">
+                            <div class="extension-section__header-icon">
+                                <f:switch expression="{category.title}">
+                                    <f:case value="For Support Products">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-{category.icon} h-5 w-5" aria-hidden="true"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"></path></svg>
+                                    </f:case>
+                                    <f:case value="For Decision Makers">
+                                        <svg height="20" width="20" version="1.1" viewBox="0 0 512 512" xml:space="preserve" fill="none"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g transform="translate(1 1)"> <path style="fill:currentcolor;" d="M502.467,489.722H7.533c-5.12,0-8.533-3.413-8.533-8.533c0-5.12,3.413-8.533,8.533-8.533h494.933 c5.12,0,8.533,3.413,8.533,8.533C511,486.308,507.587,489.722,502.467,489.722z"></path> <polygon style="fill:currentcolor" points="24.6,361.722 109.933,361.722 109.933,481.188 24.6,481.188 "></polygon> <path style="fill:currentcolor" d="M118.467,489.722h-102.4V353.188h102.4V489.722z M33.133,472.655H101.4v-102.4H33.133V472.655z"></path> <polygon style="fill:currentcolor" points="152.6,284.922 237.933,284.922 237.933,481.188 152.6,481.188 "></polygon> <path style="fill:currentcolor" d="M246.467,489.722h-102.4V276.388h102.4V489.722z M161.133,472.655H229.4v-179.2h-68.267V472.655z"></path> <polygon style="fill:currentcolor" points="280.6,216.655 365.933,216.655 365.933,481.188 280.6,481.188 "></polygon> <path style="fill:currentcolor;" d="M374.467,489.722h-102.4v-281.6h102.4V489.722z M289.133,472.655H357.4V225.188h-68.267V472.655z"></path> <polygon style="fill:currentcolor" points="408.6,148.388 493.933,148.388 493.933,481.188 408.6,481.188 "></polygon> <g> <path style="fill:currentcolor;" d="M502.467,489.722h-102.4V139.855h102.4V489.722z M417.133,472.655H485.4V156.922h-68.267V472.655z"></path> <path style="fill:currentcolor;" d="M67.267,236.282c-2.56,0-5.973-1.707-7.68-4.267c-2.56-4.267-0.853-9.387,3.413-11.947 L372.76,41.722l-46.933-4.267c-4.267-0.853-8.533-4.267-7.68-9.387c0.853-4.267,4.267-8.533,9.387-7.68l72.533,6.827 c0.853,0,0.853,0,1.707,0s1.707,0.853,2.56,0.853l0.853,0.853c0.853,0.853,0.853,0.853,1.707,1.707 c0,0.853,0.853,1.707,0.853,2.56s0,0.853,0,1.707c0,0.853,0,1.707,0,2.56s0,0.853-0.853,1.707l-30.72,66.56 c-1.707,4.267-6.827,5.973-11.093,4.267c-4.267-1.707-5.973-6.827-4.267-11.093l19.627-42.667l-308.907,179.2 C70.68,236.282,68.973,236.282,67.267,236.282z"></path> </g> </g> </g></svg>
+                                    </f:case>
+                                    <f:case value="For Marketers">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 2048 2048"><path fill="currentColor" d="M1920 2048h-128q0-106-27-204t-78-183t-120-156t-155-120t-184-77t-204-28t-204 27t-183 78t-156 120t-120 155t-77 184t-28 204H128q0-145 42-276t121-240t187-193t244-135q-124-67-210-180h-64q-40 0-75-15t-61-41t-41-61t-15-75V576q0-38 14-72t38-60t58-42t71-18q39-88 99-159t137-121t166-77t185-27t185 27t165 77t137 121t100 159q38 2 71 18t57 42t39 60t14 72v256q0 40-15 75t-41 61t-61 41t-75 15q-30 0-57-9q-43 59-97 107t-120 82q134 51 243 134t188 193t120 241t43 276M1664 576q0-26-19-45t-45-19t-45 19t-19 45v256q0 26 19 45t45 19t45-19t19-45zM384 832q0 26 19 45t45 19h64V576q0-26-19-45t-45-19t-45 19t-19 45zm301 192q70 62 157 95t182 33q62 0 121-14t112-42t100-67t83-91q-16-23-24-50t-8-56V576q0-46 20-87t59-68q-32-67-80-121t-109-92t-130-59t-144-21q-74 0-144 20t-130 59t-108 93t-81 121q38 27 58 68t21 87v320h128q0-27 10-50t27-40t41-28t50-10q27 0 50 10t40 27t28 41t10 50q0 27-10 50t-27 40t-41 28t-50 10z"/></svg>
+                                    </f:case>
+                                    <f:case value="For Developers">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 6L3 12L8 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 6L21 12L16 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </f:case>
+                                    <f:case value="For Administrators">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 36 36"><title xmlns="">administrator-line</title><path fill="currentColor" d="M14.68 14.81a6.76 6.76 0 1 1 6.76-6.75a6.77 6.77 0 0 1-6.76 6.75m0-11.51a4.76 4.76 0 1 0 4.76 4.76a4.76 4.76 0 0 0-4.76-4.76" class="clr-i-outline clr-i-outline-path-1"/><path fill="currentColor" d="M16.42 31.68A2.14 2.14 0 0 1 15.8 30H4v-5.78a14.8 14.8 0 0 1 11.09-4.68h.72a2.2 2.2 0 0 1 .62-1.85l.12-.11c-.47 0-1-.06-1.46-.06A16.47 16.47 0 0 0 2.2 23.26a1 1 0 0 0-.2.6V30a2 2 0 0 0 2 2h12.7Z" class="clr-i-outline clr-i-outline-path-2"/><path fill="currentColor" d="M26.87 16.29a.4.4 0 0 1 .15 0a.4.4 0 0 0-.15 0" class="clr-i-outline clr-i-outline-path-3"/><path fill="currentColor" d="m33.68 23.32l-2-.61a7.2 7.2 0 0 0-.58-1.41l1-1.86A.38.38 0 0 0 32 19l-1.45-1.45a.36.36 0 0 0-.44-.07l-1.84 1a7 7 0 0 0-1.43-.61l-.61-2a.36.36 0 0 0-.36-.24h-2.05a.36.36 0 0 0-.35.26l-.61 2a7 7 0 0 0-1.44.6l-1.82-1a.35.35 0 0 0-.43.07L17.69 19a.38.38 0 0 0-.06.44l1 1.82a6.8 6.8 0 0 0-.63 1.43l-2 .6a.36.36 0 0 0-.26.35v2.05A.35.35 0 0 0 16 26l2 .61a7 7 0 0 0 .6 1.41l-1 1.91a.36.36 0 0 0 .06.43l1.45 1.45a.38.38 0 0 0 .44.07l1.87-1a7 7 0 0 0 1.4.57l.6 2a.38.38 0 0 0 .35.26h2.05a.37.37 0 0 0 .35-.26l.61-2.05a7 7 0 0 0 1.38-.57l1.89 1a.36.36 0 0 0 .43-.07L32 30.4a.35.35 0 0 0 0-.4l-1-1.88a7 7 0 0 0 .58-1.39l2-.61a.36.36 0 0 0 .26-.35v-2.1a.36.36 0 0 0-.16-.35M24.85 28a3.34 3.34 0 1 1 3.33-3.33A3.34 3.34 0 0 1 24.85 28" class="clr-i-outline clr-i-outline-path-4"/><path fill="none" d="M0 0h36v36H0z"/></svg>
+                                    </f:case>
+                                    <f:case value="For Extensions Migration">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"><title xmlns="">extensions</title><path fill="currentColor" d="M15 4.957c0-.37-.144-.716-.405-.977L12.01 1.392c-.522-.523-1.431-.523-1.953 0L8 3.452v-.129c0-.772-.628-1.401-1.4-1.401H2.4c-.772 0-1.4.629-1.4 1.401V13.6c0 .77.628 1.4 1.4 1.4h10.267c.771 0 1.4-.629 1.4-1.401V9.395c0-.772-.629-1.401-1.4-1.401h-.13l2.058-2.059c.26-.26.405-.609.405-.978M2.4 2.855h4.2c.257 0 .467.21.467.467v4.671H1.933v-4.67c0-.259.21-.468.467-.468m-.467 10.743v-4.67h5.134v5.137H2.4a.47.47 0 0 1-.467-.467m11.2-4.204v4.204c0 .257-.21.467-.466.467H8V8.927h4.667c.256 0 .466.21.466.467M8 7.993v-1.53l1.529 1.53zm5.935-2.72l-2.586 2.59a.456.456 0 0 1-.633 0L8.13 5.272a.445.445 0 0 1 0-.632l2.586-2.588a.444.444 0 0 1 .633 0l2.586 2.588a.445.445 0 0 1 0 .632"/></svg>
+                                    </f:case>
+                                    <f:case value="For CMS Migration">
+                                        <svg width="24" height="24" viewBox="0 0 64 64" version="1.1" fill="currentcolor"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>db-copy</title> <desc>Created with Sketch.</desc> <defs> </defs> <g id="64px-Line" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="db-copy"> </g> <path d="M20,58 C21.433,58 34,57.888 34,54 L34,30 C34,26.112 21.433,26 20,26 C18.567,26 6,26.112 6,30 L6,54 C6,57.888 18.567,58 20,58 L20,58 Z M20,56 C12.861,56 8.515,54.691 8,53.932 L8,48.271 C11.606,49.937 18.927,50 20,50 C21.073,50 28.394,49.937 32,48.271 L32,53.932 C31.485,54.691 27.139,56 20,56 L20,56 Z M32,37.93 C31.49,38.689 27.143,40 20,40 C12.857,40 8.51,38.689 8,37.93 L8,32.271 C11.606,33.937 18.927,34 20,34 C21.073,34 28.394,33.937 32,32.271 L32,37.93 L32,37.93 Z M20,42 C21.073,42 28.394,41.937 32,40.271 L32,45.93 C31.49,46.689 27.143,48 20,48 C12.857,48 8.51,46.689 8,45.93 L8,40.271 C11.606,41.937 18.927,42 20,42 L20,42 Z M20,28 C26.929,28 31.228,29.233 31.945,30 C31.228,30.767 26.929,32 20,32 C13.071,32 8.772,30.767 8.055,30 C8.772,29.233 13.071,28 20,28 L20,28 Z" id="Shape" fill="currentcolor"> </path> <path d="M30,20 L30,24.167 C30,24.719 30.448,25.167 31,25.167 C31.552,25.167 32,24.719 32,24.167 L32,22.271 C35.606,23.937 42.927,24 44,24 C45.073,24 52.394,23.937 56,22.271 L56,27.93 C55.49,28.689 51.143,30 44,30 C41.553,30 39.181,29.84 37.14,29.538 C36.593,29.462 36.086,29.835 36.004,30.381 C35.923,30.927 36.3,31.436 36.847,31.517 C38.983,31.833 41.457,32 44,32 C45.073,32 52.394,31.937 56,30.271 L56,35.93 C55.49,36.689 51.143,38 44,38 C41.557,38 39.187,37.841 37.147,37.54 C36.607,37.462 36.092,37.836 36.012,38.383 C35.931,38.929 36.309,39.438 36.855,39.518 C38.99,39.833 41.46,40 44,40 C45.073,40 52.394,39.937 56,38.271 L56,43.932 C55.485,44.691 51.139,46 44,46 C41.557,46 39.187,45.841 37.147,45.54 C36.607,45.461 36.092,45.836 36.012,46.383 C35.931,46.929 36.309,47.438 36.855,47.518 C38.99,47.833 41.46,48 44,48 C45.433,48 58,47.888 58,44 L58,20 C58,16.112 45.433,16 44,16 C42.567,16 30,16.112 30,20 L30,20 Z M44,18 C50.929,18 55.228,19.233 55.945,20 C55.228,20.767 50.929,22 44,22 C37.071,22 32.772,20.767 32.055,20 C32.772,19.233 37.071,18 44,18 L44,18 Z" id="Shape" fill="currentcolor"> </path> <path d="M20.293,23.707 C20.385,23.799 20.496,23.873 20.618,23.923 C20.74,23.974 20.87,24 21,24 C21.13,24 21.26,23.974 21.382,23.923 C21.504,23.872 21.615,23.799 21.707,23.707 L26.707,18.707 C27.098,18.316 27.098,17.684 26.707,17.293 C26.316,16.902 25.684,16.902 25.293,17.293 L22,20.586 L22,19 C22,11.832 26.486,6 32,6 C35.806,6 39.341,8.888 41.007,13.356 C41.2,13.874 41.778,14.137 42.293,13.944 C42.811,13.751 43.074,13.175 42.881,12.658 C40.921,7.398 36.649,4 32,4 C25.383,4 20,10.729 20,19 L20,20.586 L16.707,17.293 C16.316,16.902 15.684,16.902 15.293,17.293 C14.902,17.684 14.902,18.316 15.293,18.707 L20.293,23.707 L20.293,23.707 Z" id="Shape" fill="currentcolor"> </path> </g> </g></svg>
+                                    </f:case>
+                                    <f:defaultCase>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-{category.icon} h-5 w-5" aria-hidden="true"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"></path></svg>
+                                    </f:defaultCase>
+                                </f:switch>
+                            </div>
+                            <div class="extension-section__header-content">
+                                <div class="extension-section__header-title">{category.title}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body card-container px-3">
+                        <f:for each="{category.items}" as="item">
+                            <div class="card card-size-small extension-card-wrapper service-card-wrapper" data-name="{item.title}" data-category="{category.title}" data-description="{item.description}">
+                                <div class="card-header">
+                                    <div class="card-header__title">
+                                        <div class="card-header__title-content">
+                                            <h3 class="h4 mb-0"><b>{item.title}</b></h3>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <p>{item.description}</p>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="actions-wrapper align-items-center">
+                                        <f:if condition="{item.tx_mask_pricing_text}">
+                                            <span class="price-text">{item.tx_mask_pricing_text}</span>
+                                        </f:if>
+                                        <f:if condition="{item.slug}">
+                                            <a href="{item.slug}" class="btn btn-link" target="_blank" rel="noopener noreferrer">
+                                                <span>Learn More</span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link h-3.5 w-3.5 mr-1.5" aria-hidden="true"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
+                                            </a>
+                                        </f:if>
+                                    </div>
+                                </div>
+                            </div>
+                        </f:for>
+                    </div>
+                </div>
+            </f:for>
+        </div>
+    </f:if>
+</div>

@@ -4,9 +4,9 @@ use NITSAN\NsLicense\Controller\NsLicenseModuleController;
 
 $module = [
     'nitsan_nslicensemodule' => [
-        'parent' => 'nitsan_module',
-        'position' => ['after' => 'top'],
-        'access' => 'user',
+        'parent' => 'tools',
+        'position' => ['before' => 'tools_ExtensionmanagerExtensionmanager'],
+        'access' => 'systemMaintainer',
         'path' => '/module/nitsan/NsLicense',
         'iconIdentifier' => 'submodule-nslicense',
         'labels' => 'LLL:EXT:ns_license/Resources/Private/Language/locallang_licensemodule.xlf',
@@ -14,7 +14,7 @@ $module = [
         'inheritNavigationComponent' => false,
         'controllerActions' => [
             NsLicenseModuleController::class => [
-                'list', 'update', 'activation', 'deactivation', 'reactivation', 'checkUpdate',
+                'list', 'update', 'activation', 'deactivation', 'reactivation', 'extendTrial', 'getServicesData', 'getShopData', 'fetchExtensionLogs',
             ],
         ],
     ],

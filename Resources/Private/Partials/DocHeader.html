@@ -1,0 +1,29 @@
+<div class="module-docheader t3js-module-docheader module-docheader-navigation pb-0 justify-content-end ns-license-module">
+    <div class="container">
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-pills ns-license-nav-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="my-extensions-tab" data-bs-toggle="tab" data-bs-target="#extensions-pane" type="button" role="tab" aria-controls="extensions-pane" aria-selected="true">
+                    <f:translate key="license-tabs.my-extensions" />
+                    <f:variable name="premiumCount">{extensions.premium -> f:count()}</f:variable>
+                    <f:variable name="freeCount">{extensions.free -> f:count()}</f:variable>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link t3js-shop-tab" id="shop-tab" data-bs-toggle="tab" data-bs-target="#shop-pane" data-shop-url="{f:uri.action(action: 'getShopData', absolute: 1)}" type="button" role="tab" aria-controls="shop-pane" aria-selected="false">
+                    <f:translate key="license-tabs.shop" />
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link t3js-services-tab" id="services-tab" data-bs-toggle="tab" data-bs-target="#services-pane" data-services-url="{f:uri.action(action: 'getServicesData', absolute: 1)}" type="button" role="tab" aria-controls="services-pane" aria-selected="false">
+                    <f:translate key="license-tabs.services" />
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" href="https://t3planet.de/en/typo3-saas" target="_blank">
+                    <f:translate key="license-tabs.website-builder" />
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
