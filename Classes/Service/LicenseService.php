@@ -561,8 +561,7 @@ final class LicenseService
      */
     protected function getApiBaseUrl(): string
     {
-        return 'https://composer.thebetaspace.com/API/';
-        // return 'https://composer.t3planet.cloud/API/';
+        return 'https://composer.t3planet.cloud/API/';
     }
 
 }
