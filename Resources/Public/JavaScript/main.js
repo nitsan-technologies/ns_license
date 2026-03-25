@@ -1,5 +1,8 @@
 import AjaxRequest from '@typo3/core/ajax/ajax-request.js';
 import Notification from '@typo3/backend/notification.js';
+import Modal from '@typo3/backend/modal.js';
+import Severity from '@typo3/backend/severity.js';
+import DeferredAction from '@typo3/backend/action-button/deferred-action.js';
 
 // Confirmation modalbox `Version Update` button
 document.querySelectorAll('.license-activation .license-activation-latest').forEach((el) => {
@@ -138,4 +141,36 @@ document.addEventListener('click', (e) => {
       Notification.error('Error', 'An error occurred while fetching data');
       console.error('Error updating data:', error);
     });
+});
+
+// Trial extension: use TYPO3 modal API with DeferredAction to show spinner on OK.
+document.addEventListener('click', (e) => {
+  const button = e.target.closest('.js-trial-extend-trigger');
+  if (!button) return;
+
+  e.preventDefault();
+  const title = button.dataset.title || 'Extend trial';
+  const content = button.dataset.content || 'Do you want to extend this trial?';
+  const targetUrl = button.dataset.href;
+  if (!targetUrl) return;
+
+  Modal.confirm(title, content, Severity.info, [
+    {
+      text: TYPO3.lang?.cancel || 'Cancel',
+      trigger() {
+        Modal.dismiss();
+      },
+    },
+    {
+      text: TYPO3.lang?.ok || 'OK',
+      btnClass: 'btn-info',
+      active: true,
+      action: new DeferredAction(() => {
+        const loader = document.getElementById('nsLicenseLoader');
+        if (loader) loader.style.display = '';
+        window.location.href = targetUrl;
+        return Promise.resolve();
+      }),
+    },
+  ]);
 });

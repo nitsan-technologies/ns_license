@@ -114,7 +114,7 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide domains-icon" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
                                     </button>
                                 </f:if>
-                                <f:if condition="{extension.details.lts_version} != {extension.details.version} && {isUpdateAvail} && {extension.details.days} > 0">
+                                <f:if condition="{extension.details.lts_version} != {extension.details.version} && {extension.details.isUpdateAvail} && {extension.details.days} > 0">
                                     <div class="update-version-available">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-arrow-up h-3.5 w-3.5" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m16 12-4-4-4 4"></path><path d="M12 16V8"></path></svg>
                                         <span><f:translate key="license-new-update-version-available" arguments="{0: extension.details.lts_version}" extensionName="ns_license" /></span>
@@ -180,7 +180,7 @@
                                         </f:else>
                                     </f:if>
                                     <f:if condition="!{composer}">
-                                        <f:if condition="{extension.isUpdateAvail}">
+                                        <f:if condition="{extension.details.isUpdateAvail}">
                                             <f:link.action data="{bs-toggle:'modal', bs-target:'#activation-modal'}" action="update"  class="btn btn-default license-activation-latest" 
                                                 arguments="{extension: {extension_key: extension.key, license_key: extension.details.license_key}}">
                                                 <core:icon identifier="actions-synchronize" size="small" />
@@ -193,8 +193,8 @@
                                             <f:then>
                                                 <f:if condition="!{extension.details.trial_extended} && {extension.details.days} <= 0">
                                                     <f:then>
-                                                        <button type="button"
-                                                            class="btn btn-info t3js-modal-trigger"
+                                                          <button type="button"
+                                                            class="btn btn-info js-trial-extend-trigger"
                                                             data-title="{f:translate(key: 'license.trial.extend')}" 
                                                             data-content="{f:translate(key: 'license.trial.confirm_message', arguments: {0: extension.key})}"
                                                             data-severity="info"
