@@ -35,7 +35,7 @@ class NsLicenseRepository
         $row = [];
         if ($isAvailable) {
             $this->updateData($data, 1);
-        } else {
+        } else if($data->license_key){
             $extensionDownloadUrl = $data->extension_download_url ?? [];
             if (PHP_VERSION > 8) {
                 $extensionDownloadUrl = $data->extension_download_url ? get_mangled_object_vars($data->extension_download_url) : [];
@@ -82,10 +82,9 @@ class NsLicenseRepository
                     'rating' => $data->rating ?? 0,
                     'downloads' => $data->downloads ?? 0,
                     'username' => $data->user_name ?? '',
-                    'trial_extended' => (int)$data->trial_extended,
+                    'trial_extended' => (int)$data->trial_extended ?? 0,
                     'cs_version' => $csVersion,
                     'cs_lts_version' => $csLTSVersion
-
                 ])
                 ->executeStatement();
         }
