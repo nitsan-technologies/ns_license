@@ -122,7 +122,7 @@ class ExtensionListService
                     }
                     if($extension['key'] == 'ns_t3ac' || ($extension['key'] == 'ns_t3as')){
                         $csVersion = $extensions['premium'][$key]['details']['cs_version'];
-                        if (version_compare($extDetails['cs_lts_version'], $csVersion, '>')) {
+                        if ($csVersion && version_compare($extDetails['cs_lts_version'], $csVersion, '>')) {
                             $extensions['premium'][$key]['details']['isUpdateAvail'] = true;
                         }
                     }
