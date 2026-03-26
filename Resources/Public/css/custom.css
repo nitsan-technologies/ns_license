@@ -35,7 +35,7 @@
 }
 
 /* Ensure dialog backdrop is visible in TYPO3 v14 */
-.modal-open .modal-backdrop.show {
+.modal-open .ns-license-module-wrapper +.modal-backdrop.show {
   background-color: rgba(0, 0, 0, 0.75);
   position: fixed;
   top: 0;
