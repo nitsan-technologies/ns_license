@@ -8,12 +8,12 @@ $EM_CONF['ns_license'] = array (
   'author_email' => 'sanjay@nitsan.in',
   'author_company' => 'T3Planet // NITSAN',
   'state' => 'stable',
-  'version' => '1.9.6',
+  'version' => '1.10.0',
   'constraints' =>
     array (
       'depends' =>
         array (
-          'typo3' => '8.0.0-11.5.99',
+          'typo3' => '10.0.0-11.5.99',
         ),
       'conflicts' =>
         array (

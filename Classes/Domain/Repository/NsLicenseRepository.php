@@ -35,6 +35,22 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
             if (is_null($extVersion)) {
                 $extVersion = $key;
             }
+
+            $csVersion = '';
+            $csLTSVersion = '';
+
+            $csDownloadUrl = $data->cs_download_url ?? [];
+            if($data->extension_key === 'ns_t3ac' || $data->extension_key === 'ns_t3as' && $csDownloadUrl){
+                if (PHP_VERSION > 8) {
+                    $csDownloadUrl = $data->cs_download_url ? get_mangled_object_vars($data->cs_download_url) : [];
+                }
+                end($csDownloadUrl);
+                $csLTSVersion = key($csDownloadUrl);
+                if (is_null($csVersion)) {
+                    $csVersion = $csLTSVersion;
+                }
+            } 
+
             $row = $queryBuilder
                 ->insert('ns_product_license')
                 ->values([
@@ -51,6 +67,10 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
                     'expiration_date' => $data->expiration_date,
                     'domains' => $data->domains,
                     'license_type' => $data->license_type,
+                    'staging_domains' => $data->staging_domains,
+                    'local_domains' => $data->local_domains,
+                    'cs_version' => $extVersion,
+                    'cs_lts_version' => $key
                 ])
                 ->execute();
         }
@@ -103,6 +123,21 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
            ->set('license_type', $data->license_type);;
         if ($ltsCheck == 1) {
             $queryBuilder->set('version', $key);
+        }
+
+        if(($data->extension_key == 'ns_t3ac' || $data->extension_key == 'ns_t3as') && isset($data->cs_download_url)){
+            $csDownloadUrl = $data->cs_download_url;
+            if (PHP_VERSION > 8) {
+                if ($data->cs_download_url) {
+                    $csDownloadUrl = get_mangled_object_vars($data->cs_download_url);
+                }
+            }
+            end($csDownloadUrl);
+            $version = key($csDownloadUrl);
+            if ($ltsCheck == 1) {
+                $queryBuilder->set('cs_version', $version);
+            }
+            $queryBuilder->set('cs_lts_version', $version);
         }
         $queryBuilder->set('lts_version', $key)
            ->execute();
