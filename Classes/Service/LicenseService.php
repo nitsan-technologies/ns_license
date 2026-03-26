@@ -437,26 +437,10 @@ final class LicenseService
         // Determine API endpoint and method based on type
         if ($type === 'extensions') {
             $extensions = [];
-            $availableExtensions = $this->packageManager->getAvailablePackages();
-            foreach ($availableExtensions as $package) {
-                $key = $package->getPackageKey();
-                if ($key === 'ns_license' || (!str_starts_with($key, 'ns_') && !str_starts_with($key, 'nitsan_'))) {
-                    continue;
-                }
-                $details = $this->nsLicenseRepository->fetchData($key);
-                if($details){
-                    $extensions[$key] = $details[0]['license_key'];
-                }else{
-                    $extensions[$key] ='';
-                }
-            }
-            
             $allLicense = $this->nsLicenseRepository->fetchData();
             if($allLicense){
                 foreach ($allLicense as $license) {
-                    if(!in_array($license['extension_key'], $extensions)){
-                        $extensions[$license['extension_key']] = $license['license_key'];
-                    }
+                    $extensions[$license['extension_key']] = $license['license_key'];
                 }
             }
 
