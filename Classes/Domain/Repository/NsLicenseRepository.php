@@ -58,8 +58,11 @@ class NsLicenseRepository
                 if (is_null($csVersion)) {
                     $csVersion = $csLTSVersion;
                 }
-            } 
-          
+            }
+            
+            $localDomains =  $data->local_domains ?? $data->local ?? '';
+            $stageDomains =  $data->staging_domains ?? $data->staging ?? '';
+
             $row = $queryBuilder
                 ->insert('ns_product_license')
                 ->values([
@@ -76,8 +79,8 @@ class NsLicenseRepository
                     'is_life_time' => $data->is_life_time ?? 0,
                     'expiration_date' => $data->expiration_date ?? 0,
                     'domains' => $data->domains ?? '',
-                    'local_domains' => $data->local ?? '',
-                    'staging_domains' => $data->staging ?? '',
+                    'local_domains' => $localDomains,
+                    'staging_domains' => $stageDomains,
                     'license_type' => $data->license_type ?? '',
                     'rating' => $data->rating ?? 0,
                     'downloads' => $data->downloads ?? 0,
