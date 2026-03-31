@@ -3,6 +3,9 @@
 <f:if condition="{t3version} == 12 || {t3version} == 14">
     <f:be.pageRenderer includeCssFiles="{0:'EXT:ns_license/Resources/Public/css/custom-12.css'}" />
 </f:if>
+<f:if condition="{t3version} == 14">
+    <f:be.pageRenderer includeCssFiles="{0:'EXT:ns_license/Resources/Public/css/custom-14.css'}" />
+</f:if>
 <f:be.pageRenderer includeJavaScriptModules="{0:'@nitsan/ns-license/filter.js'}" />
 <f:render partial="Shop" arguments="{_all}" />
 </html>

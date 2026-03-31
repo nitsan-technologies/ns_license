@@ -1,0 +1,20 @@
+/* TYPO3 v12 specific stylesheet entry.
+ * Starts by importing the shared stylesheet; add v12 overrides below as needed.
+ */
+ @import url('./custom.css');
+
+ .ns-license-modal.modal {
+    pointer-events: none;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .ns-license-module .search-section .refresh-data-button {
+    min-width: 150px;
+  }
+
+  .ns-license-module .ns-license-activation-form .ns-ext-form .btn {
+    min-width: 335px;
+  }

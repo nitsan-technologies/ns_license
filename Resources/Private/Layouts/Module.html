@@ -41,16 +41,16 @@
         <f:render partial="ActivationModal" arguments="{_all}" optional="true" />
         <f:render partial="DomainsModal" arguments="{_all}" optional="true" />
         <!-- Help widget: fixed bottom-right -->
-        <div class="ns-license-help-widget dropdown">
-            <button type="button" class="ns-license-help-widget__trigger btn btn-primary rounded-circle p-0 shadow" aria-label="{f:translate(key: 'license-help-widget.aria-label', extensionName: 'ns_license')}" aria-expanded="false" aria-haspopup="true" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+        <div class="ns-license-help-widget">
+            <button type="button" class="ns-license-help-widget__trigger btn btn-primary rounded-circle p-0 shadow" aria-label="{f:translate(key: 'license-help-widget.aria-label', extensionName: 'ns_license')}" aria-expanded="false" aria-haspopup="true" aria-controls="ns-license-help-widget-popover" data-help-widget-trigger="true">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"></path></svg>
             </button>
-            <div class="dropdown-menu dropdown-menu-end ns-license-help-widget__popover shadow-lg border p-0">
+            <div id="ns-license-help-widget-popover" class="ns-license-help-widget__popover shadow-lg border p-0" data-help-widget-popover="true">
                 <div class="p-3 border-bottom">
                     <h4 class="h6 mb-1 fw-bold"><f:translate key="license-help-widget.title" extensionName="ns_license" /></h4>
                     <p class="small text-muted mb-0"><f:translate key="license-help-widget.description" extensionName="ns_license" /></p>
                 </div>
-                <div class="p-2">
+                <div class="ns-license-help-widget__list">
                     <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="https://t3planet.de/en/" target="_blank">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><title xmlns="">message-chatbot</title><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-5l-5 3v-3H6a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3zM9.5 9h.01m4.99 0h.01"/><path d="M9.5 13a3.5 3.5 0 0 0 5 0"/></g></svg>
                         <f:translate key="license-help-widget.live-chat" extensionName="ns_license" />

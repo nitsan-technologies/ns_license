@@ -1,7 +1,7 @@
 
 <f:if condition="{extensions}">
 <div id="premium-section" class="extension-section">
-    <div class="card-body px-3">
+    <div class="card-body mx-1">
         <div class="row license-activation">
             <f:for each="{extensions}" as="extension">
                 <f:if condition="{extension.details.license_key}">
@@ -20,7 +20,7 @@
                             <f:variable name="extensionStatusType" value="trial" />
                         </f:else>
                     </f:if>
-                    <div class="col-md-6 col-xl-4 p-1 extension-card-wrapper extension-{extensionStatusType}" data-name="{extension.title}" data-key="{extension.key}" data-status="{extensionStatus}">
+                    <div class="col-md-6 col-xl-4 p-2 extension-card-wrapper extension-{extensionStatusType}" data-name="{extension.title}" data-key="{extension.key}" data-status="{extensionStatus}">
                         <div class="card h-100">
                             <div class="card-header">
                                 <div class="card-header__title">

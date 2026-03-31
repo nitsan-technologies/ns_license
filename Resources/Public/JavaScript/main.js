@@ -59,6 +59,50 @@ document.addEventListener('click', (e) => {
   if (loader) loader.style.display = '';
 });
 
+// Help widget dropdown (custom, no Bootstrap dropdown behavior)
+(() => {
+  const widget = document.querySelector('.ns-license-help-widget');
+  const trigger = widget?.querySelector('[data-help-widget-trigger]');
+  const popover = widget?.querySelector('[data-help-widget-popover]');
+  if (!widget || !trigger || !popover) return;
+
+  const openWidget = () => {
+    widget.classList.add('is-open');
+    trigger.setAttribute('aria-expanded', 'true');
+  };
+
+  const closeWidget = () => {
+    widget.classList.remove('is-open');
+    trigger.setAttribute('aria-expanded', 'false');
+  };
+
+  const toggleWidget = () => {
+    if (widget.classList.contains('is-open')) {
+      closeWidget();
+    } else {
+      openWidget();
+    }
+  };
+
+  trigger.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    toggleWidget();
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!widget.contains(event.target)) {
+      closeWidget();
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      closeWidget();
+    }
+  });
+})();
+
 
 /**
  * Copy text to clipboard (fallback for older browsers).
