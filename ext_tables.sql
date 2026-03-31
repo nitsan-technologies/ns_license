@@ -16,6 +16,10 @@ CREATE TABLE ns_product_license (
 	expiration_date int(11) DEFAULT '0' NOT NULL,
 	domains text,
 	license_type varchar(5) DEFAULT NULL,
+	cs_version varchar(15) DEFAULT NULL,
+	cs_lts_version varchar(15) DEFAULT NULL,
+	local_domains text DEFAULT NULL,
+	staging_domains text DEFAULT NULL,
 
 	PRIMARY KEY (uid)
 );

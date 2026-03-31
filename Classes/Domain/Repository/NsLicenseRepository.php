@@ -35,6 +35,25 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
             if (is_null($extVersion)) {
                 $extVersion = $key;
             }
+
+            $csVersion = '';
+            $csLTSVersion = '';
+
+            $csDownloadUrl = $data->cs_download_url ?? [];
+            if(($data->extension_key === 'ns_t3ac' || $data->extension_key === 'ns_t3as') && $csDownloadUrl){
+                if (PHP_VERSION > 8) {
+                    $csDownloadUrl = $data->cs_download_url ? get_mangled_object_vars($data->cs_download_url) : [];
+                }
+                end($csDownloadUrl);
+                $csLTSVersion = key($csDownloadUrl);
+                if (is_null($csVersion)) {
+                    $csVersion = $csLTSVersion;
+                }
+            }
+
+            $localDomains = $data->local ?? $data->local_domains ?? '';
+            $stageDomains = $data->staging ?? $data->staging_domains ?? '';
+
             $row = $queryBuilder
                 ->insert('ns_product_license')
                 ->values([
@@ -51,6 +70,10 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
                     'expiration_date' => $data->expiration_date,
                     'domains' => $data->domains,
                     'license_type' => $data->license_type,
+                    'staging_domains' => $stageDomains,
+                    'local_domains' => $localDomains,
+                    'cs_version' => $csVersion,
+                    'cs_lts_version' => $csLTSVersion
                 ])
                 ->execute();
         }
@@ -78,6 +101,7 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 
     public function updateData($data, $ltsCheck = 0)
     {
+     
         $extensionDownloadUrl = $data->extension_download_url;
         if (PHP_VERSION > 8) {
             $extensionDownloadUrl = get_mangled_object_vars($data->extension_download_url);
@@ -100,10 +124,30 @@ class NsLicenseRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
            ->set('expiration_date', $data->expiration_date)
            ->set('documentation_link', $data->documentation_link)
            ->set('domains', $data->domains)
-           ->set('license_type', $data->license_type);;
+           ->set('license_type', $data->license_type);
         if ($ltsCheck == 1) {
             $queryBuilder->set('version', $key);
         }
+
+        if(($data->extension_key == 'ns_t3ac' || $data->extension_key == 'ns_t3as') && isset($data->cs_download_url)){
+            $csDownloadUrl = $data->cs_download_url;
+            if (PHP_VERSION > 8) {
+                if ($data->cs_download_url) {
+                    $csDownloadUrl = get_mangled_object_vars($data->cs_download_url);
+                }
+            }
+            end($csDownloadUrl);
+            $csversion = key($csDownloadUrl);
+            if ($ltsCheck == 1) {
+                $queryBuilder->set('cs_version', $csversion);
+            }
+            $queryBuilder->set('cs_lts_version', $csversion);
+        }
+        $localDomains = $data->local ?? $data->local_domains ?? '';
+        $stageDomains = $data->staging ?? $data->staging_domains ?? '';
+        $queryBuilder->set('local_domains', $localDomains);
+        $queryBuilder->set('staging_domains', $stageDomains);
+
         $queryBuilder->set('lts_version', $key)
            ->execute();
     }
