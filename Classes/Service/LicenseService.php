@@ -66,7 +66,7 @@ final class LicenseService
                         if (!empty($licenseData['serverError'])) {
                             return true;
                         }
-                        if (isset($licenseData['expiration_date']) && (int)$licenseData['expiration_date'] <= time()) {
+                        if (isset($licenseData['is_life_time'], $licenseData['expiration_date']) && !$licenseData['is_life_time'] && (int)$licenseData['expiration_date'] <= time()) {
                             $this->nsLicenseRepository->markExpired($extData[0]['license_key'],$extKey,'EXPIRED_'.$extData[0]['order_id']);
                             $this->updateFiles($extFolder);
                             return false;
