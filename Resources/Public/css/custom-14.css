@@ -10,11 +10,3 @@
     top: 50%;
     transform: translate(-50%, -50%);
   }
-
-  .ns-license-module .search-section .refresh-data-button {
-    min-width: 150px;
-  }
-
-  .ns-license-module .ns-license-activation-form .ns-ext-form .btn {
-    min-width: 335px;
-  }
