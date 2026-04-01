@@ -11,3 +11,11 @@
 .ns-license-module-wrapper .module-docheader-navigation {
     position: sticky;
 }
+
+.ns-license-module .search-section .refresh-data-button {
+  min-width: 150px;
+}
+
+.ns-license-module .ns-license-activation-form .ns-ext-form .btn {
+  min-width: 335px;
+}

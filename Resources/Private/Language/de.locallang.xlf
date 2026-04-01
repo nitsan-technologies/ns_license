@@ -662,6 +662,7 @@
             </trans-unit>
             <trans-unit id="license-help-widget.live-chat">
                 <source>Live Chat</source>
+                <target>Live-Chat</target>
             </trans-unit>
             <trans-unit id="license-help-widget.knowledge-base">
                 <source>Knowledge Base</source>
