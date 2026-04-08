@@ -48,6 +48,7 @@
 .ns-license-modal.modal.show {
   z-index: 1091;
   border: 1px solid inherit !important;
+  box-shadow: none;
 }
 
 .ns-license-modal.modal.show .t3js-modal-content.modal-content{
@@ -108,11 +109,11 @@
   border-radius: 0;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
-  padding: 10px;
+  padding: 11px;
 }
 
-.ns-license-module .ns-license-nav-tabs .nav-link:hover,
-.ns-license-modal .modal-body .modal-tabs .nav-link:hover {
+.ns-license-module .ns-license-nav-tabs .nav-link:not(.active):hover,
+.ns-license-modal .modal-body .modal-tabs .nav-link:not(.active):hover {
   background: light-dark(#f2f2f2, #181818);
   text-decoration: none;
 }
@@ -124,11 +125,9 @@
 } */
 
 .ns-license-modal .modal-body .modal-tabs .nav-link.active,
-.ns-license-modal .modal-body .modal-tabs .nav-link.active:hover,
-.ns-license-module .ns-license-nav-tabs .nav-link.active:hover,
 .ns-license-modal .modal-body .modal-tabs .nav-link.active:hover {
-  background: var(--bs-blue) !important;
-  color: light-dark(#ffffff, #000000);
+  background: light-dark(#eeedf1, #333333);
+  color: light-dark(#000000, #ffffff);
 }
 
 .ns-license-module .meta-info,

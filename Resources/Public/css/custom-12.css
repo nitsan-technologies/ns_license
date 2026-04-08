@@ -10,6 +10,7 @@
 
 .ns-license-module-wrapper .module-docheader-navigation {
     position: sticky;
+    top: 0;
 }
 
 .ns-license-module .search-section .refresh-data-button {
@@ -18,4 +19,12 @@
 
 .ns-license-module .ns-license-activation-form .ns-ext-form .btn {
   min-width: 335px;
+}
+
+.ns-license-modal.modal {
+  pointer-events: none;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
