@@ -58,8 +58,8 @@ class ExtensionListService
                         $icon = $package ? $package->getPackageIcon() : '';
                     }
                     
-                    $description = !empty($extDetails['description']) ? $extDetails['description']  : '';
-                    $title = !empty($extDetails['title']) ? $extDetails['title'] : '';
+                    $description = isset($extDetails['description']) ? $extDetails['description']  : '';
+                    $title = isset($extDetails['title']) ? $extDetails['title'] : '';
                     if ($packageMetaData && (!$title || !$description)) {
                         $title = $packageMetaData->getTitle();
                         $description = $packageMetaData->getDescription();
