@@ -71,6 +71,7 @@ class NsLicenseRepository
                     'order_id' => $data->order_id ?? 'FREE',
                     'license_key' => $data->license_key ?? '',
                     'description'=> $data->description ?? '',
+                    'title'=> $data->title ?? '',
                     'extension_key' => $data->extension_key,
                     'product_link' => $data->product_link,
                     'documentation_link' => $data->documentation_link,
@@ -176,6 +177,7 @@ class NsLicenseRepository
             ->set('downloads', $data->downloads ?? 0)
             ->set('license_type', $data->license_type ?? 0)
             ->set('description', $data->description ?? '')
+            ->set('title', $data->title ?? '')
             ->set('trial_extended', (int)$data->trial_extended ?? 0);
             
             if ($ltsCheck == 1) {

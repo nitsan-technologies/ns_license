@@ -57,12 +57,14 @@ class ExtensionListService
                     } else {
                         $icon = $package ? $package->getPackageIcon() : '';
                     }
-                    $description = '';
-                    if ($extDetails['description']){
-                        $description = $extDetails['description'] ?? '';
-                    }elseif ($packageMetaData){
+                    
+                    $description = !empty($extDetails['description']) ? $extDetails['description']  : '';
+                    $title = !empty($extDetails['title']) ? $extDetails['title'] : '';
+                    if ($packageMetaData && (!$title || !$description)) {
+                        $title = $packageMetaData->getTitle();
                         $description = $packageMetaData->getDescription();
                     }
+                    
                     if (isset($extDetails['license_key']) && $extDetails['license_key']) {
                         $domains = isset($extDetails['domains']) ? GeneralUtility::trimExplode(',', $extDetails['domains']) : [];
                         $composerPackage = 'nitsan/' . str_replace('_', '-', $extDetails['extension_key']);
@@ -73,7 +75,7 @@ class ExtensionListService
                             'version' => $version,
                             'state' => str_starts_with($version, 'dev-') ? 'alpha' : 'stable',
                             'icon' => $icon ? PathUtility::getAbsoluteWebPath($package->getPackagePath() . $icon) : '',
-                            'title' => $packageMetaData ? $packageMetaData->getTitle() : '',
+                            'title' => $title,
                             'description' => $description,
                             'is_premium' => true,
                             'details' => $extDetails,

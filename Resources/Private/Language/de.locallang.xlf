@@ -676,6 +676,10 @@
                 <source>Rate Us</source>
                 <target>Bewerten Sie uns</target>
             </trans-unit>
+             <trans-unit id="extension.search.no_result">
+                <source>No extensions found matching your criteria</source>
+                <target>Es wurden keine Erweiterungen gefunden, die Ihren Kriterien entsprechen</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

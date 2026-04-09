@@ -13,8 +13,8 @@ $EM_CONF['ns_license'] = [
       => [
         'depends'
           => [
-            'typo3' => '12.0.0-14.1.1',
-            'extensionmanager' => '12.0.0-14.1.1',
+            'typo3' => '12.0.0-14.2.99',
+            'extensionmanager' => '12.0.0-14.2.99',
           ],
       ],
     'autoload'

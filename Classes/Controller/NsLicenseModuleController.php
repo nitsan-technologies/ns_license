@@ -798,7 +798,6 @@ class NsLicenseModuleController extends ActionController
                 $isSuccess = $result && isset($result['sections']) && is_array($result['sections']);
                 $successMessageKey = 'fetchData.success.shop_updated';
             } else {
-                // services: https://t3planet.de/?type=997979 returns { "services": { "records": [...] } }; sanitized to categories with title, description, slug, tx_mask_pricing_text
                 $isSuccess = $result && isset($result['categories']) && is_array($result['categories']);
                 $successMessageKey = 'fetchData.success.services_updated';
             }

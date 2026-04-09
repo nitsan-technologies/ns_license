@@ -391,6 +391,7 @@ function filterExtensions() {
     
     const statusFilterValue = statusFilter.value || 'all';
     const searchText = searchInput.value.toLowerCase().trim();
+    const noResultsText = extensionsPane.getAttribute('data-no-results-message') || 'No extensions found matching your criteria.';
     
     // Get all extension cards
     const extensionCards = extensionsPane.querySelectorAll('.extension-card-wrapper');
@@ -473,7 +474,7 @@ function filterExtensions() {
         if (!noResultsMessage) {
             noResultsMessage = document.createElement('div');
             noResultsMessage.className = 'no-extensions-results col-12 text-center py-5';
-            noResultsMessage.innerHTML = '<p class="text-muted">No extensions found matching your criteria.</p>';
+            noResultsMessage.innerHTML = '<p class="text-muted">' + noResultsText + '</p>';
             extensionsPane.appendChild(noResultsMessage);
         }
     } else {
