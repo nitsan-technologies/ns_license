@@ -147,6 +147,9 @@ class ExtensionListService
             if ($extKey === 'dataviewer_pro') {
                 return $this->composerSiteRoot . 'vendor/aix/' . $extKey . '/';
             }
+            if ($extKey === 'tonictypes_pro') {
+                return $this->composerSiteRoot . 'vendor/k3n/' . $extKey . '/';
+            }
             $extKeyForPath = str_replace('_', '-', $extKey);
             return $this->composerSiteRoot . 'vendor/nitsan/' . $extKeyForPath . '/';
         }

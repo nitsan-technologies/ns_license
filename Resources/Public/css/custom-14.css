@@ -1,5 +1,0 @@
-/* TYPO3 v12 specific stylesheet entry.
- * Starts by importing the shared stylesheet; add v12 overrides below as needed.
- */
- @import url('./custom.css');
-

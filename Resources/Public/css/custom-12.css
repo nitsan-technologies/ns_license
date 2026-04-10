@@ -28,3 +28,24 @@
   top: 50%;
   transform: translate(-50%, -50%);
 }
+
+
+.ns-license-module-wrapper .spinner-border {
+  width: 48px;
+  height: 48px;
+  border: 2px solid light-dark(rgba(0, 0, 0, 0.9), rgba(255, 255, 255, 0.9));
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+} 
