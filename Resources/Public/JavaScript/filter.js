@@ -391,6 +391,7 @@ function filterExtensions() {
     
     const statusFilterValue = statusFilter.value || 'all';
     const searchText = searchInput.value.toLowerCase().trim();
+    const noResultsText = extensionsPane.getAttribute('data-no-results-message') || 'No extensions found matching your criteria.';
     
     // Get all extension cards
     const extensionCards = extensionsPane.querySelectorAll('.extension-card-wrapper');
@@ -473,7 +474,7 @@ function filterExtensions() {
         if (!noResultsMessage) {
             noResultsMessage = document.createElement('div');
             noResultsMessage.className = 'no-extensions-results col-12 text-center py-5';
-            noResultsMessage.innerHTML = '<p class="text-muted">No extensions found matching your criteria.</p>';
+            noResultsMessage.innerHTML = '<p class="text-muted">' + noResultsText + '</p>';
             extensionsPane.appendChild(noResultsMessage);
         }
     } else {
@@ -487,6 +488,14 @@ function filterExtensions() {
  * Initialize filter functionality when DOM is ready
  */
 function initializeFilters() {
+    const moduleTabsContainer = document.querySelector('.ns-license-nav-tabs');
+    const moduleTabContent = document.querySelector('#license-tab-content');
+    const clearMainTabState = () => {
+        moduleTabsContainer?.querySelectorAll('.nav-link').forEach((tab) => tab.classList.remove('active'));
+        moduleTabContent?.querySelectorAll('.tab-pane').forEach((pane) => {
+            pane.classList.remove('show', 'active');
+        });
+    };
     // Services Filter and Search - Event handlers
     const servicesCategoryFilter = document.querySelector('#servicesCategoryFilter');
     const servicesSearch = document.querySelector('#servicesSearch');
@@ -541,11 +550,8 @@ function initializeFilters() {
             // Manually activate the tab (Bootstrap 5)
             const shopPane = document.querySelector('#shop-pane');
             if (shopPane) {
-                // Remove active from all tabs and panes
-                document.querySelectorAll('.nav-link').forEach(tab => tab.classList.remove('active'));
-                document.querySelectorAll('.tab-pane').forEach(pane => {
-                    pane.classList.remove('show', 'active');
-                });
+                // Remove active from this module tabs and panes only
+                clearMainTabState();
                 
                 // Add active to shop tab and pane
                 shopTab.classList.add('active');
@@ -564,11 +570,8 @@ function initializeFilters() {
             // Manually activate the tab (Bootstrap 5)
             const servicesPane = document.querySelector('#services-pane');
             if (servicesPane) {
-                // Remove active from all tabs and panes
-                document.querySelectorAll('.nav-link').forEach(tab => tab.classList.remove('active'));
-                document.querySelectorAll('.tab-pane').forEach(pane => {
-                    pane.classList.remove('show', 'active');
-                });
+                // Remove active from this module tabs and panes only
+                clearMainTabState();
                 
                 // Add active to services tab and pane
                 servicesTab.classList.add('active');
@@ -585,11 +588,8 @@ function initializeFilters() {
             // Manually activate the tab (Bootstrap 5)
             const extensionsPane = document.querySelector('#extensions-pane');
             if (extensionsPane) {
-                // Remove active from all tabs and panes
-                document.querySelectorAll('.nav-link').forEach(tab => tab.classList.remove('active'));
-                document.querySelectorAll('.tab-pane').forEach(pane => {
-                    pane.classList.remove('show', 'active');
-                });
+                // Remove active from this module tabs and panes only
+                clearMainTabState();
                 
                 // Add active to extensions tab and pane
                 extensionsTab.classList.add('active');

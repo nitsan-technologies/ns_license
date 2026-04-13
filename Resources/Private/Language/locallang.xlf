@@ -531,6 +531,9 @@
             <trans-unit id="license-help-widget.rate-us">
                 <source>Rate Us</source>
             </trans-unit>
+            <trans-unit id="extension.search.no_result">
+                <source>No extensions found matching your criteria</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>

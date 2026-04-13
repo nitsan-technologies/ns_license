@@ -12,13 +12,13 @@
     "template",
     "ns"
   ],
-  "homepage": "https://t3planet.com",
+  "homepage": "https://t3planet.de",
   "authors": [
     {
         "name": "Team T3Planet",
         "email": "support@t3planet.com",
         "role": "Developer",
-        "homepage": "https://t3planet.com"
+        "homepage": "https://t3planet.de"
     }
   ],
   "support": {
@@ -26,8 +26,8 @@
   },
   "license": "MIT",
   "require": {
-    "typo3/cms-core": "^12 || ^13 || ^14.1",
-    "typo3/cms-extensionmanager": "^12 || ^13 || ^14.1"
+    "typo3/cms-core": "^12 || ^13 || ^14",
+    "typo3/cms-extensionmanager": "^12 || ^13 || ^14"
   },
   "autoload": {
     "psr-4": {

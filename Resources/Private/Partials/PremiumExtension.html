@@ -183,7 +183,10 @@
                                     </f:if>
                                     <f:if condition="!{composer}">
                                         <f:if condition="{extension.details.isUpdateAvail} && {extension.details.days} > 0">
-                                            <f:link.action data="{bs-toggle:'modal', bs-target:'#activation-modal'}" action="update"  class="btn btn-default license-activation-latest" 
+                                            <f:link.action action="update"  class="btn btn-default license-activation-latest"
+                                                data-title="{f:translate(key: 'license-activation.update_extension', extensionName: 'ns_license')}"
+                                                data-content="{f:translate(key: 'license-activation.update_extension_msg', extensionName: 'ns_license')}"
+                                                data-confirm-text="{f:translate(key: 'license-activation.update_extension_btn_update', extensionName: 'ns_license')}"
                                                 arguments="{extension: {extension_key: extension.key, license_key: extension.details.license_key}}">
                                                 <core:icon identifier="actions-synchronize" size="small" />
                                                 <f:translate key="license-activation.updateTo" /> {extension.details.lts_version}
@@ -230,7 +233,10 @@
                                             </f:else>
                                         </f:if>
                                     </f:if>
-                                    <f:link.action data="{bs-toggle:'modal', bs-target:'#deactivation-modal'}" action="deactivation"  class="btn btn-danger license-deactivation-latest" 
+                                    <f:link.action action="deactivation"  class="btn btn-danger license-deactivation-latest"
+                                        data-title="{f:translate(key: 'license-deactivation.confirmation', extensionName: 'ns_license')}"
+                                        data-content="{f:translate(key: 'license-deactivation.confirmation.message', extensionName: 'ns_license')}"
+                                        data-confirm-text="{f:translate(key: 'license-deactivation.button', extensionName: 'ns_license')}"
                                         arguments="{extension: {extension_key: extension.key, license_key: extension.details.license_key}}">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2 lucide-trash-2 h-3.5 w-3.5 mr-1.5" aria-hidden="true"><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                                         <f:translate key="license-deactivation.action" />

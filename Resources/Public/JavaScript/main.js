@@ -5,37 +5,69 @@ import Severity from '@typo3/backend/severity.js';
 import DeferredAction from '@typo3/backend/action-button/deferred-action.js';
 
 // Confirmation modalbox `Version Update` button
-document.querySelectorAll('.license-activation .license-activation-latest').forEach((el) => {
-  el.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.currentTarget.classList.add('active');
-  });
-});
+document.addEventListener('click', (e) => {
+  const link = e.target.closest('.license-activation-latest');
+  if (!link) return;
+  e.preventDefault();
 
-document.querySelector('#activation-modal .activation-modal-update')?.addEventListener('click', (e) => {
-  const activeLink = document.querySelector('.license-activation .license-activation-latest.active');
-  const url = activeLink?.getAttribute('href');
-  if (activeLink) activeLink.classList.remove('active');
-  const loader = document.getElementById('nsLicenseLoader');
-  if (loader) loader.style.display = '';
-  if (url) window.location = url;
+  const targetUrl = link.getAttribute('href');
+  if (!targetUrl) return;
+  const title = link.dataset.title || 'Attention Please!';
+  const content = link.dataset.content || 'Are you sure that you want to overwrite the existing TYPO3 extension?';
+  const confirmText = link.dataset.confirmText || 'Update Now';
+
+  Modal.confirm(title, content, Severity.warning, [
+    {
+      text: TYPO3.lang?.cancel || 'Cancel',
+      trigger() {
+        Modal.dismiss();
+      },
+    },
+    {
+      text: confirmText,
+      btnClass: 'btn-warning',
+      active: true,
+      action: new DeferredAction(() => {
+        const loader = document.getElementById('nsLicenseLoader');
+        if (loader) loader.style.display = '';
+        window.location.href = targetUrl;
+        return Promise.resolve();
+      }),
+    },
+  ]);
 });
 
 // Confirmation modalbox `License DeActivation` button
-document.querySelectorAll('.license-activation .license-deactivation-latest').forEach((el) => {
-  el.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.currentTarget.classList.add('active');
-  });
-});
+document.addEventListener('click', (e) => {
+  const link = e.target.closest('.license-deactivation-latest');
+  if (!link) return;
+  e.preventDefault();
 
-document.querySelector('#deactivation-modal .deactivation-modal-update')?.addEventListener('click', (e) => {
-  const activeLink = document.querySelector('.license-activation .license-deactivation-latest.active');
-  const url = activeLink?.getAttribute('href');
-  if (activeLink) activeLink.classList.remove('active');
-  const loader = document.getElementById('nsLicenseLoader');
-  if (loader) loader.style.display = '';
-  if (url) window.location = url;
+  const targetUrl = link.getAttribute('href');
+  if (!targetUrl) return;
+  const title = link.dataset.title || 'Caution!';
+  const content = link.dataset.content || 'Do you want to deactivate the license key from this domain? The TYPO3 extension will not more work on this domain.';
+  const confirmText = link.dataset.confirmText || 'Deactivate Now!';
+
+  Modal.confirm(title, content, Severity.error, [
+    {
+      text: TYPO3.lang?.cancel || 'Cancel',
+      trigger() {
+        Modal.dismiss();
+      },
+    },
+    {
+      text: confirmText,
+      btnClass: 'btn-danger',
+      active: true,
+      action: new DeferredAction(() => {
+        const loader = document.getElementById('nsLicenseLoader');
+        if (loader) loader.style.display = '';
+        window.location.href = targetUrl;
+        return Promise.resolve();
+      }),
+    },
+  ]);
 });
 
 // If Cancel button from Modalbox

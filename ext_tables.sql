@@ -18,6 +18,7 @@ CREATE TABLE ns_product_license (
 	expiration_date int(11) DEFAULT '0' NOT NULL,
 	domains text DEFAULT NULL,
 	username varchar(255) NOT NULL,
+	title varchar(128) DEFAULT '' NOT NULL,
 	description varchar(255) DEFAULT '' NOT NULL,
 	local_domains text DEFAULT NULL,
 	staging_domains text DEFAULT NULL,
