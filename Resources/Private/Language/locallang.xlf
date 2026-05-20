@@ -460,8 +460,31 @@
             <trans-unit id="license-domains.button.add_domain">
                 <source>Add Domain</source>
             </trans-unit>
+            <!-- Authentication search Logs -->
             <trans-unit id="license-auth-logs.search_placeholder">
                 <source>Search logs...</source>
+            </trans-unit>
+            <!-- Filter in Authentication Logs -->
+            <trans-unit id="license-auth.filter.type.all">
+                <source>All Logs</source>
+            </trans-unit>
+            <trans-unit id="license-auth.filter.type.domain_removed">
+                <source>Domain Removed</source>
+            </trans-unit>
+            <trans-unit id="license-auth.filter.type.domain_added">
+                <source>Domain Added</source>
+            </trans-unit>
+            <trans-unit id="license-auth.filter.type.domain_limit_reached">
+                <source>Domain Limit Reached</source>
+            </trans-unit>
+            <trans-unit id="license-auth.filter.type.domain_updated">
+                <source>Domain Updated</source>
+            </trans-unit>
+            <trans-unit id="license-auth.filter.type.error2">
+                <source>Error</source>
+            </trans-unit>
+            <trans-unit id="license-auth-logs.no_matching">
+                <source>No matching auth logs found.</source>
             </trans-unit>
             <trans-unit id="license-domains.add_modal.title">
                 <source>New Domain</source>

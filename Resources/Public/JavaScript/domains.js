@@ -126,19 +126,17 @@ $(document).on('click', '.t3js-domains-modal-trigger', function(e) {
     processDomains(domainsLocal, 'local');
     $(modalTarget).data('all-domains', allDomainsData);
     
-    // Initial display and wire search/filter to shared refresh
+    // Initial display (search/filter use document-level handlers)
     refreshDomainsList(modalTarget);
-    $(modalTarget + ' #domains-search-input').on('input', function() {
-        refreshDomainsList(modalTarget);
-    });
-    $(modalTarget + ' #domains-environment-filter').on('change', function() {
-        refreshDomainsList(modalTarget);
-    });
-    
+
     // Reset search and filter when modal is hidden
-    $(modalTarget).on('hidden.bs.modal', function() {
+    $(modalTarget).off('hidden.bs.modal.nsLicenseDomains').on('hidden.bs.modal.nsLicenseDomains', function() {
         $(modalTarget + ' #domains-search-input').val('');
         $(modalTarget + ' #domains-environment-filter').val('all');
+        $(modalTarget + ' #auth-log-search').val('');
+        $(modalTarget + ' #auth-log-filter').val('all');
+        $(modalTarget + ' .auth-logs-list .auth-logs-filter-empty').remove();
+        $(modalTarget + ' .auth-logs-list .auth-log-item').show();
     });
 
     // Helper function to close modal
@@ -266,6 +264,7 @@ $(document).on('click', '.t3js-domains-modal-trigger', function(e) {
             // Mark as loaded and store current license key
             authLogsList.data('loaded', true);
             authLogsList.data('current-license-key', licenseKey);
+            applyAuthLogFilters();
         })
         .catch(function (error) {
             authLogsList.html('<div class="p-4 text-center text-danger">Error loading auth logs. Please try again.</div>');
@@ -652,3 +651,52 @@ $(document).on('click', '.domains-list__item-action-delete', function(e) {
     Modal.advanced(modalConfig);
 });
 
+/**
+ * Apply auth log type filter and search together (within #domains-modal).
+ */
+function applyAuthLogFilters() {
+    const $modal = $('#domains-modal');
+    const $list = $modal.find('.auth-logs-list');
+    const selectedType = String($('#auth-log-filter').val() || 'all').trim();
+    const searchValue = String($('#auth-log-search').val() || '').toLowerCase().trim();
+    const emptyMessage = $modal.attr('data-auth-logs-no-matching') || 'No matching auth logs found.';
+    let visibleCount = 0;
+
+    $list.find('.auth-logs-filter-empty').remove();
+    $list.find('.auth-log-item').each(function() {
+        const $item = $(this);
+        const itemType = String($item.attr('data-type') || '').trim();
+        const text = String($item.text() || '').toLowerCase();
+        const typeMatch = selectedType === 'all' || itemType === selectedType;
+        const searchMatch = searchValue === '' || text.indexOf(searchValue) > -1;
+        const show = typeMatch && searchMatch;
+        $item.toggle(show);
+        if (show) {
+            visibleCount++;
+        }
+    });
+
+    if ($list.find('.auth-log-item').length > 0 && visibleCount === 0) {
+        $list.append(
+            '<div class="p-4 text-center text-gray-500 auth-logs-filter-empty">' +
+            emptyMessage.replace(/</g, '&lt;') +
+            '</div>'
+        );
+    }
+}
+
+$(document).on('input', '#domains-search-input', function() {
+    refreshDomainsList('#domains-modal');
+});
+
+$(document).on('change', '#domains-environment-filter', function() {
+    refreshDomainsList('#domains-modal');
+});
+
+$(document).on('input', '#auth-log-search', function() {
+    applyAuthLogFilters();
+});
+
+$(document).on('change', '#auth-log-filter', function() {
+    applyAuthLogFilters();
+});

@@ -588,6 +588,34 @@
                 <source>Search logs...</source>
                 <target>Logs durchsuchen...</target>
             </trans-unit>
+            <trans-unit id="license-auth.filter.type.all">
+                <source>All Logs</source>
+                <target>Alle Logs</target>
+            </trans-unit>
+            <trans-unit id="license-auth.filter.type.domain_removed">
+                <source>Domain Removed</source>
+                <target>Domain entfernt</target>
+            </trans-unit>
+            <trans-unit id="license-auth.filter.type.domain_added">
+                <source>Domain Added</source>
+                <target>Domain hinzugefügt</target>
+            </trans-unit>
+            <trans-unit id="license-auth.filter.type.domain_limit_reached">
+                <source>Domain Limit Reached</source>
+                <target>Domain-Limit erreicht</target>
+            </trans-unit>
+            <trans-unit id="license-auth.filter.type.domain_updated">
+                <source>Domain Updated</source>
+                <target>Domain aktualisiert</target>
+            </trans-unit>
+            <trans-unit id="license-auth.filter.type.error2">
+                <source>Error</source>
+                <target>Fehler</target>
+            </trans-unit>
+            <trans-unit id="license-auth-logs.no_matching">
+                <source>No matching auth logs found.</source>
+                <target>Keine passenden Auth-Logs gefunden.</target>
+            </trans-unit>
             <trans-unit id="license-domains.add_modal.title">
                 <source>New Domain</source>
                 <target>Neue Domain</target>
