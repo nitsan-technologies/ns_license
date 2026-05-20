@@ -152,7 +152,9 @@ class NsLicenseRepository
         }
         end($extensionDownloadUrl);
         $key = key($extensionDownloadUrl);
-     
+        $localDomains =  $data->local_domains ?? $data->local ?? '';
+        $stageDomains =  $data->staging_domains ?? $data->staging ?? '';
+
         if ($key) {
             $queryBuilder = $this->getQueryBuilder('ns_product_license');
             $queryBuilder
@@ -171,8 +173,8 @@ class NsLicenseRepository
             ->set('expiration_date', $data->expiration_date ?? 0)
             ->set('documentation_link', $data->documentation_link)
             ->set('domains', $data->domains ?? '')
-            ->set('local_domains', $data->local_domains ?? '')
-            ->set('staging_domains', $data->staging_domains ?? '')
+            ->set('local_domains', $localDomains)
+            ->set('staging_domains', $stageDomains)
             ->set('rating', $data->rating ?? 0)
             ->set('downloads', $data->downloads ?? 0)
             ->set('license_type', $data->license_type ?? 0)
