@@ -532,7 +532,7 @@ $(document).on('click', '.domains-list__item-action-save', function(e) {
 
     btn.prop('disabled', true);
     let originalHtml = btn.html();
-    btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+    btn.html('<span class="spinner-border spinner-border-sm spinner-border-domains" role="status" aria-hidden="true"></span>');
 
     new AjaxRequest(TYPO3.settings.ajaxUrls.update_domain)
         .post({
