@@ -182,7 +182,7 @@
                                         </f:else>
                                     </f:if>
                                     <f:if condition="!{composer}">
-                                        <f:if condition="{extension.details.isUpdateAvail} && {extension.details.days} > 0">
+                                        <f:if condition="{extension.details.isUpdateAvail} && ({extension.details.days} > 0 || {extension.details.is_life_time})">
                                             <f:link.action action="update"  class="btn btn-default license-activation-latest"
                                                 data-title="{f:translate(key: 'license-activation.update_extension', extensionName: 'ns_license')}"
                                                 data-content="{f:translate(key: 'license-activation.update_extension_msg', extensionName: 'ns_license')}"
