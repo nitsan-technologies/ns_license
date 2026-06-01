@@ -51,10 +51,11 @@
   box-shadow: none;
 }
 
-.ns-license-modal.modal.show .t3js-modal-content.modal-content{
+.ns-license-modal.modal.show .t3js-modal-content.modal-content {
   display: flex;
   flex-direction: column;
   max-height: calc(100dvh - 40px);
+  height: 100%;
 }
 
 .ns-license-modal.modal .modal-dialog {
@@ -64,6 +65,7 @@
 
 .ns-license-modal.modal.show .modal-dialog {
   transform: none;
+  height: 100%;
 }
 
 .ns-license-modal.modal.show .modal-header {
@@ -120,7 +122,7 @@
 
 .ns-license-modal .modal-body .modal-tabs .nav-link.active,
 .ns-license-modal .modal-body .modal-tabs .nav-link.active:hover {
-  background: light-dark(#eeedf1, #333333);
+  background: light-dark(#eeedf1, #181818);
   color: light-dark(#000000, #ffffff);
 }
 
