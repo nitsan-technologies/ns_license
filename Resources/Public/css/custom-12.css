@@ -41,6 +41,11 @@
   animation: rotation 1s linear infinite;
 }
 
+.ns-license-module-wrapper .spinner-border.spinner-border-domains {
+  width: 14px;
+  height: 14px;
+}
+
 .ns-license-module-wrapper .search-section .spinner-border {
   width: 16px;
   height: 16px;

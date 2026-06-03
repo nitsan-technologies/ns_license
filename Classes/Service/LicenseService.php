@@ -433,7 +433,7 @@ final class LicenseService
     public function fetchData(string $type = 'shop'): array
     {
         $apiBaseUrl = $this->getApiBaseUrl();
-
+       
         // Determine API endpoint and method based on type
         if ($type === 'extensions') {
             $extensions = [];
@@ -457,6 +457,7 @@ final class LicenseService
             $options = [
                 'body' => json_encode([
                     'extensions' => $extensions,
+                    'typo3_version' => (string) $this->typo3Version,
                 ]),
                 'headers' => [
                     'Content-Type' => 'application/json'
