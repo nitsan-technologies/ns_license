@@ -59,6 +59,10 @@
                 <source>Trial</source>
                 <target>Testversion</target>
             </trans-unit>
+            <trans-unit id="license-activation.badge.active">
+                <source>Active</source>
+                <target>Aktiv</target>
+            </trans-unit>
             <trans-unit id="license-activation.extkey">
                 <source>Extension Key</source>
                 <target>Extension-Key</target>
