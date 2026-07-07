@@ -11,6 +11,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use NITSAN\NsLicense\Service\LicenseService;
 use NITSAN\NsLicense\Service\ExtensionListService;
 use NITSAN\NsLicense\Service\ExtensionArchiveService;
+use NITSAN\NsLicense\Service\ProductBundleRegistry;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
@@ -275,14 +276,8 @@ class NsLicenseModuleController extends ActionController
                     try {
                         if (!$this->isComposerMode) {
                             $overwrite = (bool)($params['overwrite'] ?? false);
-                            // Install dependency first (static URL from API), then main extension.
-                            $this->installExtensionFromDownloadUrls(
-                                $licenseData['cs_download_url'] ?? [],
-                                $licenseData,
-                                'ns_t3cs',
-                                $overwrite,
-                                false
-                            );
+                            // Install bundled foundation dependency first, then main extension.
+                            $this->installBundledDependencies($licenseData, $overwrite);
                             $this->installExtensionFromDownloadUrls(
                                 $licenseData['extension_download_url'] ?? [],
                                 $licenseData,
@@ -331,14 +326,8 @@ class NsLicenseModuleController extends ActionController
                         }
                         try {
                             if (!$this->isComposerMode) {
-                                // Install dependency first (static URL from API), then main extension.
-                                $this->installExtensionFromDownloadUrls(
-                                    $licenseData['cs_download_url'] ?? [],
-                                    $licenseData,
-                                    'ns_t3cs',
-                                    $overwrite,
-                                    false
-                                );
+                                // Install bundled foundation dependency first, then main extension.
+                                $this->installBundledDependencies($licenseData, $overwrite);
                                 $this->installExtensionFromDownloadUrls(
                                     $licenseData['extension_download_url'] ?? [],
                                     $licenseData,
@@ -890,6 +879,40 @@ class NsLicenseModuleController extends ActionController
             if (isset($params['action'])) {
                 return $this->redirect('list');
             }
+        }
+    }
+
+    /**
+     * Install shared foundation dependencies before the licensed product extension.
+     *
+     * @param array<string, mixed> $licenseData
+     */
+    protected function installBundledDependencies(array $licenseData, bool $overwrite): void
+    {
+        if ($this->isComposerMode) {
+            return;
+        }
+
+        $extensionKey = (string)($licenseData['extension_key'] ?? '');
+
+        if (ProductBundleRegistry::isChatbotSearchProduct($extensionKey)) {
+            $this->installExtensionFromDownloadUrls(
+                $licenseData['cs_download_url'] ?? [],
+                $licenseData,
+                'ns_t3cs',
+                $overwrite,
+                false
+            );
+        }
+
+        if (ProductBundleRegistry::isAiFoundationDependentProduct($extensionKey)) {
+            $this->installExtensionFromDownloadUrls(
+                $licenseData['af_download_url'] ?? [],
+                $licenseData,
+                'ns_t3af',
+                $overwrite,
+                false
+            );
         }
     }
 

@@ -122,9 +122,15 @@ class ExtensionListService
                     if (version_compare($extDetails['lts_version'], $extVersion, '>')) {
                         $extensions['premium'][$key]['details']['isUpdateAvail'] = true;
                     }
-                    if($extension['key'] == 'ns_t3ac' || ($extension['key'] == 'ns_t3as')){
+                    if (ProductBundleRegistry::isChatbotSearchProduct((string) $extension['key'])) {
                         $csVersion = $extensions['premium'][$key]['details']['cs_version'];
                         if ($csVersion && version_compare($extDetails['cs_lts_version'], $csVersion, '>')) {
+                            $extensions['premium'][$key]['details']['isUpdateAvail'] = true;
+                        }
+                    }
+                    if (ProductBundleRegistry::isAiFoundationDependentProduct((string) $extension['key'])) {
+                        $afVersion = $extensions['premium'][$key]['details']['af_version'];
+                        if ($afVersion && version_compare($extDetails['af_lts_version'], $afVersion, '>')) {
                             $extensions['premium'][$key]['details']['isUpdateAvail'] = true;
                         }
                     }

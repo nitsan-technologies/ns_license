@@ -4,6 +4,7 @@ namespace NITSAN\NsLicense\Domain\Repository;
 
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\DBALException;
+use NITSAN\NsLicense\Service\ProductBundleRegistry;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -47,19 +48,21 @@ class NsLicenseRepository
             }
             $csVersion = '';
             $csLTSVersion = '';
-           
-            $csDownloadUrl = $data->cs_download_url ?? [];
-            if($data->extension_key === 'ns_t3ac' || $data->extension_key === 'ns_t3as' && $csDownloadUrl){
-                if (PHP_VERSION > 8) {
-                    $csDownloadUrl = $data->cs_download_url ? get_mangled_object_vars($data->cs_download_url) : [];
-                }
-                end($csDownloadUrl);
-                $csLTSVersion = key($csDownloadUrl);
-                if (is_null($csVersion)) {
-                    $csVersion = $csLTSVersion;
-                }
+            $afVersion = '';
+            $afLTSVersion = '';
+
+            if (ProductBundleRegistry::isChatbotSearchProduct((string) $data->extension_key) && !empty($data->cs_download_url ?? [])) {
+                $resolvedCs = ProductBundleRegistry::resolveDownloadVersions($data, 'cs_download_url');
+                $csVersion = $resolvedCs['version'];
+                $csLTSVersion = $resolvedCs['ltsVersion'];
             }
-            
+
+            if (ProductBundleRegistry::isAiFoundationDependentProduct((string) $data->extension_key) && !empty($data->af_download_url ?? [])) {
+                $resolvedAf = ProductBundleRegistry::resolveDownloadVersions($data, 'af_download_url');
+                $afVersion = $resolvedAf['version'];
+                $afLTSVersion = $resolvedAf['ltsVersion'];
+            }
+
             $localDomains =  $data->local_domains ?? $data->local ?? '';
             $stageDomains =  $data->staging_domains ?? $data->staging ?? '';
 
@@ -88,7 +91,9 @@ class NsLicenseRepository
                     'username' => $data->user_name ?? '',
                     'trial_extended' => (int)$data->trial_extended ?? 0,
                     'cs_version' => $csVersion,
-                    'cs_lts_version' => $csLTSVersion
+                    'cs_lts_version' => $csLTSVersion,
+                    'af_version' => $afVersion,
+                    'af_lts_version' => $afLTSVersion,
                 ])
                 ->executeStatement();
         }
@@ -186,22 +191,26 @@ class NsLicenseRepository
                 $queryBuilder->set('version', $key);
             }
 
-            if(($data->extension_key === 'ns_t3ac' || $data->extension_key === 'ns_t3as') && isset($data->cs_download_url)){
-                $csDownloadUrl = $data->cs_download_url;
-                if (PHP_VERSION > 8) {
-                    if ($data->cs_download_url) {
-                        $csDownloadUrl = get_mangled_object_vars($data->cs_download_url);
-                    }
-                }
-                end($csDownloadUrl);
-                $version = key($csDownloadUrl);
+            if (ProductBundleRegistry::isChatbotSearchProduct((string) $data->extension_key) && isset($data->cs_download_url)) {
+                $resolvedCs = ProductBundleRegistry::resolveDownloadVersions($data, 'cs_download_url');
+                $version = $resolvedCs['ltsVersion'];
                 if ($ltsCheck == 1) {
                     $queryBuilder->set('cs_version', $version);
                 }
-                
+
                 $queryBuilder->set('cs_lts_version', $version);
             }
-            
+
+            if (ProductBundleRegistry::isAiFoundationDependentProduct((string) $data->extension_key) && isset($data->af_download_url)) {
+                $resolvedAf = ProductBundleRegistry::resolveDownloadVersions($data, 'af_download_url');
+                $version = $resolvedAf['ltsVersion'];
+                if ($ltsCheck == 1) {
+                    $queryBuilder->set('af_version', $version);
+                }
+
+                $queryBuilder->set('af_lts_version', $version);
+            }
+
             $queryBuilder->set('lts_version', $key)
                 ->executeStatement();
         }

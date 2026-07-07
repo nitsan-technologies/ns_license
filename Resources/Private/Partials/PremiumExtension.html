@@ -6,7 +6,7 @@
             <f:for each="{extensions}" as="extension">
                 <f:if condition="{extension.details.license_key}">
                     <f:variable name="extensionStatus" value="premium" />
-                    <f:if condition="{extension.details.is_life_time} == 0 && {extension.details.days} > 0 && {extension.trial}">
+                    <f:if condition="{extension.details.is_life_time} == 0 && {extension.details.days} > 0">
                         <f:variable name="extensionStatus" value="trial" />
                     </f:if>
                     <f:if condition="{extension.details.is_life_time}">
@@ -17,14 +17,7 @@
                             <f:variable name="extensionStatusType" value="expired" />
                         </f:else>
                         <f:else>
-                            <f:if condition="{extension.trial}">
-                                <f:then>
-                                    <f:variable name="extensionStatusType" value="trial" />
-                                </f:then>
-                                <f:else>
-                                    <f:variable name="extensionStatusType" value="active" />
-                                </f:else>
-                            </f:if>
+                            <f:variable name="extensionStatusType" value="trial" />
                         </f:else>
                     </f:if>
                     <div class="col-md-6 col-xl-4 p-2 extension-card-wrapper extension-{extensionStatusType}" data-name="{extension.title}" data-key="{extension.key}" data-status="{extensionStatus}">
@@ -51,14 +44,7 @@
                                             <span class="badge rounded-pill badge-danger"><f:translate key="license-activation.expiration_date.expired" extensionName="ns_license" /></span>
                                         </f:else>
                                         <f:else>
-                                            <f:if condition="{extension.trial}">
-                                                <f:then>
-                                                    <span class="badge rounded-pill badge-primary"><f:translate key="license-activation.badge.trial" extensionName="ns_license" /></span>
-                                                </f:then>
-                                                <f:else>
-                                                    <span class="badge rounded-pill badge-primary"><f:translate key="license-activation.badge.active" extensionName="ns_license" /></span>
-                                                </f:else>
-                                            </f:if>
+                                            <span class="badge rounded-pill badge-primary"><f:translate key="license-activation.badge.trial" extensionName="ns_license" /></span>
                                         </f:else>
                                     </f:if>
                                 </div>
@@ -90,7 +76,14 @@
                                                         <f:translate key="license-activation.activated_composer_stepcs" extensionName="ns_license" arguments="{0: extension.composerPackage}"/>
                                                     </f:then>
                                                     <f:else>
-                                                        <f:translate key="license-activation.activated_composer_step1" extensionName="ns_license" arguments="{0: extension.composerPackage}"/>
+                                                        <f:if condition="{extension.key} == 'ns_t3ai' || {extension.key} == 'ns_t3aa'">
+                                                            <f:then>
+                                                                <f:translate key="license-activation.activated_composer_stepaf" extensionName="ns_license" arguments="{0: extension.composerPackage}"/>
+                                                            </f:then>
+                                                            <f:else>
+                                                                <f:translate key="license-activation.activated_composer_step1" extensionName="ns_license" arguments="{0: extension.composerPackage}"/>
+                                                            </f:else>
+                                                        </f:if>
                                                     </f:else>
                                                 </f:if>
                                                 <f:translate key="license-activation.activated_composer_step2" extensionName="ns_license"/>
@@ -236,16 +229,14 @@
                                                 </f:if>
                                             </f:then>
                                             <f:else>
-                                                <f:if condition="{extension.details.days} <= 0">
-                                                    <a type="button"
-                                                        class="btn btn-success"
-                                                        data-title="Renew License"  
-                                                        href="{extension.details.product_link}"
-                                                        target="_blank">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-credit-card h-3.5 w-3.5 mr-1.5" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>
-                                                        <f:translate key="license.renew" />
-                                                    </a>
-                                                </f:if>
+                                                <a type="button"
+                                                    class="btn btn-success"
+                                                    data-title="Renew License"  
+                                                    href="{extension.details.product_link}"
+                                                    target="_blank">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-credit-card h-3.5 w-3.5 mr-1.5" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>
+                                                    <f:translate key="license.renew" />
+                                                </a>
                                             </f:else>
                                         </f:if>
                                     </f:if>
