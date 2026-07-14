@@ -4,7 +4,6 @@
 [![TYPO3 14](https://img.shields.io/badge/TYPO3-14-important.svg?logo=typo3)](https://get.typo3.org/version/14)
 [![TYPO3 13](https://img.shields.io/badge/TYPO3-13-important.svg?logo=typo3)](https://get.typo3.org/version/13)
 [![TYPO3 12](https://img.shields.io/badge/TYPO3-12-important.svg?logo=typo3)](https://get.typo3.org/version/12)
-[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![Packagist](https://img.shields.io/badge/Packagist-nitsan%2Fns--license-informational)](https://packagist.org/packages/nitsan/ns-license)
 
 **License Manager** for T3Planet products: activate and validate license keys, manage domains, and download licensed extensions from the TYPO3 backend.
