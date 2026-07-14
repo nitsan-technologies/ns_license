@@ -128,12 +128,6 @@ class ExtensionListService
                             $extensions['premium'][$key]['details']['isUpdateAvail'] = true;
                         }
                     }
-                    if (ProductBundleRegistry::isAiFoundationDependentProduct((string) $extension['key'])) {
-                        $afVersion = $extensions['premium'][$key]['details']['af_version'];
-                        if ($afVersion && version_compare($extDetails['af_lts_version'], $afVersion, '>')) {
-                            $extensions['premium'][$key]['details']['isUpdateAvail'] = true;
-                        }
-                    }
                 }
 
                 $extFolder = $this->getExtensionFolder($extension['key']);
