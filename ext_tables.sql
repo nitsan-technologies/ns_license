@@ -14,8 +14,6 @@ CREATE TABLE ns_product_license (
 	lts_version varchar(15) NOT NULL,
 	cs_version varchar(15) DEFAULT NULL,
 	cs_lts_version varchar(15) DEFAULT NULL,
-	af_version varchar(15) DEFAULT NULL,
-	af_lts_version varchar(15) DEFAULT NULL,
 	is_life_time varchar(5) DEFAULT NULL,
 	expiration_date int(11) DEFAULT '0' NOT NULL,
 	domains text DEFAULT NULL,

@@ -41,26 +41,25 @@ class NsLicenseRepository
             if (PHP_VERSION > 8) {
                 $extensionDownloadUrl = $data->extension_download_url ? get_mangled_object_vars($data->extension_download_url) : [];
             }
-            end($extensionDownloadUrl);
-            $key = key($extensionDownloadUrl);
+            if (!is_array($extensionDownloadUrl)) {
+                $extensionDownloadUrl = [];
+            }
+            $key = null;
+            if ($extensionDownloadUrl !== []) {
+                end($extensionDownloadUrl);
+                $key = key($extensionDownloadUrl);
+            }
+            // Empty map (e.g. Packagist ns_t3af) must still insert — do not require version keys.
             if (is_null($extVersion)) {
-                $extVersion = $key;
+                $extVersion = $key ?? '';
             }
             $csVersion = '';
             $csLTSVersion = '';
-            $afVersion = '';
-            $afLTSVersion = '';
 
             if (ProductBundleRegistry::isChatbotSearchProduct((string) $data->extension_key) && !empty($data->cs_download_url ?? [])) {
                 $resolvedCs = ProductBundleRegistry::resolveDownloadVersions($data, 'cs_download_url');
                 $csVersion = $resolvedCs['version'];
                 $csLTSVersion = $resolvedCs['ltsVersion'];
-            }
-
-            if (ProductBundleRegistry::isAiFoundationDependentProduct((string) $data->extension_key) && !empty($data->af_download_url ?? [])) {
-                $resolvedAf = ProductBundleRegistry::resolveDownloadVersions($data, 'af_download_url');
-                $afVersion = $resolvedAf['version'];
-                $afLTSVersion = $resolvedAf['ltsVersion'];
             }
 
             $localDomains =  $data->local_domains ?? $data->local ?? '';
@@ -92,8 +91,6 @@ class NsLicenseRepository
                     'trial_extended' => (int)$data->trial_extended ?? 0,
                     'cs_version' => $csVersion,
                     'cs_lts_version' => $csLTSVersion,
-                    'af_version' => $afVersion,
-                    'af_lts_version' => $afLTSVersion,
                 ])
                 ->executeStatement();
         }
@@ -149,20 +146,29 @@ class NsLicenseRepository
      */
     public function updateData($data, $ltsCheck = 0): void
     {
-        $extensionDownloadUrl = $data->extension_download_url;
+        $extensionDownloadUrl = $data->extension_download_url ?? [];
         if (PHP_VERSION > 8) {
             if ($data->extension_download_url) {
                 $extensionDownloadUrl = get_mangled_object_vars($data->extension_download_url);
+            } else {
+                $extensionDownloadUrl = [];
             }
         }
-        end($extensionDownloadUrl);
-        $key = key($extensionDownloadUrl);
+        if (!is_array($extensionDownloadUrl)) {
+            $extensionDownloadUrl = [];
+        }
+        $key = null;
+        if ($extensionDownloadUrl !== []) {
+            end($extensionDownloadUrl);
+            $key = key($extensionDownloadUrl);
+        }
         $localDomains =  $data->local_domains ?? $data->local ?? '';
         $stageDomains =  $data->staging_domains ?? $data->staging ?? '';
 
-        if ($key) {
-            $queryBuilder = $this->getQueryBuilder('ns_product_license');
-            $queryBuilder
+        // Always sync license metadata even when extension_download_url has no version keys
+        // (Packagist / empty-URL ns_t3af BE-login sync).
+        $queryBuilder = $this->getQueryBuilder('ns_product_license');
+        $queryBuilder
             ->update('ns_product_license')
             ->where(
                 $queryBuilder->expr()->eq('extension_key', $queryBuilder->createNamedParameter($data->extension_key)),
@@ -186,35 +192,26 @@ class NsLicenseRepository
             ->set('description', $data->description ?? '')
             ->set('title', $data->title ?? '')
             ->set('trial_extended', (int)$data->trial_extended ?? 0);
-            
+
+        if ($key) {
             if ($ltsCheck == 1) {
                 $queryBuilder->set('version', $key);
             }
+            $queryBuilder->set('lts_version', $key);
+        }
 
-            if (ProductBundleRegistry::isChatbotSearchProduct((string) $data->extension_key) && isset($data->cs_download_url)) {
-                $resolvedCs = ProductBundleRegistry::resolveDownloadVersions($data, 'cs_download_url');
-                $version = $resolvedCs['ltsVersion'];
+        if (ProductBundleRegistry::isChatbotSearchProduct((string) $data->extension_key) && isset($data->cs_download_url)) {
+            $resolvedCs = ProductBundleRegistry::resolveDownloadVersions($data, 'cs_download_url');
+            $version = $resolvedCs['ltsVersion'];
+            if ($version !== '') {
                 if ($ltsCheck == 1) {
                     $queryBuilder->set('cs_version', $version);
                 }
-
                 $queryBuilder->set('cs_lts_version', $version);
             }
-
-            if (ProductBundleRegistry::isAiFoundationDependentProduct((string) $data->extension_key) && isset($data->af_download_url)) {
-                $resolvedAf = ProductBundleRegistry::resolveDownloadVersions($data, 'af_download_url');
-                $version = $resolvedAf['ltsVersion'];
-                if ($ltsCheck == 1) {
-                    $queryBuilder->set('af_version', $version);
-                }
-
-                $queryBuilder->set('af_lts_version', $version);
-            }
-
-            $queryBuilder->set('lts_version', $key)
-                ->executeStatement();
         }
 
+        $queryBuilder->executeStatement();
     }
 
     /**

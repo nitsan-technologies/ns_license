@@ -276,15 +276,19 @@ class NsLicenseModuleController extends ActionController
                     try {
                         if (!$this->isComposerMode) {
                             $overwrite = (bool)($params['overwrite'] ?? false);
+                            $extensionKey = (string)($licenseData['extension_key'] ?? '');
                             // Install bundled foundation dependency first, then main extension.
+                            // ns_t3af: license + repair only — never zip-install the product itself.
                             $this->installBundledDependencies($licenseData, $overwrite);
-                            $this->installExtensionFromDownloadUrls(
-                                $licenseData['extension_download_url'] ?? [],
-                                $licenseData,
-                                (string)($licenseData['extension_key'] ?? ''),
-                                $overwrite,
-                                true
-                            );
+                            if ($extensionKey !== 'ns_t3af') {
+                                $this->installExtensionFromDownloadUrls(
+                                    $licenseData['extension_download_url'] ?? [],
+                                    $licenseData,
+                                    $extensionKey,
+                                    $overwrite,
+                                    true
+                                );
+                            }
                         }
 
                         // Rename the static data dump file after update the extension for theme...
@@ -326,15 +330,19 @@ class NsLicenseModuleController extends ActionController
                         }
                         try {
                             if (!$this->isComposerMode) {
+                                $extensionKey = (string)($licenseData['extension_key'] ?? '');
                                 // Install bundled foundation dependency first, then main extension.
+                                // ns_t3af: license + repair only — never zip-install the product itself.
                                 $this->installBundledDependencies($licenseData, $overwrite);
-                                $this->installExtensionFromDownloadUrls(
-                                    $licenseData['extension_download_url'] ?? [],
-                                    $licenseData,
-                                    (string)($licenseData['extension_key'] ?? ''),
-                                    $overwrite,
-                                    true
-                                );
+                                if ($extensionKey !== 'ns_t3af') {
+                                    $this->installExtensionFromDownloadUrls(
+                                        $licenseData['extension_download_url'] ?? [],
+                                        $licenseData,
+                                        $extensionKey,
+                                        $overwrite,
+                                        true
+                                    );
+                                }
                             }
                             // Let's flush all the cache to change the version number
                             $this->cacheManager->flushCaches();
@@ -347,7 +355,12 @@ class NsLicenseModuleController extends ActionController
                             return $this->redirect('list');
                         }
                     }
-                    if ($this->isComposerMode && empty($licenseData['extension_download_url'])) {
+                    // Free Packagist AF may ship with an empty extension_download_url map.
+                    if (
+                        $this->isComposerMode
+                        && empty($licenseData['extension_download_url'])
+                        && ($licenseData['extension_key'] ?? '') !== 'ns_t3af'
+                    ) {
                         $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense', [$licenseData['extension_key'] ?? '', $this->typo3Version]), $licenseData['extension_key'] ?? '', ContextualFeedbackSeverity::ERROR);
                         return $this->redirect('list');
                     }
@@ -904,16 +917,6 @@ class NsLicenseModuleController extends ActionController
                 false
             );
         }
-
-        if (ProductBundleRegistry::isAiFoundationDependentProduct($extensionKey)) {
-            $this->installExtensionFromDownloadUrls(
-                $licenseData['af_download_url'] ?? [],
-                $licenseData,
-                'ns_t3af',
-                $overwrite,
-                false
-            );
-        }
     }
 
     /**
@@ -933,7 +936,7 @@ class NsLicenseModuleController extends ActionController
         bool $overwrite,
         bool $required = false
     ): void {
-        if ($targetExtensionKey === '') {
+        if ($targetExtensionKey === '' || $targetExtensionKey === 'ns_t3af') {
             return;
         }
         if (!is_array($downloadUrls)) {
