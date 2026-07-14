@@ -68,7 +68,7 @@ final class LicenseService
                         }
                         if (isset($licenseData['is_life_time'], $licenseData['expiration_date']) && !$licenseData['is_life_time'] && (int)$licenseData['expiration_date'] <= time()) {
                             $this->nsLicenseRepository->markExpired($extData[0]['license_key'],$extKey,'EXPIRED_'.$extData[0]['order_id']);
-                            $this->updateFiles($extFolder);
+                            $this->updateFiles($extFolder, $extKey);
                             return false;
                         }
                         if (!empty($licenseData['status'])) {
@@ -78,12 +78,12 @@ final class LicenseService
                         }
                         if (isset($licenseData['status']) && !$licenseData['status']) {
                             $this->nsLicenseRepository->markExpired($extData[0]['license_key'],$extKey,$extData[0]['order_id'].'EXPIRED_');
-                            $this->updateFiles($extFolder);
+                            $this->updateFiles($extFolder, $extKey);
                             return false;
                         }
                     }
                 } else {
-                    $this->updateFiles($extFolder);
+                    $this->updateFiles($extFolder, $extKey);
                     return false;
                 }
             }
@@ -92,9 +92,9 @@ final class LicenseService
     }
 
  
-    public function updateFiles($extFolder)
+    public function updateFiles($extFolder, $extKey = null)
     {
-        if (is_dir($extFolder . 'Configuration/Backend') && file_exists($extFolder . 'Configuration/Backend/Modules.php')) {
+        if ($extKey !== 'ns_t3af' && is_dir($extFolder . 'Configuration/Backend') && file_exists($extFolder . 'Configuration/Backend/Modules.php')) {
             rename($extFolder . 'Configuration/Backend/Modules.php', $extFolder . 'Configuration/Backend/Modules..php');
         }
         if (file_exists($extFolder . 'ext_tables.php')) {

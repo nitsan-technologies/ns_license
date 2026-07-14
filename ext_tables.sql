@@ -21,7 +21,7 @@ CREATE TABLE ns_product_license (
 	domains text DEFAULT NULL,
 	username varchar(255) NOT NULL,
 	title varchar(128) DEFAULT '' NOT NULL,
-	description varchar(255) DEFAULT '' NOT NULL,
+	description text DEFAULT NULL,
 	local_domains text DEFAULT NULL,
 	staging_domains text DEFAULT NULL,
 	license_type varchar(5) DEFAULT NULL,
