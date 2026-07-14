@@ -24,7 +24,6 @@
 |---|---|
 | TYPO3 | 12 – 14 |
 | Extension Manager | 12 – 14 |
-| PHP | as required by your TYPO3 version |
 
 ## Installation
 
