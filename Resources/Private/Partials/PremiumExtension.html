@@ -36,15 +36,32 @@
                                     </div>
                                 </div>
                                 <div class="card-header__status">
-                                    <f:if condition="{extension.details.is_life_time}">
+                                    <f:if condition="{extension.key} == 'ns_t3af'">
                                         <f:then>
-                                            <span class="badge rounded-pill badge-success"><f:translate key="license-activation.badge.licensed" extensionName="ns_license" /></span>
+                                            <f:if condition="{extension.oss} || {extension.trial}">
+                                                <f:then>
+                                                    <span class="badge rounded-pill badge-success"><f:translate key="license-activation.badge.free" extensionName="ns_license" /></span>
+                                                </f:then>
+                                                <f:else if="!{extension.oss}">
+                                                    <span class="badge rounded-pill badge-success"><f:translate key="license-activation.badge.commercial" extensionName="ns_license" /></span>
+                                                </f:else>
+                                                <f:else>
+                                                    <span class="badge rounded-pill badge-danger"><f:translate key="license-activation.badge.invalid" extensionName="ns_license" /></span>
+                                                </f:else>
+                                            </f:if>
                                         </f:then>
-                                        <f:else if="{extension.details.days} <= 0">
-                                            <span class="badge rounded-pill badge-danger"><f:translate key="license-activation.expiration_date.expired" extensionName="ns_license" /></span>
-                                        </f:else>
                                         <f:else>
-                                            <span class="badge rounded-pill badge-primary"><f:translate key="license-activation.badge.trial" extensionName="ns_license" /></span>
+                                            <f:if condition="{extension.details.is_life_time}">
+                                                <f:then>
+                                                    <span class="badge rounded-pill badge-success"><f:translate key="license-activation.badge.licensed" extensionName="ns_license" /></span>
+                                                </f:then>
+                                                <f:else if="{extension.details.days} <= 0">
+                                                    <span class="badge rounded-pill badge-danger"><f:translate key="license-activation.expiration_date.expired" extensionName="ns_license" /></span>
+                                                </f:else>
+                                                <f:else>
+                                                    <span class="badge rounded-pill badge-primary"><f:translate key="license-activation.badge.trial" extensionName="ns_license" /></span>
+                                                </f:else>
+                                            </f:if>
                                         </f:else>
                                     </f:if>
                                 </div>

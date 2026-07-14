@@ -80,7 +80,8 @@ class ExtensionListService
                             'is_premium' => true,
                             'details' => $extDetails,
                             'domains' => count($domains),
-                            'trial' => isset($extDetails['order_id']) && str_starts_with($extDetails['order_id'],'TRIAL') ? true : false
+                            'trial' => isset($extDetails['order_id']) && str_starts_with($extDetails['order_id'],'TRIAL') ? true : false,
+                            'oss' => isset($extDetails['order_id']) && str_starts_with($extDetails['order_id'],'OSS') ? true : false,
                         ];
                     }
                 }

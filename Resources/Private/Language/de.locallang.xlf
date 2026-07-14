@@ -59,6 +59,18 @@
                 <source>Trial</source>
                 <target>Testversion</target>
             </trans-unit>
+            <trans-unit id="license-activation.badge.free">
+                <source>Free Forever</source>
+                <target>Für immer kostenlos</target>
+            </trans-unit>
+            <trans-unit id="license-activation.badge.commercial">
+                <source>Commercial Licensed</source>
+                <target>Kommerziell lizenziert</target>
+            </trans-unit>
+            <trans-unit id="license-activation.badge.invalid">
+                <source>Invalid License</source>
+                <target>Ungültige Lizenz</target>
+            </trans-unit>
             <trans-unit id="license-activation.badge.active">
                 <source>Active</source>
                 <target>Aktiv</target>
