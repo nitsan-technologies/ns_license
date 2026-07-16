@@ -120,7 +120,7 @@ class ExtensionListService
                    
 
                 if (isset($extDetails['lts_version']) && $extensions['premium'][$key]['version']) {
-                    if (version_compare($extDetails['lts_version'], $extVersion, '>')) {
+                    if ($extVersion && version_compare($extDetails['lts_version'], $extVersion, '>')) {
                         $extensions['premium'][$key]['details']['isUpdateAvail'] = true;
                     }
                     if (ProductBundleRegistry::isChatbotSearchProduct((string) $extension['key'])) {

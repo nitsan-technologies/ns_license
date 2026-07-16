@@ -60,8 +60,8 @@
                 <target>Testversion</target>
             </trans-unit>
             <trans-unit id="license-activation.badge.free">
-                <source>Free Forever</source>
-                <target>Für immer kostenlos</target>
+                <source>Free</source>
+                <target>Kostenlos</target>
             </trans-unit>
             <trans-unit id="license-activation.badge.commercial">
                 <source>Commercial Licensed</source>
