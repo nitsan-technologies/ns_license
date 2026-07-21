@@ -58,6 +58,9 @@
                                                 <f:else if="{extension.details.days} <= 0">
                                                     <span class="badge rounded-pill badge-danger"><f:translate key="license-activation.expiration_date.expired" extensionName="ns_license" /></span>
                                                 </f:else>
+                                                <f:else if="{extension.details.days} > 0 && !{extension.trial}">
+                                                    <span class="badge rounded-pill badge-danger"><f:translate key="license-activation.badge.licensed" extensionName="ns_license" /></span>
+                                                </f:else>
                                                 <f:else>
                                                     <span class="badge rounded-pill badge-primary"><f:translate key="license-activation.badge.trial" extensionName="ns_license" /></span>
                                                 </f:else>
