@@ -47,7 +47,7 @@
                 <source>Trial</source>
             </trans-unit>
             <trans-unit id="license-activation.badge.free">
-                <source>Free Forever</source>
+                <source>Free</source>
             </trans-unit>
             <trans-unit id="license-activation.badge.commercial">
                 <source>Commercial Licensed</source>
@@ -123,7 +123,7 @@
                    <strong> Step1. </strong> composer config repositories.t3planet '{<br />
                     "type": "composer",<br />
                     "url": "https://composer.t3planet.cloud",<br />
-                    "only": ["%s" ,"nitsan/ns-t3cs", "nitsan/ns-t3af"]<br />
+                    "only": ["%s" ,"nitsan/ns-t3cs"]<br />
                     }' <br /><br />]]>
                 </source>
             </trans-unit>
@@ -132,7 +132,7 @@
                    <strong> Step1. </strong> composer config repositories.t3planet '{<br />
                     "type": "composer",<br />
                     "url": "https://composer.t3planet.cloud",<br />
-                    "only": ["%s" ,"nitsan/ns-t3af"]<br />
+                    "only": ["%s"]<br />
                     }' <br /><br />]]>
                 </source>
             </trans-unit>
