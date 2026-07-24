@@ -201,9 +201,6 @@ function setComboboxOpen(modal, open) {
 function buildOrderedProductGroups(modal, products) {
   const groups = new Map();
   products.forEach((p) => {
-    if (!isAllowedShopProduct(p)) {
-      return;
-    }
     const section = (p.section || '').trim() || (modal.dataset.labelOtherProducts || 'Other Products');
     if (!groups.has(section)) groups.set(section, []);
     groups.get(section).push(p);
