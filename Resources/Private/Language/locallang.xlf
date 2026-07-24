@@ -662,6 +662,93 @@
             <trans-unit id="license-get-new.modal.subtitle">
                 <source>Select a product to start a free 30-day trial or buy a license.</source>
             </trans-unit>
+            <trans-unit id="license-get-new.wizard.meta">
+                <source>Get New License · Step %d of %d</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.kicker.before">
+                <source>Get New License · Step </source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.kicker.of">
+                <source> of </source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.stepper_label">
+                <source>License setup steps</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.step.welcome">
+                <source>Welcome</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.step.products">
+                <source>Mode</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.step.details">
+                <source>Details</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.step.otp">
+                <source>Verify</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.step.success">
+                <source>Done</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.title.welcome">
+                <source>Welcome to Get New License</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.title.products">
+                <source>Free Trial or Purchase</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.title.form">
+                <source>Trial details</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.form.lead">
+                <source>Enter your contact details and domain to receive a verification code for your free trial.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.purchase.lead">
+                <source>Review the price and terms, then continue to secure checkout for your full license.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.title.purchase">
+                <source>Confirm purchase</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.title.otp">
+                <source>Verify your email</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.title.success">
+                <source>You're all set</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.intro.title">
+                <source>T3Planet License Setup</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.intro.text">
+                <source>This short wizard helps you start a free trial or buy a license. It usually takes under 2 minutes.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.checklist.title">
+                <source>What you'll set up</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.checklist.product.title">
+                <source>Product</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.checklist.product.text">
+                <source>Pick the extension or template you want to license.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.checklist.mode.title">
+                <source>Trial or purchase</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.checklist.mode.text">
+                <source>Start a free 30-day trial or buy a full license.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.checklist.activate.title">
+                <source>Activate on this site</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.checklist.activate.text">
+                <source>Verify your email (trial) or complete checkout, then activate the key here.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.callout">
+                <source>You can close this wizard anytime and continue later from Get New License.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.button.skip">
+                <source>Skip step</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.button.start">
+                <source>Get Started</source>
+            </trans-unit>
             <trans-unit id="license-get-new.select_product">
                 <source>Select a product</source>
             </trans-unit>
@@ -712,6 +799,54 @@
             </trans-unit>
             <trans-unit id="license-get-new.mode.buy">
                 <source>Buy / Purchase</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.heading">
+                <source>License mode</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.sub">
+                <source>Choose how you want to get your license. You can switch between trial and purchase anytime before you continue.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.trial.title">
+                <source>Free Trial</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.trial.badge">
+                <source>Recommended</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.trial.desc">
+                <source>Start a free 30-day trial for the selected product. No payment required to evaluate features on your domain.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.trial.meta1">
+                <source>No credit card required</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.trial.meta2">
+                <source>Full feature access for 30 days</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.trial.meta3">
+                <source>Activate instantly after email verification</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.trial.pricing">
+                <source>Free for 30 days · Upgrade to a full license anytime</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.buy.title">
+                <source>Buy / Purchase</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.buy.button">
+                <source>Buy Now</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.buy.badge">
+                <source>Full license</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.buy.desc">
+                <source>Purchase a full license and complete checkout securely. The license key is emailed to you for activation here.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.buy.meta1">
+                <source>Secure checkout on t3planet.shop</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.buy.meta2">
+                <source>Production-ready license key</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.buy.meta3">
+                <source>Activate on this site after payment</source>
             </trans-unit>
             <trans-unit id="license-get-new.form.selected_product">
                 <source>Selected product</source>
@@ -765,10 +900,10 @@
                 <source>Send Code</source>
             </trans-unit>
             <trans-unit id="license-get-new.otp.title">
-                <source>Enter Verification Code</source>
+                <source>Verify Email</source>
             </trans-unit>
             <trans-unit id="license-get-new.otp.sent_to">
-                <source>We sent a 6-digit code to %s</source>
+                <source>Please enter the 6-digit code we just sent to %s</source>
             </trans-unit>
             <trans-unit id="license-get-new.otp.no_code">
                 <source>Didn't receive the code?</source>

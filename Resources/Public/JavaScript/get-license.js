@@ -1290,10 +1290,15 @@ function submitTrial(modal, isResend) {
       if (data && data.success) {
         // Remember what we need for the OTP verification step.
         trialContext = { ...(trialContext || {}), email: values.email, name: values.name, domain: values.domain, extensionKey: values.extension_key };
-        const sentTpl = modal.dataset.labelOtpSent || 'We sent a 6-digit code to %s';
+        const sentTpl = modal.dataset.labelOtpSent || 'Please enter the 6-digit code we just sent to %s';
         const sentEl = modal.querySelector('.js-gl-otp-sent');
-        if (sentEl) sentEl.textContent = sentTpl.replace('%s', values.email);
+        if (sentEl) {
+          const emailHtml = '<strong class="gl-otp-email">' + escapeHtml(values.email) + '</strong>';
+          sentEl.innerHTML = escapeHtml(sentTpl).replace('%s', emailHtml);
+        }
+        clearOtpInputs(modal);
         showStep(modal, 'otp');
+        focusOtpDigit(modal, 0);
         if (isResend) {
           Notification.success(modal.dataset.labelTitleSuccess || 'Success', data.message || 'A new code has been sent.');
         }
@@ -1360,16 +1365,90 @@ function showOtpFeedback(modal, message) {
 }
 
 /**
+ * OTP digit inputs in order.
+ * @param {HTMLElement} modal
+ * @returns {HTMLInputElement[]}
+ */
+function getOtpDigitInputs(modal) {
+  return Array.from(modal.querySelectorAll('.gl-otp-digit'));
+}
+
+/**
+ * Combined 6-digit OTP value.
+ * @param {HTMLElement} modal
+ * @returns {string}
+ */
+function getOtpCode(modal) {
+  return getOtpDigitInputs(modal).map((el) => (el.value || '').replace(/\D/g, '')).join('').slice(0, 6);
+}
+
+/**
+ * Sync hidden #gl-otp with digit boxes.
+ * @param {HTMLElement} modal
+ */
+function syncHiddenOtp(modal) {
+  const hidden = modal.querySelector('#gl-otp');
+  if (hidden) hidden.value = getOtpCode(modal);
+}
+
+/**
+ * Clear OTP digit boxes.
+ * @param {HTMLElement} modal
+ */
+function clearOtpInputs(modal) {
+  getOtpDigitInputs(modal).forEach((el) => {
+    el.value = '';
+  });
+  syncHiddenOtp(modal);
+  showOtpFeedback(modal, '');
+}
+
+/**
+ * Focus an OTP digit by index.
+ * @param {HTMLElement} modal
+ * @param {number} index
+ */
+function focusOtpDigit(modal, index) {
+  const digits = getOtpDigitInputs(modal);
+  const el = digits[Math.max(0, Math.min(index, digits.length - 1))];
+  if (el) {
+    el.focus();
+    el.select();
+  }
+}
+
+/**
+ * Fill digit boxes from a code string (typing or paste).
+ * @param {HTMLElement} modal
+ * @param {string} code
+ * @param {number} [startIndex]
+ */
+function fillOtpDigits(modal, code, startIndex = 0) {
+  const digits = getOtpDigitInputs(modal);
+  const chars = String(code || '').replace(/\D/g, '').slice(0, digits.length - startIndex).split('');
+  chars.forEach((ch, i) => {
+    const el = digits[startIndex + i];
+    if (el) el.value = ch;
+  });
+  syncHiddenOtp(modal);
+  const nextIndex = Math.min(startIndex + chars.length, digits.length - 1);
+  focusOtpDigit(modal, chars.length > 0 && startIndex + chars.length < digits.length
+    ? startIndex + chars.length
+    : nextIndex);
+}
+
+/**
  * Verify the entered OTP; on success show the success step.
  * @param {HTMLElement} modal
  */
 function verifyOtp(modal) {
-  const input = modal.querySelector('#gl-otp');
-  const otp = (input?.value || '').trim();
+  syncHiddenOtp(modal);
+  const otp = getOtpCode(modal);
   showOtpFeedback(modal, '');
 
   if (!/^\d{6}$/.test(otp)) {
     showOtpFeedback(modal, modal.dataset.labelOtpInvalid || 'Please enter the 6-digit code.');
+    focusOtpDigit(modal, otp.length);
     return;
   }
 
@@ -1651,21 +1730,63 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// Keep the OTP input numeric; submit on Enter.
+// OTP digit boxes: numeric only, auto-advance, paste, Enter to verify.
 document.addEventListener('input', (e) => {
-  const input = e.target.closest('#gl-otp');
-  if (!input) return;
-  input.value = input.value.replace(/\D/g, '').slice(0, 6);
-  const modal = input.closest('#' + MODAL_ID);
-  if (modal) showOtpFeedback(modal, '');
+  const digit = e.target.closest('.gl-otp-digit');
+  if (!digit) return;
+  const modal = digit.closest('#' + MODAL_ID);
+  if (!modal) return;
+
+  const index = Number(digit.getAttribute('data-otp-index') || '0');
+  const raw = String(digit.value || '').replace(/\D/g, '');
+  showOtpFeedback(modal, '');
+
+  if (raw.length > 1) {
+    fillOtpDigits(modal, raw, index);
+    return;
+  }
+
+  digit.value = raw.slice(0, 1);
+  syncHiddenOtp(modal);
+  if (raw && index < 5) {
+    focusOtpDigit(modal, index + 1);
+  }
 });
 
 document.addEventListener('keydown', (e) => {
-  const input = e.target.closest('#gl-otp');
-  if (!input || e.key !== 'Enter') return;
+  const digit = e.target.closest('.gl-otp-digit');
+  if (!digit) return;
+  const modal = digit.closest('#' + MODAL_ID);
+  if (!modal) return;
+
+  const index = Number(digit.getAttribute('data-otp-index') || '0');
+
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    verifyOtp(modal);
+    return;
+  }
+
+  if (e.key === 'Backspace' && !digit.value && index > 0) {
+    e.preventDefault();
+    focusOtpDigit(modal, index - 1);
+    const prev = getOtpDigitInputs(modal)[index - 1];
+    if (prev) prev.value = '';
+    syncHiddenOtp(modal);
+    showOtpFeedback(modal, '');
+  }
+});
+
+document.addEventListener('paste', (e) => {
+  const digit = e.target.closest('.gl-otp-digit');
+  if (!digit) return;
+  const modal = digit.closest('#' + MODAL_ID);
+  if (!modal) return;
   e.preventDefault();
-  const modal = input.closest('#' + MODAL_ID);
-  if (modal) verifyOtp(modal);
+  const text = (e.clipboardData || window.clipboardData)?.getData('text') || '';
+  const index = Number(digit.getAttribute('data-otp-index') || '0');
+  fillOtpDigits(modal, text, index);
+  showOtpFeedback(modal, '');
 });
 
 if (document.readyState === 'loading') {
