@@ -46,24 +46,27 @@
                     </div>
                     <f:if condition="{section.id} == 'ai-universe'">
                         <f:then>
-                            <a href="https://t3planet.de/typo3-ki" class="btn btn-primary btn-sm flex-shrink-0" target="_blank" rel="noopener noreferrer">
+                            <button type="button"
+                                class="btn btn-primary btn-sm t3js-shop-show-section flex-shrink-0"
+                                data-section="{section.title}">
                                 <f:translate key="license-shop.all-extensions" extensionName="ns_license" />
-                                <core:icon identifier="actions-window-open" size="small" />
-                            </a>
+                            </button>
                         </f:then>
                         <f:else>
                             <f:if condition="{section.id} == 'premium-templates'">
                                 <f:then>
-                                    <a href="https://t3planet.de/typo3-templates" class="btn btn-primary btn-sm flex-shrink-0" target="_blank" rel="noopener noreferrer">
+                                    <button type="button"
+                                        class="btn btn-primary btn-sm t3js-shop-show-section flex-shrink-0"
+                                        data-section="{section.title}">
                                         <f:translate key="license-shop.all-templates" extensionName="ns_license" />
-                                        <core:icon identifier="actions-window-open" size="small" />
-                                    </a>
+                                    </button>
                                 </f:then>
                                 <f:else if="{section.id} == 'premium-extensions' || {section.id} == 'popular-extensions'">
-                                    <a href="https://t3planet.de/typo3-extensions" class="btn btn-primary btn-sm flex-shrink-0" target="_blank" rel="noopener noreferrer">
+                                    <button type="button"
+                                        class="btn btn-primary btn-sm t3js-shop-show-section flex-shrink-0"
+                                        data-section="{section.title}">
                                         <f:translate key="license-shop.all-extensions" extensionName="ns_license" />
-                                        <core:icon identifier="actions-window-open" size="small" />
-                                    </a>
+                                    </button>
                                 </f:else>
                             </f:if>
                         </f:else>

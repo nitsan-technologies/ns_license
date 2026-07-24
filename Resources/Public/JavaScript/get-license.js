@@ -403,6 +403,7 @@ function loadProducts(modal) {
 
 /**
  * Apply optional pre-select / mode from a Get New License trigger (e.g. Buy button).
+ * Buy with a known extension key skips the product step and opens the purchase step.
  * @param {HTMLElement} modal
  * @param {string} extensionKey
  * @param {string} mode
@@ -419,8 +420,17 @@ function applyTriggerProductSelection(modal, extensionKey, mode) {
   if (normalizedMode === 'buy') {
     const product = (productsCache || []).find((p) => p.extensionKey === key) || null;
     const buyRadio = modal.querySelector('#gl-mode-buy');
-    if (buyRadio && product && productCheckoutUrl(product) && !buyRadio.disabled) {
+    if (buyRadio && product && productCheckoutUrl(product)) {
+      buyRadio.disabled = false;
       buyRadio.checked = true;
+      onProductSelected(modal);
+      const selection = getSelection(modal);
+      if (selection) {
+        openPurchaseStep(modal, selection);
+      }
+      return;
+    }
+    if (buyRadio && product) {
       onProductSelected(modal);
     }
     return;
@@ -1233,10 +1243,21 @@ document.addEventListener('click', (e) => {
   trialContext = null;
   purchaseContext = null;
   resetProductCombobox(modal);
-  showStep(modal, 'products');
+  const skipToPurchase = glMode === 'buy' && !!extensionKey;
+  if (!skipToPurchase) {
+    showStep(modal, 'products');
+  }
   showModal(modal);
   loadProducts(modal).then(() => {
     applyTriggerProductSelection(modal, extensionKey, glMode);
+    // If Buy skip failed (no checkout URL / unknown product), fall back to product step.
+    if (skipToPurchase) {
+      const purchaseStep = modal.querySelector('.get-license-step[data-step="purchase"]');
+      const onPurchase = purchaseStep && purchaseStep.style.display !== 'none' && !purchaseStep.hidden;
+      if (!onPurchase) {
+        showStep(modal, 'products');
+      }
+    }
   });
 });
 
