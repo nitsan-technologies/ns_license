@@ -840,6 +840,122 @@
                 <source>Select a product to start a free 30-day trial or buy a license.</source>
                 <target>Wählen Sie ein Produkt, um eine kostenlose 30-Tage-Testversion zu starten oder eine Lizenz zu kaufen.</target>
             </trans-unit>
+            <trans-unit id="license-get-new.wizard.meta">
+                <source>Get New License · Step %d of %d</source>
+                <target>Neue Lizenz · Schritt %d von %d</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.kicker.before">
+                <source>Get New License · Step </source>
+                <target>Neue Lizenz · Schritt </target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.kicker.of">
+                <source> of </source>
+                <target> von </target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.stepper_label">
+                <source>License setup steps</source>
+                <target>Schritte der Lizenzeinrichtung</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.step.welcome">
+                <source>Welcome</source>
+                <target>Willkommen</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.step.products">
+                <source>Mode</source>
+                <target>Modus</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.step.details">
+                <source>Details</source>
+                <target>Details</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.step.otp">
+                <source>Verify</source>
+                <target>Prüfen</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.step.success">
+                <source>Done</source>
+                <target>Fertig</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.title.welcome">
+                <source>Welcome to Get New License</source>
+                <target>Willkommen bei Neue Lizenz</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.title.products">
+                <source>Free Trial or Purchase</source>
+                <target>Testversion oder Kauf</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.title.form">
+                <source>Trial details</source>
+                <target>Testdetails</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.form.lead">
+                <source>Enter your contact details and domain to receive a verification code for your free trial.</source>
+                <target>Geben Sie Ihre Kontaktdaten und Domain ein, um einen Bestätigungscode für Ihre kostenlose Testversion zu erhalten.</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.purchase.lead">
+                <source>Review the price and terms, then continue to secure checkout for your full license.</source>
+                <target>Prüfen Sie Preis und Bedingungen und fahren Sie dann mit dem sicheren Checkout für Ihre Voll-Lizenz fort.</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.title.purchase">
+                <source>Confirm purchase</source>
+                <target>Kauf bestätigen</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.title.otp">
+                <source>Verify your email</source>
+                <target>E-Mail bestätigen</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.title.success">
+                <source>You're all set</source>
+                <target>Alles erledigt</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.intro.title">
+                <source>T3Planet License Setup</source>
+                <target>T3Planet Lizenzeinrichtung</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.intro.text">
+                <source>This short wizard helps you start a free trial or buy a license. It usually takes under 2 minutes.</source>
+                <target>Dieser kurze Assistent hilft Ihnen, eine kostenlose Testversion zu starten oder eine Lizenz zu kaufen. Meist unter 2 Minuten.</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.checklist.title">
+                <source>What you'll set up</source>
+                <target>Das richten Sie ein</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.checklist.product.title">
+                <source>Product</source>
+                <target>Produkt</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.checklist.product.text">
+                <source>Pick the extension or template you want to license.</source>
+                <target>Wählen Sie die Extension oder das Template, das Sie lizenzieren möchten.</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.checklist.mode.title">
+                <source>Trial or purchase</source>
+                <target>Testversion oder Kauf</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.checklist.mode.text">
+                <source>Start a free 30-day trial or buy a full license.</source>
+                <target>Starten Sie eine kostenlose 30-Tage-Testversion oder kaufen Sie eine Voll-Lizenz.</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.checklist.activate.title">
+                <source>Activate on this site</source>
+                <target>Auf dieser Seite aktivieren</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.checklist.activate.text">
+                <source>Verify your email (trial) or complete checkout, then activate the key here.</source>
+                <target>Bestätigen Sie Ihre E-Mail (Testversion) oder schließen Sie den Checkout ab und aktivieren Sie den Schlüssel hier.</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.callout">
+                <source>You can close this wizard anytime and continue later from Get New License.</source>
+                <target>Sie können diesen Assistenten jederzeit schließen und später über „Neue Lizenz anfordern“ fortfahren.</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.button.skip">
+                <source>Skip step</source>
+                <target>Schritt überspringen</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.button.start">
+                <source>Get Started</source>
+                <target>Loslegen</target>
+            </trans-unit>
             <trans-unit id="license-get-new.select_product">
                 <source>Select a product</source>
                 <target>Produkt auswählen</target>
@@ -907,6 +1023,70 @@
             <trans-unit id="license-get-new.mode.buy">
                 <source>Buy / Purchase</source>
                 <target>Kaufen</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.heading">
+                <source>License mode</source>
+                <target>Lizenzmodus</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.sub">
+                <source>Choose how you want to get your license. You can switch between trial and purchase anytime before you continue.</source>
+                <target>Wählen Sie, wie Sie Ihre Lizenz erhalten möchten. Sie können vor dem Weiter vorübergehend zwischen Testversion und Kauf wechseln.</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.trial.title">
+                <source>Free Trial</source>
+                <target>Kostenlose Testversion</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.trial.badge">
+                <source>Recommended</source>
+                <target>Empfohlen</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.trial.desc">
+                <source>Start a free 30-day trial for the selected product. No payment required to evaluate features on your domain.</source>
+                <target>Starten Sie eine kostenlose 30-Tage-Testversion für das gewählte Produkt. Keine Zahlung nötig, um Funktionen auf Ihrer Domain zu testen.</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.trial.meta1">
+                <source>No credit card required</source>
+                <target>Keine Kreditkarte erforderlich</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.trial.meta2">
+                <source>Full feature access for 30 days</source>
+                <target>Voller Funktionsumfang für 30 Tage</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.trial.meta3">
+                <source>Activate instantly after email verification</source>
+                <target>Sofort aktivieren nach E-Mail-Bestätigung</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.trial.pricing">
+                <source>Free for 30 days · Upgrade to a full license anytime</source>
+                <target>30 Tage kostenlos · Jederzeit auf Voll-Lizenz upgraden</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.buy.title">
+                <source>Buy / Purchase</source>
+                <target>Kaufen</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.buy.button">
+                <source>Buy Now</source>
+                <target>Jetzt kaufen</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.buy.badge">
+                <source>Full license</source>
+                <target>Voll-Lizenz</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.buy.desc">
+                <source>Purchase a full license and complete checkout securely. The license key is emailed to you for activation here.</source>
+                <target>Kaufen Sie eine Voll-Lizenz und schließen Sie den Checkout sicher ab. Der Lizenzschlüssel wird per E-Mail zugestellt und hier aktiviert.</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.buy.meta1">
+                <source>Secure checkout on t3planet.shop</source>
+                <target>Sicherer Checkout auf t3planet.shop</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.buy.meta2">
+                <source>Production-ready license key</source>
+                <target>Produktionsreifer Lizenzschlüssel</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.buy.meta3">
+                <source>Activate on this site after payment</source>
+                <target>Nach Zahlung auf dieser Seite aktivieren</target>
             </trans-unit>
             <trans-unit id="license-get-new.form.selected_product">
                 <source>Selected product</source>
@@ -977,12 +1157,12 @@
                 <target>Code senden</target>
             </trans-unit>
             <trans-unit id="license-get-new.otp.title">
-                <source>Enter Verification Code</source>
-                <target>Bestätigungscode eingeben</target>
+                <source>Verify Email</source>
+                <target>E-Mail bestätigen</target>
             </trans-unit>
             <trans-unit id="license-get-new.otp.sent_to">
-                <source>We sent a 6-digit code to %s</source>
-                <target>Wir haben einen 6-stelligen Code an %s gesendet</target>
+                <source>Please enter the 6-digit code we just sent to %s</source>
+                <target>Bitte geben Sie den 6-stelligen Code ein, den wir gerade an %s gesendet haben</target>
             </trans-unit>
             <trans-unit id="license-get-new.otp.no_code">
                 <source>Didn't receive the code?</source>
