@@ -1527,9 +1527,13 @@ document.addEventListener('click', (e) => {
   trialContext = null;
   purchaseContext = null;
   resetProductCombobox(modal);
+  setLicenseMode(modal, 'trial');
+
+  // DocHeader (no key) → Welcome. Shop/deep-link with key → Mode step.
+  // Buy + key may skip straight to purchase after products load.
   const skipToPurchase = glMode === 'buy' && !!extensionKey;
   if (!skipToPurchase) {
-    showStep(modal, 'products');
+    showStep(modal, extensionKey ? 'products' : 'welcome');
   }
   showModal(modal);
   loadProducts(modal).then(() => {
