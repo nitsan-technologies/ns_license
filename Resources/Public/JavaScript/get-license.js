@@ -201,9 +201,6 @@ function setComboboxOpen(modal, open) {
 function buildOrderedProductGroups(modal, products) {
   const groups = new Map();
   products.forEach((p) => {
-    if (!isAllowedShopProduct(p)) {
-      return;
-    }
     const section = (p.section || '').trim() || (modal.dataset.labelOtherProducts || 'Other Products');
     if (!groups.has(section)) groups.set(section, []);
     groups.get(section).push(p);
@@ -242,6 +239,7 @@ function renderProducts(modal, products, options = {}) {
   const toggle = modal.querySelector('.gl-combobox__toggle');
   const menu = modal.querySelector('#gl-product-listbox');
   const valueInput = getProductValueInput(modal);
+  const modeActions = modal.querySelector('.gl-mode-actions');
   if (!combobox || !input || !menu || !valueInput) return;
 
   if (loading) loading.style.display = 'none';
@@ -252,6 +250,7 @@ function renderProducts(modal, products, options = {}) {
     if (toggle) toggle.disabled = true;
     valueInput.value = '';
     setComboboxOpen(modal, false);
+    if (modeActions) modeActions.style.display = 'none';
     if (empty) {
       empty.textContent = modal.dataset.labelNoProducts || 'No products available.';
       empty.style.display = '';
@@ -264,6 +263,7 @@ function renderProducts(modal, products, options = {}) {
   input.disabled = false;
   if (toggle) toggle.disabled = false;
   if (empty) empty.style.display = 'none';
+  if (modeActions) modeActions.style.display = '';
 
   const selectedKey = valueInput.value;
   const selectedProduct = products.find((p) => p.extensionKey === selectedKey) || null;
@@ -355,8 +355,10 @@ function showProductsError(modal, message) {
   const input = modal.querySelector('#gl-product-combobox');
   const toggle = modal.querySelector('.gl-combobox__toggle');
   const valueInput = getProductValueInput(modal);
+  const modeActions = modal.querySelector('.gl-mode-actions');
   if (loading) loading.style.display = 'none';
   if (combobox) combobox.style.display = 'none';
+  if (modeActions) modeActions.style.display = 'none';
   if (input) {
     input.disabled = true;
     input.value = '';
@@ -368,6 +370,7 @@ function showProductsError(modal, message) {
     empty.textContent = message || modal.dataset.labelLoadError || 'Failed to load products.';
     empty.style.display = '';
   }
+  onProductSelected(modal);
 }
 
 /**
@@ -420,21 +423,14 @@ function applyTriggerProductSelection(modal, extensionKey, mode) {
 
   const normalizedMode = (mode || '').trim().toLowerCase();
   if (normalizedMode === 'buy') {
-    const product = (productsCache || []).find((p) => p.extensionKey === key) || null;
-    const buyRadio = modal.querySelector('#gl-mode-buy');
-    if (buyRadio && product && productCheckoutUrl(product) && !buyRadio.disabled) {
-      buyRadio.checked = true;
-      onProductSelected(modal);
-    }
+    setLicenseMode(modal, 'buy');
+    onProductSelected(modal);
     return;
   }
 
   if (normalizedMode === 'trial') {
-    const trialRadio = modal.querySelector('#gl-mode-trial');
-    if (trialRadio && !trialRadio.disabled) {
-      trialRadio.checked = true;
-      onProductSelected(modal);
-    }
+    setLicenseMode(modal, 'trial');
+    onProductSelected(modal);
   }
 }
 
@@ -586,7 +582,31 @@ function openCheckoutModal(checkoutUrl, sourceModal) {
 }
 
 /**
- * Update the info panel, mode radios and Continue button after a product change.
+ * Sync mode cards UI with hidden radios.
+ * @param {HTMLElement} modal
+ * @param {string} mode  'trial' | 'buy'
+ */
+function setLicenseMode(modal, mode) {
+  const next = mode === 'buy' ? 'buy' : 'trial';
+  const trialRadio = modal.querySelector('#gl-mode-trial');
+  const buyRadio = modal.querySelector('#gl-mode-buy');
+  if (trialRadio) trialRadio.checked = next === 'trial';
+  if (buyRadio) buyRadio.checked = next === 'buy';
+
+  modal.querySelectorAll('.gl-mode__card[data-gl-mode]').forEach((card) => {
+    const active = card.getAttribute('data-gl-mode') === next;
+    card.classList.toggle('is-active', active);
+    card.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+
+  const productsStep = modal.querySelector('.get-license-step[data-step="products"]');
+  if (productsStep && !productsStep.hidden) {
+    updateWizardChrome(modal, 'products');
+  }
+}
+
+/**
+ * Update mode cards and Continue button after a product change.
  * @param {HTMLElement} modal
  */
 function onProductSelected(modal) {
@@ -595,17 +615,15 @@ function onProductSelected(modal) {
   const product = (productsCache || []).find((p) => p.extensionKey === extKey) || null;
   const canBuy = !!(product && productCheckoutUrl(product));
 
-  const modeWrap = modal.querySelector('.get-license-mode');
-  if (modeWrap) modeWrap.style.display = hasSelection ? '' : 'none';
+  const buyCard = modal.querySelector('.gl-mode__card--buy');
+  if (buyCard) {
+    buyCard.classList.remove('is-disabled');
+    buyCard.setAttribute('aria-disabled', 'false');
+  }
 
-  const trialRadio = modal.querySelector('#gl-mode-trial');
   const buyRadio = modal.querySelector('#gl-mode-buy');
-  if (trialRadio) trialRadio.disabled = !hasSelection;
   if (buyRadio) {
-    buyRadio.disabled = !hasSelection || !canBuy;
-    if (!canBuy && buyRadio.checked && trialRadio) {
-      trialRadio.checked = true;
-    }
+    buyRadio.disabled = false;
   }
 
   const hint = modal.querySelector('.get-license-buy-hint');
@@ -624,6 +642,32 @@ function onProductSelected(modal) {
 }
 
 /**
+ * Continue from products step with the selected mode.
+ * @param {HTMLElement} modal
+ */
+function continueFromProducts(modal) {
+  const selection = getSelection(modal);
+  if (!selection) {
+    Notification.warning(modal.dataset.labelTitleWarning || 'Warning', modal.dataset.labelSelectProduct || 'Please select a product first.');
+    return;
+  }
+
+  if (selection.mode === 'buy' && !productCheckoutUrl(selection.product)) {
+    Notification.warning(
+      modal.dataset.labelTitleWarning || 'Warning',
+      modal.dataset.labelBuyUnavailable || 'Purchase is not available for this product yet.',
+    );
+    return;
+  }
+
+  if (selection.mode === 'trial') {
+    openTrialForm(modal, selection);
+  } else {
+    openPurchaseStep(modal, selection);
+  }
+}
+
+/**
  * Return the current selection {extensionKey, mode, product}.
  * @param {HTMLElement} modal
  * @returns {{extensionKey:string, mode:string, product:(object|null)}|null}
@@ -638,9 +682,111 @@ function getSelection(modal) {
 }
 
 /**
+ * Resolve wizard progress for chrome (meta + stepper).
+ * Trial: welcome → products → form → otp → success (5)
+ * Buy:   welcome → products → purchase → success (4; Verify pill hidden)
+ * @param {HTMLElement} modal
+ * @param {string} step
+ * @returns {{index:number, total:number, hideOtp:boolean, activeOrder:string[]}}
+ */
+function getWizardChromeState(modal, step) {
+  const onBuyPath = step === 'purchase'
+    || (step === 'success' && !!purchaseContext && !trialContext)
+    || (step === 'products' && modal.querySelector('input[name="gl-mode"]:checked')?.value === 'buy');
+
+  const activeOrder = onBuyPath
+    ? ['welcome', 'products', 'purchase', 'success']
+    : ['welcome', 'products', 'form', 'otp', 'success'];
+
+  const resolvedIndex = activeOrder.indexOf(step);
+  const stepIndex = resolvedIndex >= 0 ? resolvedIndex + 1 : 1;
+
+  return {
+    index: stepIndex,
+    total: activeOrder.length,
+    hideOtp: onBuyPath,
+    activeOrder,
+  };
+}
+
+/**
+ * Update wizard meta, title, and stepper for the current step.
+ * @param {HTMLElement} modal
+ * @param {string} step
+ */
+function updateWizardChrome(modal, step) {
+  const chrome = getWizardChromeState(modal, step);
+
+  const stepEl = modal.querySelector('.js-gl-wizard-step');
+  const totalEl = modal.querySelector('.js-gl-wizard-total');
+  if (stepEl) {
+    stepEl.textContent = String(chrome.index);
+  }
+  if (totalEl) {
+    totalEl.textContent = String(chrome.total);
+  }
+
+  // Fallback single-string meta if present
+  const metaEl = modal.querySelector('.js-gl-wizard-meta');
+  if (metaEl) {
+    const tpl = modal.dataset.labelWizardMeta || 'Get New License · Step %d of %d';
+    metaEl.textContent = tpl.replace('%d', String(chrome.index)).replace('%d', String(chrome.total));
+  }
+
+  const titleMap = {
+    welcome: modal.dataset.labelWizardTitleWelcome,
+    products: modal.dataset.labelWizardTitleProducts,
+    form: modal.dataset.labelWizardTitleForm,
+    purchase: modal.dataset.labelWizardTitlePurchase,
+    otp: modal.dataset.labelWizardTitleOtp,
+    success: modal.dataset.labelWizardTitleSuccess,
+  };
+  const titleEl = modal.querySelector('.js-get-license-title');
+  if (titleEl && titleMap[step]) {
+    titleEl.textContent = titleMap[step];
+  }
+
+  const order = chrome.activeOrder;
+  const currentIdx = order.indexOf(step);
+
+  modal.querySelectorAll('.gl-wizard-step-btn').forEach((item) => {
+    const key = item.getAttribute('data-wizard-step');
+    if (key === 'otp' && chrome.hideOtp) {
+      item.hidden = true;
+      item.classList.remove('is-active', 'active', 'is-complete', 'is-locked');
+      return;
+    }
+    item.hidden = false;
+
+    let orderIdx;
+    if (key === 'details') {
+      orderIdx = order.findIndex((s) => s === 'form' || s === 'purchase');
+    } else {
+      orderIdx = order.indexOf(key);
+    }
+
+    const isActive = orderIdx === currentIdx;
+    const isComplete = orderIdx >= 0 && orderIdx < currentIdx;
+    item.classList.toggle('is-active', isActive);
+    item.classList.toggle('active', isActive);
+    item.classList.toggle('is-complete', isComplete);
+    item.classList.toggle('is-locked', !isActive && !isComplete);
+    item.setAttribute('aria-selected', isActive ? 'true' : 'false');
+  });
+
+  let num = 1;
+  modal.querySelectorAll('.gl-wizard-step-btn:not([hidden])').forEach((item) => {
+    const numEl = item.querySelector('.gl-wizard-step-num');
+    if (numEl) {
+      numEl.textContent = String(num++);
+    }
+  });
+}
+
+/**
  * Show a single step and toggle the matching footer controls.
  * @param {HTMLElement} modal
- * @param {string} step  'products' | 'form' | 'otp' | 'purchase' | 'success'
+ * @param {string} step  'welcome' | 'products' | 'form' | 'otp' | 'purchase' | 'success'
  */
 function showStep(modal, step) {
   modal.querySelectorAll('.get-license-step').forEach((el) => {
@@ -658,6 +804,7 @@ function showStep(modal, step) {
       el.hidden = true;
     }
   });
+  updateWizardChrome(modal, step);
 }
 
 /**
@@ -680,8 +827,13 @@ function productCheckoutUrl(product) {
 function openPurchaseStep(modal, selection) {
   purchaseContext = selection;
   const product = selection.product || {};
-  const nameEl = modal.querySelector('.js-gl-buy-name');
-  if (nameEl) nameEl.textContent = product.name || selection.extensionKey;
+
+  fillSelectedProductSummary(modal, product, selection.extensionKey, {
+    name: '.js-gl-buy-name',
+    key: '.js-gl-buy-key',
+    desc: '.js-gl-buy-desc',
+    descWrap: '.js-gl-buy-desc-wrap',
+  });
 
   const priceEl = modal.querySelector('.js-gl-buy-price');
   const priceSuffixEl = modal.querySelector('.js-gl-buy-price-suffix');
@@ -734,6 +886,10 @@ function openPurchaseStep(modal, selection) {
  * @param {string} [licenseKey]
  */
 function showPurchaseSuccess(modal, licenseKey) {
+  // Mark buy path for wizard chrome (Verify pill hidden) after checkout return.
+  purchaseContext = purchaseContext || { extensionKey: '', mode: 'buy', product: null };
+  trialContext = null;
+
   const titleEl = modal.querySelector('.js-gl-success-title');
   const subtitleEl = modal.querySelector('.js-gl-success-subtitle');
   const keyWrap = modal.querySelector('.js-gl-success-key-wrap');
@@ -982,6 +1138,44 @@ function startPurchaseCheckout(modal) {
 }
 
 /**
+ * Fill selected-product summary (name, key, description) in a details card.
+ * @param {HTMLElement} root  form or purchase step container (or modal)
+ * @param {object|null} product
+ * @param {string} extensionKey
+ * @param {{name:string, key:string, desc:string, descWrap:string}} selectors
+ */
+function fillSelectedProductSummary(root, product, extensionKey, selectors) {
+  const name = (product?.name || extensionKey || '').toString();
+  const key = (product?.extensionKey || extensionKey || '').toString();
+  const section = (product?.section || '').toString().trim();
+  const description = (product?.description || product?.shortDescription || '').toString().trim();
+
+  const nameEl = root.querySelector(selectors.name);
+  if (nameEl) nameEl.textContent = name;
+
+  const keyEl = root.querySelector(selectors.key);
+  if (keyEl) {
+    const parts = [];
+    if (key) parts.push(key);
+    if (section) parts.push(section);
+    keyEl.textContent = parts.join(' · ');
+    keyEl.style.display = parts.length ? '' : 'none';
+  }
+
+  const descEl = root.querySelector(selectors.desc);
+  const descWrap = root.querySelector(selectors.descWrap);
+  if (descEl && descWrap) {
+    if (description) {
+      descEl.textContent = description;
+      descWrap.style.display = '';
+    } else {
+      descEl.textContent = '';
+      descWrap.style.display = 'none';
+    }
+  }
+}
+
+/**
  * Populate and open the trial form for the current selection.
  * @param {HTMLElement} modal
  * @param {object} selection  from getSelection()
@@ -989,8 +1183,12 @@ function startPurchaseCheckout(modal) {
 function openTrialForm(modal, selection) {
   trialContext = selection;
 
-  const nameEl = modal.querySelector('.js-gl-selected-name');
-  if (nameEl) nameEl.textContent = selection.product?.name || selection.extensionKey;
+  fillSelectedProductSummary(modal, selection.product, selection.extensionKey, {
+    name: '.js-gl-selected-name',
+    key: '.js-gl-selected-key',
+    desc: '.js-gl-selected-desc',
+    descWrap: '.js-gl-selected-desc-wrap',
+  });
 
   // Prefill the production domain with the current backend host as a sensible default.
   const domainInput = modal.querySelector('#gl-domain');
@@ -1236,11 +1434,23 @@ document.addEventListener('click', (e) => {
   trialContext = null;
   purchaseContext = null;
   resetProductCombobox(modal);
-  showStep(modal, 'products');
+  setLicenseMode(modal, 'trial');
+  // Deep-link with product key skips welcome; DocHeader opens on welcome.
+  showStep(modal, extensionKey ? 'products' : 'welcome');
   showModal(modal);
   loadProducts(modal).then(() => {
     applyTriggerProductSelection(modal, extensionKey, glMode);
   });
+});
+
+// Welcome: Skip / Get Started → product step
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.t3js-get-license-skip, .t3js-get-license-start');
+  if (!btn) return;
+  e.preventDefault();
+  const modal = btn.closest('#' + MODAL_ID) || document.getElementById(MODAL_ID);
+  if (!modal) return;
+  showStep(modal, 'products');
 });
 
 // Combobox: type to filter, show menu.
@@ -1369,19 +1579,20 @@ document.addEventListener('click', (e) => {
   e.preventDefault();
 
   const modal = document.getElementById(MODAL_ID);
-  if (!modal) return;
+  if (!modal || btn.disabled) return;
 
-  const selection = getSelection(modal);
-  if (!selection) {
-    Notification.warning(modal.dataset.labelTitleWarning || 'Warning', modal.dataset.labelSelectProduct || 'Please select a product first.');
-    return;
-  }
+  continueFromProducts(modal);
+});
 
-  if (selection.mode === 'trial') {
-    openTrialForm(modal, selection);
-  } else {
-    openPurchaseStep(modal, selection);
-  }
+// Mode cards: Free Trial / Buy Now — select mode only; Continue advances.
+document.addEventListener('click', (e) => {
+  const card = e.target.closest('.gl-mode__card[data-gl-mode]');
+  if (!card) return;
+  const modal = card.closest('#' + MODAL_ID);
+  if (!modal || card.classList.contains('is-disabled')) return;
+  e.preventDefault();
+  setLicenseMode(modal, card.getAttribute('data-gl-mode') || 'trial');
+  onProductSelected(modal);
 });
 
 // Purchase -> close Get New License, open single BE checkout modal.
