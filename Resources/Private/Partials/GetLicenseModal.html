@@ -1,0 +1,234 @@
+<div id="get-license-modal" class="t3js-modal modal fade modal-type-default modal-severity-default modal-style-default ns-license-modal ns-get-license-modal modal-size-medium position-fixed top-50 start-50 translate-middle right-0 left-0 p-0 border-0" tabindex="-1" data-bs-keyboard="true"
+    data-label-no-products="{f:translate(key: 'license-get-new.no_products', extensionName: 'ns_license')}"
+    data-label-other-products="{f:translate(key: 'license-get-new.other_products', extensionName: 'ns_license')}"
+    data-label-search-no-match="{f:translate(key: 'license-get-new.search_no_match', extensionName: 'ns_license')}"
+    data-label-load-error="{f:translate(key: 'license-get-new.error.load_failed', extensionName: 'ns_license')}"
+    data-label-select-product="{f:translate(key: 'license-get-new.select_product_first', extensionName: 'ns_license')}"
+    data-label-invalid-email="{f:translate(key: 'license-get-new.form.error.email', extensionName: 'ns_license')}"
+    data-label-invalid-domain="{f:translate(key: 'license-get-new.form.error.domain', extensionName: 'ns_license')}"
+    data-label-terms-required="{f:translate(key: 'license-get-new.form.error.terms', extensionName: 'ns_license')}"
+    data-label-generic-error="{f:translate(key: 'license-get-new.error.generic', extensionName: 'ns_license')}"
+    data-label-title-warning="{f:translate(key: 'license-get-new.notification.warning', extensionName: 'ns_license')}"
+    data-label-title-error="{f:translate(key: 'license-get-new.notification.error', extensionName: 'ns_license')}"
+    data-label-title-success="{f:translate(key: 'license-get-new.notification.success', extensionName: 'ns_license')}"
+    data-label-title-info="{f:translate(key: 'license-get-new.notification.info', extensionName: 'ns_license')}"
+    data-label-otp-sent="{f:translate(key: 'license-get-new.otp.sent_to', extensionName: 'ns_license')}"
+    data-label-otp-invalid="{f:translate(key: 'license-get-new.otp.error.invalid', extensionName: 'ns_license')}"
+    data-label-attempts-left="{f:translate(key: 'license-get-new.otp.attempts_left', extensionName: 'ns_license')}"
+    data-label-buy-unavailable="{f:translate(key: 'license-get-new.buy.unavailable', extensionName: 'ns_license')}"
+    data-label-buy-price-empty="{f:translate(key: 'license-get-new.buy.price_empty', extensionName: 'ns_license')}"
+    data-label-checkout-invalid="{f:translate(key: 'license-get-new.buy.checkout_invalid', extensionName: 'ns_license')}"
+    data-label-checkout-open-tab="{f:translate(key: 'license-get-new.buy.open_new_tab', extensionName: 'ns_license')}"
+    data-label-checkout-title="{f:translate(key: 'license-get-new.buy.checkout_title', extensionName: 'ns_license')}"
+    data-label-buy-success-title="{f:translate(key: 'license-get-new.buy.success.title', extensionName: 'ns_license')}"
+    data-label-buy-success-subtitle="{f:translate(key: 'license-get-new.buy.success.subtitle', extensionName: 'ns_license')}"
+    data-label-buy-success-email="{f:translate(key: 'license-get-new.buy.success.email_note', extensionName: 'ns_license')}"
+    data-label-trial-success-title="{f:translate(key: 'license-get-new.success.title', extensionName: 'ns_license')}"
+    data-label-trial-success-subtitle="{f:translate(key: 'license-get-new.success.subtitle', extensionName: 'ns_license')}"
+    data-label-trial-success-email="{f:translate(key: 'license-get-new.success.email_note', extensionName: 'ns_license')}"
+    data-label-activating="{f:translate(key: 'license-get-new.success.activating', extensionName: 'ns_license')}"
+    data-label-activate-failed="{f:translate(key: 'license-get-new.success.activate_failed', extensionName: 'ns_license')}"
+    data-label-activate-missing-key="{f:translate(key: 'license-get-new.success.activate_missing_key', extensionName: 'ns_license')}"
+    data-purchase-success="{f:if(condition: purchaseSuccess, then: '1', else: '0')}"
+    data-purchase-token="{purchaseToken}">
+    <div class="modal-dialog">
+        <div class="t3js-modal-content modal-content">
+            <div class="modal-header">
+                <h4 class="t3js-modal-title modal-title">
+                    <div class="modal-ext-name-content">
+                        <h3 class="modal-ext-name mb-0"><b><f:translate key="license-get-new.modal.title" extensionName="ns_license" /></b></h3>
+                        <span class="js-get-license-subtitle"><f:translate key="license-get-new.modal.subtitle" extensionName="ns_license" /></span>
+                    </div>
+                </h4>
+                <button class="t3js-modal-close close bg-transparent border-0" data-bs-dismiss="modal">
+                    <span aria-hidden="true">
+                        <span class="t3js-icon icon icon-size-small icon-state-default icon-actions-close" data-identifier="actions-close">
+                            <span class="icon-markup">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M11.9 5.5L9.4 8l2.5 2.5c.2.2.2.5 0 .7l-.7.7c-.2.2-.5.2-.7 0L8 9.4l-2.5 2.5c-.2.2-.5.2-.7 0l-.7-.7c-.2-.2-.2-.5 0-.7L6.6 8 4.1 5.5c-.2-.2-.2-.5 0-.7l.7-.7c.2-.2.5-.2.7 0L8 6.6l2.5-2.5c.2-.2.5-.2.7 0l.7.7c.2.2.2.5 0 .7z" class="icon-color"></path>
+                                </svg>
+                            </span>
+                        </span>
+                    </span>
+                    <span class="sr-only"></span>
+                </button>
+            </div>
+            <div class="t3js-modal-body modal-body">
+
+                <!-- Step: product selection -->
+                <div class="get-license-step" data-step="products">
+                    <!-- Searchable product combobox -->
+                    <div class="mb-3 get-license-product-picker">
+                        <label class="form-label fw-bold" for="gl-product-combobox"><f:translate key="license-get-new.select_product" extensionName="ns_license" /></label>
+                        <div class="gl-combobox" style="display: none;">
+                            <input type="hidden" id="gl-product-select" value="">
+                            <div class="gl-combobox__control input-group">
+                                <input type="text" id="gl-product-combobox" class="form-control gl-combobox__input" autocomplete="off"
+                                    role="combobox" aria-expanded="false" aria-controls="gl-product-listbox" aria-autocomplete="list"
+                                    placeholder="{f:translate(key: 'license-get-new.search_product_placeholder', extensionName: 'ns_license')}"
+                                    aria-label="{f:translate(key: 'license-get-new.search_product', extensionName: 'ns_license')}" disabled>
+                                <button type="button" class="btn btn-default gl-combobox__toggle" tabindex="-1" aria-label="{f:translate(key: 'license-get-new.choose_product', extensionName: 'ns_license')}" disabled>
+                                    <span aria-hidden="true">▾</span>
+                                </button>
+                            </div>
+                            <div id="gl-product-listbox" class="gl-combobox__menu" role="listbox" hidden></div>
+                        </div>
+                    </div>
+
+                    <!-- Loading placeholder -->
+                    <div class="get-license-products-loading text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden"><f:translate key="license-loading.loading" extensionName="ns_license" /></span>
+                        </div>
+                        <p class="mt-3 text-variant mb-0"><f:translate key="license-get-new.loading" extensionName="ns_license" /></p>
+                    </div>
+
+                    <!-- Empty / error state -->
+                    <div class="get-license-products-empty text-center py-4 text-variant" style="display: none;"></div>
+
+                    <!-- Mode selection: Free Trial / Buy (enabled once a product is selected) -->
+                    <div class="get-license-mode d-flex align-items-center gap-4 mt-2" style="display: none;">
+                        <div class="form-check mb-0">
+                            <input class="form-check-input" type="radio" name="gl-mode" id="gl-mode-trial" value="trial" checked disabled>
+                            <label class="form-check-label" for="gl-mode-trial"><f:translate key="license-get-new.mode.trial" extensionName="ns_license" /></label>
+                        </div>
+                        <div class="form-check mb-0">
+                            <input class="form-check-input" type="radio" name="gl-mode" id="gl-mode-buy" value="buy" disabled>
+                            <label class="form-check-label" for="gl-mode-buy"><f:translate key="license-get-new.mode.buy" extensionName="ns_license" /></label>
+                        </div>
+                    </div>
+                    <p class="get-license-buy-hint text-variant small mt-2 mb-0" style="display: none;"></p>
+                </div>
+
+                <!-- Step: trial form -->
+                <div class="get-license-step" data-step="form" style="display: none;">
+                    <div class="gl-selected-product d-flex align-items-center gap-2 mb-4 p-3">
+                        <span class="text-variant"><f:translate key="license-get-new.form.selected_product" extensionName="ns_license" />:</span>
+                        <span class="fw-bold js-gl-selected-name"></span>
+                    </div>
+
+                    <form class="gl-trial-form" novalidate>
+                        <div class="mb-3">
+                            <label class="form-label" for="gl-name"><f:translate key="license-get-new.form.name" extensionName="ns_license" /></label>
+                            <input type="text" id="gl-name" class="form-control" placeholder="{f:translate(key: 'license-get-new.form.name_placeholder', extensionName: 'ns_license')}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="gl-email"><f:translate key="license-get-new.form.email" extensionName="ns_license" /> <span class="text-danger">*</span></label>
+                            <input type="email" id="gl-email" class="form-control" required placeholder="{f:translate(key: 'license-get-new.form.email_placeholder', extensionName: 'ns_license')}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="gl-domain"><f:translate key="license-get-new.form.domain" extensionName="ns_license" /> <span class="text-danger">*</span></label>
+                            <input type="text" id="gl-domain" class="form-control" required placeholder="{f:translate(key: 'license-get-new.form.domain_placeholder', extensionName: 'ns_license')}">
+                            <div class="form-text"><f:translate key="license-get-new.form.domain_help" extensionName="ns_license" /></div>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="gl-terms">
+                            <label class="form-check-label" for="gl-terms">
+                                <f:translate key="license-get-new.form.terms_prefix" extensionName="ns_license" />
+                                <a href="https://t3planet.de/agb" target="_blank" rel="noopener"><f:translate key="license-get-new.form.terms_link" extensionName="ns_license" /></a>
+                                <f:translate key="license-get-new.form.terms_and" extensionName="ns_license" />
+                                <a href="https://t3planet.de/privacy-policy" target="_blank" rel="noopener"><f:translate key="license-get-new.form.privacy_link" extensionName="ns_license" /></a>
+                            </label>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Step: purchase summary + checkout -->
+                <div class="get-license-step" data-step="purchase" style="display: none;">
+                    <div class="gl-selected-product d-flex align-items-center gap-2 mb-4 p-3">
+                        <span class="text-variant"><f:translate key="license-get-new.form.selected_product" extensionName="ns_license" />:</span>
+                        <span class="fw-bold js-gl-buy-name"></span>
+                    </div>
+                    <div class="gl-buy-price mb-4 p-3">
+                        <span class="text-variant d-block small mb-1"><f:translate key="license-get-new.buy.price_label" extensionName="ns_license" /></span>
+                        <span class="fw-bold fs-4 js-gl-buy-price"></span>
+                        <span class="text-variant small ms-1 js-gl-buy-price-suffix"><f:translate key="license-get-new.buy.billing_annual" extensionName="ns_license" /></span>
+                    </div>
+                    <p class="text-variant mb-0"><f:translate key="license-get-new.buy.help" extensionName="ns_license" /></p>
+                    <div class="js-gl-buy-feedback text-danger small mt-2" style="display:none;" role="alert"></div>
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" id="gl-buy-terms">
+                        <label class="form-check-label" for="gl-buy-terms">
+                            <f:translate key="license-get-new.form.terms_prefix" extensionName="ns_license" />
+                            <a href="https://t3planet.de/agb" target="_blank" rel="noopener"><f:translate key="license-get-new.form.terms_link" extensionName="ns_license" /></a>
+                            <f:translate key="license-get-new.form.terms_and" extensionName="ns_license" />
+                            <a href="https://t3planet.de/privacy-policy" target="_blank" rel="noopener"><f:translate key="license-get-new.form.privacy_link" extensionName="ns_license" /></a>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Step: OTP verification -->
+                <div class="get-license-step" data-step="otp" style="display: none;">
+                    <div class="gl-otp-wrapper text-center py-3">
+                        <h4 class="mb-2"><f:translate key="license-get-new.otp.title" extensionName="ns_license" /></h4>
+                        <p class="text-variant js-gl-otp-sent mb-4"></p>
+                        <input type="text" id="gl-otp" class="form-control gl-otp-input mx-auto" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="------">
+                        <div class="gl-otp-feedback text-danger small mt-2" style="display:none;"></div>
+                        <div class="mt-4">
+                            <span class="text-variant small"><f:translate key="license-get-new.otp.no_code" extensionName="ns_license" /></span>
+                            <button type="button" class="btn btn-link btn-sm p-0 align-baseline t3js-get-license-resend"><f:translate key="license-get-new.otp.resend" extensionName="ns_license" /></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step: success (trial + purchase-with-key show the license key) -->
+                <div class="get-license-step" data-step="success" style="display: none;">
+                    <div class="gl-success text-center py-4">
+                        <div class="gl-success__icon mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#28a745" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        </div>
+                        <h4 class="mb-2 js-gl-success-title"><f:translate key="license-get-new.success.title" extensionName="ns_license" /></h4>
+                        <p class="text-variant mb-4 js-gl-success-subtitle"><f:translate key="license-get-new.success.subtitle" extensionName="ns_license" /></p>
+                        <div class="gl-success__license d-inline-block text-start p-3 js-gl-success-key-wrap">
+                            <span class="text-variant small d-block mb-1"><f:translate key="license-get-new.success.license_key" extensionName="ns_license" /></span>
+                            <code class="js-gl-license-key user-select-all"></code>
+                        </div>
+                        <p class="text-variant small mt-4 mb-0 js-gl-success-email-note"><f:translate key="license-get-new.success.email_note" extensionName="ns_license" /></p>
+                    </div>
+                </div>
+
+            </div>
+            <div class="t3js-modal-footer modal-footer">
+                <!-- Back buttons (form -> products, otp -> form, purchase -> products) -->
+                <button type="button" class="btn btn-default t3js-get-license-back me-auto" data-step-footer="form" data-back-to="products" style="display:none;">
+                    <span><f:translate key="license-get-new.button.back" extensionName="ns_license" /></span>
+                </button>
+                <button type="button" class="btn btn-default t3js-get-license-back me-auto" data-step-footer="otp" data-back-to="form" style="display:none;">
+                    <span><f:translate key="license-get-new.button.back" extensionName="ns_license" /></span>
+                </button>
+                <button type="button" class="btn btn-default t3js-get-license-back me-auto" data-step-footer="purchase" data-back-to="products" style="display:none;">
+                    <span><f:translate key="license-get-new.button.back" extensionName="ns_license" /></span>
+                </button>
+
+                <button type="button" class="btn btn-gray btn-default t3js-modal-close" data-bs-dismiss="modal">
+                    <span><f:translate key="license-activation.update_extension_btn_cancel" extensionName="ns_license" /></span>
+                </button>
+
+                <!-- Step primary actions -->
+                <button type="button" class="btn btn-primary t3js-get-license-continue" data-step-footer="products" disabled>
+                    <span><f:translate key="license-get-new.button.continue" extensionName="ns_license" /></span>
+                </button>
+                <button type="button" class="btn btn-primary t3js-get-license-send-code" data-step-footer="form" style="display:none;"
+                    data-label-default="{f:translate(key: 'license-get-new.form.submit', extensionName: 'ns_license')}"
+                    data-label-sending="{f:translate(key: 'license-get-new.form.sending', extensionName: 'ns_license')}">
+                    <span class="label"><f:translate key="license-get-new.form.submit" extensionName="ns_license" /></span>
+                </button>
+                <button type="button" class="btn btn-primary t3js-get-license-pay" data-step-footer="purchase" style="display:none;"
+                    data-label-default="{f:translate(key: 'license-get-new.buy.pay', extensionName: 'ns_license')}"
+                    data-label-loading="{f:translate(key: 'license-get-new.buy.preparing', extensionName: 'ns_license')}">
+                    <span class="label"><f:translate key="license-get-new.buy.pay" extensionName="ns_license" /></span>
+                </button>
+                <button type="button" class="btn btn-primary t3js-get-license-verify" data-step-footer="otp" style="display:none;"
+                    data-label-default="{f:translate(key: 'license-get-new.otp.verify', extensionName: 'ns_license')}"
+                    data-label-verifying="{f:translate(key: 'license-get-new.otp.verifying', extensionName: 'ns_license')}">
+                    <span class="label"><f:translate key="license-get-new.otp.verify" extensionName="ns_license" /></span>
+                </button>
+                <button type="button" class="btn btn-primary t3js-get-license-done" data-step-footer="success" style="display:none;"
+                    data-label-default="{f:translate(key: 'license-get-new.success.done', extensionName: 'ns_license')}"
+                    data-label-activating="{f:translate(key: 'license-get-new.success.activating', extensionName: 'ns_license')}">
+                    <span class="label"><f:translate key="license-get-new.success.done" extensionName="ns_license" /></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

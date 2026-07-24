@@ -14,6 +14,7 @@
 * Validate license status and show license details  
 * Download licensed T3Planet extensions (classic / non-Composer installs)  
 * Manage registered domains and view authentication logs  
+* **Get New License** right from the backend — pick any T3Planet product and start a **free 30‑day trial** (email OTP) or **buy a license** via secure t3planet.shop checkout (Pabbly), then activate the emailed key  
 * Extend trial licenses when available  
 * Works with free **EXT:ns_t3af** license keys (Packagist install; license registration only)
 
@@ -41,8 +42,11 @@ https://extensions.typo3.org/extension/ns_license/
 1. Install and activate `ns_license`.
 2. Open **Admin Tools → T3Planet License**.
 3. Enter your license key to activate the product for the current domain.
+4. Don't have a key yet? Use **Get New License** in the module header:
+   - **Start Free Trial** — confirm your email with the one‑time code; a 30‑day trial key is issued.
+   - **Buy / Purchase** — review the annual price, accept terms, and complete payment securely on **t3planet.shop** (Pabbly). The license key is emailed after payment; then **Activate** it in this module.
 
-For **AI Foundation (ns_t3af)**, install the extension from Packagist/TER first, then activate the free lifetime key here.
+
 
 ## Documentation
 

@@ -9,6 +9,7 @@ use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Service\DependencyOrderingService;
@@ -540,13 +541,299 @@ final class LicenseService
     }
 
     /**
-     * Get API base URL based on environment
+     * Fetch the list of products for the "Get New License" modal.
+     * Shared by both the free-trial and purchase modes.
+     * Calls the signed GetProduct.php endpoint.
+     *
+     * @return array{success:bool, products?:array, error_code?:string, message?:string}
+     */
+    public function getProducts(): array
+    {
+        $url = $this->getApiBaseUrl() . 'GetProduct.php';
+
+        try {
+            $data = $this->composerApiClient->requestJsonArray($url, 'GET', [
+                'headers' => $this->buildSignedHeaders(''),
+            ]);
+
+            if (is_array($data) && !empty($data['status']) && isset($data['products']) && is_array($data['products'])) {
+                return [
+                    'success' => true,
+                    'products' => $data['products'],
+                ];
+            }
+
+            return [
+                'success' => false,
+                'error_code' => $data['error_code'] ?? 'error',
+                'message' => $data['message'] ?? 'Failed to load products',
+            ];
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            return [
+                'success' => false,
+                'error_code' => 'server_error',
+                'message' => 'Server connection error: ' . $e->getMessage(),
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'error_code' => 'error',
+                'message' => 'Error loading products: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Start a free trial: send the email OTP (step 1 of the trial flow).
+     * Signs the request and POSTs to StartTrial.php. No license is created here.
+     *
+     * @param array<string,mixed> $input Keys: extension_key, email, name, domain,
+     *        local_domain, staging_domain, language, terms_accepted, extension_name,
+     *        price_annual, price_lifetime
+     * @return array{success:bool, message?:string, error_code?:string, expires_in?:int, retry_after?:int, expiration_date_formatted?:string}
+     */
+    public function startTrial(array $input): array
+    {
+        $url = $this->getApiBaseUrl() . 'StartTrial.php';
+
+        $payload = [
+            'extension_key' => (string) ($input['extension_key'] ?? ''),
+            'email' => (string) ($input['email'] ?? ''),
+            'name' => (string) ($input['name'] ?? ''),
+            'domain' => (string) ($input['domain'] ?? ''),
+            'local_domain' => (string) ($input['local_domain'] ?? ''),
+            'staging_domain' => (string) ($input['staging_domain'] ?? ''),
+            'language' => (string) ($input['language'] ?? 'en'),
+            'terms_accepted' => !empty($input['terms_accepted']),
+            'extension_name' => (string) ($input['extension_name'] ?? ''),
+            'price_annual' => (string) ($input['price_annual'] ?? ''),
+            'price_lifetime' => (string) ($input['price_lifetime'] ?? ''),
+        ];
+
+        // The signature must cover the EXACT body bytes we transmit.
+        $rawBody = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $headers = $this->buildSignedHeaders($rawBody);
+        $headers['Content-Type'] = 'application/json';
+
+        try {
+            $data = $this->composerApiClient->requestJsonArray($url, 'POST', [
+                'headers' => $headers,
+                'body' => $rawBody,
+                'http_errors' => false,
+            ]);
+
+            if (is_array($data) && !empty($data['status'])) {
+                return [
+                    'success' => true,
+                    'message' => $data['message'] ?? 'Verification code sent.',
+                    'expires_in' => (int) ($data['expires_in'] ?? 600),
+                ];
+            }
+
+            $result = [
+                'success' => false,
+                'error_code' => $data['error_code'] ?? 'error',
+                'message' => $data['message'] ?? 'Failed to start the trial. Please try again.',
+            ];
+            if (isset($data['retry_after'])) {
+                $result['retry_after'] = (int) $data['retry_after'];
+            }
+            if (isset($data['expiration_date_formatted'])) {
+                $result['expiration_date_formatted'] = (string) $data['expiration_date_formatted'];
+            }
+            return $result;
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            return [
+                'success' => false,
+                'error_code' => 'server_error',
+                'message' => 'Server connection error: ' . $e->getMessage(),
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'error_code' => 'error',
+                'message' => 'Error starting trial: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Verify the trial OTP (step 2 of the trial flow). On success the server
+     * creates the trial license and returns its details.
+     *
+     * @param array<string,mixed> $input Keys: extension_key, email, otp
+     * @return array{success:bool, message?:string, error_code?:string, license_key?:string, order_id?:string, remaining_attempts?:int}
+     */
+    public function verifyTrialOtp(array $input): array
+    {
+        $url = $this->getApiBaseUrl() . 'VerifyTrialOtp.php';
+
+        $payload = [
+            'extension_key' => (string) ($input['extension_key'] ?? ''),
+            'email' => (string) ($input['email'] ?? ''),
+            'otp' => (string) ($input['otp'] ?? ''),
+        ];
+
+        $rawBody = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $headers = $this->buildSignedHeaders($rawBody);
+        $headers['Content-Type'] = 'application/json';
+
+        try {
+            $data = $this->composerApiClient->requestJsonArray($url, 'POST', [
+                'headers' => $headers,
+                'body' => $rawBody,
+                'http_errors' => false,
+            ]);
+
+            if (is_array($data) && !empty($data['status'])) {
+                return [
+                    'success' => true,
+                    'message' => $data['message'] ?? 'Trial license created successfully.',
+                    'extension_key' => $data['extension_key'] ?? $payload['extension_key'],
+                    'license_key' => $data['license_key'] ?? '',
+                    'user_name' => $data['user_name'] ?? '',
+                    'order_id' => $data['order_id'] ?? '',
+                    'expiration_date' => $data['expiration_date'] ?? '',
+                    'is_life_time' => $data['is_life_time'] ?? 0,
+                    'domain' => $data['domain'] ?? '',
+                ];
+            }
+
+            $result = [
+                'success' => false,
+                'error_code' => $data['error_code'] ?? 'error',
+                'message' => $data['message'] ?? 'Verification failed. Please try again.',
+            ];
+            if (isset($data['remaining_attempts'])) {
+                $result['remaining_attempts'] = (int) $data['remaining_attempts'];
+            }
+            return $result;
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            return [
+                'success' => false,
+                'error_code' => 'server_error',
+                'message' => 'Server connection error: ' . $e->getMessage(),
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'error_code' => 'error',
+                'message' => 'Error verifying code: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Resolve an encrypted purchase_token from the post-checkout redirect URL.
+     * Composer API decrypts; this extension never holds the encryption secret.
+     *
+     * @return array{success:bool, license_key?:string, message?:string, error_code?:string}
+     */
+    public function resolvePurchaseToken(string $purchaseToken): array
+    {
+        $url = $this->getApiBaseUrl() . 'ResolvePurchaseToken.php';
+
+        $payload = [
+            'purchase_token' => $purchaseToken,
+        ];
+
+        $rawBody = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $headers = $this->buildSignedHeaders($rawBody);
+        $headers['Content-Type'] = 'application/json';
+
+        try {
+            $data = $this->composerApiClient->requestJsonArray($url, 'POST', [
+                'headers' => $headers,
+                'body' => $rawBody,
+                'http_errors' => false,
+            ]);
+
+            if (is_array($data) && !empty($data['status'])) {
+                $licenseKey = trim((string)($data['license_key'] ?? ''));
+                if ($licenseKey === '') {
+                    return [
+                        'success' => false,
+                        'error_code' => 'invalid_token',
+                        'message' => 'Purchase token did not return a license key.',
+                    ];
+                }
+
+                return [
+                    'success' => true,
+                    'license_key' => $licenseKey,
+                ];
+            }
+
+            return [
+                'success' => false,
+                'error_code' => $data['error_code'] ?? 'error',
+                'message' => $data['message'] ?? 'Could not resolve purchase token.',
+            ];
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            return [
+                'success' => false,
+                'error_code' => 'server_error',
+                'message' => 'Server connection error: ' . $e->getMessage(),
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'error_code' => 'error',
+                'message' => 'Error resolving purchase token: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Get API base URL from extension configuration (falls back to the default).
+     * Always returns a URL ending in a single trailing slash.
      *
      * @return string
      */
     protected function getApiBaseUrl(): string
     {
-        return 'https://composer.t3planet.cloud/API/';
+        return 'https://composer.thebetaspace.com/API/';
+    }
+
+    /**
+     * Read a value from the ns_license extension configuration.
+     */
+    protected function getExtensionConfiguration(string $key, string $default = ''): string
+    {
+        try {
+            $value = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('ns_license', $key);
+            if (is_string($value) && trim($value) !== '') {
+                return trim($value);
+            }
+        } catch (\Throwable $e) {
+            // Configuration not available; use default.
+        }
+        return $default;
+    }
+
+    /**
+     * Build the HMAC authentication headers for a signed trial-API request.
+     * Returns an empty array when no shared secret is configured (the server
+     * then allows the request only in local development).
+     *
+     * @return array<string,string>
+     */
+    protected function buildSignedHeaders(string $rawBody = ''): array
+    {
+        $secret = $this->getExtensionConfiguration('sharedSecret');
+        if ($secret === '') {
+            return [];
+        }
+
+        $timestamp = (string) time();
+        $nonce = bin2hex(random_bytes(16));
+        $signature = hash_hmac('sha256', $timestamp . "\n" . $nonce . "\n" . $rawBody, $secret);
+
+        return [
+            'X-Timestamp' => $timestamp,
+            'X-Nonce' => $nonce,
+            'X-Signature' => $signature,
+        ];
     }
 
 }

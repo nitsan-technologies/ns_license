@@ -34,6 +34,11 @@
       "NITSAN\\NsLicense\\": "Classes/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "NITSAN\\NsLicense\\Tests\\": "Tests/"
+    }
+  },
   "replace": {
       "typo3-ter/ns-license": "self.version"
   },

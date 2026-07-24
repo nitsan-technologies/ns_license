@@ -205,15 +205,13 @@ function filterServices() {
                          cardDescription.toLowerCase().includes(searchText);
         }
         
-        // Find parent column element
-        const parentColumn = card.closest('.col-md-6, .col-lg-4, .col-xl-3');
-        
         // Show or hide card based on both filters
         if (categoryMatch && searchMatch) {
-            if (parentColumn) {
-                parentColumn.style.display = '';
-            }
             card.style.display = '';
+            const col = card.closest('[class*="col-"]');
+            if (col) {
+                col.style.display = '';
+            }
             visibleCount++;
             
             // Track which categories have visible items
@@ -222,26 +220,22 @@ function filterServices() {
             }
             categoryVisibility[cardCategory]++;
         } else {
-            if (parentColumn) {
-                parentColumn.style.display = 'none';
-            }
             card.style.display = 'none';
+            const col = card.closest('[class*="col-"]');
+            if (col) {
+                col.style.display = 'none';
+            }
         }
     });
     
     // Show/hide category sections based on visible items
     const categorySections = document.querySelectorAll('.service-category-section');
     categorySections.forEach((section) => {
-        const sectionTitleElement = section.querySelector('.extension-section__header-title');
+        const sectionTitleElement = section.querySelector('.extension-section__header-title, .extension-section-header .card-title, .card-header .card-title');
         if (sectionTitleElement) {
             const sectionTitle = sectionTitleElement.textContent.trim();
             const hasVisibleItems = categoryVisibility[sectionTitle] > 0;
-            
-            if (hasVisibleItems) {
-                section.style.display = '';
-            } else {
-                section.style.display = 'none';
-            }
+            section.style.display = hasVisibleItems ? '' : 'none';
         }
     });
     
@@ -253,7 +247,7 @@ function filterServices() {
         if (!noResultsMessage && extensionWrapper) {
             noResultsMessage = document.createElement('div');
             noResultsMessage.className = 'no-services-results col-12 text-center py-5';
-            noResultsMessage.innerHTML = '<p class="text-muted">No services found matching your criteria.</p>';
+            noResultsMessage.innerHTML = '<p class="text-variant">No services found matching your criteria.</p>';
             extensionWrapper.appendChild(noResultsMessage);
         }
     } else {
@@ -297,7 +291,7 @@ function filterShop() {
         const cardDescription = card.dataset.description || '';
         
         // Get extension key and version from span element for search
-        const extensionKeySpan = card.querySelector('.card-header__title-content span');
+        const extensionKeySpan = card.querySelector('.card-subtitle');
         const extensionKey = extensionKeySpan ? extensionKeySpan.textContent.toLowerCase() : '';
         
         // Check section filter
@@ -311,14 +305,13 @@ function filterShop() {
                          extensionKey.includes(searchText);
         }
         
-        // Find parent column element
-        const parentColumn = card.closest('.extension-section');
-        // Show or hide card based on both filters
+        // Show or hide card based on both filters (do not hide parent section per-card)
         if (sectionMatch && searchMatch) {
-            if (parentColumn) {
-                parentColumn.style.display = '';
-            }
             card.style.display = '';
+            const col = card.closest('[class*="col-"]');
+            if (col) {
+                col.style.display = '';
+            }
             visibleCount++;
             
             // Track which sections have visible items
@@ -327,30 +320,22 @@ function filterShop() {
             }
             sectionVisibility[cardSection]++;
         } else {
-            if (parentColumn) {
-                parentColumn.style.display = 'none';
-            }
             card.style.display = 'none';
+            const col = card.closest('[class*="col-"]');
+            if (col) {
+                col.style.display = 'none';
+            }
         }
     });
     
     // Show/hide section wrappers based on visible items
     const extensionSections = shopPane.querySelectorAll('.extension-section');
     extensionSections.forEach((section) => {
-        const sectionId = section.getAttribute('id');
-        
-        // Only hide if it's a shop section (has wrapper ID pattern)
-        if (sectionId && sectionId.includes('-wrapper')) {
-            const sectionTitleElement = section.querySelector('.extension-section__header-title');
-            if (sectionTitleElement) {
-                const sectionTitle = sectionTitleElement.textContent.trim();
-                const hasVisibleItems = sectionVisibility[sectionTitle] > 0;
-                if (hasVisibleItems) {
-                    section.classList.remove('d-none');
-                } else {
-                    // section.classList.add('d-none');
-                }
-            }
+        const sectionTitleElement = section.querySelector('.extension-section__header-title, .extension-section-header .card-title, .card-header .card-title');
+        if (sectionTitleElement) {
+            const sectionTitle = sectionTitleElement.textContent.trim();
+            const hasVisibleItems = sectionVisibility[sectionTitle] > 0;
+            section.style.display = hasVisibleItems ? '' : 'none';
         }
     });
     
@@ -361,7 +346,7 @@ function filterShop() {
         if (!noResultsMessage) {
             noResultsMessage = document.createElement('div');
             noResultsMessage.className = 'no-shop-results col-12 text-center py-5';
-            noResultsMessage.innerHTML = '<p class="text-muted">No products found matching your criteria.</p>';
+            noResultsMessage.innerHTML = '<p class="text-variant">No products found matching your criteria.</p>';
             shopPane.appendChild(noResultsMessage);
         }
     } else {
@@ -406,11 +391,11 @@ function filterExtensions() {
         const cardKey = card.dataset.key || '';
         
         // Get extension description for search
-        const descriptionElement = card.querySelector('.card-body p');
+        const descriptionElement = card.querySelector('.card-body .card-text, .card-body p');
         const cardDescription = descriptionElement ? descriptionElement.textContent.toLowerCase() : '';
         
-        // Get extension key and version from span for search
-        const keySpan = card.querySelector('.extension-card-header__title-content span, .card-header__title-content span');
+        // Get extension key and version from subtitle for search
+        const keySpan = card.querySelector('.card-subtitle');
         const extensionKey = keySpan ? keySpan.textContent.toLowerCase() : '';
         
         // Check status filter
@@ -425,14 +410,8 @@ function filterExtensions() {
                          cardKey.toLowerCase().includes(searchText);
         }
         
-        // Find parent column element
-        const parentColumn = card.closest('.col-md-6, .col-xl-4');
-        
         // Show or hide card based on both filters
         if (statusMatch && searchMatch) {
-            if (parentColumn) {
-                parentColumn.style.display = '';
-            }
             card.style.display = '';
             visibleCount++;
             
@@ -446,9 +425,6 @@ function filterExtensions() {
                 sectionVisibility[sectionId]++;
             }
         } else {
-            if (parentColumn) {
-                parentColumn.style.display = 'none';
-            }
             card.style.display = 'none';
         }
     });
@@ -474,7 +450,7 @@ function filterExtensions() {
         if (!noResultsMessage) {
             noResultsMessage = document.createElement('div');
             noResultsMessage.className = 'no-extensions-results col-12 text-center py-5';
-            noResultsMessage.innerHTML = '<p class="text-muted">' + noResultsText + '</p>';
+            noResultsMessage.innerHTML = '<p class="text-variant">' + noResultsText + '</p>';
             extensionsPane.appendChild(noResultsMessage);
         }
     } else {
@@ -491,10 +467,35 @@ function initializeFilters() {
     const moduleTabsContainer = document.querySelector('.ns-license-nav-tabs');
     const moduleTabContent = document.querySelector('#license-tab-content');
     const clearMainTabState = () => {
-        moduleTabsContainer?.querySelectorAll('.nav-link').forEach((tab) => tab.classList.remove('active'));
+        moduleTabsContainer?.querySelectorAll('.nav-link').forEach((tab) => {
+            tab.classList.remove('active', 'is-active');
+            tab.setAttribute('aria-selected', 'false');
+        });
         moduleTabContent?.querySelectorAll('.tab-pane').forEach((pane) => {
             pane.classList.remove('show', 'active');
         });
+    };
+    const activateMainTab = (tab, pane) => {
+        if (!tab || !pane) {
+            return;
+        }
+        clearMainTabState();
+        tab.classList.add('active', 'is-active');
+        tab.setAttribute('aria-selected', 'true');
+        pane.classList.add('show', 'active');
+        updateTabPageHeader(tab);
+    };
+    const updateTabPageHeader = (tab) => {
+        const title = tab?.getAttribute('data-page-title');
+        const subtitle = tab?.getAttribute('data-page-subtitle');
+        const titleEl = document.querySelector('.ns-license-tab-page-header__title');
+        const subtitleEl = document.querySelector('.ns-license-tab-page-header__subtitle');
+        if (titleEl && title) {
+            titleEl.textContent = title;
+        }
+        if (subtitleEl && subtitle) {
+            subtitleEl.textContent = subtitle;
+        }
     };
     // Services Filter and Search - Event handlers
     const servicesCategoryFilter = document.querySelector('#servicesCategoryFilter');
@@ -547,16 +548,7 @@ function initializeFilters() {
             // Load shop data if not already loaded
             loadShopData();
             
-            // Manually activate the tab (Bootstrap 5)
-            const shopPane = document.querySelector('#shop-pane');
-            if (shopPane) {
-                // Remove active from this module tabs and panes only
-                clearMainTabState();
-                
-                // Add active to shop tab and pane
-                shopTab.classList.add('active');
-                shopPane.classList.add('show', 'active');
-            }
+            activateMainTab(shopTab, document.querySelector('#shop-pane'));
         });
     }
     
@@ -566,17 +558,7 @@ function initializeFilters() {
             e.preventDefault();
             // Load services data if not already loaded
             loadServicesData();
-            
-            // Manually activate the tab (Bootstrap 5)
-            const servicesPane = document.querySelector('#services-pane');
-            if (servicesPane) {
-                // Remove active from this module tabs and panes only
-                clearMainTabState();
-                
-                // Add active to services tab and pane
-                servicesTab.classList.add('active');
-                servicesPane.classList.add('show', 'active');
-            }
+            activateMainTab(servicesTab, document.querySelector('#services-pane'));
         });
     }
     
@@ -584,22 +566,11 @@ function initializeFilters() {
     if (extensionsTab) {
         extensionsTab.addEventListener('click', function(e) {
             e.preventDefault();
-            
-            // Manually activate the tab (Bootstrap 5)
-            const extensionsPane = document.querySelector('#extensions-pane');
-            if (extensionsPane) {
-                // Remove active from this module tabs and panes only
-                clearMainTabState();
-                
-                // Add active to extensions tab and pane
-                extensionsTab.classList.add('active');
-                extensionsPane.classList.add('show', 'active');
-                
-                // Re-apply filters
-                setTimeout(() => {
-                    filterExtensions();
-                }, 100);
-            }
+            activateMainTab(extensionsTab, document.querySelector('#extensions-pane'));
+            // Re-apply filters
+            setTimeout(() => {
+                filterExtensions();
+            }, 100);
         });
     }
 }

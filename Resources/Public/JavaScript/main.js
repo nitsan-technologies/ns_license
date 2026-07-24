@@ -250,3 +250,54 @@ document.addEventListener('click', (e) => {
     },
   ]);
 });
+
+// Renew: fill Fluid renew modal status / expiry when it opens from a card trigger.
+document.addEventListener('show.bs.modal', (e) => {
+  const modal = e.target;
+  if (!(modal instanceof HTMLElement) || modal.id !== 'renew-license-modal') {
+    return;
+  }
+
+  const button = e.relatedTarget;
+  if (!(button instanceof HTMLElement) || !button.classList.contains('js-license-renew-trigger')) {
+    return;
+  }
+
+  const days = Number.parseInt(button.dataset.days ?? '', 10);
+  const expirationTs = Number.parseInt(button.dataset.expirationDate ?? '', 10);
+  const statusBadge = modal.querySelector('.js-renew-status-badge');
+  const expiryEl = modal.querySelector('.js-renew-expiry-date');
+
+  let statusKey = 'active';
+  let badgeClass = 'badge rounded-pill badge-success js-renew-status-badge';
+  if (!Number.isFinite(days) || days <= 0) {
+    statusKey = 'expired';
+    badgeClass = 'badge rounded-pill badge-danger js-renew-status-badge';
+  } else if (days <= 30) {
+    statusKey = 'expiring';
+    badgeClass = 'badge rounded-pill badge-warning js-renew-status-badge';
+  }
+
+  const statusLabels = {
+    active: modal.dataset.labelStatusActive || 'Active',
+    expiring: modal.dataset.labelStatusExpiring || 'Expiring Soon',
+    expired: modal.dataset.labelStatusExpired || 'Expired',
+  };
+
+  if (statusBadge) {
+    statusBadge.className = badgeClass;
+    statusBadge.textContent = statusLabels[statusKey] || statusLabels.active;
+  }
+
+  if (expiryEl) {
+    if (Number.isFinite(expirationTs) && expirationTs > 0) {
+      const date = new Date(expirationTs * 1000);
+      const dd = String(date.getDate()).padStart(2, '0');
+      const mm = String(date.getMonth() + 1).padStart(2, '0');
+      const yyyy = date.getFullYear();
+      expiryEl.textContent = `${dd}.${mm}.${yyyy}`;
+    } else {
+      expiryEl.textContent = '—';
+    }
+  }
+});

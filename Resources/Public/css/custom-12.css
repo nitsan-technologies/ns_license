@@ -8,6 +8,7 @@
     padding-right: 8px;
 }
 
+.ns-license-module-shell .module-docheader-navigation,
 .ns-license-module-wrapper .module-docheader-navigation {
     position: sticky;
     top: 0;
@@ -18,7 +19,7 @@
 }
 
 .ns-license-module .ns-license-activation-form .ns-ext-form .btn {
-  min-width: 335px;
+  min-width: auto;
 }
 
 .ns-license-modal.modal {
