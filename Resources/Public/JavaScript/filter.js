@@ -259,89 +259,88 @@ function filterServices() {
 
 /**
  * Shop Filter and Search functionality
+ * - "All Sections": preview up to 8 cards per section
+ * - Specific section (dropdown or All button): show all cards in that section
  */
 function filterShop() {
     const shopPane = document.querySelector('#shop-pane');
-    
+
     // Only run if we're on the shop tab/pane
     if (!shopPane || !shopPane.classList.contains('active')) {
         return;
     }
-    
+
     const sectionFilter = document.querySelector('#shopSectionFilter');
     const searchInput = document.querySelector('#shopSearch');
-    
+
     if (!sectionFilter || !searchInput) {
         return;
     }
-    
+
     const sectionFilterValue = sectionFilter.value || 'All Sections';
     const searchText = searchInput.value.toLowerCase().trim();
-    
-    // Get all shop cards within shop-pane (cards with data-section attribute)
-    const shopCards = shopPane.querySelectorAll('.extension-card-wrapper[data-section]');
-    
+    const isAllSections = sectionFilterValue === 'All Sections';
+    const isSearching = searchText !== '';
+    const previewLimit = 8;
+
     let visibleCount = 0;
-    const sectionVisibility = {};
-    
-    // Filter each shop card
-    shopCards.forEach((card) => {
-        const cardSection = card.dataset.section || '';
-        const cardName = card.dataset.name || '';
-        const cardDescription = card.dataset.description || '';
-        
-        // Get extension key and version from span element for search
-        const extensionKeySpan = card.querySelector('.card-subtitle');
-        const extensionKey = extensionKeySpan ? extensionKeySpan.textContent.toLowerCase() : '';
-        
-        // Check section filter
-        const sectionMatch = (sectionFilterValue === 'All Sections' || sectionFilterValue === cardSection);
-        
-        // Check search filter
-        let searchMatch = true;
-        if (searchText) {
-            searchMatch = cardName.toLowerCase().includes(searchText) || 
-                         cardDescription.toLowerCase().includes(searchText) ||
-                         extensionKey.includes(searchText);
-        }
-        
-        // Show or hide card based on both filters (do not hide parent section per-card)
-        if (sectionMatch && searchMatch) {
-            card.style.display = '';
-            const col = card.closest('[class*="col-"]');
-            if (col) {
-                col.style.display = '';
-            }
-            visibleCount++;
-            
-            // Track which sections have visible items
-            if (!sectionVisibility[cardSection]) {
-                sectionVisibility[cardSection] = 0;
-            }
-            sectionVisibility[cardSection]++;
-        } else {
-            card.style.display = 'none';
-            const col = card.closest('[class*="col-"]');
-            if (col) {
-                col.style.display = 'none';
-            }
-        }
-    });
-    
-    // Show/hide section wrappers based on visible items
     const extensionSections = shopPane.querySelectorAll('.extension-section');
+
     extensionSections.forEach((section) => {
         const sectionTitleElement = section.querySelector('.extension-section__header-title, .extension-section-header .card-title, .card-header .card-title');
-        if (sectionTitleElement) {
-            const sectionTitle = sectionTitleElement.textContent.trim();
-            const hasVisibleItems = sectionVisibility[sectionTitle] > 0;
-            section.style.display = hasVisibleItems ? '' : 'none';
+        const sectionTitle = sectionTitleElement ? sectionTitleElement.textContent.trim() : '';
+        const cards = section.querySelectorAll('.extension-card-wrapper[data-section]');
+        let sectionVisible = 0;
+
+        cards.forEach((card) => {
+            const cardSection = card.dataset.section || '';
+            const cardName = card.dataset.name || '';
+            const cardDescription = card.dataset.description || '';
+            const extensionKeySpan = card.querySelector('.card-subtitle');
+            const extensionKey = extensionKeySpan ? extensionKeySpan.textContent.toLowerCase() : '';
+
+            const sectionMatch = (isAllSections || sectionFilterValue === cardSection);
+            let searchMatch = true;
+            if (isSearching) {
+                searchMatch = cardName.toLowerCase().includes(searchText)
+                    || cardDescription.toLowerCase().includes(searchText)
+                    || extensionKey.includes(searchText);
+            }
+
+            let show = sectionMatch && searchMatch;
+            // Default overview: only first N cards per section (search shows all matches).
+            if (show && isAllSections && !isSearching && sectionVisible >= previewLimit) {
+                show = false;
+            }
+
+            if (show) {
+                card.style.display = '';
+                const col = card.closest('[class*="col-"]');
+                if (col) {
+                    col.style.display = '';
+                }
+                sectionVisible++;
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+                const col = card.closest('[class*="col-"]');
+                if (col) {
+                    col.style.display = 'none';
+                }
+            }
+        });
+
+        // When filtering to one section, hide other section wrappers entirely.
+        if (!isAllSections) {
+            section.style.display = (sectionTitle === sectionFilterValue && sectionVisible > 0) ? '' : 'none';
+        } else {
+            section.style.display = sectionVisible > 0 ? '' : 'none';
         }
     });
-    
+
     // Show message if no results
     let noResultsMessage = shopPane.querySelector('.no-shop-results');
-    
+
     if (visibleCount === 0) {
         if (!noResultsMessage) {
             noResultsMessage = document.createElement('div');
@@ -349,10 +348,39 @@ function filterShop() {
             noResultsMessage.innerHTML = '<p class="text-variant">No products found matching your criteria.</p>';
             shopPane.appendChild(noResultsMessage);
         }
+    } else if (noResultsMessage) {
+        noResultsMessage.remove();
+    }
+}
+
+/**
+ * "All Extensions/Templates" → select that category and show every product in it.
+ * @param {string} sectionTitle
+ */
+function showShopSection(sectionTitle) {
+    const title = (sectionTitle || '').trim();
+    if (!title) {
+        return;
+    }
+    const sectionFilter = document.querySelector('#shopSectionFilter');
+    if (!sectionFilter) {
+        return;
+    }
+    const options = Array.from(sectionFilter.options || []);
+    const match = options.find((opt) => opt.value === title || opt.textContent.trim() === title);
+    if (match) {
+        sectionFilter.value = match.value;
     } else {
-        if (noResultsMessage) {
-            noResultsMessage.remove();
-        }
+        sectionFilter.value = title;
+    }
+    const searchInput = document.querySelector('#shopSearch');
+    if (searchInput) {
+        searchInput.value = '';
+    }
+    filterShop();
+    const shopPane = document.querySelector('#shop-pane');
+    if (shopPane) {
+        shopPane.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 }
 
@@ -522,6 +550,16 @@ function initializeFilters() {
         shopSearch.addEventListener('input', filterShop);
         shopSearch.addEventListener('keyup', filterShop);
     }
+
+    // "All Extensions / All Templates" → filter to that section (works after AJAX inject)
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.t3js-shop-show-section');
+        if (!btn) {
+            return;
+        }
+        e.preventDefault();
+        showShopSection(btn.getAttribute('data-section') || '');
+    });
     
     // Extensions Filter and Search - Event handlers
     const extensionsStatusFilter = document.querySelector('#extFilter');
