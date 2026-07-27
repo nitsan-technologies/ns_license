@@ -1239,6 +1239,14 @@ function readTrialForm(modal) {
     Notification.warning(modal.dataset.labelTitleWarning || 'Warning', modal.dataset.labelInvalidDomain || 'Please enter your domain.');
     return null;
   }
+  // Free trial allows a single domain only (no comma-separated lists).
+  if (domain.includes(',') || domain.includes(';')) {
+    Notification.warning(
+      modal.dataset.labelTitleWarning || 'Warning',
+      modal.dataset.labelInvalidDomainMultiple || 'Please enter only one domain (comma-separated domains are not allowed).',
+    );
+    return null;
+  }
   if (!terms) {
     Notification.warning(modal.dataset.labelTitleWarning || 'Warning', modal.dataset.labelTermsRequired || 'Please accept the Terms & Conditions and Privacy Policy.');
     return null;

@@ -891,7 +891,7 @@
                 <source>example.com</source>
             </trans-unit>
             <trans-unit id="license-get-new.form.domain_help">
-                <source>The domain where you will use this extension.</source>
+                <source>Enter a single domain where you will use this extension (no comma-separated list).</source>
             </trans-unit>
             <trans-unit id="license-get-new.form.terms_prefix">
                 <source>I agree to the</source>
@@ -910,6 +910,9 @@
             </trans-unit>
             <trans-unit id="license-get-new.form.error.domain">
                 <source>Please enter your domain.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.form.error.domain_multiple">
+                <source>Please enter only one domain (comma-separated domains are not allowed).</source>
             </trans-unit>
             <trans-unit id="license-get-new.form.error.terms">
                 <source>Please accept the Terms &amp; Conditions and Privacy Policy.</source>
