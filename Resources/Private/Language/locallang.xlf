@@ -492,6 +492,9 @@
             <trans-unit id="license.renew.modal.close">
                 <source>Close</source>
             </trans-unit>
+            <trans-unit id="license.renew.modal.cancel">
+                <source>Cancel</source>
+            </trans-unit>
             <trans-unit id="license.renew.modal.status_label">
                 <source>Status:</source>
             </trans-unit>
@@ -511,12 +514,30 @@
                 <source>Your annual subscription for this product is nearing renewal. Renew to keep uninterrupted access to product access, updates and support from our team.</source>
             </trans-unit>
             <trans-unit id="license.renew.modal.step1_prefix">
+                <source>Step 1. Log in to your account:</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.step1_num">
+                <source>Step 1.</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.step1_text">
                 <source>Log in to your account:</source>
             </trans-unit>
             <trans-unit id="license.renew.modal.step2">
+                <source>Step 2. Open the Invoice module and pay your renewal invoice.</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.step2_num">
+                <source>Step 2.</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.step2_text">
                 <source>Open the Invoice module and pay your renewal invoice.</source>
             </trans-unit>
             <trans-unit id="license.renew.modal.step3">
+                <source>Step 3. Once we receive your payment, we'll manually activate your renewal within 2 business days and notify you by email.</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.step3_num">
+                <source>Step 3.</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.step3_text">
                 <source>Once we receive your payment, we'll manually activate your renewal within 2 business days and notify you by email.</source>
             </trans-unit>
             <trans-unit id="license.renew.modal.note">
@@ -870,7 +891,7 @@
                 <source>example.com</source>
             </trans-unit>
             <trans-unit id="license-get-new.form.domain_help">
-                <source>The domain where you will use this extension.</source>
+                <source>Enter a single domain where you will use this extension (no comma-separated list).</source>
             </trans-unit>
             <trans-unit id="license-get-new.form.terms_prefix">
                 <source>I agree to the</source>
@@ -889,6 +910,9 @@
             </trans-unit>
             <trans-unit id="license-get-new.form.error.domain">
                 <source>Please enter your domain.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.form.error.domain_multiple">
+                <source>Please enter only one domain (comma-separated domains are not allowed).</source>
             </trans-unit>
             <trans-unit id="license-get-new.form.error.terms">
                 <source>Please accept the Terms &amp; Conditions and Privacy Policy.</source>

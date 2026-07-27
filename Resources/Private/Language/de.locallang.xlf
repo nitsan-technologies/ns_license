@@ -620,6 +620,10 @@
                 <source>Close</source>
                 <target>Schließen</target>
             </trans-unit>
+            <trans-unit id="license.renew.modal.cancel">
+                <source>Cancel</source>
+                <target>Abbrechen</target>
+            </trans-unit>
             <trans-unit id="license.renew.modal.status_label">
                 <source>Status:</source>
                 <target>Status:</target>
@@ -645,14 +649,38 @@
                 <target>Ihr Jahresabonnement für dieses Produkt steht zur Verlängerung an. Verlängern Sie, um ununterbrochenen Zugriff auf das Produkt, Updates und Support durch unser Team zu behalten.</target>
             </trans-unit>
             <trans-unit id="license.renew.modal.step1_prefix">
+                <source>Step 1. Log in to your account:</source>
+                <target>Schritt 1. Melden Sie sich in Ihrem Konto an:</target>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.step1_num">
+                <source>Step 1.</source>
+                <target>Schritt 1.</target>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.step1_text">
                 <source>Log in to your account:</source>
                 <target>Melden Sie sich in Ihrem Konto an:</target>
             </trans-unit>
             <trans-unit id="license.renew.modal.step2">
+                <source>Step 2. Open the Invoice module and pay your renewal invoice.</source>
+                <target>Schritt 2. Öffnen Sie das Rechnungsmodul und bezahlen Sie Ihre Verlängerungsrechnung.</target>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.step2_num">
+                <source>Step 2.</source>
+                <target>Schritt 2.</target>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.step2_text">
                 <source>Open the Invoice module and pay your renewal invoice.</source>
                 <target>Öffnen Sie das Rechnungsmodul und bezahlen Sie Ihre Verlängerungsrechnung.</target>
             </trans-unit>
             <trans-unit id="license.renew.modal.step3">
+                <source>Step 3. Once we receive your payment, we'll manually activate your renewal within 2 business days and notify you by email.</source>
+                <target>Schritt 3. Sobald wir Ihre Zahlung erhalten haben, aktivieren wir Ihre Verlängerung manuell innerhalb von 2 Werktagen und benachrichtigen Sie per E-Mail.</target>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.step3_num">
+                <source>Step 3.</source>
+                <target>Schritt 3.</target>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.step3_text">
                 <source>Once we receive your payment, we'll manually activate your renewal within 2 business days and notify you by email.</source>
                 <target>Sobald wir Ihre Zahlung erhalten haben, aktivieren wir Ihre Verlängerung manuell innerhalb von 2 Werktagen und benachrichtigen Sie per E-Mail.</target>
             </trans-unit>
@@ -1117,8 +1145,8 @@
                 <target>beispiel.de</target>
             </trans-unit>
             <trans-unit id="license-get-new.form.domain_help">
-                <source>The domain where you will use this extension.</source>
-                <target>Die Domain, auf der Sie diese Erweiterung verwenden werden.</target>
+                <source>Enter a single domain where you will use this extension (no comma-separated list).</source>
+                <target>Geben Sie nur eine Domain an, auf der Sie diese Erweiterung verwenden (keine kommagetrennte Liste).</target>
             </trans-unit>
             <trans-unit id="license-get-new.form.terms_prefix">
                 <source>I agree to the</source>
@@ -1143,6 +1171,10 @@
             <trans-unit id="license-get-new.form.error.domain">
                 <source>Please enter your domain.</source>
                 <target>Bitte geben Sie Ihre Domain ein.</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.form.error.domain_multiple">
+                <source>Please enter only one domain (comma-separated domains are not allowed).</source>
+                <target>Bitte geben Sie nur eine Domain ein (kommagetrennte Domains sind nicht erlaubt).</target>
             </trans-unit>
             <trans-unit id="license-get-new.form.error.terms">
                 <source>Please accept the Terms &amp; Conditions and Privacy Policy.</source>

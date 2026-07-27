@@ -994,6 +994,14 @@ class NsLicenseModuleController extends ActionController
                 'message' => LocalizationUtility::translate('license-get-new.form.error.domain', 'NsLicense') ?: 'Please enter your domain.',
             ], 400);
         }
+        if (str_contains($domain, ',') || str_contains($domain, ';')) {
+            return new JsonResponse([
+                'success' => false,
+                'error_code' => 'invalid_domain',
+                'message' => LocalizationUtility::translate('license-get-new.form.error.domain_multiple', 'NsLicense')
+                    ?: 'Please enter only one domain (comma-separated domains are not allowed).',
+            ], 400);
+        }
         if (!$termsAccepted) {
             return new JsonResponse([
                 'success' => false,

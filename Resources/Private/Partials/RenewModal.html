@@ -1,6 +1,8 @@
-<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+      data-namespace-typo3-fluid="true">
 <div id="renew-license-modal"
-     class="t3js-modal modal fade modal-type-default modal-severity-default modal-style-default ns-license-modal ns-renew-license-modal modal-size-medium position-fixed top-50 start-50 translate-middle right-0 left-0 p-0 border-0"
+     class="t3js-modal modal fade modal-type-default modal-severity-default modal-style-default ns-license-modal ns-renew-license-modal modal-size-small position-fixed top-50 start-50 translate-middle p-0 border-0"
      tabindex="-1"
      data-bs-keyboard="true"
      data-label-status-active="{f:translate(key: 'license.renew.modal.status.active', extensionName: 'ns_license')}"
@@ -9,66 +11,65 @@
      data-portal-url="https://t3planet.shop/portal/signin/t3planet">
     <div class="modal-dialog">
         <div class="t3js-modal-content modal-content">
-            <div class="modal-header">
+            <div class="t3js-modal-header modal-header">
                 <h4 class="t3js-modal-title modal-title">
                     <f:translate key="license.renew.modal.title" extensionName="ns_license" />
                 </h4>
-                <button type="button" class="t3js-modal-close close bg-transparent border-0" data-bs-dismiss="modal" aria-label="{f:translate(key: 'license.renew.modal.close', extensionName: 'ns_license')}">
-                    <span aria-hidden="true">
-                        <span class="t3js-icon icon icon-size-small icon-state-default icon-actions-close" data-identifier="actions-close">
-                            <span class="icon-markup">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
-                                    <path d="M11.9 5.5L9.4 8l2.5 2.5c.2.2.2.5 0 .7l-.7.7c-.2.2-.5.2-.7 0L8 9.4l-2.5 2.5c-.2.2-.5.2-.7 0l-.7-.7c-.2-.2-.2-.5 0-.7L6.6 8 4.1 5.5c-.2-.2-.2-.5 0-.7l.7-.7c.2-.2.5-.2.7 0L8 6.6l2.5-2.5c.2-.2.5-.2.7 0l.7.7c.2.2.2.5 0 .7z" class="icon-color"></path>
-                                </svg>
-                            </span>
-                        </span>
-                    </span>
+                <button type="button"
+                    class="btn btn-default btn-sm t3js-modal-close ms-auto border-0"
+                    data-bs-dismiss="modal"
+                    aria-label="{f:translate(key: 'license.renew.modal.close', extensionName: 'ns_license', default: 'Close')}">
+                    <core:icon identifier="actions-close" size="small" alternativeMarkupIdentifier="inline" />
                 </button>
             </div>
             <div class="t3js-modal-body modal-body">
-                <dl class="ns-renew-license-modal__meta mb-3">
-                    <div class="d-flex flex-wrap gap-2 align-items-baseline mb-2">
-                        <dt class="mb-0 me-1"><f:translate key="license.renew.modal.status_label" extensionName="ns_license" /></dt>
-                        <dd class="mb-0">
-                            <span class="badge rounded-pill js-renew-status-badge badge-success">—</span>
-                        </dd>
+                <div class="ns-renew-license-modal__meta mb-3">
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                        <span class="fw-semibold"><f:translate key="license.renew.modal.status_label" extensionName="ns_license" /></span>
+                        <span class="badge rounded-pill js-renew-status-badge badge-success">—</span>
                     </div>
-                    <div class="d-flex flex-wrap gap-2 align-items-baseline">
-                        <dt class="mb-0 me-1"><f:translate key="license.renew.modal.expiry_label" extensionName="ns_license" /></dt>
-                        <dd class="mb-0 js-renew-expiry-date">—</dd>
+                    <div class="d-flex flex-wrap align-items-baseline gap-2">
+                        <span class="fw-semibold"><f:translate key="license.renew.modal.expiry_label" extensionName="ns_license" /></span>
+                        <span class="js-renew-expiry-date">—</span>
                     </div>
-                </dl>
+                </div>
 
                 <p class="js-renew-intro mb-3">
                     <f:translate key="license.renew.modal.intro" extensionName="ns_license" />
                 </p>
 
-                <ol class="ns-renew-license-modal__steps mb-3 ps-3">
-                    <li class="mb-2">
-                        <f:translate key="license.renew.modal.step1_prefix" extensionName="ns_license" />
-                        <a class="js-renew-portal-link" href="https://t3planet.shop/portal/signin/t3planet" target="_blank" rel="noopener noreferrer">https://t3planet.shop/portal/signin/t3planet</a>
-                    </li>
-                    <li class="mb-2">
-                        <f:translate key="license.renew.modal.step2" extensionName="ns_license" />
-                    </li>
-                    <li class="mb-0">
-                        <f:translate key="license.renew.modal.step3" extensionName="ns_license" />
-                    </li>
-                </ol>
+                <div class="ns-renew-license-modal__steps mb-3">
+                    <p class="mb-2">
+                        <span class="ns-renew-step-num"><f:translate key="license.renew.modal.step1_num" extensionName="ns_license" default="Step 1." /></span>
+                        <f:translate key="license.renew.modal.step1_text" extensionName="ns_license" default="Log in to your account:" />
+                        <a class="js-renew-portal-link"
+                           href="https://t3planet.shop/portal/signin/t3planet"
+                           target="_blank"
+                           rel="noopener noreferrer">https://t3planet.shop/portal/signin/t3planet</a>
+                    </p>
+                    <p class="mb-2">
+                        <span class="ns-renew-step-num"><f:translate key="license.renew.modal.step2_num" extensionName="ns_license" default="Step 2." /></span>
+                        <f:translate key="license.renew.modal.step2_text" extensionName="ns_license" default="Open the Invoice module and pay your renewal invoice." />
+                    </p>
+                    <p class="mb-0">
+                        <span class="ns-renew-step-num"><f:translate key="license.renew.modal.step3_num" extensionName="ns_license" default="Step 3." /></span>
+                        <f:translate key="license.renew.modal.step3_text" extensionName="ns_license" default="Once we receive your payment, we'll manually activate your renewal within 2 business days and notify you by email." />
+                    </p>
+                </div>
 
-                <p class="text-muted small mb-0">
+                <p class="text-variantmb-0">
                     <f:translate key="license.renew.modal.note" extensionName="ns_license" />
                 </p>
             </div>
             <div class="t3js-modal-footer modal-footer">
-                <button type="button" class="btn btn-default" data-bs-dismiss="modal">
-                    <f:translate key="license.renew.modal.close" extensionName="ns_license" />
+                <button type="button" class="btn btn-default t3js-modal-close" data-bs-dismiss="modal">
+                    <f:translate key="license.renew.modal.cancel" extensionName="ns_license" default="Cancel" />
                 </button>
                 <a class="btn btn-success js-renew-now-cta"
                    href="https://t3planet.shop/portal/signin/t3planet"
                    target="_blank"
                    rel="noopener noreferrer">
-                    <f:translate key="license.renew.modal.cta" extensionName="ns_license" />
+                    <span><f:translate key="license.renew.modal.cta" extensionName="ns_license" default="Renew Now" /></span>
                 </a>
             </div>
         </div>

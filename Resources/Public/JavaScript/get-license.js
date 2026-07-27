@@ -919,9 +919,11 @@ function showPurchaseSuccess(modal, licenseKey) {
     subtitleEl.textContent = modal.dataset.labelBuySuccessSubtitle
       || 'Your license has been created.';
   }
+  const copyBtn = modal.querySelector('.js-gl-copy-license-key');
   if (key) {
     if (keyWrap) keyWrap.style.display = '';
     if (keyEl) keyEl.textContent = key;
+    if (copyBtn) copyBtn.dataset.licenseKey = key;
     if (emailNote) {
       emailNote.textContent = modal.dataset.labelBuySuccessEmail
         || "We've also emailed the license details to you.";
@@ -929,6 +931,7 @@ function showPurchaseSuccess(modal, licenseKey) {
   } else {
     if (keyWrap) keyWrap.style.display = 'none';
     if (keyEl) keyEl.textContent = '';
+    if (copyBtn) copyBtn.dataset.licenseKey = '';
     if (emailNote) {
       emailNote.textContent = modal.dataset.labelBuySuccessEmail
         || 'Check your email for the license key, then Activate it on this page.';
@@ -1004,7 +1007,9 @@ function showTrialSuccess(modal, licenseKey) {
   const subtitleEl = modal.querySelector('.js-gl-success-subtitle');
   const keyWrap = modal.querySelector('.js-gl-success-key-wrap');
   const keyEl = modal.querySelector('.js-gl-license-key');
+  const copyBtn = modal.querySelector('.js-gl-copy-license-key');
   const emailNote = modal.querySelector('.js-gl-success-email-note');
+  const key = String(licenseKey || '').trim();
 
   if (titleEl) titleEl.textContent = modal.dataset.labelTrialSuccessTitle || 'Your trial is ready!';
   if (subtitleEl) {
@@ -1012,7 +1017,8 @@ function showTrialSuccess(modal, licenseKey) {
       || 'Your 30-day free trial license has been created.';
   }
   if (keyWrap) keyWrap.style.display = '';
-  if (keyEl) keyEl.textContent = licenseKey || '';
+  if (keyEl) keyEl.textContent = key;
+  if (copyBtn) copyBtn.dataset.licenseKey = key;
   if (emailNote) {
     emailNote.textContent = modal.dataset.labelTrialSuccessEmail
       || "We've also emailed the license details to you.";
@@ -1231,6 +1237,14 @@ function readTrialForm(modal) {
   }
   if (domain === '') {
     Notification.warning(modal.dataset.labelTitleWarning || 'Warning', modal.dataset.labelInvalidDomain || 'Please enter your domain.');
+    return null;
+  }
+  // Free trial allows a single domain only (no comma-separated lists).
+  if (domain.includes(',') || domain.includes(';')) {
+    Notification.warning(
+      modal.dataset.labelTitleWarning || 'Warning',
+      modal.dataset.labelInvalidDomainMultiple || 'Please enter only one domain (comma-separated domains are not allowed).',
+    );
     return null;
   }
   if (!terms) {
