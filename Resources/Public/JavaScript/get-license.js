@@ -920,10 +920,12 @@ function showPurchaseSuccess(modal, licenseKey) {
       || 'Your license has been created.';
   }
   const copyBtn = modal.querySelector('.js-gl-copy-license-key');
+  const activateBtn = modal.querySelector('.js-gl-activate-license');
   if (key) {
     if (keyWrap) keyWrap.style.display = '';
     if (keyEl) keyEl.textContent = key;
     if (copyBtn) copyBtn.dataset.licenseKey = key;
+    if (activateBtn) activateBtn.style.display = '';
     if (emailNote) {
       emailNote.textContent = modal.dataset.labelBuySuccessEmail
         || "We've also emailed the license details to you.";
@@ -932,6 +934,7 @@ function showPurchaseSuccess(modal, licenseKey) {
     if (keyWrap) keyWrap.style.display = 'none';
     if (keyEl) keyEl.textContent = '';
     if (copyBtn) copyBtn.dataset.licenseKey = '';
+    if (activateBtn) activateBtn.style.display = 'none';
     if (emailNote) {
       emailNote.textContent = modal.dataset.labelBuySuccessEmail
         || 'Check your email for the license key, then Activate it on this page.';
@@ -1008,6 +1011,7 @@ function showTrialSuccess(modal, licenseKey) {
   const keyWrap = modal.querySelector('.js-gl-success-key-wrap');
   const keyEl = modal.querySelector('.js-gl-license-key');
   const copyBtn = modal.querySelector('.js-gl-copy-license-key');
+  const activateBtn = modal.querySelector('.js-gl-activate-license');
   const emailNote = modal.querySelector('.js-gl-success-email-note');
   const key = String(licenseKey || '').trim();
 
@@ -1016,9 +1020,10 @@ function showTrialSuccess(modal, licenseKey) {
     subtitleEl.textContent = modal.dataset.labelTrialSuccessSubtitle
       || 'Your 30-day free trial license has been created.';
   }
-  if (keyWrap) keyWrap.style.display = '';
+  if (keyWrap) keyWrap.style.display = key ? '' : 'none';
   if (keyEl) keyEl.textContent = key;
   if (copyBtn) copyBtn.dataset.licenseKey = key;
+  if (activateBtn) activateBtn.style.display = key ? '' : 'none';
   if (emailNote) {
     emailNote.textContent = modal.dataset.labelTrialSuccessEmail
       || "We've also emailed the license details to you.";
@@ -1056,7 +1061,7 @@ function activateLicenseAndReload(modal, doneBtn) {
   }
 
   const label = doneBtn.querySelector('.label');
-  const defaultLabel = doneBtn.dataset.labelDefault || 'Done';
+  const defaultLabel = doneBtn.dataset.labelDefault || 'Activate license';
   const activatingLabel = doneBtn.dataset.labelActivating
     || modal.dataset.labelActivating
     || 'Activating…';

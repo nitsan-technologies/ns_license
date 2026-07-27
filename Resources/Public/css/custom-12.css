@@ -22,7 +22,8 @@
   min-width: auto;
 }
 
-.ns-license-modal.modal {
+/* Domains / shared modals only — do not fight Get New License / Renew sizing */
+.ns-license-modal.modal:not(.ns-get-license-modal):not(.ns-renew-license-modal) {
   pointer-events: none;
   position: fixed;
   left: 50%;
@@ -30,6 +31,25 @@
   transform: translate(-50%, -50%);
 }
 
+.ns-license-modal.modal.show:not(.ns-get-license-modal):not(.ns-renew-license-modal) {
+  pointer-events: auto;
+}
+
+/* v12: only force what core may override (rest lives in custom.css) */
+.ns-license-module-shell.module {
+  overflow-y: auto !important;
+  height: 100% !important;
+  max-height: 100% !important;
+}
+
+.ns-license-module-shell.module > .module-body {
+  flex: 1 0 auto !important;
+}
+
+.ns-license-module-wrapper .ns-license-help-widget {
+  bottom: 4.5rem !important;
+  z-index: 1040 !important;
+}
 
 .ns-license-module-wrapper .spinner-border {
   width: 48px;

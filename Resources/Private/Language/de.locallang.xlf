@@ -1240,6 +1240,14 @@
                 <source>Done</source>
                 <target>Fertig</target>
             </trans-unit>
+            <trans-unit id="license-get-new.success.close">
+                <source>Close</source>
+                <target>Schließen</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.success.activate">
+                <source>Activate license</source>
+                <target>Lizenz aktivieren</target>
+            </trans-unit>
             <trans-unit id="license-get-new.success.activating">
                 <source>Activating…</source>
                 <target>Wird aktiviert…</target>

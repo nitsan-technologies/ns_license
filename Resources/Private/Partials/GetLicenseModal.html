@@ -373,9 +373,6 @@
             <div class="t3js-modal-footer modal-footer gl-wizard-footer">
                 <!-- Welcome -->
                 <div class="gl-wizard-footer-row w-100" data-step-footer="welcome">
-                    <button type="button" class="btn btn-default t3js-get-license-skip">
-                        <span><f:translate key="license-get-new.wizard.button.skip" extensionName="ns_license" /></span>
-                    </button>
                     <div class="ms-auto">
                         <button type="button" class="btn btn-primary t3js-get-license-start">
                             <span><f:translate key="license-get-new.wizard.button.start" extensionName="ns_license" /></span>
@@ -437,12 +434,15 @@
                     </div>
                 </div>
 
-                <!-- Success -->
-                <div class="gl-wizard-footer-row w-100 justify-content-end" data-step-footer="success" style="display:none;">
-                    <button type="button" class="btn btn-primary t3js-get-license-done"
-                        data-label-default="{f:translate(key: 'license-get-new.success.done', extensionName: 'ns_license')}"
+                <!-- Success: Close (dismiss) + Activate license (optional install) -->
+                <div class="gl-wizard-footer-row w-100 justify-content-end gap-2" data-step-footer="success" style="display:none;">
+                    <button type="button" class="btn btn-default t3js-modal-close t3js-get-license-close" data-bs-dismiss="modal">
+                        <span><f:translate key="license-get-new.success.close" extensionName="ns_license" /></span>
+                    </button>
+                    <button type="button" class="btn btn-primary t3js-get-license-done js-gl-activate-license"
+                        data-label-default="{f:translate(key: 'license-get-new.success.activate', extensionName: 'ns_license')}"
                         data-label-activating="{f:translate(key: 'license-get-new.success.activating', extensionName: 'ns_license')}">
-                        <span class="label"><f:translate key="license-get-new.success.done" extensionName="ns_license" /></span>
+                        <span class="label"><f:translate key="license-get-new.success.activate" extensionName="ns_license" /></span>
                     </button>
                 </div>
             </div>
