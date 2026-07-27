@@ -127,13 +127,20 @@
                                 data-domains-staging="{extension.details.staging_domains}"
                                 data-domains-local="{extension.details.local_domains}">
                                 <span class="d-inline-flex align-items-center gap-2 text-start">
-                                    <core:icon identifier="apps-pagetree-page-domain" size="small" />
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#30ab5d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
                                     <span>
                                         <span class="d-block">{extension.domains} <f:translate key="license-domains-active"/></span>
                                         <span class="small text-variant"><f:translate key="license-click-to-manage-domains" /></span>
                                     </span>
                                 </span>
-                                <core:icon identifier="actions-chevron-end" size="small" />
+                                <f:if condition="{t3version} == 14">
+                                    <f:then>
+                                        <core:icon identifier="actions-chevron-end" size="small" />
+                                    </f:then>
+                                    <f:else>
+                                        <core:icon identifier="actions-chevron-right" size="small" />
+                                    </f:else>
+                                </f:if>
                             </button>
                         </f:if>
 
@@ -150,7 +157,7 @@
                         <f:if condition="!{extension.details.is_life_time}">
                             <f:if condition="{extension.details.days} <= 0">
                                 <f:then>
-                                    <div class="callout callout-warning mb-0">
+                                    <div class="callout callout-danger mb-0">
                                         <div class="callout-content">
                                             <div class="callout-body">
                                                 <p class="mb-0"><f:translate key="license-expired" extensionName="ns_license" /></p>

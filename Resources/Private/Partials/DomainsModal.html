@@ -19,7 +19,7 @@
                 <ul class="nav nav-pills modal-tabs mb-3 gap-2" id="domainTabs" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active is-active d-inline-flex align-items-center gap-1" id="domains-tab" data-bs-toggle="tab" data-bs-target="#domains-tab-pane" type="button" role="tab" aria-selected="true">
-                            <core:icon identifier="apps-pagetree-page-domain" size="small" />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
                             <f:translate key="license-domains.tab.domains" extensionName="ns_license" />
                             <span class="badge badge-default" data-badge="0">0</span>
                         </button>
@@ -35,19 +35,19 @@
 
                 <div class="tab-content" id="domainTabsContent">
                     <div class="tab-pane show active" id="domains-tab-pane" role="tabpanel">
-                        <div class="d-flex flex-wrap gap-2 mb-3">
-                            <div class="input-group flex-grow-1">
+                        <div class="domains-toolbar d-flex flex-nowrap align-items-center gap-2 mb-3">
+                            <div class="input-group domains-toolbar__search">
                                 <label class="visually-hidden" for="domains-search-input"><f:translate key="license-domains.search_placeholder" extensionName="ns_license" /></label>
                                 <input type="search" id="domains-search-input" class="form-control search-input"
                                     placeholder="{f:translate(key: 'license-domains.search_placeholder', extensionName: 'ns_license')}">
                             </div>
-                            <select id="domains-environment-filter" class="form-select w-auto">
+                            <select id="domains-environment-filter" class="form-select domains-toolbar__filter">
                                 <option value="all"><f:translate key="license-domains.filter.environment.all" extensionName="ns_license" /></option>
                                 <option value="production"><f:translate key="license-domains.filter.environment.production" extensionName="ns_license" /></option>
                                 <option value="staging"><f:translate key="license-domains.filter.environment.staging" extensionName="ns_license" /></option>
                                 <option value="local"><f:translate key="license-domains.filter.environment.local" extensionName="ns_license" /></option>
                             </select>
-                            <button type="button" class="btn btn-success t3js-add-domain-modal-trigger d-inline-flex align-items-center gap-1"
+                            <button type="button" class="btn btn-success t3js-add-domain-modal-trigger d-inline-flex align-items-center gap-1 domains-toolbar__add"
                                     data-add-domain-title="{f:translate(key: 'license-domains.add_modal.title', extensionName: 'ns_license')}"
                                     data-add-domain-cancel="{f:translate(key: 'license-activation.update_extension_btn_cancel', extensionName: 'ns_license')}"
                                     data-add-domain-submit="{f:translate(key: 'license-domains.button.add_domain', extensionName: 'ns_license')}">
@@ -113,7 +113,7 @@
 </div>
 
 <div id="ns-license-icon-templates" class="visually-hidden" aria-hidden="true">
-    <span data-icon="domain"><core:icon identifier="apps-pagetree-page-domain" size="small" /></span>
+    <span data-icon="domain"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg></span>
     <span data-icon="edit"><core:icon identifier="actions-open" size="small" /></span>
     <span data-icon="delete"><core:icon identifier="actions-delete" size="small" /></span>
     <span data-icon="save"><core:icon identifier="actions-check" size="small" /></span>

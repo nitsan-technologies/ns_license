@@ -42,11 +42,11 @@ function createDomainHtml(domain, envType) {
         '</div>' +
         '</div>' +
         '</div>' +
-        '<div class="domains-list__item-actions btn-group" role="group" aria-label="Domain actions">' +
-        '<button type="button" class="btn btn-default btn-sm domains-list__item-action-edit" title="Edit">' +
+        '<div class="domains-list__item-actions" role="group" aria-label="Domain actions">' +
+        '<button type="button" class="btn btn-sm domains-list__item-action-edit" title="Edit">' +
         getIconHtml('edit') +
         '</button>' +
-        '<button type="button" class="btn btn-default btn-sm domains-list__item-action-delete" title="Delete">' +
+        '<button type="button" class="btn btn-sm domains-list__item-action-delete" title="Delete">' +
         getIconHtml('delete') +
         '</button>' +
         '</div>' +

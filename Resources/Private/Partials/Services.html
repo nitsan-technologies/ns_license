@@ -21,7 +21,7 @@
     <f:if condition="{servicesData.categories}">
         <div class="ns-license-services-sections">
             <f:for each="{servicesData.categories}" as="category">
-                <div class="service-category-section extension-section mb-3" id="{category.id}">
+                <div class="service-category-section extension-section mb-4" id="{category.id}">
                     <div class="extension-section-header mb-2">
                         <div class="extension-section__header">
                             <div class="extension-section__header-icon">
@@ -76,7 +76,7 @@
                                             <f:if condition="{item.slug}">
                                                 <a href="{item.slug}" class="btn btn-link" target="_blank" rel="noopener noreferrer">
                                                     <span>Learn More</span>
-                                                    <core:icon identifier="actions-window-open" size="small" />
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link h-3.5 w-3.5 mr-1.5" aria-hidden="true"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                                 </a>
                                             </f:if>
                                         </div>

@@ -1,5 +1,6 @@
 /* Module shell — match ns_t3af header/footer chrome (v12–v14).
- * Footer stays a sibling of module-body; the shell scrolls so the footer is reachable. */
+ * Shell fills the module frame; body grows so the footer sits at the bottom
+ * when content is short, and scrolls with content when tall. */
 .ns-license-module-shell.module {
   display: flex !important;
   flex-direction: column;
@@ -7,9 +8,11 @@
   grid-template-rows: unset !important;
   grid-template-columns: unset !important;
   width: 100%;
-  min-height: 100%;
+  min-height: 100vh;
+  height: 100%;
   overflow-x: hidden;
   overflow-y: auto;
+  background: var(--module-bg, var(--typo3-surface-container-lowest, #fff));
 }
 
 .ns-license-module-shell.module > .module-docheader {
@@ -24,11 +27,13 @@
 }
 
 .ns-license-module-shell.module > .module-body {
-  flex: 0 0 auto;
+  flex: 1 1 auto;
   grid-area: unset !important;
   order: 2;
   width: 100%;
+  min-height: 0;
   overflow: visible;
+  background: var(--module-bg, var(--typo3-surface-container-lowest, #fff));
 }
 
 .ns-license-module-shell.module > .module-footer,
@@ -41,7 +46,7 @@
   width: 100%;
   max-width: 100%;
   margin: 0;
-  margin-top: 0;
+  margin-top: auto;
   position: static;
   padding: 0.75rem var(--module-body-padding-x, 1.5rem);
   background: var(--module-bg, var(--typo3-surface-container-lowest, #fff));
@@ -247,6 +252,9 @@
   display: flex;
   flex-direction: column;
   max-height: calc(100dvh - 40px);
+}
+
+.ns-license-modal.modal.show:not(.ns-renew-license-modal):not(.ns-get-license-modal) .t3js-modal-content.modal-content {
   height: 100%;
 }
 
@@ -257,6 +265,9 @@
 
 .ns-license-modal.modal.show .modal-dialog {
   transform: none;
+}
+
+.ns-license-modal.modal.show:not(.ns-renew-license-modal):not(.ns-get-license-modal) .modal-dialog {
   height: 100%;
 }
 
@@ -597,6 +608,22 @@
   justify-content: center;
 }
 
+.ns-license-modal .domains-toolbar {
+  width: 100%;
+}
+
+.ns-license-modal .domains-toolbar__search {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: auto;
+}
+
+.ns-license-modal .domains-toolbar__filter,
+.ns-license-modal .domains-toolbar__add {
+  flex: 0 0 auto;
+  width: auto;
+}
+
 .ns-license-modal .domains-list .domains-list__item {
   display: flex;
   align-items: center;
@@ -793,7 +820,7 @@
 }
 
 .ns-license-module-wrapper {
-  background: light-dark(#f5f5f5, #181818);
+  background: var(--module-bg, var(--typo3-surface-container-lowest, light-dark(#fff, #1a1a1a)));
 }
 
 /* Help widget: fixed bottom-right button + dropdown */
@@ -914,11 +941,107 @@
   padding: 1.25rem 1.5rem 1.15rem;
 }
 
+/* Dark mode: ensure cards / lists / pills have visible borders */
+.ns-get-license-modal .card,
+.ns-get-license-modal .gl-selected-product-card,
+.ns-get-license-modal .gl-buy-price-card {
+  border: 1px solid light-dark(#d7d7d7, #6b6b6b);
+  background: var(--typo3-card-bg, var(--typo3-surface-container-low, light-dark(#fff, #333)));
+}
+
+.ns-get-license-modal .gl-wizard-preview-list.list-group {
+  border: 1px solid light-dark(#d7d7d7, #6b6b6b);
+  border-radius: var(--typo3-component-border-radius, 0.375rem);
+  overflow: hidden;
+}
+
+.ns-get-license-modal .gl-wizard-preview-list .list-group-item {
+  background: var(--typo3-card-bg, var(--typo3-surface-container-low, light-dark(#fff, #333)));
+  border-color: light-dark(#e5e7eb, #5c5c5c);
+  color: var(--typo3-text-color-base);
+}
+
+.ns-get-license-modal .gl-wizard-step-btn.is-locked {
+  border: 1px solid light-dark(#d7d7d7, #6b6b6b);
+  opacity: 0.55;
+}
+
+.ns-get-license-modal .gl-wizard-step-btn.is-active,
+.ns-get-license-modal .gl-wizard-step-btn.active {
+  border-color: light-dark(#212529, #e5e5e5) !important;
+  color: light-dark(#212529, #f5f5f5) !important;
+  background: var(--typo3-btn-default-bg, var(--typo3-component-bg, light-dark(#fff, #3a3a3a))) !important;
+}
+
+.ns-get-license-modal .gl-success__license {
+  background: var(--typo3-surface-container-low, light-dark(#f8f9fa, #333));
+  border-color: light-dark(#e5e7eb, #6b6b6b);
+}
+
+.ns-get-license-modal .gl-mode__card {
+  border-color: light-dark(#d7d7d7, #6b6b6b);
+}
+
+.ns-get-license-modal .gl-combobox__menu {
+  background: var(--typo3-component-bg, light-dark(#fff, #333));
+  border-color: light-dark(#cfcfcf, #6b6b6b);
+  box-shadow: 0 6px 18px light-dark(rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.45));
+}
+
+.ns-get-license-modal .gl-combobox__group {
+  background: var(--typo3-surface-container-low, light-dark(#f8f9fa, #2b2b2b));
+  border-top-color: light-dark(#eee, #5c5c5c);
+  color: var(--typo3-text-color-variant, light-dark(#6c757d, #b0b0b0));
+}
+
+.ns-get-license-modal .gl-otp-digit {
+  border-color: light-dark(#ced4da, #6b6b6b);
+}
+
+[data-color-scheme="dark"] .ns-get-license-modal .card,
+[data-bs-theme="dark"] .ns-get-license-modal .card,
+[data-color-scheme="dark"] .ns-get-license-modal .gl-wizard-preview-list.list-group,
+[data-bs-theme="dark"] .ns-get-license-modal .gl-wizard-preview-list.list-group,
+[data-color-scheme="dark"] .ns-get-license-modal .gl-selected-product-card,
+[data-bs-theme="dark"] .ns-get-license-modal .gl-selected-product-card,
+[data-color-scheme="dark"] .ns-get-license-modal .gl-buy-price-card,
+[data-bs-theme="dark"] .ns-get-license-modal .gl-buy-price-card,
+[data-color-scheme="dark"] .ns-get-license-modal .gl-mode__card,
+[data-bs-theme="dark"] .ns-get-license-modal .gl-mode__card,
+[data-color-scheme="dark"] .ns-get-license-modal .gl-success__license,
+[data-bs-theme="dark"] .ns-get-license-modal .gl-success__license,
+[data-color-scheme="dark"] .ns-get-license-modal .gl-otp-digit,
+[data-bs-theme="dark"] .ns-get-license-modal .gl-otp-digit,
+[data-color-scheme="dark"] .ns-get-license-modal .gl-wizard-step-btn.is-locked,
+[data-bs-theme="dark"] .ns-get-license-modal .gl-wizard-step-btn.is-locked {
+  border-color: #6b6b6b;
+}
+
+[data-color-scheme="dark"] .ns-get-license-modal .gl-wizard-preview-list .list-group-item,
+[data-bs-theme="dark"] .ns-get-license-modal .gl-wizard-preview-list .list-group-item {
+  border-color: #5c5c5c;
+}
+
+[data-color-scheme="dark"] .ns-get-license-modal .gl-wizard-header,
+[data-bs-theme="dark"] .ns-get-license-modal .gl-wizard-header {
+  border-bottom-color: #5c5c5c;
+}
+
+[data-color-scheme="dark"] .ns-get-license-modal .gl-wizard-footer,
+[data-bs-theme="dark"] .ns-get-license-modal .gl-wizard-footer {
+  border-top-color: #5c5c5c;
+}
+
+[data-color-scheme="dark"] .ns-get-license-modal .gl-wizard-step-btn.is-locked,
+[data-bs-theme="dark"] .ns-get-license-modal .gl-wizard-step-btn.is-locked {
+  opacity: 0.6;
+}
+
 /* Wizard shell — aligned with ns_t3af Setup Wizard (setup.css) */
 .ns-get-license-modal .gl-wizard-header {
   align-items: flex-start;
   background: var(--typo3-surface-container-low, light-dark(#f5f6f8, #2b2b2b));
-  border-bottom: 1px solid light-dark(#e5e7eb, #404040);
+  border-bottom: 1px solid light-dark(#e5e7eb, #5c5c5c);
   flex-shrink: 0;
   padding: 1.25rem 1.5rem 1.15rem;
 }
@@ -933,6 +1056,14 @@
   display: flex;
   gap: 0.5rem;
   justify-content: space-between;
+}
+
+.ns-get-license-modal .gl-wizard-kicker .icon-size-small {
+--icon-size: 16px;
+}
+
+.ns-get-license-modal .gl-wizard-close .icon-size-small {
+  --icon-size: 20px;
 }
 
 .ns-get-license-modal .gl-wizard-kicker {
@@ -958,16 +1089,6 @@
 
 .ns-get-license-modal .gl-wizard-close:hover {
   background: var(--typo3-surface-container-low, light-dark(#f5f6f8, #333));
-}
-
-.ns-get-license-modal .js-get-license-title.h2,
-.ns-get-license-modal .js-get-license-title {
-  color: var(--typo3-text-color-base, inherit);
-  font-size: var(--typo3-font-size-h2, 1.5rem);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  line-height: 1.3;
-  margin: 0 0 1rem;
 }
 
 .ns-get-license-modal .gl-wizard-stepper {
@@ -1005,7 +1126,6 @@
 
 .ns-get-license-modal .gl-wizard-step-btn.is-locked {
   cursor: not-allowed;
-  opacity: 0.38;
   pointer-events: none;
 }
 
@@ -1086,7 +1206,7 @@
 
 .ns-get-license-modal .gl-wizard-footer {
   background: var(--typo3-surface-container-low, light-dark(#f5f6f8, #2b2b2b));
-  border-top: 1px solid light-dark(#e5e7eb, #404040);
+  border-top: 1px solid light-dark(#e5e7eb, #5c5c5c);
 }
 
 .ns-get-license-modal .gl-wizard-footer-row {
@@ -1097,11 +1217,60 @@
   width: 100%;
 }
 
+.ns-get-license-modal .gl-success {
+  margin: 0 auto;
+  max-width: 28rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
 .ns-get-license-modal .gl-success__icon {
+  align-items: center;
   color: var(--typo3-state-success-color, #28a745);
   display: inline-flex;
   justify-content: center;
   line-height: 0;
+}
+
+.ns-get-license-modal .gl-success__icon .t3js-icon,
+.ns-get-license-modal .gl-success__icon .icon-markup,
+.ns-get-license-modal .gl-success__icon svg {
+  color: inherit;
+}
+
+.ns-get-license-modal .gl-success__icon svg,
+.ns-get-license-modal .gl-success__icon svg path,
+.ns-get-license-modal .gl-success__icon svg g {
+  fill: oklch(0.596 0.145 163.225) !important;
+  color: inherit;
+}
+
+.ns-get-license-modal .gl-success__license {
+  background: var(--typo3-surface-container-low, light-dark(#f8f9fa, #333));
+  border: 1px solid light-dark(#e5e7eb, #6b6b6b);
+  border-radius: 0.5rem;
+  min-width: min(100%, 280px);
+  max-width: 100%;
+}
+
+.ns-get-license-modal .gl-success__license-header {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.ns-get-license-modal .gl-success__license-header .btn-link {
+  line-height: 1;
+  padding: 0;
+  text-decoration: none;
+}
+
+.ns-get-license-modal .gl-success__license code {
+  color: var(--typo3-text-color-base);
+  font-size: 0.9375rem;
+  word-break: break-all;
 }
 
 .ns-get-license-modal .gl-combobox {
@@ -1124,7 +1293,7 @@
   align-items: flex-start;
   align-self: stretch;
   background: var(--typo3-card-bg, var(--typo3-surface-container-low, #fff));
-  border: 1px solid var(--typo3-card-border-color, light-dark(#d7d7d7, #525252));
+  border: 1px solid var(--typo3-card-border-color, light-dark(#d7d7d7, #6b6b6b));
   border-radius: var(--typo3-card-border-radius, var(--typo3-component-border-radius, 0.5rem));
   cursor: pointer;
   display: flex;
@@ -1258,10 +1427,10 @@
   right: 0;
   max-height: 260px;
   overflow: auto;
-  background: #fff;
-  border: 1px solid #cfcfcf;
+  background: var(--typo3-component-bg, light-dark(#fff, #333));
+  border: 1px solid light-dark(#cfcfcf, #6b6b6b);
   border-radius: 4px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 6px 18px light-dark(rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.45));
 }
 
 .ns-get-license-modal .gl-combobox__group {
@@ -1270,9 +1439,9 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.02em;
-  color: #6c757d;
-  background: #f8f9fa;
-  border-top: 1px solid #eee;
+  color: var(--typo3-text-color-variant, light-dark(#6c757d, #b0b0b0));
+  background: var(--typo3-surface-container-low, light-dark(#f8f9fa, #2b2b2b));
+  border-top: 1px solid light-dark(#eee, #5c5c5c);
   position: sticky;
   top: 0;
 }
@@ -1289,29 +1458,60 @@
   background: transparent;
   padding: 0.55rem 0.75rem;
   cursor: pointer;
-  color: inherit;
+  color: var(--typo3-text-color-base, light-dark(#212529, #f5f5f5));
 }
 
 .ns-get-license-modal .gl-combobox__option:hover,
 .ns-get-license-modal .gl-combobox__option.is-active {
-  background: #eef5ff;
+  background: light-dark(#eef5ff, #3d4f66);
+  color: var(--typo3-text-color-base, light-dark(#212529, #ffffff));
 }
 
 .ns-get-license-modal .gl-combobox__option.is-selected {
-  background: #e7f1ff;
+  background: light-dark(#e7f1ff, #455a75);
+  color: var(--typo3-text-color-base, light-dark(#212529, #ffffff));
   font-weight: 600;
 }
 
 .ns-get-license-modal .gl-combobox__option-key {
   display: block;
   font-size: 0.8rem;
-  color: #6c757d;
+  color: var(--typo3-text-color-variant, light-dark(#6c757d, #b8b8b8));
   font-weight: 400;
+}
+
+.ns-get-license-modal .gl-combobox__option:hover .gl-combobox__option-key,
+.ns-get-license-modal .gl-combobox__option.is-active .gl-combobox__option-key,
+.ns-get-license-modal .gl-combobox__option.is-selected .gl-combobox__option-key {
+  color: var(--typo3-text-color-variant, light-dark(#5a6268, #d0d0d0));
 }
 
 .ns-get-license-modal .gl-combobox__empty {
   padding: 0.75rem;
-  color: #6c757d;
+  color: var(--typo3-text-color-variant, light-dark(#6c757d, #b8b8b8));
+}
+
+[data-color-scheme="dark"] .ns-get-license-modal .gl-combobox__option:hover,
+[data-bs-theme="dark"] .ns-get-license-modal .gl-combobox__option:hover,
+[data-color-scheme="dark"] .ns-get-license-modal .gl-combobox__option.is-active,
+[data-bs-theme="dark"] .ns-get-license-modal .gl-combobox__option.is-active {
+  background: #3d4f66;
+  color: #ffffff;
+}
+
+[data-color-scheme="dark"] .ns-get-license-modal .gl-combobox__option.is-selected,
+[data-bs-theme="dark"] .ns-get-license-modal .gl-combobox__option.is-selected {
+  background: #455a75;
+  color: #ffffff;
+}
+
+[data-color-scheme="dark"] .ns-get-license-modal .gl-combobox__option:hover .gl-combobox__option-key,
+[data-bs-theme="dark"] .ns-get-license-modal .gl-combobox__option:hover .gl-combobox__option-key,
+[data-color-scheme="dark"] .ns-get-license-modal .gl-combobox__option.is-active .gl-combobox__option-key,
+[data-bs-theme="dark"] .ns-get-license-modal .gl-combobox__option.is-active .gl-combobox__option-key,
+[data-color-scheme="dark"] .ns-get-license-modal .gl-combobox__option.is-selected .gl-combobox__option-key,
+[data-bs-theme="dark"] .ns-get-license-modal .gl-combobox__option.is-selected .gl-combobox__option-key {
+  color: #d0d0d0;
 }
 
 
@@ -1393,18 +1593,6 @@
   text-decoration: underline;
 }
 
-.ns-get-license-modal .gl-success__license {
-  background: #f8f9fa;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  min-width: 260px;
-}
-
-.ns-get-license-modal .gl-success__license code {
-  font-size: 1rem;
-  word-break: break-all;
-}
-
 .ns-get-license-modal .gl-buy-price-card .js-gl-buy-price {
   line-height: 1.2;
 }
@@ -1437,10 +1625,109 @@
   border: 0;
 }
 
-.ns-renew-license-modal__meta dt {
+.ns-renew-license-modal.modal {
+  position: fixed !important;
+  left: 50% !important;
+  right: auto !important;
+  top: 50% !important;
+  bottom: auto !important;
+  transform: translate(-50%, -50%) !important;
+  height: auto !important;
+  max-height: calc(100dvh - 2rem);
+  margin: 0;
+  overflow: visible;
+}
+
+.ns-renew-license-modal.modal .modal-dialog,
+.ns-renew-license-modal.modal.show .modal-dialog {
+  transform: none !important;
+  height: auto !important;
+  max-height: calc(100dvh - 2rem);
+  margin: 0 auto;
+}
+
+.ns-renew-license-modal.modal.show .t3js-modal-content.modal-content {
+  display: flex !important;
+  flex-direction: column !important;
+  height: auto !important;
+  max-height: calc(100dvh - 2rem);
+  overflow: hidden;
+}
+
+.ns-renew-license-modal .modal-header {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  gap: 0.5rem;
+  justify-content: space-between;
+}
+
+.ns-renew-license-modal .modal-header .t3js-modal-close {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0.25rem;
+}
+
+.ns-renew-license-modal .modal-header .t3js-modal-close:hover,
+.ns-renew-license-modal .modal-header .t3js-modal-close:focus {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.ns-renew-license-modal__steps .ns-renew-step-num {
+  font-weight: 700;
+}
+
+.ns-renew-license-modal .modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.ns-renew-license-modal .modal-footer {
+  display: flex !important;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  visibility: visible !important;
+}
+
+.ns-renew-license-modal .modal-header,
+.ns-renew-license-modal .modal-footer,
+.ns-renew-license-modal .modal-header button,
+.ns-renew-license-modal .modal-footer button,
+.ns-renew-license-modal .modal-footer a,
+.ns-renew-license-modal .modal-body a {
+  pointer-events: auto;
+}
+
+.ns-renew-license-modal__meta .fw-semibold {
   font-weight: 600;
 }
 
 .ns-renew-license-modal__steps a {
   word-break: break-all;
+}
+
+.ns-renew-license-modal .js-renew-now-cta {
+  display: inline-flex;
+  align-items: center;
+}
+
+.ns-renew-license-modal .js-renew-status-badge.badge-danger {
+  background-color: light-dark(#fee2e2, #5c2121);
+  color: light-dark(#b42318, #fecaca);
+}
+
+.ns-renew-license-modal .js-renew-status-badge.badge-warning {
+  background-color: light-dark(#fef3c7, #5c4a1a);
+  color: light-dark(#92400e, #fde68a);
+}
+
+.ns-renew-license-modal .js-renew-status-badge.badge-success {
+  background-color: light-dark(#dcfce7, #1f4d33);
+  color: light-dark(#166534, #bbf7d0);
 }

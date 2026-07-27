@@ -345,17 +345,26 @@
 
                 <!-- Step: success (trial + purchase-with-key show the license key) -->
                 <div class="get-license-step gl-wizard-panel" data-step="success" style="display: none;">
-                    <div class="gl-success text-center py-4">
-                        <div class="gl-success__icon mb-3">
+                    <div class="gl-success text-center">
+                        <div class="gl-success__icon mb-3" aria-hidden="true">
                             <core:icon identifier="actions-check" size="large" alternativeMarkupIdentifier="inline" />
                         </div>
                         <h4 class="mb-2 js-gl-success-title"><f:translate key="license-get-new.success.title" extensionName="ns_license" /></h4>
-                        <p class="text-variant mb-4 js-gl-success-subtitle"><f:translate key="license-get-new.success.subtitle" extensionName="ns_license" /></p>
+                        <p class="text-variant mb-3 js-gl-success-subtitle"><f:translate key="license-get-new.success.subtitle" extensionName="ns_license" /></p>
                         <div class="gl-success__license d-inline-block text-start p-3 js-gl-success-key-wrap">
-                            <span class="text-variant small d-block mb-1"><f:translate key="license-get-new.success.license_key" extensionName="ns_license" /></span>
+                            <div class="gl-success__license-header">
+                                <span class="text-variant small"><f:translate key="license-get-new.success.license_key" extensionName="ns_license" /></span>
+                                <button type="button"
+                                    class="btn btn-link t3js-copy-license-key js-gl-copy-license-key"
+                                    data-license-key=""
+                                    title="{f:translate(key: 'license-get-new.success.license_key', extensionName: 'ns_license')}"
+                                    aria-label="{f:translate(key: 'license-get-new.success.license_key', extensionName: 'ns_license')}">
+                                    <core:icon identifier="actions-clipboard" size="small" alternativeMarkupIdentifier="inline" />
+                                </button>
+                            </div>
                             <code class="js-gl-license-key user-select-all"></code>
                         </div>
-                        <p class="text-variant small mt-4 mb-0 js-gl-success-email-note"><f:translate key="license-get-new.success.email_note" extensionName="ns_license" /></p>
+                        <p class="text-variant small mt-3 mb-0 js-gl-success-email-note"><f:translate key="license-get-new.success.email_note" extensionName="ns_license" /></p>
                     </div>
                 </div>
 
