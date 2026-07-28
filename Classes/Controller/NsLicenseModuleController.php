@@ -9,6 +9,8 @@ use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use NITSAN\NsLicense\Service\LicenseService;
+use NITSAN\NsLicense\Service\CatalogCacheService;
+use NITSAN\NsLicense\Service\CatalogTabMapper;
 use NITSAN\NsLicense\Service\ExtensionListService;
 use NITSAN\NsLicense\Service\ExtensionArchiveService;
 use NITSAN\NsLicense\Service\ProductBundleRegistry;
@@ -78,6 +80,7 @@ class NsLicenseModuleController extends ActionController
         protected readonly DependencyOrderingService $dependencyOrderingService,
         protected readonly CheckoutUrlBuilder $checkoutUrlBuilder,
         protected readonly CheckoutReturnUrlBuilder $checkoutReturnUrlBuilder,
+        protected readonly CatalogCacheService $catalogCacheService,
     ) {}
 
     /**
@@ -132,12 +135,34 @@ class NsLicenseModuleController extends ActionController
      * Shop action - displays shop data
      * @return ResponseInterface
      */
-    public function getShopDataAction(): ResponseInterface
+    public function getCatalogDataAction(): ResponseInterface
     {
+        $tab = (string)($this->request->getArgument('tab') ?? CatalogTabMapper::TAB_AI_UNIVERSE);
+        if (!in_array($tab, CatalogTabMapper::getAllowedTabs(), true)) {
+            $tab = CatalogTabMapper::TAB_AI_UNIVERSE;
+        }
+
+        $catalog = $this->catalogCacheService->getCatalog();
+        $tabs = CatalogTabMapper::buildTabsFromCatalog($catalog);
+        $tabData = $tabs[$tab] ?? ['title' => '', 'items' => []];
+
+        $itemsByKey = [];
+        foreach ($tabData['items'] as $item) {
+            $key = trim((string)($item['extensionKey'] ?? ''));
+            if ($key !== '') {
+                $itemsByKey[$key] = $item;
+            }
+        }
+
         $view = $this->initializeModuleTemplate($this->request);
-        $shopData = $this->loadSyncData('shop');
-        $view->assign('shopData', $shopData);
-        return $view->renderResponse('NsLicenseModule/Shop');
+        $view->assignMultiple([
+            'catalogTab' => $tab,
+            'catalogData' => $tabData,
+            'catalogItemsJson' => json_encode($itemsByKey, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE),
+            't3version' => $this->typo3Version,
+        ]);
+
+        return $view->renderResponse('NsLicenseModule/Catalog');
     }
 
     /**
@@ -872,7 +897,7 @@ class NsLicenseModuleController extends ActionController
                 $isSuccess = $result && isset($result['status']) && $result['status'] && isset($result['logs']);
                 $successMessageKey = 'fetchData.success.extension_logs_updated';
             } elseif ($type === 'shop') {
-                $isSuccess = $result && isset($result['sections']) && is_array($result['sections']);
+                $isSuccess = $result && ((isset($result['sections']) && is_array($result['sections'])) || (isset($result['tabs']) && is_array($result['tabs'])));
                 $successMessageKey = 'fetchData.success.shop_updated';
             } else {
                 $isSuccess = $result && isset($result['categories']) && is_array($result['categories']);

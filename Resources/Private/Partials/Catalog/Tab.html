@@ -1,0 +1,34 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers" data-namespace-typo3-fluid="true">
+<div class="catalog-tab-content" data-catalog-tab="{catalogTab}">
+    <div class="search-section d-flex flex-nowrap align-items-center gap-2 mb-3">
+        <div class="input-group flex-grow-1">
+            <label class="visually-hidden" for="catalogSearch-{catalogTab}"><f:translate key="license-catalog.search-placeholder" extensionName="ns_license" /></label>
+            <input type="search" id="catalogSearch-{catalogTab}" class="form-control search-input catalog-search" placeholder="{f:translate(key: 'license-catalog.search-placeholder', extensionName: 'ns_license')}">
+        </div>
+        <select id="catalogFilter-{catalogTab}" class="form-select w-auto flex-shrink-0 catalog-filter">
+            <option value="all" selected><f:translate key="license-catalog.filter-all" extensionName="ns_license" /></option>
+            <option value="premium"><f:translate key="license-catalog.filter-premium" extensionName="ns_license" /></option>
+            <option value="free"><f:translate key="license-catalog.filter-free" extensionName="ns_license" /></option>
+        </select>
+        <button type="button" class="btn btn-primary refresh-data-button flex-shrink-0" data-type="shop">
+            <core:icon identifier="actions-refresh" size="small" />
+            <f:translate key="license-extensions.get-updates" />
+        </button>
+    </div>
+
+    <f:if condition="{catalogData.items}">
+        <f:then>
+            <div class="card-container catalog-card-container">
+                <f:for each="{catalogData.items}" as="item">
+                    <f:render partial="Catalog/Card" arguments="{item: item, catalogTab: catalogTab}" />
+                </f:for>
+            </div>
+            <script type="application/json" class="catalog-items-json" data-catalog-tab="{catalogTab}"><f:format.raw>{catalogItemsJson}</f:format.raw></script>
+        </f:then>
+        <f:else>
+            <p class="text-variant text-center py-5"><f:translate key="license-catalog.empty" extensionName="ns_license" /></p>
+        </f:else>
+    </f:if>
+</div>
+</html>

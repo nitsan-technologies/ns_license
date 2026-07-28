@@ -1,0 +1,41 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers" data-namespace-typo3-fluid="true">
+<div id="product-detail-modal"
+     class="t3js-modal modal fade modal-type-default modal-severity-default modal-style-default ns-license-modal ns-product-detail-modal modal-size-large position-fixed top-50 start-50 translate-middle p-0 border-0"
+     tabindex="-1"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="t3js-modal-content modal-content">
+            <div class="t3js-modal-header modal-header">
+                <h4 class="t3js-modal-title modal-title js-product-detail-title"></h4>
+                <button type="button" class="btn btn-default btn-sm t3js-modal-close ms-auto border-0" data-bs-dismiss="modal" aria-label="Close">
+                    <core:icon identifier="actions-close" size="small" />
+                </button>
+            </div>
+            <div class="t3js-modal-body modal-body">
+                <p class="text-variant mb-2 js-product-detail-subtitle"></p>
+                <p class="js-product-detail-description"></p>
+
+                <h5 class="mt-3"><f:translate key="license-catalog.detail.overview" extensionName="ns_license" /></h5>
+                <p class="js-product-detail-long-description"></p>
+
+                <h5 class="mt-3"><f:translate key="license-catalog.detail.features" extensionName="ns_license" /></h5>
+                <ul class="js-product-detail-features mb-0"></ul>
+
+                <h5 class="mt-3"><f:translate key="license-catalog.detail.changelog" extensionName="ns_license" /></h5>
+                <div class="js-product-detail-changelog"></div>
+
+                <h5 class="mt-3"><f:translate key="license-catalog.detail.faq" extensionName="ns_license" /></h5>
+                <div class="js-product-detail-faq"></div>
+
+                <h5 class="mt-3"><f:translate key="license-catalog.detail.meta" extensionName="ns_license" /></h5>
+                <dl class="row mb-0 js-product-detail-meta"></dl>
+
+                <h5 class="mt-3"><f:translate key="license-catalog.detail.dependencies" extensionName="ns_license" /></h5>
+                <ul class="js-product-detail-dependencies mb-0"></ul>
+            </div>
+            <div class="t3js-modal-footer modal-footer js-product-detail-actions"></div>
+        </div>
+    </div>
+</div>
+</html>

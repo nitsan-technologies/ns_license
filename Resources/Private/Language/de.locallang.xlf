@@ -308,6 +308,54 @@
                 <source>Manage your licenses and discover new extensions</source>
                 <target>Lizenzen verwalten und neue Extensions entdecken</target>
             </trans-unit>
+            <trans-unit id="license-tabs.ai-universe">
+                <source>AI Universe</source>
+                <target>AI Universe</target>
+            </trans-unit>
+            <trans-unit id="license-tabs.ai-universe.title">
+                <source>AI Universe</source>
+                <target>AI Universe</target>
+            </trans-unit>
+            <trans-unit id="license-tabs.ai-universe.description">
+                <source>Discover AI-powered TYPO3 extensions</source>
+                <target>Discover AI-powered TYPO3 extensions</target>
+            </trans-unit>
+            <trans-unit id="license-tabs.extensions">
+                <source>Extensions</source>
+                <target>Extensions</target>
+            </trans-unit>
+            <trans-unit id="license-tabs.extensions.title">
+                <source>Extensions</source>
+                <target>Extensions</target>
+            </trans-unit>
+            <trans-unit id="license-tabs.extensions.description">
+                <source>Browse premium and free TYPO3 extensions</source>
+                <target>Browse premium and free TYPO3 extensions</target>
+            </trans-unit>
+            <trans-unit id="license-tabs.templates">
+                <source>Templates</source>
+                <target>Templates</target>
+            </trans-unit>
+            <trans-unit id="license-tabs.templates.title">
+                <source>Templates</source>
+                <target>Templates</target>
+            </trans-unit>
+            <trans-unit id="license-tabs.templates.description">
+                <source>Explore TYPO3 templates and sitepackages</source>
+                <target>Explore TYPO3 templates and sitepackages</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail">
+                <source>Detail</source>
+                <target>Detail</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.empty">
+                <source>No products available. Click Get Updates to refresh the catalog.</source>
+                <target>No products available. Click Get Updates to refresh the catalog.</target>
+            </trans-unit>
+            <trans-unit id="license-loading.catalog">
+                <source>Loading catalog...</source>
+                <target>Loading catalog...</target>
+            </trans-unit>
             <trans-unit id="license-tabs.shop">
                 <source>T3Planet Shop</source>
                 <target>T3Planet Store</target>
@@ -1101,8 +1149,8 @@
                 <target>Voll-Lizenz</target>
             </trans-unit>
             <trans-unit id="license-get-new.wizard.mode.buy.desc">
-                <source>Purchase a full license and complete checkout securely. The license key is emailed to you for activation here.</source>
-                <target>Kaufen Sie eine Voll-Lizenz und schließen Sie den Checkout sicher ab. Der Lizenzschlüssel wird per E-Mail zugestellt und hier aktiviert.</target>
+                <source>Purchase a full license and complete checkout securely. Your license is activated automatically after payment.</source>
+                <target>Kaufen Sie eine Voll-Lizenz und schließen Sie den Checkout sicher ab. Ihre Lizenz wird nach der Zahlung automatisch aktiviert.</target>
             </trans-unit>
             <trans-unit id="license-get-new.wizard.mode.buy.meta1">
                 <source>Secure checkout on t3planet.shop</source>

@@ -498,8 +498,10 @@ final class LicenseService
                         }
                     }
                 } elseif ($type === 'shop') {
-                    if (isset($data['sections']) && is_array($data['sections'])) {
-                        $this->saveSyncDataToDatabase('shop', $data);
+                    if ($this->isValidShopCatalog($data)) {
+                        $catalogCacheService = GeneralUtility::makeInstance(CatalogCacheService::class);
+                        $catalogCacheService->flush();
+                        $catalogCacheService->warmCache($data);
                     }
                 } else {
                     if (isset($data['categories']) && is_array($data['categories'])) {
@@ -531,6 +533,18 @@ final class LicenseService
      * @param array $data Data to save
      * @return bool
      */
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    protected function isValidShopCatalog(array $data): bool
+    {
+        if (isset($data['tabs']) && is_array($data['tabs'])) {
+            return true;
+        }
+
+        return isset($data['sections']) && is_array($data['sections']);
+    }
     protected function saveSyncDataToDatabase(string $type, array $data): bool
     {
         try {

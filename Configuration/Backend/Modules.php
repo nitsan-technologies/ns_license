@@ -24,7 +24,7 @@ $licenseModule = [
         : '@typo3/backend/page-tree/page-tree-element',
     'controllerActions' => [
         NsLicenseModuleController::class => [
-            'list', 'update', 'activation', 'deactivation', 'reactivation', 'extendTrial', 'getServicesData', 'getShopData', 'fetchExtensionLogs',
+            'list', 'update', 'activation', 'deactivation', 'reactivation', 'extendTrial', 'getServicesData', 'getCatalogData', 'fetchExtensionLogs',
         ],
     ],
 ];

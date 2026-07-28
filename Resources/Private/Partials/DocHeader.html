@@ -12,10 +12,24 @@
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link t3js-shop-tab" id="shop-tab" data-bs-toggle="tab" data-bs-target="#shop-pane" data-shop-url="{f:uri.action(action: 'getShopData', absolute: 1)}" type="button" role="tab" aria-controls="shop-pane" aria-selected="false"
-                        data-page-title="{f:translate(key: 'license-tabs.shop.title')}"
-                        data-page-subtitle="{f:translate(key: 'license-tabs.shop.description')}">
-                        <f:translate key="license-tabs.shop" />
+                    <button class="nav-link t3js-catalog-tab" id="ai-universe-tab" data-bs-toggle="tab" data-bs-target="#ai-universe-pane" data-catalog-tab="ai-universe" data-catalog-url="{f:uri.action(action: 'getCatalogData', arguments: {tab: 'ai-universe'}, absolute: 1)}" type="button" role="tab" aria-controls="ai-universe-pane" aria-selected="false"
+                        data-page-title="{f:translate(key: 'license-tabs.ai-universe.title')}"
+                        data-page-subtitle="{f:translate(key: 'license-tabs.ai-universe.description')}">
+                        <f:translate key="license-tabs.ai-universe" />
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link t3js-catalog-tab" id="extensions-catalog-tab" data-bs-toggle="tab" data-bs-target="#extensions-catalog-pane" data-catalog-tab="extensions" data-catalog-url="{f:uri.action(action: 'getCatalogData', arguments: {tab: 'extensions'}, absolute: 1)}" type="button" role="tab" aria-controls="extensions-catalog-pane" aria-selected="false"
+                        data-page-title="{f:translate(key: 'license-tabs.extensions.title')}"
+                        data-page-subtitle="{f:translate(key: 'license-tabs.extensions.description')}">
+                        <f:translate key="license-tabs.extensions" />
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link t3js-catalog-tab" id="templates-tab" data-bs-toggle="tab" data-bs-target="#templates-pane" data-catalog-tab="templates" data-catalog-url="{f:uri.action(action: 'getCatalogData', arguments: {tab: 'templates'}, absolute: 1)}" type="button" role="tab" aria-controls="templates-pane" aria-selected="false"
+                        data-page-title="{f:translate(key: 'license-tabs.templates.title')}"
+                        data-page-subtitle="{f:translate(key: 'license-tabs.templates.description')}">
+                        <f:translate key="license-tabs.templates" />
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">

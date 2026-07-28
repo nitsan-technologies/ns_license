@@ -23,6 +23,7 @@ services:
       $contentObject: '@TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer'
       $nsLicenseRepository: '@NITSAN\NsLicense\Domain\Repository\NsLicenseRepository'
       $licenseService: '@NITSAN\NsLicense\Service\LicenseService'
+      $catalogCacheService: '@NITSAN\NsLicense\Service\CatalogCacheService'
 
   NITSAN\NsLicense\Domain\Repository\NsLicenseRepository:
     public: true

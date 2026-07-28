@@ -253,6 +253,81 @@
             <trans-unit id="license-tabs.my-extensions.description">
                 <source>Manage your licenses and discover new extensions</source>
             </trans-unit>
+            <trans-unit id="license-tabs.ai-universe">
+                <source>AI Universe</source>
+            </trans-unit>
+            <trans-unit id="license-tabs.ai-universe.title">
+                <source>AI Universe</source>
+            </trans-unit>
+            <trans-unit id="license-tabs.ai-universe.description">
+                <source>Discover AI-powered TYPO3 extensions</source>
+            </trans-unit>
+            <trans-unit id="license-tabs.extensions">
+                <source>Extensions</source>
+            </trans-unit>
+            <trans-unit id="license-tabs.extensions.title">
+                <source>Extensions</source>
+            </trans-unit>
+            <trans-unit id="license-tabs.extensions.description">
+                <source>Browse premium and free TYPO3 extensions</source>
+            </trans-unit>
+            <trans-unit id="license-tabs.templates">
+                <source>Templates</source>
+            </trans-unit>
+            <trans-unit id="license-tabs.templates.title">
+                <source>Templates</source>
+            </trans-unit>
+            <trans-unit id="license-tabs.templates.description">
+                <source>Explore TYPO3 templates and sitepackages</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.search-placeholder">
+                <source>Search products...</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.filter-all">
+                <source>All Products</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.filter-premium">
+                <source>Premium Only</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.filter-free">
+                <source>Free Only</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail">
+                <source>Detail</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.empty">
+                <source>No products available. Click Get Updates to refresh the catalog.</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.overview">
+                <source>Overview</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.features">
+                <source>Key Features</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.changelog">
+                <source>Changelog</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.faq">
+                <source>FAQ</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta">
+                <source>Details</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.dependencies">
+                <source>Dependencies</source>
+            </trans-unit>
+            <trans-unit id="license-loading.catalog">
+                <source>Loading catalog...</source>
+            </trans-unit>
+            <trans-unit id="license-loading.error.catalog-url-not-found">
+                <source>Catalog URL not found.</source>
+            </trans-unit>
+            <trans-unit id="license-loading.error.catalog-failed">
+                <source>Failed to load catalog data. Please try again.</source>
+            </trans-unit>
+            <trans-unit id="license-loading.error.catalog-error">
+                <source>Error loading catalog data. Please refresh the page.</source>
+            </trans-unit>
             <trans-unit id="license-tabs.shop">
                 <source>T3Planet Shop</source>
             </trans-unit>
@@ -858,7 +933,7 @@
                 <source>Full license</source>
             </trans-unit>
             <trans-unit id="license-get-new.wizard.mode.buy.desc">
-                <source>Purchase a full license and complete checkout securely. The license key is emailed to you for activation here.</source>
+                <source>Purchase a full license and complete checkout securely. Your license is activated automatically after payment.</source>
             </trans-unit>
             <trans-unit id="license-get-new.wizard.mode.buy.meta1">
                 <source>Secure checkout on t3planet.shop</source>
@@ -990,7 +1065,7 @@
                 <source>/ year</source>
             </trans-unit>
             <trans-unit id="license-get-new.buy.help">
-                <source>You will complete payment securely on t3planet.shop. After payment, the license key is emailed to you — then Activate it here.</source>
+                <source>You will complete payment securely on t3planet.shop. After payment, your license is activated automatically.</source>
             </trans-unit>
             <trans-unit id="license-get-new.buy.pay">
                 <source>Proceed to payment</source>
