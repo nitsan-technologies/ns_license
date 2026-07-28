@@ -1,9 +1,11 @@
 /**
  * Module: @nitsan/ns-license/product-detail
- * Product detail modal for catalog tabs.
+ * Full-page product detail view for catalog tabs.
  */
 
-const MODAL_ID = 'product-detail-modal';
+const VIEW_ID = 'product-detail-view';
+const LIST_SELECTOR = '#license-tab-content';
+const HEADER_SELECTOR = '.ns-license-tab-page-header';
 
 /**
  * @param {string} text
@@ -16,248 +18,485 @@ function escapeHtml(text) {
 }
 
 /**
- * @param {HTMLElement} modal
- * @returns {Record<string, object>}
+ * @param {number|string|null|undefined} ts
+ * @returns {string}
  */
-function getCatalogItemsMap(modal) {
-  const trigger = modal.dataset.detailTrigger;
-  if (!trigger) {
-    return {};
-  }
-  const pane = document.querySelector(trigger.closest('.tab-pane') ? trigger : null);
-  const activePane = document.querySelector('.tab-pane.active');
-  const scope = activePane || document;
-  const script = scope.querySelector('.catalog-items-json');
-  if (!script) {
-    return {};
+function formatDate(ts) {
+  const n = Number(ts);
+  if (!n || Number.isNaN(n)) {
+    return '';
   }
   try {
-    return JSON.parse(script.textContent || '{}');
+    return new Date(n * 1000).toLocaleDateString(undefined, {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
   } catch (e) {
-    console.error('Invalid catalog JSON', e);
-    return {};
+    return '';
   }
 }
 
 /**
- * @param {HTMLElement} modal
+ * @param {unknown} value
+ * @returns {string}
+ */
+function formatDownloads(value) {
+  if (value === null || value === undefined || value === '') {
+    return '';
+  }
+  const n = Number(value);
+  if (!Number.isNaN(n) && n >= 1000) {
+    const k = n / 1000;
+    return (k % 1 === 0 ? k.toFixed(0) : k.toFixed(1)) + 'k';
+  }
+  return String(value);
+}
+
+/**
+ * @param {HTMLElement} el
+ * @param {boolean} show
+ */
+function setVisible(el, show) {
+  if (!el) {
+    return;
+  }
+  el.classList.toggle('d-none', !show);
+}
+
+/**
+ * @param {string} tab
+ * @returns {string}
+ */
+function sectionLabel(tab) {
+  const map = {
+    'ai-universe': 'AI Universe',
+    extensions: 'Extensions',
+    templates: 'Templates',
+  };
+  return map[tab] || '';
+}
+
+/**
+ * @param {HTMLElement} view
  * @param {object} item
  */
-function populateModal(modal, item) {
-  const title = modal.querySelector('.js-product-detail-title');
-  const subtitle = modal.querySelector('.js-product-detail-subtitle');
-  const description = modal.querySelector('.js-product-detail-description');
-  const longDescription = modal.querySelector('.js-product-detail-long-description');
-  const features = modal.querySelector('.js-product-detail-features');
-  const changelog = modal.querySelector('.js-product-detail-changelog');
-  const faq = modal.querySelector('.js-product-detail-faq');
-  const meta = modal.querySelector('.js-product-detail-meta');
-  const dependencies = modal.querySelector('.js-product-detail-dependencies');
-  const actions = modal.querySelector('.js-product-detail-actions');
-
+function populateView(view, item) {
   const name = item.name || '';
   const key = item.extensionKey || '';
   const version = item.version ? `v${item.version}` : '';
   const price = item.price || '';
+  const isFree = !!(item.isFree || price === 'Free');
+  const heroImage = item.detailImage || item.listImage || '';
 
-  if (title) title.textContent = name;
-  if (subtitle) subtitle.textContent = [key, version, price].filter(Boolean).join(' · ');
-  if (description) description.textContent = item.description || '';
+  const crumbShop = view.querySelector('.js-product-detail-crumb-shop');
+  const crumbSection = view.querySelector('.js-product-detail-crumb-section');
+  const crumbSectionSep = view.querySelector('.js-product-detail-crumb-section-sep');
+  const crumbName = view.querySelector('.js-product-detail-crumb-name');
+  if (crumbShop) {
+    crumbShop.textContent = view.dataset.labelShop || 'T3Planet Shop';
+  }
+  const section = sectionLabel(item.catalogSection || '');
+  if (crumbSection) {
+    crumbSection.textContent = section;
+  }
+  setVisible(crumbSectionSep, !!section);
+  setVisible(crumbSection, !!section);
+  if (crumbName) {
+    crumbName.textContent = name;
+  }
+
+  const heroBg = view.querySelector('.js-product-detail-hero-bg');
+  if (heroBg) {
+    if (heroImage) {
+      const safeUrl = String(heroImage).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+      heroBg.style.backgroundImage = `url("${safeUrl}")`;
+      heroBg.classList.add('has-image');
+    } else {
+      heroBg.style.backgroundImage = '';
+      heroBg.classList.remove('has-image');
+    }
+  }
+
+  const badges = view.querySelector('.js-product-detail-badges');
+  if (badges) {
+    const parts = [];
+    if (item.category) {
+      parts.push(`<span class="ns-product-detail__badge ns-product-detail__badge--category">${escapeHtml(item.category)}</span>`);
+    }
+    if (item.badge) {
+      parts.push(`<span class="ns-product-detail__badge ns-product-detail__badge--promo">${escapeHtml(item.badge)}</span>`);
+    }
+    badges.innerHTML = parts.join('');
+    setVisible(badges, parts.length > 0);
+  }
+
+  const title = view.querySelector('.js-product-detail-title');
+  if (title) {
+    title.textContent = name;
+  }
+
+  const subtitle = view.querySelector('.js-product-detail-subtitle');
+  if (subtitle) {
+    subtitle.textContent = [key, version].filter(Boolean).join('  |  ');
+  }
+
+  const heroStats = view.querySelector('.js-product-detail-hero-stats');
+  if (heroStats) {
+    const bits = [];
+    if (item.rating) {
+      bits.push(`<span class="ns-product-detail__stat"><span class="ns-product-detail__stars" aria-hidden="true">★★★★★</span> ${escapeHtml(String(item.rating))}</span>`);
+    }
+    const downloads = formatDownloads(item.downloads);
+    if (downloads) {
+      bits.push(`<span class="ns-product-detail__stat">${escapeHtml(downloads)} downloads</span>`);
+    }
+    heroStats.innerHTML = bits.join('');
+    setVisible(heroStats, bits.length > 0);
+  }
+
+  const longDescription = view.querySelector('.js-product-detail-long-description');
+  const overviewSection = view.querySelector('.js-product-detail-overview-section');
+  const overviewText = item.longDescription || item.description || '';
   if (longDescription) {
-    longDescription.textContent = item.longDescription || item.description || '';
+    longDescription.textContent = overviewText;
   }
+  setVisible(overviewSection, !!overviewText);
 
-  if (features) {
-    features.innerHTML = '';
-    const list = Array.isArray(item.features) ? item.features : [];
-    if (list.length === 0) {
-      features.innerHTML = '<li class="text-variant">—</li>';
-    } else {
-      list.forEach((entry) => {
-        const li = document.createElement('li');
-        li.textContent = String(entry);
-        features.appendChild(li);
-      });
-    }
-  }
-
-  if (changelog) {
-    changelog.innerHTML = '';
-    const entries = Array.isArray(item.changelog) ? item.changelog : [];
-    if (entries.length === 0) {
-      changelog.innerHTML = '<p class="text-variant mb-0">—</p>';
-    } else {
-      entries.forEach((entry) => {
-        const block = document.createElement('div');
-        block.className = 'mb-2';
-        const heading = document.createElement('strong');
-        heading.textContent = [entry.version, entry.date].filter(Boolean).join(' · ');
-        block.appendChild(heading);
-        const changes = Array.isArray(entry.changes) ? entry.changes : [];
-        if (changes.length) {
-          const ul = document.createElement('ul');
-          ul.className = 'mb-0';
-          changes.forEach((change) => {
-            const li = document.createElement('li');
-            li.textContent = String(change);
-            ul.appendChild(li);
-          });
-          block.appendChild(ul);
-        }
-        changelog.appendChild(block);
-      });
-    }
-  }
-
-  if (faq) {
-    faq.innerHTML = '';
-    const entries = Array.isArray(item.faq) ? item.faq : [];
-    if (entries.length === 0) {
-      faq.innerHTML = '<p class="text-variant mb-0">—</p>';
-    } else {
-      entries.forEach((entry) => {
-        const block = document.createElement('div');
-        block.className = 'mb-2';
-        block.innerHTML = `<strong>${escapeHtml(entry.q || '')}</strong><p class="mb-0">${escapeHtml(entry.a || '')}</p>`;
-        faq.appendChild(block);
-      });
-    }
-  }
-
-  if (meta) {
-    const rows = [
-      ['Author', item.author || 'Team T3Planet'],
-      ['Company', item.company || 'T3Planet'],
-      ['Category', item.category || '—'],
-      ['Extension Key', key || '—'],
-      ['Version', version || '—'],
-      ['Downloads', item.downloads || '—'],
-      ['Rating', item.rating || '—'],
-    ];
-    meta.innerHTML = rows.map(([label, value]) => (
-      `<dt class="col-sm-4">${escapeHtml(label)}</dt><dd class="col-sm-8">${escapeHtml(String(value))}</dd>`
+  const featuresSection = view.querySelector('.js-product-detail-features-section');
+  const featuresEl = view.querySelector('.js-product-detail-features');
+  const features = Array.isArray(item.features) ? item.features : [];
+  if (featuresEl) {
+    featuresEl.innerHTML = features.map((entry) => (
+      `<div class="ns-product-detail__feature"><span class="ns-product-detail__feature-icon" aria-hidden="true">✓</span><span>${escapeHtml(String(entry))}</span></div>`
     )).join('');
   }
+  setVisible(featuresSection, features.length > 0);
 
-  if (dependencies) {
-    dependencies.innerHTML = '';
-    const deps = Array.isArray(item.dependencies) ? item.dependencies : [];
-    if (deps.length === 0) {
-      dependencies.innerHTML = '<li class="text-variant">—</li>';
-    } else {
-      deps.forEach((dep) => {
-        const li = document.createElement('li');
-        li.textContent = `${dep.key || ''} ${dep.version || ''}`.trim();
-        dependencies.appendChild(li);
-      });
-    }
-  }
-
-  if (actions) {
-    actions.innerHTML = '';
-    const isFree = item.isFree || item.price === 'Free';
-    if (!isFree && key) {
-      const trialBtn = document.createElement('button');
-      trialBtn.type = 'button';
-      trialBtn.className = 'btn btn-primary btn-sm t3js-get-license-trigger';
-      trialBtn.dataset.extensionKey = key;
-      trialBtn.dataset.glMode = 'trial';
-      trialBtn.textContent = 'Free Trial';
-      actions.appendChild(trialBtn);
-    }
-    if (item.liveDemoUrl) {
-      const demo = document.createElement('a');
-      demo.href = item.liveDemoUrl;
-      demo.target = '_blank';
-      demo.rel = 'noopener noreferrer';
-      demo.className = 'btn btn-default btn-sm';
-      demo.textContent = 'Live Demo';
-      actions.appendChild(demo);
-    }
-    if (item.documentationUrl || item.documentation_link) {
-      const docs = document.createElement('a');
-      docs.href = item.documentationUrl || item.documentation_link;
-      docs.target = '_blank';
-      docs.rel = 'noopener noreferrer';
-      docs.className = 'btn btn-default btn-sm';
-      docs.textContent = 'Documentation';
-      actions.appendChild(docs);
-    }
-    const closeBtn = document.createElement('button');
-    closeBtn.type = 'button';
-    closeBtn.className = 'btn btn-default btn-sm t3js-modal-close';
-    closeBtn.dataset.bsDismiss = 'modal';
-    closeBtn.textContent = 'Close';
-    actions.appendChild(closeBtn);
-  }
+  populateChangelog(view, item);
+  populateFaq(view, item);
+  populateActions(view, item, key, isFree, price);
+  populateComposer(view, item);
+  populateResources(view, item);
+  populateMeta(view, item, key, version);
+  populateDependencies(view, item);
 }
 
 /**
- * @param {HTMLElement} modal
+ * @param {HTMLElement} view
+ * @param {object} item
  */
-function showModal(modal) {
-  if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-    bootstrap.Modal.getOrCreateInstance(modal).show();
-  } else if (window.bootstrap?.Modal) {
-    window.bootstrap.Modal.getOrCreateInstance(modal).show();
-  } else {
-    modal.classList.add('show');
-    modal.style.display = 'block';
-    document.body.classList.add('modal-open');
-    if (!document.querySelector('.modal-backdrop')) {
-      const backdrop = document.createElement('div');
-      backdrop.className = 'modal-backdrop fade show';
-      document.body.appendChild(backdrop);
-    }
-  }
-}
-
-/**
- * Hide the modal (native API with manual fallback).
- * @param {HTMLElement} modal
- */
-function hideModal(modal) {
-  if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-    bootstrap.Modal.getOrCreateInstance(modal).hide();
-  } else if (window.bootstrap?.Modal) {
-    window.bootstrap.Modal.getOrCreateInstance(modal).hide();
-  } else {
-    modal.classList.remove('show');
-    modal.style.display = 'none';
-    document.body.classList.remove('modal-open');
-    document.querySelector('.modal-backdrop')?.remove();
-  }
-}
-
-// Close via the header (X) or footer Close button (works without Bootstrap data-api).
-document.addEventListener('click', (e) => {
-  const closer = e.target.closest('#' + MODAL_ID + ' .t3js-modal-close, #' + MODAL_ID + ' [data-bs-dismiss="modal"]');
-  if (!closer) {
+function populateChangelog(view, item) {
+  const section = view.querySelector('.js-product-detail-changelog-section');
+  const container = view.querySelector('.js-product-detail-changelog');
+  const entries = Array.isArray(item.changelog) ? item.changelog : [];
+  if (!container) {
     return;
   }
-  e.preventDefault();
-  const modal = document.getElementById(MODAL_ID);
-  if (modal) {
-    hideModal(modal);
+  container.innerHTML = '';
+  if (entries.length === 0) {
+    setVisible(section, false);
+    return;
   }
-});
+  const latestLabel = view.dataset.labelLatest || 'Latest';
+  entries.forEach((entry, index) => {
+    const id = `pd-changelog-${index}`;
+    const open = index === 0;
+    const heading = [entry.version, index === 0 ? `(${latestLabel})` : '', entry.date]
+      .filter(Boolean)
+      .join(' ');
+    const changes = Array.isArray(entry.changes) ? entry.changes : [];
+    const body = changes.length
+      ? `<ul class="mb-0">${changes.map((c) => `<li>${escapeHtml(String(c))}</li>`).join('')}</ul>`
+      : '<p class="text-variant mb-0">—</p>';
+    const itemEl = document.createElement('div');
+    itemEl.className = 'accordion-item';
+    itemEl.innerHTML = `
+      <h3 class="accordion-header">
+        <button class="accordion-button${open ? '' : ' collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#${id}" aria-expanded="${open ? 'true' : 'false'}" aria-controls="${id}">
+          ${escapeHtml(heading)}
+        </button>
+      </h3>
+      <div id="${id}" class="accordion-collapse collapse${open ? ' show' : ''}" data-bs-parent="#product-detail-changelog">
+        <div class="accordion-body">${body}</div>
+      </div>`;
+    container.appendChild(itemEl);
+  });
+  setVisible(section, true);
+}
+
+/**
+ * @param {HTMLElement} view
+ * @param {object} item
+ */
+function populateFaq(view, item) {
+  const section = view.querySelector('.js-product-detail-faq-section');
+  const container = view.querySelector('.js-product-detail-faq');
+  const entries = Array.isArray(item.faq) ? item.faq : [];
+  if (!container) {
+    return;
+  }
+  container.innerHTML = '';
+  if (entries.length === 0) {
+    setVisible(section, false);
+    return;
+  }
+  entries.forEach((entry, index) => {
+    const id = `pd-faq-${index}`;
+    const itemEl = document.createElement('div');
+    itemEl.className = 'accordion-item';
+    itemEl.innerHTML = `
+      <h3 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${id}" aria-expanded="false" aria-controls="${id}">
+          ${escapeHtml(entry.q || '')}
+        </button>
+      </h3>
+      <div id="${id}" class="accordion-collapse collapse" data-bs-parent="#product-detail-faq">
+        <div class="accordion-body">${escapeHtml(entry.a || '')}</div>
+      </div>`;
+    container.appendChild(itemEl);
+  });
+  setVisible(section, true);
+}
+
+/**
+ * @param {HTMLElement} view
+ * @param {object} item
+ * @param {string} key
+ * @param {boolean} isFree
+ * @param {string} price
+ */
+function populateActions(view, item, key, isFree, price) {
+  const actions = view.querySelector('.js-product-detail-actions');
+  if (!actions) {
+    return;
+  }
+  actions.innerHTML = '';
+
+  if (!isFree && key) {
+    const buyLabel = view.dataset.labelBuy || 'Buy Now';
+    const buyText = price ? `${buyLabel} — ${price}` : buyLabel;
+    const buyBtn = document.createElement('button');
+    buyBtn.type = 'button';
+    buyBtn.className = 'btn btn-primary t3js-get-license-trigger';
+    buyBtn.dataset.extensionKey = key;
+    buyBtn.dataset.glMode = 'buy';
+    buyBtn.textContent = buyText;
+    actions.appendChild(buyBtn);
+
+    const trialBtn = document.createElement('button');
+    trialBtn.type = 'button';
+    trialBtn.className = 'btn btn-default t3js-get-license-trigger';
+    trialBtn.dataset.extensionKey = key;
+    trialBtn.dataset.glMode = 'trial';
+    trialBtn.textContent = view.dataset.labelTrial || 'Free Trial';
+    actions.appendChild(trialBtn);
+  }
+
+  if (item.liveDemoUrl) {
+    const demo = document.createElement('a');
+    demo.href = item.liveDemoUrl;
+    demo.target = '_blank';
+    demo.rel = 'noopener noreferrer';
+    demo.className = 'btn btn-default';
+    demo.textContent = view.dataset.labelDemo || 'Live Demo';
+    actions.appendChild(demo);
+  }
+
+  setVisible(view.querySelector('.js-product-detail-cta-card'), actions.children.length > 0);
+}
+
+/**
+ * @param {HTMLElement} view
+ * @param {object} item
+ */
+function populateComposer(view, item) {
+  const section = view.querySelector('.js-product-detail-composer-section');
+  const code = view.querySelector('.js-product-detail-composer');
+  const cmd = (item.composerCommand || '').trim();
+  if (code) {
+    code.textContent = cmd;
+  }
+  setVisible(section, !!cmd);
+}
+
+/**
+ * @param {HTMLElement} view
+ * @param {object} item
+ */
+function populateResources(view, item) {
+  const section = view.querySelector('.js-product-detail-resources-section');
+  const list = view.querySelector('.js-product-detail-resources');
+  if (!list) {
+    return;
+  }
+  list.innerHTML = '';
+  const links = [];
+  const docs = item.documentationUrl || item.documentation_link;
+  if (docs) {
+    links.push({ href: docs, label: view.dataset.labelDocs || 'Extension Manual' });
+  }
+  const product = item.productUrl || item.knowMoreUrl;
+  if (product) {
+    links.push({ href: product, label: view.dataset.labelProductPage || 'T3Planet Page' });
+  }
+  links.forEach((link) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<a href="${escapeHtml(link.href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(link.label)}</a>`;
+    list.appendChild(li);
+  });
+  setVisible(section, links.length > 0);
+}
+
+/**
+ * @param {HTMLElement} view
+ * @param {object} item
+ * @param {string} key
+ * @param {string} version
+ */
+function populateMeta(view, item, key, version) {
+  const meta = view.querySelector('.js-product-detail-meta');
+  if (!meta) {
+    return;
+  }
+  const rows = [
+    [view.dataset.labelAuthor || 'Author', item.author || 'Team T3Planet'],
+    [view.dataset.labelCompany || 'Company', item.company || 'T3Planet'],
+    [view.dataset.labelLastUpdate || 'Last Update', formatDate(item.lastUpdate)],
+    [view.dataset.labelFirstUpload || 'First Upload', formatDate(item.firstUpload)],
+    [view.dataset.labelDownloads || 'Downloads', item.downloads ? String(item.downloads) : ''],
+    [view.dataset.labelCategory || 'Category', item.category || ''],
+    [view.dataset.labelExtensionKey || 'Extension Key', key],
+    [view.dataset.labelVersion || 'Version', version],
+  ].filter(([, value]) => value !== '' && value != null);
+
+  meta.innerHTML = rows.map(([label, value]) => (
+    `<div class="ns-product-detail__meta-row"><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(String(value))}</dd></div>`
+  )).join('');
+}
+
+/**
+ * @param {HTMLElement} view
+ * @param {object} item
+ */
+function populateDependencies(view, item) {
+  const section = view.querySelector('.js-product-detail-dependencies-section');
+  const list = view.querySelector('.js-product-detail-dependencies');
+  let deps = Array.isArray(item.dependencies) ? item.dependencies : [];
+  // Support map form { "pkg": "^12" } if ever present client-side.
+  if (!Array.isArray(item.dependencies) && item.dependencies && typeof item.dependencies === 'object') {
+    deps = Object.entries(item.dependencies).map(([key, version]) => ({ key, version }));
+  }
+  if (!list) {
+    return;
+  }
+  list.innerHTML = '';
+  deps.forEach((dep) => {
+    if (typeof dep === 'string') {
+      const li = document.createElement('li');
+      li.innerHTML = `<code>${escapeHtml(dep)}</code>`;
+      list.appendChild(li);
+      return;
+    }
+    const key = dep.key || dep.name || '';
+    const ver = dep.version || '';
+    if (!key && !ver) {
+      return;
+    }
+    const li = document.createElement('li');
+    li.innerHTML = `<code>${escapeHtml(key)}</code><span class="text-variant">${escapeHtml(ver)}</span>`;
+    list.appendChild(li);
+  });
+  setVisible(section, list.children.length > 0);
+}
+
+/**
+ * @param {boolean} show
+ */
+function toggleDetailMode(show) {
+  const view = document.getElementById(VIEW_ID);
+  const list = document.querySelector(LIST_SELECTOR);
+  const header = document.querySelector(HEADER_SELECTOR);
+  if (!view) {
+    return;
+  }
+  if (show) {
+    view.classList.remove('d-none');
+    view.removeAttribute('hidden');
+    view.setAttribute('aria-hidden', 'false');
+    if (list) {
+      list.classList.add('d-none');
+    }
+    if (header) {
+      header.classList.add('d-none');
+    }
+    view.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else {
+    view.classList.add('d-none');
+    view.setAttribute('hidden', 'hidden');
+    view.setAttribute('aria-hidden', 'true');
+    if (list) {
+      list.classList.remove('d-none');
+    }
+    if (header) {
+      header.classList.remove('d-none');
+    }
+  }
+}
 
 document.addEventListener('click', (e) => {
+  const back = e.target.closest('.t3js-product-detail-back');
+  if (back) {
+    e.preventDefault();
+    toggleDetailMode(false);
+    return;
+  }
+
+  // Leaving detail when switching module tabs.
+  if (e.target.closest('.ns-license-nav-tabs .nav-link, .t3js-catalog-tab, .t3js-services-tab, #my-extensions-tab, #services-tab')) {
+    const view = document.getElementById(VIEW_ID);
+    if (view && !view.classList.contains('d-none')) {
+      toggleDetailMode(false);
+    }
+  }
+
+  const copyBtn = e.target.closest('.t3js-product-detail-copy-composer');
+  if (copyBtn) {
+    e.preventDefault();
+    const view = document.getElementById(VIEW_ID);
+    const code = view?.querySelector('.js-product-detail-composer');
+    const text = code?.textContent || '';
+    if (!text) {
+      return;
+    }
+    const done = () => {
+      const prev = copyBtn.getAttribute('title') || '';
+      copyBtn.setAttribute('title', view?.dataset.labelCopied || 'Copied');
+      setTimeout(() => copyBtn.setAttribute('title', prev), 1500);
+    };
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(() => {});
+    } else {
+      done();
+    }
+    return;
+  }
+
   const trigger = e.target.closest('.t3js-product-detail-trigger');
   if (!trigger) {
     return;
   }
   e.preventDefault();
 
-  const modal = document.getElementById(MODAL_ID);
-  if (!modal) {
+  const view = document.getElementById(VIEW_ID);
+  if (!view) {
     return;
   }
 
-  modal.dataset.detailTrigger = '1';
   const extensionKey = trigger.dataset.extensionKey || '';
   const pane = trigger.closest('.tab-pane');
-  const script = pane?.querySelector('.catalog-items-json') || document.querySelector('.tab-pane.active .catalog-items-json');
+  const script = pane?.querySelector('.catalog-items-json')
+    || document.querySelector('.tab-pane.active .catalog-items-json');
   let items = {};
   try {
     items = JSON.parse(script?.textContent || '{}');
@@ -270,6 +509,6 @@ document.addEventListener('click', (e) => {
     return;
   }
 
-  populateModal(modal, item);
-  showModal(modal);
+  populateView(view, item);
+  toggleDetailMode(true);
 });

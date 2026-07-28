@@ -9,6 +9,11 @@
      data-description="{item.description}"
      data-extension-key="{item.extensionKey}"
      data-is-free="{isFreeSection}">
+    <f:if condition="{item.listImage}">
+        <div class="catalog-card__image">
+            <img src="{item.listImage}" alt="{item.name}" loading="lazy" />
+        </div>
+    </f:if>
     <div class="card-header">
         <div class="card-header-body">
             <div class="d-flex align-items-center justify-content-between gap-2">
