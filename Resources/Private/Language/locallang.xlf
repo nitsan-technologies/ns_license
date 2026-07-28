@@ -295,6 +295,60 @@
             <trans-unit id="license-catalog.detail">
                 <source>Detail</source>
             </trans-unit>
+            <trans-unit id="license-catalog.detail.back">
+                <source>Back</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.buy-now">
+                <source>Buy Now</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.get-started">
+                <source>Get Started</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.composer">
+                <source>Composer Require</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.composer.copy">
+                <source>Copy</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.composer.copied">
+                <source>Copied</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.resources">
+                <source>Resources</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.resource.docs">
+                <source>Extension Manual</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.resource.product">
+                <source>T3Planet Page</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.changelog.latest">
+                <source>Latest</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.author">
+                <source>Author</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.company">
+                <source>Company</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.last-update">
+                <source>Last Update</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.first-upload">
+                <source>First Upload</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.downloads">
+                <source>Downloads</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.category">
+                <source>Category</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.extension-key">
+                <source>Extension Key</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.version">
+                <source>Version</source>
+            </trans-unit>
             <trans-unit id="license-catalog.empty">
                 <source>No products available. Click Get Updates to refresh the catalog.</source>
             </trans-unit>
@@ -308,7 +362,7 @@
                 <source>Changelog</source>
             </trans-unit>
             <trans-unit id="license-catalog.detail.faq">
-                <source>FAQ</source>
+                <source>Frequently Asked Questions</source>
             </trans-unit>
             <trans-unit id="license-catalog.detail.meta">
                 <source>Details</source>

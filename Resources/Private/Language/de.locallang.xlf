@@ -348,6 +348,102 @@
                 <source>Detail</source>
                 <target>Detail</target>
             </trans-unit>
+            <trans-unit id="license-catalog.detail.back">
+                <source>Back</source>
+                <target>Zurück</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.buy-now">
+                <source>Buy Now</source>
+                <target>Jetzt kaufen</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.get-started">
+                <source>Get Started</source>
+                <target>Loslegen</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.composer">
+                <source>Composer Require</source>
+                <target>Composer Require</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.composer.copy">
+                <source>Copy</source>
+                <target>Kopieren</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.composer.copied">
+                <source>Copied</source>
+                <target>Kopiert</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.resources">
+                <source>Resources</source>
+                <target>Ressourcen</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.resource.docs">
+                <source>Extension Manual</source>
+                <target>Extension-Handbuch</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.resource.product">
+                <source>T3Planet Page</source>
+                <target>T3Planet-Seite</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.changelog.latest">
+                <source>Latest</source>
+                <target>Aktuell</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.author">
+                <source>Author</source>
+                <target>Autor</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.company">
+                <source>Company</source>
+                <target>Unternehmen</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.last-update">
+                <source>Last Update</source>
+                <target>Letztes Update</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.first-upload">
+                <source>First Upload</source>
+                <target>Erster Upload</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.downloads">
+                <source>Downloads</source>
+                <target>Downloads</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.category">
+                <source>Category</source>
+                <target>Kategorie</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.extension-key">
+                <source>Extension Key</source>
+                <target>Extension Key</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.version">
+                <source>Version</source>
+                <target>Version</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.overview">
+                <source>Overview</source>
+                <target>Übersicht</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.features">
+                <source>Key Features</source>
+                <target>Hauptfunktionen</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.changelog">
+                <source>Changelog</source>
+                <target>Changelog</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.faq">
+                <source>Frequently Asked Questions</source>
+                <target>Häufig gestellte Fragen</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta">
+                <source>Details</source>
+                <target>Details</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.dependencies">
+                <source>Dependencies</source>
+                <target>Abhängigkeiten</target>
+            </trans-unit>
             <trans-unit id="license-catalog.empty">
                 <source>No products available. Click Get Updates to refresh the catalog.</source>
                 <target>No products available. Click Get Updates to refresh the catalog.</target>
