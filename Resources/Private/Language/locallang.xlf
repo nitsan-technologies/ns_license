@@ -355,6 +355,12 @@
             <trans-unit id="license-catalog.detail.overview">
                 <source>Overview</source>
             </trans-unit>
+            <trans-unit id="license-catalog.detail.tags">
+                <source>Tags</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.keywords">
+                <source>Keywords</source>
+            </trans-unit>
             <trans-unit id="license-catalog.detail.features">
                 <source>Key Features</source>
             </trans-unit>

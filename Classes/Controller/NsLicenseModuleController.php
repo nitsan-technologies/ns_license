@@ -870,6 +870,41 @@ class NsLicenseModuleController extends ActionController
     }
 
     /**
+     * Return full catalog product detail (tags, features, FAQ, changelog) for one extension key.
+     * List cards stay slim; detail loads on demand to avoid oversized customer caches.
+     */
+    public function getCatalogProductDetailAction(ServerRequestInterface $request): JsonResponse
+    {
+        $params = $request->getQueryParams();
+        $body = $request->getParsedBody();
+        if (is_array($body)) {
+            $params = array_merge($params, $body);
+        }
+        $extensionKey = trim((string)($params['extensionKey'] ?? ''));
+        if ($extensionKey === '') {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'extensionKey is required.',
+                'error_code' => 'missing_extension_key',
+            ], 400);
+        }
+
+        $item = $this->catalogCacheService->fetchProductDetail($extensionKey);
+        if ($item === null) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Product detail not found.',
+                'error_code' => 'product_not_found',
+            ], 404);
+        }
+
+        return new JsonResponse([
+            'success' => true,
+            'item' => $item,
+        ]);
+    }
+
+    /**
      * Fetch and update data from API based on type
      * Supports types: 'shop', 'services', 'extensions'
      * 

@@ -424,6 +424,14 @@
                 <source>Overview</source>
                 <target>Übersicht</target>
             </trans-unit>
+            <trans-unit id="license-catalog.detail.tags">
+                <source>Tags</source>
+                <target>Tags</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.keywords">
+                <source>Keywords</source>
+                <target>Stichwörter</target>
+            </trans-unit>
             <trans-unit id="license-catalog.detail.features">
                 <source>Key Features</source>
                 <target>Hauptfunktionen</target>
