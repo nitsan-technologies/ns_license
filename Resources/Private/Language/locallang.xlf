@@ -1037,6 +1037,12 @@
             <trans-unit id="license-get-new.success.done">
                 <source>Done</source>
             </trans-unit>
+            <trans-unit id="license-get-new.success.close">
+                <source>Close</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.success.activate">
+                <source>Activate license</source>
+            </trans-unit>
             <trans-unit id="license-get-new.success.activating">
                 <source>Activating…</source>
             </trans-unit>
