@@ -19,7 +19,7 @@
 
     <f:if condition="{catalogData.items}">
         <f:then>
-            <div class="card-container catalog-card-container">
+            <div class="row g-3 catalog-card-container">
                 <f:for each="{catalogData.items}" as="item">
                     <f:render partial="Catalog/Card" arguments="{item: item, catalogTab: catalogTab}" />
                 </f:for>
