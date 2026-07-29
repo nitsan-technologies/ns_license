@@ -19,6 +19,10 @@ return [
         'path' => '/license/fetch-data',
         'target' => NsLicenseModuleController::class . '::fetchDataAction'
     ],
+    'catalog_product_detail' => [
+        'path' => '/license/catalog-product-detail',
+        'target' => NsLicenseModuleController::class . '::getCatalogProductDetailAction'
+    ],
     'get_products' => [
         'path' => '/license/get-products',
         'target' => NsLicenseModuleController::class . '::getProductsAction'

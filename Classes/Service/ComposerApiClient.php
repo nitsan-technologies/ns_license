@@ -44,9 +44,52 @@ class ComposerApiClient
     public function requestJsonArray(string $url, string $method = 'GET', array $options = []): ?array
     {
         $response = $this->request($url, $method, $options);
+        if ($response->getStatusCode() === 304) {
+            return null;
+        }
         $decoded = json_decode($response->getBody()->getContents(), true);
         return is_array($decoded) ? $decoded : null;
     }
 
-}
+    /**
+     * JSON request with HTTP status / ETag awareness for conditional catalog fetches.
+     *
+     * @param array<string,mixed> $options
+     * @return array{
+     *   status:int,
+     *   notModified:bool,
+     *   etag:string,
+     *   syncedAt:int,
+     *   data:?array<string,mixed>
+     * }
+     */
+    public function requestJsonResult(string $url, string $method = 'GET', array $options = []): array
+    {
+        $response = $this->request($url, $method, $options);
+        $status = $response->getStatusCode();
+        $etag = trim($response->getHeaderLine('ETag'));
+        $syncedAtHeader = trim($response->getHeaderLine('X-Catalog-Synced-At'));
+        $syncedAt = $syncedAtHeader !== '' ? (int)$syncedAtHeader : 0;
 
+        if ($status === 304) {
+            return [
+                'status' => 304,
+                'notModified' => true,
+                'etag' => $etag,
+                'syncedAt' => $syncedAt,
+                'data' => null,
+            ];
+        }
+
+        $body = $response->getBody()->getContents();
+        $decoded = json_decode($body, true);
+
+        return [
+            'status' => $status,
+            'notModified' => false,
+            'etag' => $etag,
+            'syncedAt' => $syncedAt,
+            'data' => is_array($decoded) ? $decoded : null,
+        ];
+    }
+}

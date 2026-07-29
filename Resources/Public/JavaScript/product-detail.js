@@ -3,9 +3,14 @@
  * Full-page product detail view for catalog tabs.
  */
 
+import AjaxRequest from '@typo3/core/ajax/ajax-request.js';
+
 const VIEW_ID = 'product-detail-view';
 const LIST_SELECTOR = '#license-tab-content';
 const HEADER_SELECTOR = '.ns-license-tab-page-header';
+
+/** @type {Record<string, object>} */
+const detailCache = {};
 
 /**
  * @param {string} text
@@ -162,6 +167,19 @@ function populateView(view, item) {
     longDescription.textContent = overviewText;
   }
   setVisible(overviewSection, !!overviewText);
+
+  const keywordsSection = view.querySelector('.js-product-detail-keywords-section');
+  const keywordsEl = view.querySelector('.js-product-detail-keywords');
+  const keywords = Array.isArray(item.keywords)
+    ? item.keywords
+    : (Array.isArray(item.tags) ? item.tags : []);
+  if (keywordsEl) {
+    const tagIcon = '<svg class="ns-product-detail__keyword-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M2 2h5.5L14 8.5 8.5 14 2 7.5V2zm2.5 2a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/></svg>';
+    keywordsEl.innerHTML = keywords.map((entry) => (
+      `<span class="ns-product-detail__keyword">${tagIcon}<span>${escapeHtml(String(entry))}</span></span>`
+    )).join('');
+  }
+  setVisible(keywordsSection, keywords.length > 0);
 
   const featuresSection = view.querySelector('.js-product-detail-features-section');
   const featuresEl = view.querySelector('.js-product-detail-features');
@@ -504,11 +522,59 @@ document.addEventListener('click', (e) => {
     console.error(err);
   }
 
-  const item = items[extensionKey];
-  if (!item) {
+  const listItem = items[extensionKey];
+  if (!listItem && !extensionKey) {
     return;
   }
 
-  populateView(view, item);
-  toggleDetailMode(true);
+  // Show list card data immediately, then enrich with full detail (tags, features, FAQ…).
+  if (listItem) {
+    populateView(view, listItem);
+    toggleDetailMode(true);
+  }
+
+  loadFullProductDetail(extensionKey, listItem || {}).then((fullItem) => {
+    if (!fullItem) {
+      return;
+    }
+    populateView(view, fullItem);
+    toggleDetailMode(true);
+  });
 });
+
+/**
+ * @param {string} extensionKey
+ * @param {object} fallback
+ * @returns {Promise<object|null>}
+ */
+function loadFullProductDetail(extensionKey, fallback) {
+  if (!extensionKey) {
+    return Promise.resolve(fallback && Object.keys(fallback).length ? fallback : null);
+  }
+  if (detailCache[extensionKey]) {
+    return Promise.resolve(detailCache[extensionKey]);
+  }
+
+  const ajaxUrl = TYPO3?.settings?.ajaxUrls?.catalog_product_detail;
+  if (!ajaxUrl) {
+    return Promise.resolve(fallback && Object.keys(fallback).length ? fallback : null);
+  }
+
+  return new AjaxRequest(ajaxUrl)
+    .withQueryArguments({ extensionKey })
+    .get()
+    .then((response) => response.resolve())
+    .then((payload) => {
+      if (payload?.success && payload.item && typeof payload.item === 'object') {
+        // Merge so list-only fields (e.g. catalogSection) are preserved when API omits them.
+        const merged = { ...fallback, ...payload.item };
+        detailCache[extensionKey] = merged;
+        return merged;
+      }
+      return fallback && Object.keys(fallback).length ? fallback : null;
+    })
+    .catch((err) => {
+      console.error(err);
+      return fallback && Object.keys(fallback).length ? fallback : null;
+    });
+}

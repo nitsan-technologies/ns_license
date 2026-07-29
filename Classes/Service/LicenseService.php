@@ -465,9 +465,15 @@ final class LicenseService
                 ]
             ];
         } elseif ($type === 'shop') {
-            $url = $apiBaseUrl . 'GetShopAndServicesData.php?type=shop';
-            $method = 'GET';
-            $options = [];
+            $catalogCacheService = new CatalogCacheService(
+                $this->cacheManager,
+                $this->composerApiClient,
+                GeneralUtility::makeInstance(ExtensionConfiguration::class)
+            );
+            $data = $catalogCacheService->refreshFromApi();
+            return $this->isValidShopCatalog($data)
+                ? $data
+                : ['status' => false, 'message' => 'No data received from API'];
         } else {
             $url = $apiBaseUrl . 'GetShopAndServicesData.php?type=services';
             $method = 'GET';
@@ -496,12 +502,6 @@ final class LicenseService
                                 $this->nsLicenseRepository->insertNewData($licenseDataObj);
                             }
                         }
-                    }
-                } elseif ($type === 'shop') {
-                    if ($this->isValidShopCatalog($data)) {
-                        $catalogCacheService = GeneralUtility::makeInstance(CatalogCacheService::class);
-                        $catalogCacheService->flush();
-                        $catalogCacheService->warmCache($data);
                     }
                 } else {
                     if (isset($data['categories']) && is_array($data['categories'])) {

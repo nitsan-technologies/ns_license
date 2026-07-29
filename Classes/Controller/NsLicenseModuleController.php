@@ -145,9 +145,27 @@ class NsLicenseModuleController extends ActionController
         $catalog = $this->catalogCacheService->getCatalog();
         $tabs = CatalogTabMapper::buildTabsFromCatalog($catalog);
         $tabData = $tabs[$tab] ?? ['title' => '', 'items' => []];
+        $items = is_array($tabData['items'] ?? null) ? $tabData['items'] : [];
+
+        $heroItem = null;
+        $listItems = [];
+        foreach ($items as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+            if ($heroItem === null && $this->isMostPopularBadge((string)($item['badge'] ?? ''))) {
+                $heroItem = $item;
+                continue;
+            }
+            $listItems[] = $item;
+        }
+        $tabData['items'] = $listItems;
 
         $itemsByKey = [];
-        foreach ($tabData['items'] as $item) {
+        foreach ($items as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
             $key = trim((string)($item['extensionKey'] ?? ''));
             if ($key !== '') {
                 $itemsByKey[$key] = $item;
@@ -158,11 +176,23 @@ class NsLicenseModuleController extends ActionController
         $view->assignMultiple([
             'catalogTab' => $tab,
             'catalogData' => $tabData,
+            'catalogHeroItem' => $heroItem,
             'catalogItemsJson' => json_encode($itemsByKey, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE),
             't3version' => $this->typo3Version,
         ]);
 
         return $view->renderResponse('NsLicenseModule/Catalog');
+    }
+
+    private function isMostPopularBadge(string $badge): bool
+    {
+        $normalized = strtolower(trim($badge));
+        if ($normalized === '') {
+            return false;
+        }
+
+        return str_contains($normalized, 'most popular')
+            || str_contains($normalized, 'beliebteste');
     }
 
     /**
@@ -867,6 +897,41 @@ class NsLicenseModuleController extends ActionController
         }
         
         return $this->redirect('list');
+    }
+
+    /**
+     * Return full catalog product detail (tags, features, FAQ, changelog) for one extension key.
+     * List cards stay slim; detail loads on demand to avoid oversized customer caches.
+     */
+    public function getCatalogProductDetailAction(ServerRequestInterface $request): JsonResponse
+    {
+        $params = $request->getQueryParams();
+        $body = $request->getParsedBody();
+        if (is_array($body)) {
+            $params = array_merge($params, $body);
+        }
+        $extensionKey = trim((string)($params['extensionKey'] ?? ''));
+        if ($extensionKey === '') {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'extensionKey is required.',
+                'error_code' => 'missing_extension_key',
+            ], 400);
+        }
+
+        $item = $this->catalogCacheService->fetchProductDetail($extensionKey);
+        if ($item === null) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Product detail not found.',
+                'error_code' => 'product_not_found',
+            ], 404);
+        }
+
+        return new JsonResponse([
+            'success' => true,
+            'item' => $item,
+        ]);
     }
 
     /**
