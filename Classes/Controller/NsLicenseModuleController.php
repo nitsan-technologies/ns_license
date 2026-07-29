@@ -145,9 +145,27 @@ class NsLicenseModuleController extends ActionController
         $catalog = $this->catalogCacheService->getCatalog();
         $tabs = CatalogTabMapper::buildTabsFromCatalog($catalog);
         $tabData = $tabs[$tab] ?? ['title' => '', 'items' => []];
+        $items = is_array($tabData['items'] ?? null) ? $tabData['items'] : [];
+
+        $heroItem = null;
+        $listItems = [];
+        foreach ($items as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+            if ($heroItem === null && $this->isMostPopularBadge((string)($item['badge'] ?? ''))) {
+                $heroItem = $item;
+                continue;
+            }
+            $listItems[] = $item;
+        }
+        $tabData['items'] = $listItems;
 
         $itemsByKey = [];
-        foreach ($tabData['items'] as $item) {
+        foreach ($items as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
             $key = trim((string)($item['extensionKey'] ?? ''));
             if ($key !== '') {
                 $itemsByKey[$key] = $item;
@@ -158,11 +176,23 @@ class NsLicenseModuleController extends ActionController
         $view->assignMultiple([
             'catalogTab' => $tab,
             'catalogData' => $tabData,
+            'catalogHeroItem' => $heroItem,
             'catalogItemsJson' => json_encode($itemsByKey, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE),
             't3version' => $this->typo3Version,
         ]);
 
         return $view->renderResponse('NsLicenseModule/Catalog');
+    }
+
+    private function isMostPopularBadge(string $badge): bool
+    {
+        $normalized = strtolower(trim($badge));
+        if ($normalized === '') {
+            return false;
+        }
+
+        return str_contains($normalized, 'most popular')
+            || str_contains($normalized, 'beliebteste');
     }
 
     /**

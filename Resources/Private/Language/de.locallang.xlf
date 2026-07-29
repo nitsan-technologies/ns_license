@@ -348,6 +348,22 @@
                 <source>Detail</source>
                 <target>Detail</target>
             </trans-unit>
+            <trans-unit id="license-catalog.hero.most-popular">
+                <source>Most Popular</source>
+                <target>Beliebteste</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.hero.most-popular-template">
+                <source>Most Popular Template</source>
+                <target>Beliebtestes Template</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.list-heading">
+                <source>All products</source>
+                <target>Alle Produkte</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.list-heading.templates">
+                <source>Premium Templates</source>
+                <target>Premium Templates</target>
+            </trans-unit>
             <trans-unit id="license-catalog.detail.back">
                 <source>Back</source>
                 <target>Zurück</target>

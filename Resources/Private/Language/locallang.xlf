@@ -292,6 +292,18 @@
             <trans-unit id="license-catalog.filter-free">
                 <source>Free Only</source>
             </trans-unit>
+            <trans-unit id="license-catalog.hero.most-popular">
+                <source>Most Popular</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.hero.most-popular-template">
+                <source>Most Popular Template</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.list-heading">
+                <source>All products</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.list-heading.templates">
+                <source>Premium Templates</source>
+            </trans-unit>
             <trans-unit id="license-catalog.detail">
                 <source>Detail</source>
             </trans-unit>

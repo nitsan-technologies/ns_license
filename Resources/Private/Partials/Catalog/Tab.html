@@ -17,13 +17,32 @@
         </button>
     </div>
 
-    <f:if condition="{catalogData.items}">
+    <f:if condition="{catalogHeroItem}">
+        <f:render partial="Catalog/Hero" arguments="{item: catalogHeroItem, catalogTab: catalogTab}" />
+    </f:if>
+
+    <f:if condition="{catalogData.items} || {catalogHeroItem}">
         <f:then>
-            <div class="card-container catalog-card-container">
-                <f:for each="{catalogData.items}" as="item">
-                    <f:render partial="Catalog/Card" arguments="{item: item, catalogTab: catalogTab}" />
-                </f:for>
-            </div>
+            <f:if condition="{catalogData.items}">
+                <div class="catalog-list-heading d-flex align-items-center gap-2 mb-3">
+                    <h3 class="h5 mb-0">
+                        <f:if condition="{catalogTab} == 'templates'">
+                            <f:then>
+                                <f:translate key="license-catalog.list-heading.templates" extensionName="ns_license" />
+                            </f:then>
+                            <f:else>
+                                <f:translate key="license-catalog.list-heading" extensionName="ns_license" />
+                            </f:else>
+                        </f:if>
+                        ({f:count(subject: catalogData.items)})
+                    </h3>
+                </div>
+                <div class="card-container catalog-card-container">
+                    <f:for each="{catalogData.items}" as="item">
+                        <f:render partial="Catalog/Card" arguments="{item: item, catalogTab: catalogTab}" />
+                    </f:for>
+                </div>
+            </f:if>
             <script type="application/json" class="catalog-items-json" data-catalog-tab="{catalogTab}"><f:format.raw>{catalogItemsJson}</f:format.raw></script>
         </f:then>
         <f:else>

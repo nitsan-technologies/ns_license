@@ -1,0 +1,161 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers" data-namespace-typo3-fluid="true">
+<f:variable name="isFreeSection" value="0" />
+<f:if condition="{item.isFree} || {item.price} == 'Free'">
+    <f:variable name="isFreeSection" value="1" />
+</f:if>
+<article class="catalog-hero"
+         data-name="{item.name}"
+         data-description="{item.description}"
+         data-extension-key="{item.extensionKey}"
+         data-is-free="{isFreeSection}">
+    <div class="catalog-hero__main">
+        <div class="catalog-hero__badges">
+            <f:if condition="{item.category}">
+                <span class="catalog-hero__badge catalog-hero__badge--category">{item.category}</span>
+            </f:if>
+            <span class="catalog-hero__badge catalog-hero__badge--popular">
+                <f:if condition="{catalogTab} == 'templates'">
+                    <f:then>
+                        <f:translate key="license-catalog.hero.most-popular-template" extensionName="ns_license" />
+                    </f:then>
+                    <f:else>
+                        <f:translate key="license-catalog.hero.most-popular" extensionName="ns_license" />
+                    </f:else>
+                </f:if>
+            </span>
+        </div>
+
+        <div class="catalog-hero__identity">
+            <f:if condition="{item.listImage}">
+                <f:then>
+                    <div class="catalog-hero__icon">
+                        <img src="{item.listImage}" alt="" loading="lazy" />
+                    </div>
+                </f:then>
+                <f:else>
+                    <div class="catalog-hero__icon catalog-hero__icon--fallback" aria-hidden="true">
+                        <core:icon identifier="content-plugin" size="default" />
+                    </div>
+                </f:else>
+            </f:if>
+            <div class="catalog-hero__titles min-w-0">
+                <h2 class="catalog-hero__title">{item.name}</h2>
+                <p class="catalog-hero__subtitle mb-0">
+                    {item.extensionKey}<f:if condition="{item.version}"> · v{item.version}</f:if>
+                </p>
+            </div>
+        </div>
+
+        <f:if condition="{item.description}">
+            <p class="catalog-hero__description">{item.description}</p>
+        </f:if>
+
+        <f:if condition="{item.features}">
+            <ul class="catalog-hero__features list-unstyled mb-0">
+                <f:for each="{item.features}" as="feature" iteration="i">
+                    <f:if condition="{i.index} < 5">
+                        <li>
+                            <span class="catalog-hero__feature-icon" aria-hidden="true">
+                                <core:icon identifier="actions-check" size="small" />
+                            </span>
+                            <span>{feature}</span>
+                        </li>
+                    </f:if>
+                </f:for>
+            </ul>
+        </f:if>
+
+        <div class="catalog-hero__actions d-flex flex-wrap gap-2">
+            <f:if condition="{isFreeSection}">
+                <f:then>
+                    <f:if condition="{item.knowMoreUrl}">
+                        <a href="{item.knowMoreUrl}" class="btn btn-default" target="_blank" rel="noopener noreferrer">
+                            <core:icon identifier="actions-window-open" size="small" />
+                            <span><f:translate key="license-shop.know-more" extensionName="ns_license" /></span>
+                        </a>
+                    </f:if>
+                </f:then>
+                <f:else>
+                    <f:if condition="{item.extensionKey}">
+                        <button type="button"
+                            class="btn btn-primary t3js-get-license-trigger"
+                            data-extension-key="{item.extensionKey}"
+                            data-gl-mode="trial">
+                            <core:icon identifier="actions-plus" size="small" />
+                            <span><f:translate key="license-shop.free-trial" extensionName="ns_license" /></span>
+                        </button>
+                        <button type="button"
+                            class="btn btn-default t3js-get-license-trigger"
+                            data-extension-key="{item.extensionKey}"
+                            data-gl-mode="buy">
+                            <core:icon identifier="actions-plus" size="small" />
+                            <span>
+                                <f:if condition="{item.price}">
+                                    <f:then>{item.price} <f:translate key="license-catalog.detail.buy-now" extensionName="ns_license" /></f:then>
+                                    <f:else><f:translate key="license-catalog.detail.buy-now" extensionName="ns_license" /></f:else>
+                                </f:if>
+                            </span>
+                        </button>
+                    </f:if>
+                </f:else>
+            </f:if>
+            <f:if condition="{item.liveDemoUrl}">
+                <a href="{item.liveDemoUrl}" class="btn btn-default" target="_blank" rel="noopener noreferrer">
+                    <core:icon identifier="actions-preview" size="small" />
+                    <span><f:translate key="license-shop.live-demo" extensionName="ns_license" /></span>
+                </a>
+            </f:if>
+            <f:if condition="{item.extensionKey}">
+                <button type="button"
+                    class="btn btn-default t3js-product-detail-trigger"
+                    data-extension-key="{item.extensionKey}">
+                    <core:icon identifier="actions-document-view" size="small" />
+                    <span><f:translate key="license-catalog.detail" extensionName="ns_license" /></span>
+                </button>
+            </f:if>
+        </div>
+    </div>
+
+    <aside class="catalog-hero__aside" aria-label="{f:translate(key: 'license-catalog.detail.features', extensionName: 'ns_license')}">
+        <f:if condition="{item.keywords}">
+            <f:then>
+                <div class="catalog-hero__tags">
+                    <f:for each="{item.keywords}" as="keyword" iteration="i">
+                        <f:if condition="{i.index} < 8">
+                            <span class="catalog-hero__tag{f:if(condition: '{i.isFirst}', then: ' catalog-hero__tag--accent')}">{keyword}</span>
+                        </f:if>
+                    </f:for>
+                </div>
+            </f:then>
+            <f:else>
+                <f:if condition="{item.features}">
+                    <div class="catalog-hero__tags">
+                        <f:for each="{item.features}" as="feature" iteration="i">
+                            <f:if condition="{i.index} < 8">
+                                <span class="catalog-hero__tag{f:if(condition: '{i.isFirst}', then: ' catalog-hero__tag--accent')}">{feature}</span>
+                            </f:if>
+                        </f:for>
+                    </div>
+                </f:if>
+            </f:else>
+        </f:if>
+        <f:if condition="{item.rating} || {item.downloads}">
+            <div class="catalog-hero__stats">
+                <f:if condition="{item.rating}">
+                    <span class="catalog-hero__stat">
+                        <core:icon identifier="actions-star" size="small" />
+                        {item.rating}
+                    </span>
+                </f:if>
+                <f:if condition="{item.downloads}">
+                    <span class="catalog-hero__stat">
+                        <core:icon identifier="actions-download" size="small" />
+                        {item.downloads}
+                    </span>
+                </f:if>
+            </div>
+        </f:if>
+    </aside>
+</article>
+</html>

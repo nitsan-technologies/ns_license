@@ -465,7 +465,11 @@ final class LicenseService
                 ]
             ];
         } elseif ($type === 'shop') {
-            $catalogCacheService = GeneralUtility::makeInstance(CatalogCacheService::class);
+            $catalogCacheService = new CatalogCacheService(
+                $this->cacheManager,
+                $this->composerApiClient,
+                GeneralUtility::makeInstance(ExtensionConfiguration::class)
+            );
             $data = $catalogCacheService->refreshFromApi();
             return $this->isValidShopCatalog($data)
                 ? $data
