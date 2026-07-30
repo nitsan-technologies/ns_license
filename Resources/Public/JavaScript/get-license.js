@@ -1356,7 +1356,7 @@ function submitTrial(modal, isResend) {
  */
 function handleTrialError(modal, data) {
   const message = data?.message || modal.dataset.labelGenericError || 'Could not start the trial. Please try again.';
-  if (data?.error_code === 'trial_already_started') {
+  if (data?.error_code === 'trial_already_started' || data?.error_code === 'trial_domain_already_used') {
     Notification.info(modal.dataset.labelTitleInfo || 'Notice', message);
   } else {
     Notification.error(modal.dataset.labelTitleError || 'Error', message);
