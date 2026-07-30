@@ -98,10 +98,10 @@
                 <source>Paste your license key here</source>
             </trans-unit>
             <trans-unit id="license-activation.btn-activate">
-                <source>Activate License &amp; Download Extension</source>
+                <source>Activate or Update License</source>
             </trans-unit>
             <trans-unit id="license-activation.btn-activate-composer">
-                <source>Activate License (install via Composer)</source>
+                <source>Activate or Update License</source>
             </trans-unit>
             <trans-unit id="license-activation.activated_composer_success">
                 <source>Your license key is successfully activated. The extension is not downloaded in Composer mode — run the Composer commands below to install it.</source>

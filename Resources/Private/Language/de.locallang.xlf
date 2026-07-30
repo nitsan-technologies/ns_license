@@ -132,12 +132,12 @@
                 <target>Lizenzschlüssel hier einfügen</target>
             </trans-unit>
             <trans-unit id="license-activation.btn-activate">
-                <source>Activate License &amp; Download Extension</source>
-                <target>Lizenz aktivieren &amp; Extension herunterladen</target>
+                <source>Activate or Update License</source>
+                <target>Lizenz aktivieren oder aktualisieren</target>
             </trans-unit>
             <trans-unit id="license-activation.btn-activate-composer">
-                <source>Activate License (install via Composer)</source>
-                <target>Lizenz aktivieren (Installation via Composer)</target>
+                <source>Activate or Update License</source>
+                <target>Lizenz aktivieren oder aktualisieren</target>
             </trans-unit>
             <trans-unit id="license-activation.activated_composer_success">
                 <source>Your license key is successfully activated. The extension is not downloaded in Composer mode — run the Composer commands below to install it.</source>
