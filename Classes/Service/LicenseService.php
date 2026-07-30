@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NITSAN\NsLicense\Service;
 
 use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -54,7 +55,10 @@ final class LicenseService
             setcookie('serverConnectionTime', (string) 1, time() + 60 * 60 * 24 * 14);
 
             if ($checkType == 'checkTheme') {
-                $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_key=' . $extKey . '&typo3_version=' . $this->typo3Version);
+                $licenseData = $this->fetchLicense(
+                    'domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_key=' . $extKey . '&typo3_version=' . $this->typo3Version,
+                    $extKey
+                );
                 if (is_array($licenseData) && (isset($licenseData['status']) || isset($licenseData['checkTheme']))) {
                     return true;
                 }
@@ -62,7 +66,10 @@ final class LicenseService
             if ($extKey) {
                 $extData = $this->nsLicenseRepository->fetchData($extKey);
                 if (!empty($extData)) {
-                    $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $extData[0]['license_key'] . '&typo3_version=' . $this->typo3Version);
+                    $licenseData = $this->fetchLicense(
+                        'domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $extData[0]['license_key'] . '&typo3_version=' . $this->typo3Version,
+                        $extKey
+                    );
                     if (is_array($licenseData)) {
                         if (!empty($licenseData['serverError'])) {
                             return true;
@@ -122,15 +129,63 @@ final class LicenseService
     }
 
     /**
+     *
+     * @return array
+     */
+    private function buildEnvironmentParams(?string $extensionKey = null): array
+    {
+        $extensionVersion = '';
+        if ($extensionKey !== null && $extensionKey !== '') {
+            try {
+                if ($this->packageManager->isPackageActive($extensionKey)) {
+                    $extensionVersion = (string)$this->packageManager
+                        ->getPackage($extensionKey)
+                        ->getPackageMetaData()
+                        ->getVersion();
+                }
+            } catch (\Throwable $e) {
+                $extensionVersion = '';
+            }
+        }
+
+        return [
+            'composer_mode' => Environment::isComposerMode() ? 'composer' : 'classic',
+            'php_version' => PHP_VERSION,
+            'typo3_version' => (string)$this->typo3Version,
+            'extension_version' => $extensionVersion,
+        ];
+    }
+
+    /**
+     * Append environment query params; keep an existing typo3_version= (major) for dist filtering.
+     */
+    private function appendEnvironmentQuery(string $query, ?string $extensionKey = null): string
+    {
+        $parts = [];
+        foreach ($this->buildEnvironmentParams($extensionKey) as $key => $value) {
+            if ($key === 'typo3_version' && str_contains($query, 'typo3_version=')) {
+                continue;
+            }
+            $parts[] = rawurlencode($key) . '=' . rawurlencode((string)$value);
+        }
+        if ($parts === []) {
+            return $query;
+        }
+        return $query . ($query !== '' ? '&' : '') . implode('&', $parts);
+    }
+
+    /**
      * fetchLicense.
      *
-     * @param string $license
+     * @param string $license Query string for GetComposerDetails.php
+     * @param string|null $extensionKey Optional
      *
      * @return array|null
      **/
-    public function fetchLicense($license)
+    public function fetchLicense($license, ?string $extensionKey = null)
     {
         $apiBaseUrl = $this->getApiBaseUrl();
+        $license = $this->appendEnvironmentQuery((string)$license, $extensionKey);
         $url = $apiBaseUrl . 'GetComposerDetails.php?' . $license;
 
         try {
@@ -231,7 +286,11 @@ final class LicenseService
 
         // First, validate the license key by calling GetComposerDetails.php
         $currentDomain = GeneralUtility::getIndpEnv('HTTP_HOST');
-        $validateUrl = $apiBaseUrl . 'GetComposerDetails.php?domain=' . urlencode($currentDomain) . '&ns_license=' . urlencode($licenseKey) . '&typo3_version=' . $this->typo3Version;
+        $validateQuery = $this->appendEnvironmentQuery(
+            'domain=' . urlencode($currentDomain) . '&ns_license=' . urlencode($licenseKey) . '&typo3_version=' . $this->typo3Version,
+            $extensionKey !== '' ? $extensionKey : null
+        );
+        $validateUrl = $apiBaseUrl . 'GetComposerDetails.php?' . $validateQuery;
 
         try {
             $validateData = $this->composerApiClient->requestJsonArray($validateUrl, 'POST', []);
@@ -438,10 +497,13 @@ final class LicenseService
         // Determine API endpoint and method based on type
         if ($type === 'extensions') {
             $extensions = [];
+            $extensionVersions = [];
             $allLicense = $this->nsLicenseRepository->fetchData();
             if($allLicense){
                 foreach ($allLicense as $license) {
                     $extensions[$license['extension_key']] = $license['license_key'];
+                    $environmentForExt = $this->buildEnvironmentParams((string)$license['extension_key']);
+                    $extensionVersions[$license['extension_key']] = $environmentForExt['extension_version'];
                 }
             }
 
@@ -455,11 +517,13 @@ final class LicenseService
                     'error_code' => 'no_license_keys'
                 ];
             }
+            $environment = $this->buildEnvironmentParams();
+            unset($environment['extension_version']);
             $options = [
-                'body' => json_encode([
+                'body' => json_encode(array_merge([
                     'extensions' => $extensions,
-                    'typo3_version' => (string) $this->typo3Version,
-                ]),
+                    'extension_versions' => $extensionVersions,
+                ], $environment)),
                 'headers' => [
                     'Content-Type' => 'application/json'
                 ]

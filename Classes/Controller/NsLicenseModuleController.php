@@ -237,7 +237,10 @@ class NsLicenseModuleController extends ActionController
         $params = $this->request->getArguments();
         $extKey = $params['extension']['extension_key'];
         if (isset($params['extension']['license_key']) && $params['extension']['license_key'] != '') {
-            $updateStatus = $this->licenseService->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['extension']['license_key'] . '&ns_updates=1&typo3_version=' . $this->typo3Version);
+            $updateStatus = $this->licenseService->fetchLicense(
+                'domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['extension']['license_key'] . '&ns_updates=1&typo3_version=' . $this->typo3Version,
+                $extKey
+            );
             if (!isset($params['action'])) {
                 return $this->redirect('list');
             }
@@ -282,7 +285,10 @@ class NsLicenseModuleController extends ActionController
     protected function deactivationAction(): ResponseInterface
     {
         $params = $this->request->getArguments();
-        $this->licenseService->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['extension']['license_key'] . '&deactivate=1');
+        $this->licenseService->fetchLicense(
+            'domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['extension']['license_key'] . '&deactivate=1',
+            $params['extension']['extension_key'] ?? null
+        );
         $this->nsLicenseRepository->deactivate($params['extension']['license_key'], $params['extension']['extension_key']);
         $extFolder = $this->extensionListService->getExtensionFolder($params['extension']['extension_key']);
         $this->licenseService->updateFiles($extFolder, $params['extension']['extension_key']);
@@ -344,9 +350,15 @@ class NsLicenseModuleController extends ActionController
         $isRepair = '';
         if (isset($params['license']) && $params['license'] != '') {
             if (isset($params['activation']) && $params['activation']) {
-                $licenseData = $this->licenseService->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license'] . '&activation=1&typo3_version=' . $this->typo3Version);
+                $licenseData = $this->licenseService->fetchLicense(
+                    'domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license'] . '&activation=1&typo3_version=' . $this->typo3Version,
+                    $params['extension']['extension_key'] ?? null
+                );
             } else {
-                $licenseData = $this->licenseService->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license'] . '&typo3_version=' . $this->typo3Version);
+                $licenseData = $this->licenseService->fetchLicense(
+                    'domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license'] . '&typo3_version=' . $this->typo3Version,
+                    $params['extension']['extension_key'] ?? ($params['extension_key'] ?? null)
+                );
             }
             if (isset($params['extension']) && is_array($licenseData)) {
                 if ($params['extension']['isUpdateAction'] && empty($licenseData['isUpdatable'])) {
