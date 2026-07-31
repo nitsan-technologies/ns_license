@@ -248,6 +248,14 @@
                 <source>Sorry! Something is wrong to connect at our License system server, Please try again or submit support ticket at https://t3planet.com/support</source>
                 <target>Verbindung zum Lizenzserver fehlgeschlagen. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support: https://t3planet.com/support</target>
             </trans-unit>
+            <trans-unit id="systemRequirements.title">
+                <source>Server requirements for activation</source>
+                <target>Serveranforderungen für die Aktivierung</target>
+            </trans-unit>
+            <trans-unit id="systemRequirements.note">
+                <source>License activation downloads the extension to your server. Please ensure PHP memory_limit is at least 1024M, max_execution_time is 60+ seconds, typo3temp is writable, and outbound HTTPS to composer.t3planet.cloud is allowed. If activation hangs or shows a blank page, ask your host to check these settings.</source>
+                <target>Bei der Lizenzaktivierung wird die Extension auf Ihren Server heruntergeladen. Bitte stellen Sie sicher, dass PHP memory_limit mindestens 1024M beträgt, max_execution_time mindestens 60 Sekunden ist, typo3temp beschreibbar ist und ausgehende HTTPS-Verbindungen zu composer.t3planet.cloud erlaubt sind. Bei hängender Aktivierung oder leerer Seite bitten Sie Ihren Hoster, diese Einstellungen zu prüfen.</target>
+            </trans-unit>
             <trans-unit id="license-activation.footerTitle">
                 <source>Need Help With Domain Registration?</source>
                 <target>Hilfe bei der Domainregistrierung?</target>

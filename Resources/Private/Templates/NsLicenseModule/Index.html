@@ -32,6 +32,12 @@
                             </div>
                         </div>
                         <div class="card-body">
+                            <f:if condition="{showSystemRequirements}">
+                                <div class="alert alert-info ns-license-system-requirements mb-3" role="status">
+                                    <p class="mb-1"><strong><f:translate key="systemRequirements.title" extensionName="ns_license" /></strong></p>
+                                    <p class="mb-0"><f:translate key="systemRequirements.note" extensionName="ns_license" /></p>
+                                </div>
+                            </f:if>
                             <div class="ns-license-activation-form">
                                 <f:form action="activation" class="ns-license-form ns-ext-form">
                                     <div class="form-group d-flex flex-nowrap gap-3 align-items-center">
