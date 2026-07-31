@@ -237,7 +237,10 @@ class NsLicenseModuleController extends ActionController
         $params = $this->request->getArguments();
         $extKey = $params['extension']['extension_key'];
         if (isset($params['extension']['license_key']) && $params['extension']['license_key'] != '') {
-            $updateStatus = $this->licenseService->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['extension']['license_key'] . '&ns_updates=1&typo3_version=' . $this->typo3Version);
+            $updateStatus = $this->licenseService->fetchLicense(
+                'domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['extension']['license_key'] . '&ns_updates=1&typo3_version=' . $this->typo3Version,
+                $extKey
+            );
             if (!isset($params['action'])) {
                 return $this->redirect('list');
             }
@@ -282,7 +285,10 @@ class NsLicenseModuleController extends ActionController
     protected function deactivationAction(): ResponseInterface
     {
         $params = $this->request->getArguments();
-        $this->licenseService->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['extension']['license_key'] . '&deactivate=1');
+        $this->licenseService->fetchLicense(
+            'domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['extension']['license_key'] . '&deactivate=1',
+            $params['extension']['extension_key'] ?? null
+        );
         $this->nsLicenseRepository->deactivate($params['extension']['license_key'], $params['extension']['extension_key']);
         $extFolder = $this->extensionListService->getExtensionFolder($params['extension']['extension_key']);
         $this->licenseService->updateFiles($extFolder, $params['extension']['extension_key']);
@@ -344,9 +350,15 @@ class NsLicenseModuleController extends ActionController
         $isRepair = '';
         if (isset($params['license']) && $params['license'] != '') {
             if (isset($params['activation']) && $params['activation']) {
-                $licenseData = $this->licenseService->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license'] . '&activation=1&typo3_version=' . $this->typo3Version);
+                $licenseData = $this->licenseService->fetchLicense(
+                    'domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license'] . '&activation=1&typo3_version=' . $this->typo3Version,
+                    $params['extension']['extension_key'] ?? null
+                );
             } else {
-                $licenseData = $this->licenseService->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license'] . '&typo3_version=' . $this->typo3Version);
+                $licenseData = $this->licenseService->fetchLicense(
+                    'domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license'] . '&typo3_version=' . $this->typo3Version,
+                    $params['extension']['extension_key'] ?? ($params['extension_key'] ?? null)
+                );
             }
             if (isset($params['extension']) && is_array($licenseData)) {
                 if ($params['extension']['isUpdateAction'] && empty($licenseData['isUpdatable'])) {
@@ -389,10 +401,14 @@ class NsLicenseModuleController extends ActionController
                 }
 
                 $isAvailable = $this->nsLicenseRepository->fetchData($licenseData['extension_key'] ?? '');
-                if ($isAvailable && ($params['overwrite'] ?? null) == 1) {
+                $isVersionUpdate = ($fromWhere === 'fromUpdate') || !empty($params['isUpdateAction']);
+                $licenseRecordOnlyUpdate = false;
+
+                if ($isAvailable && $isVersionUpdate) {
+                    // List "Update" action: reinstall ZIP (extension files change).
                     try {
                         if (!$this->isComposerMode) {
-                            $overwrite = (bool)($params['overwrite'] ?? false);
+                            $overwrite = true;
                             $extensionKey = (string)($licenseData['extension_key'] ?? '');
                             // Install bundled foundation dependency first, then main extension.
                             // ns_t3af: license + repair only — never zip-install the product itself.
@@ -437,6 +453,10 @@ class NsLicenseModuleController extends ActionController
                         );
                     }
                     $this->nsLicenseRepository->updateData(json_decode(json_encode($licenseData)), 1);
+                } elseif ($isAvailable) {
+                    // Trial → paid (or key exchange): update DB only; leave installed extension as-is.
+                    $this->nsLicenseRepository->updateData(json_decode(json_encode($licenseData)), 1);
+                    $licenseRecordOnlyUpdate = true;
                 } elseif (!$isAvailable) {
                     // OPTION 1. Repairing > Let's just repair, If the product already there in typo3conf/ext + needs repair
                     $extFolder = $this->extensionListService->getExtensionFolder($licenseData['extension_key'] ?? '');
@@ -446,13 +466,11 @@ class NsLicenseModuleController extends ActionController
                         $isRepair = 'Yes';
                     }
 
-                    // OPTION 2. Overriding > Else let's continue to download extension
+                    // OPTION 2. First-time download when not already licensed locally
                     else {
-                        if (!$this->isComposerMode) {
-                            $overwrite = (bool)($params['overwrite'] ?? false);
-                        }
                         try {
                             if (!$this->isComposerMode) {
+                                $overwrite = false;
                                 $extensionKey = (string)($licenseData['extension_key'] ?? '');
                                 // Install bundled foundation dependency first, then main extension.
                                 // ns_t3af: license + repair only — never zip-install the product itself.
@@ -478,7 +496,7 @@ class NsLicenseModuleController extends ActionController
                                 );
                             }
                             return $this->finishActivation(
-                                LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'),
+                                LocalizationUtility::translate('errorMessage.default', 'NsLicense'),
                                 $licenseData['extension_key'] ?? '',
                                 ContextualFeedbackSeverity::ERROR
                             );
@@ -497,12 +515,6 @@ class NsLicenseModuleController extends ActionController
                         );
                     }
                     $this->nsLicenseRepository->insertNewData(json_decode(json_encode($licenseData)));
-                } else {
-                    return $this->finishActivation(
-                        LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'),
-                        'EXT:' . ($licenseData['extension_key'] ?? ''),
-                        ContextualFeedbackSeverity::ERROR
-                    );
                 }
 
                 // Is it from Update version?
@@ -510,6 +522,8 @@ class NsLicenseModuleController extends ActionController
                     $successMessage = LocalizationUtility::translate('license-activation.downloaded_successfully_from_update', 'NsLicense');
                 } elseif ($isRepair == 'Yes') {
                     $successMessage = LocalizationUtility::translate('license-activation.extension_repair', 'NsLicense');
+                } elseif ($licenseRecordOnlyUpdate) {
+                    $successMessage = LocalizationUtility::translate('license-activation.activated', 'NsLicense');
                 } else {
                     $messageKey = $this->isComposerMode
                         ? 'license-activation.activated_composer_success'
@@ -1301,7 +1315,6 @@ class NsLicenseModuleController extends ActionController
             $result = $this->downloadExtension([
                 'license' => $license,
                 'activation' => true,
-                'overwrite' => 1,
             ]);
             $this->returnActivationAsArray = false;
 
