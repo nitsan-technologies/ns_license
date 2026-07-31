@@ -1225,6 +1225,52 @@ function openTrialForm(modal, selection) {
 }
 
 /**
+ * Domains known to host disposable / temporary mailboxes.
+ * Keep in sync with composer/API/Utils/DisposableEmailGuard.php.
+ * @type {string[]}
+ */
+const DISPOSABLE_EMAIL_DOMAINS = [
+  'yopmail.com',
+  'yopmail.fr',
+  'mailinator.com',
+  'guerrillamail.com',
+  'guerrillamailblock.com',
+  'sharklasers.com',
+  'grr.la',
+  'tempmail.com',
+  'temp-mail.org',
+  'throwawaymail.com',
+  '10minutemail.com',
+  'trashmail.com',
+  'fakeinbox.com',
+  'maildrop.cc',
+  'dispostable.com',
+  'mailnesia.com',
+  'getnada.com',
+  'emailondeck.com',
+  'moakt.com',
+  'discard.email',
+];
+
+/**
+ * @param {string} email
+ * @returns {boolean}
+ */
+function isDisposableEmail(email) {
+  const at = email.lastIndexOf('@');
+  if (at < 0) {
+    return false;
+  }
+  const domain = email.slice(at + 1).trim().toLowerCase().replace(/\.+$/, '');
+  if (!domain) {
+    return false;
+  }
+  return DISPOSABLE_EMAIL_DOMAINS.some(
+    (blocked) => domain === blocked || domain.endsWith('.' + blocked),
+  );
+}
+
+/**
  * Validate the trial form. Returns { valid, values } or shows a warning.
  * @param {HTMLElement} modal
  * @returns {{extension_key:string, email:string, name:string, domain:string}|null}
@@ -1238,6 +1284,14 @@ function readTrialForm(modal) {
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   if (!emailOk) {
     Notification.warning(modal.dataset.labelTitleWarning || 'Warning', modal.dataset.labelInvalidEmail || 'Please enter a valid email address.');
+    return null;
+  }
+  if (isDisposableEmail(email)) {
+    Notification.warning(
+      modal.dataset.labelTitleWarning || 'Warning',
+      modal.dataset.labelDisposableEmail
+        || 'Temporary or disposable email addresses are not allowed. Please use a permanent email.',
+    );
     return null;
   }
   if (domain === '') {

@@ -1055,6 +1055,9 @@
             <trans-unit id="license-get-new.form.error.email">
                 <source>Please enter a valid email address.</source>
             </trans-unit>
+            <trans-unit id="license-get-new.form.error.disposable_email">
+                <source>Temporary or disposable email addresses are not allowed.</source>
+            </trans-unit>
             <trans-unit id="license-get-new.form.error.domain">
                 <source>Please enter your domain.</source>
             </trans-unit>
