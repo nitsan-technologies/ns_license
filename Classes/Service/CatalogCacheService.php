@@ -122,10 +122,52 @@ final class CatalogCacheService
                 return null;
             }
             $item = $data['item'] ?? null;
-            return is_array($item) ? $item : null;
+            if (!is_array($item)) {
+                return null;
+            }
+
+            return $this->enrichChangelogIfEmpty($item, $extensionKey);
         } catch (\Throwable) {
             return null;
         }
+    }
+
+    /**
+     * Shop cache often stores changelog as []; fill from GetGitlabReleaseTags when empty.
+     * Safe no-op once the API already enriches changelog on detail fetch.
+     *
+     * @param array<string, mixed> $item
+     * @return array<string, mixed>
+     */
+    private function enrichChangelogIfEmpty(array $item, string $extensionKey): array
+    {
+        $existing = $item['changelog'] ?? null;
+        if (is_array($existing) && $existing !== []) {
+            return $item;
+        }
+
+        $key = trim((string)($item['extensionKey'] ?? $extensionKey));
+        if ($key === '') {
+            $item['changelog'] = is_array($existing) ? $existing : [];
+            return $item;
+        }
+
+        $url = rtrim($this->getApiBaseUrl(), '/')
+            . '/GetGitlabReleaseTags.php?getTags=1&extensionKey=' . rawurlencode($key);
+
+        try {
+            $result = $this->composerApiClient->requestJsonResult($url, 'GET', []);
+            $raw = $result['data'];
+            if (!is_array($raw)) {
+                $item['changelog'] = is_array($existing) ? $existing : [];
+                return $item;
+            }
+            $item['changelog'] = ReleaseNotesMapper::fromReleaseTagsJson($raw);
+        } catch (\Throwable) {
+            $item['changelog'] = is_array($existing) ? $existing : [];
+        }
+
+        return $item;
     }
 
     /**

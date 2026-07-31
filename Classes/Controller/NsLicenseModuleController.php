@@ -110,6 +110,7 @@ class NsLicenseModuleController extends ActionController
         if ($this->isComposerMode) {
             $view->assign('showUpdateButton', 1);
         }
+        $view->assign('showSystemRequirements', !$this->isComposerMode);
         $view->assign('extensions', $extensions);
 
         $query = $this->request->getQueryParams();
