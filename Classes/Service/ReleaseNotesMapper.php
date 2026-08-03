@@ -73,7 +73,8 @@ final class ReleaseNotesMapper
         $changes = [];
         foreach ($lines as $line) {
             $line = trim($line);
-            $line = ltrim($line, "-*• \t");
+            // Strip list bullets only; do not eat leading * from **FEATURE** markers.
+            $line = (string)preg_replace('/^[-•]\s+|^(?!\*\*[A-Za-z]+\*\*)\*\s+/u', '', $line);
             if ($line === '') {
                 continue;
             }
