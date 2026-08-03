@@ -116,6 +116,23 @@
                     <div class="panel-group ns-product-detail__panels js-product-detail-faq" id="product-detail-faq"></div>
                 </div>
             </section>
+
+            <section class="card ns-product-detail__section js-product-detail-related-section d-none"
+                     data-label-view="{f:translate(key: 'license-catalog.detail.related.view', extensionName: 'ns_license')}">
+                <div class="card-header">
+                    <h2 class="card-title ns-product-detail__related-title">
+                        <span class="ns-product-detail__related-title-icon" aria-hidden="true">
+                            <svg width="16" height="16" viewBox="0 0 16 16" focusable="false">
+                                <path fill="currentColor" d="M5.5 3.5A2.5 2.5 0 0 1 8 1a2.5 2.5 0 0 1 2.5 2.5V4H12a1 1 0 0 1 1 1v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a1 1 0 0 1 1-1h1.5v-.5zM7 4h2v-.5a1 1 0 0 0-2 0V4zm-2 2v7a.5.5 0 0 0 .5.5h5a.5.5 0 0 0 .5-.5V6H5z"/>
+                            </svg>
+                        </span>
+                        <f:translate key="license-catalog.detail.related" extensionName="ns_license" />
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div class="ns-product-detail__related js-product-detail-related" role="list"></div>
+                </div>
+            </section>
         </div>
 
         <aside class="col-lg-3 ns-product-detail__sidebar">

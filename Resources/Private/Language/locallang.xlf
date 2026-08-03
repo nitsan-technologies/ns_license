@@ -391,6 +391,12 @@
             <trans-unit id="license-catalog.detail.faq">
                 <source>Frequently Asked Questions</source>
             </trans-unit>
+            <trans-unit id="license-catalog.detail.related">
+                <source>Frequently Bought Together</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.related.view">
+                <source>View</source>
+            </trans-unit>
             <trans-unit id="license-catalog.detail.demo.frontend">
                 <source>Frontend Demo</source>
             </trans-unit>

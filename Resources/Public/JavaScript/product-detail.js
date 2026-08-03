@@ -262,6 +262,7 @@ function populateView(view, item) {
   populateExternalNav(view, item);
   populateChangelog(view, item);
   populateFaq(view, item);
+  populateRelated(view, item);
   populateActions(view, item, key, isFree, price);
   populateComposer(view, item);
   populateResources(view, item);
@@ -491,6 +492,99 @@ function populateFaq(view, item) {
     }));
   });
   setVisible(section, true);
+}
+
+/**
+ * Frequently Bought Together rows from relatedProducts (slim catalog cards).
+ * @param {HTMLElement} view
+ * @param {object} item
+ */
+function populateRelated(view, item) {
+  const section = view.querySelector('.js-product-detail-related-section');
+  const container = view.querySelector('.js-product-detail-related');
+  const entries = Array.isArray(item.relatedProducts) ? item.relatedProducts : [];
+  if (!container) {
+    return;
+  }
+  container.innerHTML = '';
+  if (entries.length === 0) {
+    setVisible(section, false);
+    return;
+  }
+
+  const viewLabel = section?.dataset.labelView || 'View';
+  const fallbackIcon = '<svg class="ns-product-detail__related-fallback-icon" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2.5 13.8 8h5.7l-4.6 3.4 1.8 5.5L12 13.7 7.3 16.9l1.8-5.5L4.5 8h5.7L12 2.5z"/></svg>';
+
+  entries.forEach((entry) => {
+    if (!entry || typeof entry !== 'object') {
+      return;
+    }
+    const extensionKey = String(entry.extensionKey || '').trim();
+    if (!extensionKey) {
+      return;
+    }
+    const name = String(entry.name || extensionKey);
+    const price = String(entry.price || '').trim();
+    const badge = String(entry.badge || '').trim();
+    const listImage = String(entry.listImage || '').trim();
+
+    const row = document.createElement('div');
+    row.className = 'ns-product-detail__related-row';
+    row.setAttribute('role', 'listitem');
+
+    const media = document.createElement('div');
+    media.className = 'ns-product-detail__related-media';
+    if (listImage) {
+      const img = document.createElement('img');
+      img.src = listImage;
+      img.alt = '';
+      img.loading = 'lazy';
+      media.appendChild(img);
+    } else {
+      media.innerHTML = fallbackIcon;
+    }
+
+    const body = document.createElement('div');
+    body.className = 'ns-product-detail__related-body';
+
+    const titleRow = document.createElement('div');
+    titleRow.className = 'ns-product-detail__related-title-row';
+    const title = document.createElement('span');
+    title.className = 'ns-product-detail__related-name';
+    title.textContent = name;
+    titleRow.appendChild(title);
+    if (badge) {
+      const badgeEl = document.createElement('span');
+      badgeEl.className = 'badge badge-info ns-product-detail__related-badge';
+      badgeEl.textContent = badge;
+      titleRow.appendChild(badgeEl);
+    }
+
+    const keyEl = document.createElement('div');
+    keyEl.className = 'ns-product-detail__related-key';
+    keyEl.textContent = extensionKey;
+
+    body.appendChild(titleRow);
+    body.appendChild(keyEl);
+
+    const priceEl = document.createElement('div');
+    priceEl.className = 'ns-product-detail__related-price';
+    priceEl.textContent = price;
+
+    const viewBtn = document.createElement('button');
+    viewBtn.type = 'button';
+    viewBtn.className = 'btn btn-default btn-sm t3js-product-detail-trigger ns-product-detail__related-view';
+    viewBtn.dataset.extensionKey = extensionKey;
+    viewBtn.textContent = viewLabel;
+
+    row.appendChild(media);
+    row.appendChild(body);
+    row.appendChild(priceEl);
+    row.appendChild(viewBtn);
+    container.appendChild(row);
+  });
+
+  setVisible(section, container.children.length > 0);
 }
 
 /**
