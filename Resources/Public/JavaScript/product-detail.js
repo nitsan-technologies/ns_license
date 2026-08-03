@@ -13,6 +13,18 @@ const HEADER_SELECTOR = '.ns-license-tab-page-header';
 const detailCache = {};
 
 /**
+ * @param {boolean} show
+ */
+function setModuleLoader(show) {
+  const loader = document.getElementById('nsLicenseLoader');
+  if (!loader) {
+    return;
+  }
+  loader.style.display = show ? '' : 'none';
+  loader.setAttribute('aria-hidden', show ? 'false' : 'true');
+}
+
+/**
  * @param {string} text
  * @returns {string}
  */
@@ -59,6 +71,44 @@ function formatDownloads(value) {
 }
 
 /**
+ * Normalize compatibility label (e.g. "TYPO3 v12 to v14" → "v12 to v14").
+ * @param {unknown} version
+ * @returns {string}
+ */
+function formatVersionSupport(version) {
+  let v = String(version ?? '').trim();
+  if (!v) {
+    return '';
+  }
+  v = v.replace(/\bv?TYPO3\b\s*/gi, '').replace(/\s+/g, ' ').trim();
+  if (!v) {
+    return '';
+  }
+  v = v.replace(/\b(?!v)(\d+)/gi, 'v$1');
+  return v;
+}
+
+/**
+ * Exact fractional star fill (e.g. 4.6 → 92% of the 5-star row).
+ * @param {unknown} rating
+ * @returns {{ html: string, label: string }|null}
+ */
+function renderRatingStars(rating) {
+  const num = Number.parseFloat(String(rating ?? '').replace(',', '.'));
+  if (!Number.isFinite(num) || num <= 0) {
+    return null;
+  }
+  const clamped = Math.min(5, Math.max(0, num));
+  const pct = (clamped / 5) * 100;
+  const label = String(rating).trim() || String(clamped);
+  const html = `<span class="ns-product-detail__stars" style="--ns-pd-star-fill: ${pct}%;" aria-hidden="true">`
+    + `<span class="ns-product-detail__stars-base">★★★★★</span>`
+    + `<span class="ns-product-detail__stars-fill">★★★★★</span>`
+    + `</span>`;
+  return { html, label };
+}
+
+/**
  * @param {HTMLElement} el
  * @param {boolean} show
  */
@@ -89,7 +139,7 @@ function sectionLabel(tab) {
 function populateView(view, item) {
   const name = item.name || '';
   const key = item.extensionKey || '';
-  const version = item.version ? `v${item.version}` : '';
+  const version = formatVersionSupport(item.version);
   const price = item.price || '';
   const isFree = !!(item.isFree || price === 'Free');
   const heroImage = item.detailImage || item.listImage || '';
@@ -111,15 +161,16 @@ function populateView(view, item) {
     crumbName.textContent = name;
   }
 
+  const hero = view.querySelector('.js-product-detail-hero');
   const heroBg = view.querySelector('.js-product-detail-hero-bg');
+  if (hero) {
+    hero.classList.toggle('has-image', !!heroImage);
+  }
   if (heroBg) {
     if (heroImage) {
-      const safeUrl = String(heroImage).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-      heroBg.style.backgroundImage = `url("${safeUrl}")`;
-      heroBg.classList.add('has-image');
+      heroBg.style.backgroundImage = `url(${JSON.stringify(heroImage)})`;
     } else {
       heroBg.style.backgroundImage = '';
-      heroBg.classList.remove('has-image');
     }
   }
 
@@ -127,10 +178,10 @@ function populateView(view, item) {
   if (badges) {
     const parts = [];
     if (item.category) {
-      parts.push(`<span class="ns-product-detail__badge ns-product-detail__badge--category">${escapeHtml(item.category)}</span>`);
+      parts.push(`<span class="badge badge-default">${escapeHtml(item.category)}</span>`);
     }
     if (item.badge) {
-      parts.push(`<span class="ns-product-detail__badge ns-product-detail__badge--promo">${escapeHtml(item.badge)}</span>`);
+      parts.push(`<span class="badge badge-warning">${escapeHtml(item.badge)}</span>`);
     }
     badges.innerHTML = parts.join('');
     setVisible(badges, parts.length > 0);
@@ -143,18 +194,32 @@ function populateView(view, item) {
 
   const subtitle = view.querySelector('.js-product-detail-subtitle');
   if (subtitle) {
-    subtitle.textContent = [key, version].filter(Boolean).join('  |  ');
+    subtitle.textContent = [key, version].filter(Boolean).join(' · ');
   }
 
   const heroStats = view.querySelector('.js-product-detail-hero-stats');
   if (heroStats) {
     const bits = [];
     if (item.rating) {
-      bits.push(`<span class="ns-product-detail__stat"><span class="ns-product-detail__stars" aria-hidden="true">★★★★★</span> ${escapeHtml(String(item.rating))}</span>`);
+      const stars = renderRatingStars(item.rating);
+      if (stars) {
+        bits.push(
+          `<span class="ns-product-detail__stat ns-product-detail__stat--rating">`
+          + stars.html
+          + `<strong class="ns-product-detail__stat-value">${escapeHtml(stars.label)}</strong>`
+          + `</span>`
+        );
+      }
     }
     const downloads = formatDownloads(item.downloads);
     if (downloads) {
-      bits.push(`<span class="ns-product-detail__stat">${escapeHtml(downloads)} downloads</span>`);
+      const downloadsLabel = view.dataset.labelDownloads || 'Downloads';
+      bits.push(
+        `<span class="ns-product-detail__stat ns-product-detail__stat--downloads">`
+        + `<strong class="ns-product-detail__stat-value">${escapeHtml(downloads)}</strong>`
+        + `<span class="ns-product-detail__stat-label">${escapeHtml(downloadsLabel)}</span>`
+        + `</span>`
+      );
     }
     heroStats.innerHTML = bits.join('');
     setVisible(heroStats, bits.length > 0);
@@ -176,7 +241,7 @@ function populateView(view, item) {
   if (keywordsEl) {
     const tagIcon = '<svg class="ns-product-detail__keyword-icon" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M2 2h5.5L14 8.5 8.5 14 2 7.5V2zm2.5 2a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/></svg>';
     keywordsEl.innerHTML = keywords.map((entry) => (
-      `<span class="ns-product-detail__keyword">${tagIcon}<span>${escapeHtml(String(entry))}</span></span>`
+      `<span class="badge badge-default">${tagIcon}<span>${escapeHtml(String(entry))}</span></span>`
     )).join('');
   }
   setVisible(keywordsSection, keywords.length > 0);
@@ -185,12 +250,14 @@ function populateView(view, item) {
   const featuresEl = view.querySelector('.js-product-detail-features');
   const features = Array.isArray(item.features) ? item.features : [];
   if (featuresEl) {
+    const checkIcon = '<span class="ns-product-detail__feature-icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" focusable="false"><path fill="currentColor" d="M13.78 4.22a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0L2.22 7.28a.75.75 0 0 1 1.06-1.06L7 9.94l5.72-5.72a.75.75 0 0 1 1.06 0z"/></svg></span>';
     featuresEl.innerHTML = features.map((entry) => (
-      `<div class="ns-product-detail__feature"><span class="ns-product-detail__feature-icon" aria-hidden="true">✓</span><span>${escapeHtml(String(entry))}</span></div>`
+      `<li class="ns-product-detail__feature">${checkIcon}<span>${escapeHtml(String(entry))}</span></li>`
     )).join('');
   }
   setVisible(featuresSection, features.length > 0);
 
+  populateExternalNav(view, item);
   populateChangelog(view, item);
   populateFaq(view, item);
   populateActions(view, item, key, isFree, price);
@@ -198,6 +265,66 @@ function populateView(view, item) {
   populateResources(view, item);
   populateMeta(view, item, key, version);
   populateDependencies(view, item);
+}
+
+/**
+ * Meta-bar Features / Reviews / References → external product-page links.
+ * Prefers API fields (featuresUrl / reviewsUrl / referencesUrl); falls back to productUrl.
+ * @param {HTMLElement} view
+ * @param {object} item
+ */
+function populateExternalNav(view, item) {
+  const base = String(item.productUrl || item.knowMoreUrl || '').trim();
+  const sectionUrls = (item.sectionUrls && typeof item.sectionUrls === 'object') ? item.sectionUrls : {};
+  const navLinks = (item.navLinks && typeof item.navLinks === 'object') ? item.navLinks : {};
+  const byKey = {
+    features: String(item.featuresUrl || sectionUrls.features || navLinks.features || '').trim(),
+    reviews: String(item.reviewsUrl || sectionUrls.reviews || navLinks.reviews || '').trim(),
+    references: String(item.referencesUrl || sectionUrls.references || navLinks.references || '').trim(),
+  };
+
+  view.querySelectorAll('.js-product-detail-ext-link').forEach((link) => {
+    const key = String(link.dataset.extKey || '').trim();
+    const url = byKey[key] || base;
+    if (!url) {
+      setVisible(link, false);
+      link.removeAttribute('href');
+      return;
+    }
+    link.href = url;
+    setVisible(link, true);
+  });
+}
+
+/**
+ * Build a TYPO3 core collapsible panel (Styleguide Panels pattern).
+ * @param {{ id: string, title: string, bodyHtml: string, open?: boolean }} opts
+ * @returns {HTMLElement}
+ */
+function createCorePanel(opts) {
+  const { id, title, bodyHtml, open = false } = opts;
+  const el = document.createElement('div');
+  el.className = 'panel panel-default';
+  el.innerHTML = `
+    <h3 class="panel-heading" role="tab">
+      <div class="panel-heading-row">
+        <button
+          class="panel-button${open ? '' : ' collapsed'}"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#${id}"
+          aria-expanded="${open ? 'true' : 'false'}"
+          aria-controls="${id}"
+        >
+          <div class="panel-title">${escapeHtml(title)}</div>
+          <span class="caret"></span>
+        </button>
+      </div>
+    </h3>
+    <div class="panel-collapse collapse${open ? ' show' : ''}" id="${id}" role="tabpanel">
+      <div class="panel-body">${bodyHtml}</div>
+    </div>`;
+  return el;
 }
 
 /**
@@ -224,21 +351,15 @@ function populateChangelog(view, item) {
       .filter(Boolean)
       .join(' ');
     const changes = Array.isArray(entry.changes) ? entry.changes : [];
-    const body = changes.length
+    const bodyHtml = changes.length
       ? `<ul class="mb-0">${changes.map((c) => `<li>${escapeHtml(String(c))}</li>`).join('')}</ul>`
       : '<p class="text-variant mb-0">—</p>';
-    const itemEl = document.createElement('div');
-    itemEl.className = 'accordion-item';
-    itemEl.innerHTML = `
-      <h3 class="accordion-header">
-        <button class="accordion-button${open ? '' : ' collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#${id}" aria-expanded="${open ? 'true' : 'false'}" aria-controls="${id}">
-          ${escapeHtml(heading)}
-        </button>
-      </h3>
-      <div id="${id}" class="accordion-collapse collapse${open ? ' show' : ''}" data-bs-parent="#product-detail-changelog">
-        <div class="accordion-body">${body}</div>
-      </div>`;
-    container.appendChild(itemEl);
+    container.appendChild(createCorePanel({
+      id,
+      title: heading,
+      bodyHtml,
+      open,
+    }));
   });
   setVisible(section, true);
 }
@@ -260,19 +381,12 @@ function populateFaq(view, item) {
     return;
   }
   entries.forEach((entry, index) => {
-    const id = `pd-faq-${index}`;
-    const itemEl = document.createElement('div');
-    itemEl.className = 'accordion-item';
-    itemEl.innerHTML = `
-      <h3 class="accordion-header">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${id}" aria-expanded="false" aria-controls="${id}">
-          ${escapeHtml(entry.q || '')}
-        </button>
-      </h3>
-      <div id="${id}" class="accordion-collapse collapse" data-bs-parent="#product-detail-faq">
-        <div class="accordion-body">${escapeHtml(entry.a || '')}</div>
-      </div>`;
-    container.appendChild(itemEl);
+    container.appendChild(createCorePanel({
+      id: `pd-faq-${index}`,
+      title: String(entry.q || ''),
+      bodyHtml: `<p class="mb-0">${escapeHtml(entry.a || '')}</p>`,
+      open: false,
+    }));
   });
   setVisible(section, true);
 }
@@ -309,16 +423,50 @@ function populateActions(view, item, key, isFree, price) {
     trialBtn.dataset.glMode = 'trial';
     trialBtn.textContent = view.dataset.labelTrial || 'Free Trial';
     actions.appendChild(trialBtn);
+  } else if (isFree) {
+    const knowMoreUrl = item.knowMoreUrl || item.productUrl || '';
+    if (knowMoreUrl) {
+      const knowMore = document.createElement('a');
+      knowMore.href = knowMoreUrl;
+      knowMore.target = '_blank';
+      knowMore.rel = 'noopener noreferrer';
+      knowMore.className = 'btn btn-primary';
+      knowMore.textContent = view.dataset.labelKnowMore || 'Know More';
+      actions.appendChild(knowMore);
+    }
   }
 
-  if (item.liveDemoUrl) {
-    const demo = document.createElement('a');
-    demo.href = item.liveDemoUrl;
-    demo.target = '_blank';
-    demo.rel = 'noopener noreferrer';
-    demo.className = 'btn btn-default';
-    demo.textContent = view.dataset.labelDemo || 'Live Demo';
-    actions.appendChild(demo);
+  if (item.liveDemoUrl || item.frontendDemoUrl || item.backendDemoUrl) {
+    const frontendUrl = item.frontendDemoUrl || item.liveDemoUrl || '';
+    const backendUrl = item.backendDemoUrl || '';
+    if (frontendUrl && backendUrl) {
+      const fe = document.createElement('a');
+      fe.href = frontendUrl;
+      fe.target = '_blank';
+      fe.rel = 'noopener noreferrer';
+      fe.className = 'btn btn-default';
+      fe.textContent = view.dataset.labelDemoFrontend || 'Frontend Demo';
+      actions.appendChild(fe);
+
+      const be = document.createElement('a');
+      be.href = backendUrl;
+      be.target = '_blank';
+      be.rel = 'noopener noreferrer';
+      be.className = 'btn btn-default';
+      be.textContent = view.dataset.labelDemoBackend || 'Backend Demo';
+      actions.appendChild(be);
+    } else {
+      const demoUrl = frontendUrl || backendUrl;
+      const demo = document.createElement('a');
+      demo.href = demoUrl;
+      demo.target = '_blank';
+      demo.rel = 'noopener noreferrer';
+      demo.className = 'btn btn-default';
+      demo.textContent = backendUrl && !frontendUrl
+        ? (view.dataset.labelDemoBackend || 'Backend Demo')
+        : (view.dataset.labelDemo || 'Live Demo');
+      actions.appendChild(demo);
+    }
   }
 
   setVisible(view.querySelector('.js-product-detail-cta-card'), actions.children.length > 0);
@@ -527,19 +675,39 @@ document.addEventListener('click', (e) => {
     return;
   }
 
-  // Show list card data immediately, then enrich with full detail (tags, features, FAQ…).
-  if (listItem) {
-    populateView(view, listItem);
-    toggleDetailMode(true);
+  // Loader first, then content after detail data is ready.
+  setModuleLoader(true);
+  const list = document.querySelector(LIST_SELECTOR);
+  const header = document.querySelector(HEADER_SELECTOR);
+  if (list) {
+    list.classList.add('d-none');
   }
+  if (header) {
+    header.classList.add('d-none');
+  }
+  // Keep detail hidden until populated.
+  view.classList.add('d-none');
+  view.setAttribute('hidden', 'hidden');
+  view.setAttribute('aria-hidden', 'true');
 
-  loadFullProductDetail(extensionKey, listItem || {}).then((fullItem) => {
-    if (!fullItem) {
-      return;
-    }
-    populateView(view, fullItem);
-    toggleDetailMode(true);
-  });
+  loadFullProductDetail(extensionKey, listItem || {})
+    .then((fullItem) => {
+      const item = fullItem || listItem;
+      if (!item) {
+        if (list) {
+          list.classList.remove('d-none');
+        }
+        if (header) {
+          header.classList.remove('d-none');
+        }
+        return;
+      }
+      populateView(view, item);
+      toggleDetailMode(true);
+    })
+    .finally(() => {
+      setModuleLoader(false);
+    });
 });
 
 /**

@@ -457,8 +457,16 @@
                 <target>Stichwörter</target>
             </trans-unit>
             <trans-unit id="license-catalog.detail.features">
-                <source>Key Features</source>
-                <target>Hauptfunktionen</target>
+                <source>Features</source>
+                <target>Features</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.reviews">
+                <source>Reviews</source>
+                <target>Reviews</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.references">
+                <source>References</source>
+                <target>Referenzen</target>
             </trans-unit>
             <trans-unit id="license-catalog.detail.changelog">
                 <source>Changelog</source>
