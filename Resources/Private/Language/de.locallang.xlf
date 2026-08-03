@@ -408,6 +408,10 @@
                 <source>T3Planet Page</source>
                 <target>T3Planet-Seite</target>
             </trans-unit>
+            <trans-unit id="license-catalog.detail.resource.schedule">
+                <source>Schedule a Call</source>
+                <target>Termin vereinbaren</target>
+            </trans-unit>
             <trans-unit id="license-catalog.detail.changelog.latest">
                 <source>Latest</source>
                 <target>Aktuell</target>

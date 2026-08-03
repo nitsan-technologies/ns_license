@@ -334,6 +334,9 @@
             <trans-unit id="license-catalog.detail.resource.product">
                 <source>T3Planet Page</source>
             </trans-unit>
+            <trans-unit id="license-catalog.detail.resource.schedule">
+                <source>Schedule a Call</source>
+            </trans-unit>
             <trans-unit id="license-catalog.detail.changelog.latest">
                 <source>Latest</source>
             </trans-unit>

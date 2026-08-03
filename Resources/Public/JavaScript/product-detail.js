@@ -214,8 +214,10 @@ function populateView(view, item) {
     const downloads = formatDownloads(item.downloads);
     if (downloads) {
       const downloadsLabel = view.dataset.labelDownloads || 'Downloads';
+      const downloadIcon = getProductDetailIconHtml(view, 'stat-download');
       bits.push(
         `<span class="ns-product-detail__stat ns-product-detail__stat--downloads">`
+        + (downloadIcon ? `<span class="ns-product-detail__stat-icon" aria-hidden="true">${downloadIcon}</span>` : '')
         + `<strong class="ns-product-detail__stat-value">${escapeHtml(downloads)}</strong>`
         + `<span class="ns-product-detail__stat-label">${escapeHtml(downloadsLabel)}</span>`
         + `</span>`
@@ -298,11 +300,12 @@ function populateExternalNav(view, item) {
 
 /**
  * Build a TYPO3 core collapsible panel (Styleguide Panels pattern).
- * @param {{ id: string, title: string, bodyHtml: string, open?: boolean }} opts
+ * @param {{ id: string, title?: string, titleHtml?: string, bodyHtml: string, open?: boolean }} opts
  * @returns {HTMLElement}
  */
 function createCorePanel(opts) {
-  const { id, title, bodyHtml, open = false } = opts;
+  const { id, title = '', titleHtml = '', bodyHtml, open = false } = opts;
+  const titleContent = titleHtml || escapeHtml(title);
   const el = document.createElement('div');
   el.className = 'panel panel-default';
   el.innerHTML = `
@@ -316,7 +319,7 @@ function createCorePanel(opts) {
           aria-expanded="${open ? 'true' : 'false'}"
           aria-controls="${id}"
         >
-          <div class="panel-title">${escapeHtml(title)}</div>
+          <div class="panel-title">${titleContent}</div>
           <span class="caret"></span>
         </button>
       </div>
@@ -325,6 +328,90 @@ function createCorePanel(opts) {
       <div class="panel-body">${bodyHtml}</div>
     </div>`;
   return el;
+}
+
+const CHANGELOG_TYPES = new Set(['bugfix', 'feature', 'task', 'release']);
+
+/** @type {Record<string, string>} */
+const CHANGELOG_BADGE_CLASS = {
+  feature: 'badge badge-success',
+  task: 'badge badge-info',
+  bugfix: 'badge badge-warning',
+  release: 'badge badge-primary',
+};
+
+/**
+ * Format release date like "31st Jul 2026" when parseable.
+ * @param {unknown} raw
+ * @returns {string}
+ */
+function formatChangelogDate(raw) {
+  const s = String(raw ?? '').trim();
+  if (!s) {
+    return '';
+  }
+  if (/\d+(st|nd|rd|th)\b/i.test(s)) {
+    return s;
+  }
+  const d = new Date(s);
+  if (Number.isNaN(d.getTime())) {
+    return s;
+  }
+  const day = d.getDate();
+  const j = day % 10;
+  const k = day % 100;
+  let suffix = 'th';
+  if (j === 1 && k !== 11) {
+    suffix = 'st';
+  } else if (j === 2 && k !== 12) {
+    suffix = 'nd';
+  } else if (j === 3 && k !== 13) {
+    suffix = 'rd';
+  }
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return `${day}${suffix} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+/**
+ * Parse changelog line into type + text.
+ * Supports **FEATURE**, FEATURE** (legacy stripped), and [FEATURE].
+ * @param {unknown} line
+ * @returns {{ type: string, text: string }}
+ */
+function parseChangelogChange(line) {
+  const raw = String(line ?? '').trim();
+  const patterns = [
+    /^\*\*([A-Za-z]+)\*\*\s*(.*)$/,
+    /^([A-Za-z]+)\*\*\s*(.*)$/,
+    /^\[([A-Za-z]+)\]\s*(.*)$/,
+  ];
+  for (const re of patterns) {
+    const match = raw.match(re);
+    if (!match) {
+      continue;
+    }
+    const type = match[1].toLowerCase();
+    if (!CHANGELOG_TYPES.has(type)) {
+      continue;
+    }
+    return { type, text: String(match[2] || '').trim() || raw };
+  }
+  return { type: '', text: raw };
+}
+
+/**
+ * @param {{ type: string, text: string }} change
+ * @returns {string}
+ */
+function renderChangelogChangeRow(change) {
+  const badgeClass = CHANGELOG_BADGE_CLASS[change.type] || '';
+  const badge = change.type && badgeClass
+    ? `<span class="${badgeClass} ns-product-detail__change-badge">${escapeHtml(change.type.toUpperCase())}</span>`
+    : '';
+  const text = change.text
+    ? `<span class="ns-product-detail__change-text">${escapeHtml(change.text)}</span>`
+    : '';
+  return `<li class="ns-product-detail__change-row">${badge}${text}</li>`;
 }
 
 /**
@@ -344,19 +431,34 @@ function populateChangelog(view, item) {
     return;
   }
   const latestLabel = view.dataset.labelLatest || 'Latest';
+  const clockTemplate = view.querySelector('.js-product-detail-icon-templates [data-icon="changelog-clock"]');
+  const clockIcon = clockTemplate
+    ? `<span class="ns-product-detail__changelog-icon" aria-hidden="true">${clockTemplate.innerHTML.trim()}</span>`
+    : '';
   entries.forEach((entry, index) => {
     const id = `pd-changelog-${index}`;
     const open = index === 0;
-    const heading = [entry.version, index === 0 ? `(${latestLabel})` : '', entry.date]
-      .filter(Boolean)
-      .join(' ');
+    const version = String(entry.version || '').trim();
+    const dateLabel = formatChangelogDate(entry.date);
+    const latestBadge = index === 0
+      ? `<span class="badge badge-warning ns-product-detail__latest-badge">${escapeHtml(latestLabel)}</span>`
+      : '';
+    const titleHtml = [
+      clockIcon,
+      version ? `<span class="ns-product-detail__changelog-version">${escapeHtml(version)}</span>` : '',
+      latestBadge,
+    ].filter(Boolean).join('');
     const changes = Array.isArray(entry.changes) ? entry.changes : [];
+    const rows = changes.map((c) => renderChangelogChangeRow(parseChangelogChange(c))).join('');
+    const dateHtml = dateLabel
+      ? `<div class="ns-product-detail__changelog-date">${escapeHtml(dateLabel)}</div>`
+      : '';
     const bodyHtml = changes.length
-      ? `<ul class="mb-0">${changes.map((c) => `<li>${escapeHtml(String(c))}</li>`).join('')}</ul>`
-      : '<p class="text-variant mb-0">—</p>';
+      ? `${dateHtml}<ul class="ns-product-detail__change-list list-unstyled mb-0">${rows}</ul>`
+      : `${dateHtml}<p class="text-variant mb-0">—</p>`;
     container.appendChild(createCorePanel({
       id,
-      title: heading,
+      titleHtml,
       bodyHtml,
       open,
     }));
@@ -393,6 +495,21 @@ function populateFaq(view, item) {
 
 /**
  * @param {HTMLElement} view
+ * @param {HTMLElement} el
+ * @param {{ label: string, leadingIcon?: string, external?: boolean }} opts
+ */
+function setProductDetailCtaContent(view, el, opts) {
+  const leading = opts.leadingIcon ? getProductDetailIconHtml(view, opts.leadingIcon) : '';
+  const external = opts.external ? getProductDetailIconHtml(view, 'resource-external') : '';
+  el.innerHTML = [
+    leading ? `<span class="ns-product-detail__cta-icon" aria-hidden="true">${leading}</span>` : '',
+    `<span class="ns-product-detail__cta-label">${escapeHtml(opts.label)}</span>`,
+    external ? `<span class="ns-product-detail__cta-external" aria-hidden="true">${external}</span>` : '',
+  ].filter(Boolean).join('');
+}
+
+/**
+ * @param {HTMLElement} view
  * @param {object} item
  * @param {string} key
  * @param {boolean} isFree
@@ -413,7 +530,7 @@ function populateActions(view, item, key, isFree, price) {
     buyBtn.className = 'btn btn-primary t3js-get-license-trigger';
     buyBtn.dataset.extensionKey = key;
     buyBtn.dataset.glMode = 'buy';
-    buyBtn.textContent = buyText;
+    setProductDetailCtaContent(view, buyBtn, { label: buyText, leadingIcon: 'cta-cart' });
     actions.appendChild(buyBtn);
 
     const trialBtn = document.createElement('button');
@@ -421,7 +538,10 @@ function populateActions(view, item, key, isFree, price) {
     trialBtn.className = 'btn btn-default t3js-get-license-trigger';
     trialBtn.dataset.extensionKey = key;
     trialBtn.dataset.glMode = 'trial';
-    trialBtn.textContent = view.dataset.labelTrial || 'Free Trial';
+    setProductDetailCtaContent(view, trialBtn, {
+      label: view.dataset.labelTrial || 'Free Trial',
+      leadingIcon: 'cta-trial',
+    });
     actions.appendChild(trialBtn);
   } else if (isFree) {
     const knowMoreUrl = item.knowMoreUrl || item.productUrl || '';
@@ -431,7 +551,10 @@ function populateActions(view, item, key, isFree, price) {
       knowMore.target = '_blank';
       knowMore.rel = 'noopener noreferrer';
       knowMore.className = 'btn btn-primary';
-      knowMore.textContent = view.dataset.labelKnowMore || 'Know More';
+      setProductDetailCtaContent(view, knowMore, {
+        label: view.dataset.labelKnowMore || 'Know More',
+        external: true,
+      });
       actions.appendChild(knowMore);
     }
   }
@@ -445,7 +568,10 @@ function populateActions(view, item, key, isFree, price) {
       fe.target = '_blank';
       fe.rel = 'noopener noreferrer';
       fe.className = 'btn btn-default';
-      fe.textContent = view.dataset.labelDemoFrontend || 'Frontend Demo';
+      setProductDetailCtaContent(view, fe, {
+        label: view.dataset.labelDemoFrontend || 'Frontend Demo',
+        external: true,
+      });
       actions.appendChild(fe);
 
       const be = document.createElement('a');
@@ -453,7 +579,10 @@ function populateActions(view, item, key, isFree, price) {
       be.target = '_blank';
       be.rel = 'noopener noreferrer';
       be.className = 'btn btn-default';
-      be.textContent = view.dataset.labelDemoBackend || 'Backend Demo';
+      setProductDetailCtaContent(view, be, {
+        label: view.dataset.labelDemoBackend || 'Backend Demo',
+        external: true,
+      });
       actions.appendChild(be);
     } else {
       const demoUrl = frontendUrl || backendUrl;
@@ -462,9 +591,12 @@ function populateActions(view, item, key, isFree, price) {
       demo.target = '_blank';
       demo.rel = 'noopener noreferrer';
       demo.className = 'btn btn-default';
-      demo.textContent = backendUrl && !frontendUrl
-        ? (view.dataset.labelDemoBackend || 'Backend Demo')
-        : (view.dataset.labelDemo || 'Live Demo');
+      setProductDetailCtaContent(view, demo, {
+        label: backendUrl && !frontendUrl
+          ? (view.dataset.labelDemoBackend || 'Backend Demo')
+          : (view.dataset.labelDemo || 'Live Demo'),
+        external: true,
+      });
       actions.appendChild(demo);
     }
   }
@@ -490,6 +622,21 @@ function populateComposer(view, item) {
  * @param {HTMLElement} view
  * @param {object} item
  */
+/**
+ * Clone a Fluid-rendered icon from product-detail templates.
+ * @param {HTMLElement} view
+ * @param {string} name
+ * @returns {string}
+ */
+function getProductDetailIconHtml(view, name) {
+  const tpl = view.querySelector(`.js-product-detail-icon-templates [data-icon="${name}"]`);
+  return tpl ? tpl.innerHTML.trim() : '';
+}
+
+/**
+ * @param {HTMLElement} view
+ * @param {object} item
+ */
 function populateResources(view, item) {
   const section = view.querySelector('.js-product-detail-resources-section');
   const list = view.querySelector('.js-product-detail-resources');
@@ -497,18 +644,40 @@ function populateResources(view, item) {
     return;
   }
   list.innerHTML = '';
-  const links = [];
-  const docs = item.documentationUrl || item.documentation_link;
-  if (docs) {
-    links.push({ href: docs, label: view.dataset.labelDocs || 'Extension Manual' });
-  }
-  const product = item.productUrl || item.knowMoreUrl;
-  if (product) {
-    links.push({ href: product, label: view.dataset.labelProductPage || 'T3Planet Page' });
-  }
+  const externalIcon = getProductDetailIconHtml(view, 'resource-external');
+  const links = [
+    {
+      href: String(item.documentationUrl || item.documentationLink || item.documentation_link || '').trim(),
+      label: view.dataset.labelDocs || 'Extension Manual',
+      icon: 'resource-docs',
+    },
+    {
+      href: String(item.productUrl || item.knowMoreUrl || '').trim(),
+      label: view.dataset.labelProductPage || 'T3Planet Page',
+      icon: 'resource-product',
+    },
+    {
+      href: String(
+        item.scheduleCallUrl
+        || item.bookCallUrl
+        || item.scheduleUrl
+        || view.dataset.scheduleCallUrl
+        || ''
+      ).trim(),
+      label: view.dataset.labelScheduleCall || 'Schedule a Call',
+      icon: 'resource-schedule',
+    },
+  ].filter((link) => link.href);
+
   links.forEach((link) => {
+    const leadingIcon = getProductDetailIconHtml(view, link.icon);
     const li = document.createElement('li');
-    li.innerHTML = `<a href="${escapeHtml(link.href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(link.label)}</a>`;
+    li.className = 'ns-product-detail__resource-item';
+    li.innerHTML = `<a class="ns-product-detail__resource-link" href="${escapeHtml(link.href)}" target="_blank" rel="noopener noreferrer">`
+      + `<span class="ns-product-detail__resource-leading" aria-hidden="true">${leadingIcon}</span>`
+      + `<span class="ns-product-detail__resource-label">${escapeHtml(link.label)}</span>`
+      + `<span class="ns-product-detail__resource-external" aria-hidden="true">${externalIcon}</span>`
+      + `</a>`;
     list.appendChild(li);
   });
   setVisible(section, links.length > 0);
@@ -530,7 +699,7 @@ function populateMeta(view, item, key, version) {
     [view.dataset.labelCompany || 'Company', item.company || 'T3Planet'],
     [view.dataset.labelLastUpdate || 'Last Update', formatDate(item.lastUpdate)],
     [view.dataset.labelFirstUpload || 'First Upload', formatDate(item.firstUpload)],
-    [view.dataset.labelDownloads || 'Downloads', item.downloads ? String(item.downloads) : ''],
+    [view.dataset.labelDownloads || 'Downloads', formatDownloads(item.downloads)],
     [view.dataset.labelCategory || 'Category', item.category || ''],
     [view.dataset.labelExtensionKey || 'Extension Key', key],
     [view.dataset.labelVersion || 'Version', version],
