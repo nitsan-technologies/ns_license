@@ -476,6 +476,14 @@
                 <source>Frequently Asked Questions</source>
                 <target>Häufig gestellte Fragen</target>
             </trans-unit>
+            <trans-unit id="license-catalog.detail.related">
+                <source>Frequently Bought Together</source>
+                <target>Häufig zusammen gekauft</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.related.view">
+                <source>View</source>
+                <target>Ansehen</target>
+            </trans-unit>
             <trans-unit id="license-catalog.detail.meta">
                 <source>Details</source>
                 <target>Details</target>
