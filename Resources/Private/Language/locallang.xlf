@@ -304,6 +304,24 @@
             <trans-unit id="license-catalog.list-heading.templates">
                 <source>Premium Templates</source>
             </trans-unit>
+            <trans-unit id="license-catalog.list-heading.premium-extensions">
+                <source>Premium Extensions</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.list-heading.premium-templates">
+                <source>Premium Templates</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.list-heading.premium-ai">
+                <source>Premium AI Products</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.list-heading.free-extensions">
+                <source>Free Extensions</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.list-heading.free-templates">
+                <source>Free Templates</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.list-heading.free-ai">
+                <source>Free AI Products</source>
+            </trans-unit>
             <trans-unit id="license-catalog.detail">
                 <source>Detail</source>
             </trans-unit>
@@ -460,6 +478,15 @@
             </trans-unit>
             <trans-unit id="license-extensions.section-title-free">
                 <source>Free Extensions</source>
+            </trans-unit>
+            <trans-unit id="license-extensions.section-title-premium">
+                <source>Premium Extensions</source>
+            </trans-unit>
+            <trans-unit id="license-extensions.section-subtitle-free">
+                <source>100% free</source>
+            </trans-unit>
+            <trans-unit id="license-extensions.section-subtitle-premium">
+                <source>licensed extensions</source>
             </trans-unit>
             <trans-unit id="license-extensions.get-updates">
                 <source>Get Updates</source>

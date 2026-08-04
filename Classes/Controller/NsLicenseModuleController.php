@@ -149,18 +149,27 @@ class NsLicenseModuleController extends ActionController
         $items = is_array($tabData['items'] ?? null) ? $tabData['items'] : [];
 
         $heroItem = null;
-        $listItems = [];
+        $premiumItems = [];
+        $freeItems = [];
         foreach ($items as $item) {
             if (!is_array($item)) {
                 continue;
             }
-            if ($heroItem === null && $this->isMostPopularBadge((string)($item['badge'] ?? ''))) {
+            $isFree = array_key_exists('isFree', $item)
+                ? (bool)$item['isFree']
+                : CatalogTabMapper::isFreeItem($item);
+            $item['isFree'] = $isFree;
+
+            if ($heroItem === null && !$isFree && $this->isMostPopularBadge((string)($item['badge'] ?? ''))) {
                 $heroItem = $item;
                 continue;
             }
-            $listItems[] = $item;
+            if ($isFree) {
+                $freeItems[] = $item;
+            } else {
+                $premiumItems[] = $item;
+            }
         }
-        $tabData['items'] = $listItems;
 
         $itemsByKey = [];
         foreach ($items as $item) {
@@ -177,6 +186,8 @@ class NsLicenseModuleController extends ActionController
         $view->assignMultiple([
             'catalogTab' => $tab,
             'catalogData' => $tabData,
+            'catalogPremiumItems' => $premiumItems,
+            'catalogFreeItems' => $freeItems,
             'catalogHeroItem' => $heroItem,
             'catalogItemsJson' => json_encode($itemsByKey, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE),
             't3version' => $this->typo3Version,

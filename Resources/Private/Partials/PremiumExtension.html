@@ -2,6 +2,13 @@
       xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers" data-namespace-typo3-fluid="true">
 <f:if condition="{extensions}">
 <div id="premium-section" class="extension-section">
+    <div class="catalog-list-heading d-flex align-items-center gap-2 mb-3">
+        <h3 class="h5 mb-0">
+            <f:translate key="license-extensions.section-title-premium" extensionName="ns_license" />
+            ({f:count(subject: extensions)})
+        </h3>
+        <span class="small text-variant"><f:translate key="license-extensions.section-subtitle-premium" extensionName="ns_license" /></span>
+    </div>
     <div class="row g-3 license-activation">
             <f:for each="{extensions}" as="extension">
                 <f:if condition="{extension.details.license_key}">

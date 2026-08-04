@@ -372,6 +372,30 @@
                 <source>Premium Templates</source>
                 <target>Premium Templates</target>
             </trans-unit>
+            <trans-unit id="license-catalog.list-heading.premium-extensions">
+                <source>Premium Extensions</source>
+                <target>Premium Extensions</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.list-heading.premium-templates">
+                <source>Premium Templates</source>
+                <target>Premium Templates</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.list-heading.premium-ai">
+                <source>Premium AI Products</source>
+                <target>Premium KI-Produkte</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.list-heading.free-extensions">
+                <source>Free Extensions</source>
+                <target>Kostenlose Extensions</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.list-heading.free-templates">
+                <source>Free Templates</source>
+                <target>Kostenlose Templates</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.list-heading.free-ai">
+                <source>Free AI Products</source>
+                <target>Kostenlose KI-Produkte</target>
+            </trans-unit>
             <trans-unit id="license-catalog.detail.back">
                 <source>Back</source>
                 <target>Zurück</target>
@@ -555,6 +579,18 @@
             <trans-unit id="license-extensions.section-title-free">
                 <source>Free Extensions</source>
                 <target>Kostenlose Extensions</target>
+            </trans-unit>
+            <trans-unit id="license-extensions.section-title-premium">
+                <source>Premium Extensions</source>
+                <target>Premium Extensions</target>
+            </trans-unit>
+            <trans-unit id="license-extensions.section-subtitle-free">
+                <source>100% free</source>
+                <target>100% kostenlos</target>
+            </trans-unit>
+            <trans-unit id="license-extensions.section-subtitle-premium">
+                <source>licensed extensions</source>
+                <target>lizenzierte Extensions</target>
             </trans-unit>
             <trans-unit id="license-extensions.get-updates">
                 <source>Get Updates</source>

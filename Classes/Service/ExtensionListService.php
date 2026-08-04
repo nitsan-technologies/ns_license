@@ -19,6 +19,7 @@ class ExtensionListService
 {
     protected NsLicenseRepository $nsLicenseRepository;
     protected PackageManager $packageManager;
+    protected CatalogCacheService $catalogCacheService;
     protected int $typo3Version;
     protected string $siteRoot;
     protected string $composerSiteRoot;
@@ -26,10 +27,13 @@ class ExtensionListService
 
     public function __construct(
         NsLicenseRepository $nsLicenseRepository,
-        PackageManager $packageManager
+        PackageManager $packageManager,
+        ?CatalogCacheService $catalogCacheService = null
     ) {
         $this->nsLicenseRepository = $nsLicenseRepository;
         $this->packageManager = $packageManager;
+        $this->catalogCacheService = $catalogCacheService
+            ?? GeneralUtility::makeInstance(CatalogCacheService::class);
         $this->typo3Version = GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion();
         $this->siteRoot = rtrim(Environment::getPublicPath() . '/', '/') . '/';
         $this->composerSiteRoot = Environment::getProjectPath() . '/';
@@ -43,7 +47,7 @@ class ExtensionListService
      */
     public function fetchExtensions(): array
     {
-        $extensions = ['premium' => []];
+        $extensions = ['premium' => [], 'free' => []];
         $licenseRecords = $this->nsLicenseRepository->fetchData();
 
         if ($licenseRecords !== []) {
@@ -136,7 +140,131 @@ class ExtensionListService
             }
         }
 
+        $extensions['free'] = $this->buildFreeExtensions($extensions['premium']);
+
         return $extensions;
+    }
+
+    /**
+     * Free catalog products (empty price + downloads != 0), enriched when installed.
+     * Excludes keys that already appear under premium (licensed).
+     *
+     * @param array<string, array> $premium
+     * @return array<string, array>
+     */
+    private function buildFreeExtensions(array $premium): array
+    {
+        $freeCatalog = $this->getFreeCatalogItemsByKey();
+        if ($freeCatalog === []) {
+            return [];
+        }
+
+        $free = [];
+        foreach ($freeCatalog as $key => $catalogItem) {
+            if (isset($premium[$key])) {
+                continue;
+            }
+
+            $package = $this->getPackage($key);
+            $packageMetaData = $package ? $package->getPackageMetaData() : null;
+            $version = $packageMetaData ? (string)$packageMetaData->getVersion() : trim((string)($catalogItem['version'] ?? ''));
+            $icon = '';
+            $packagePath = '';
+            if ($package) {
+                $packagePath = $package->getPackagePath();
+                if ($this->typo3Version === 12) {
+                    $iconRel = ExtensionManagementUtility::getExtensionIcon($packagePath);
+                } else {
+                    $iconRel = $package->getPackageIcon() ?: '';
+                }
+                $icon = $iconRel ? PathUtility::getAbsoluteWebPath($packagePath . $iconRel) : '';
+            }
+
+            $title = trim((string)($catalogItem['name'] ?? ''));
+            $description = (string)($catalogItem['description'] ?? '');
+            if ($packageMetaData) {
+                if ($title === '') {
+                    $title = (string)$packageMetaData->getTitle();
+                }
+                if ($description === '') {
+                    $description = (string)$packageMetaData->getDescription();
+                }
+            }
+
+            $documentationUrl = trim((string)($catalogItem['documentationUrl'] ?? ''));
+            $knowMoreUrl = trim((string)($catalogItem['knowMoreUrl'] ?? $catalogItem['productUrl'] ?? ''));
+            $listImage = trim((string)($catalogItem['listImage'] ?? ''));
+
+            $free[$key] = [
+                'packagePath' => $packagePath,
+                'key' => $key,
+                'composerPackage' => 'nitsan/' . str_replace('_', '-', $key),
+                'version' => $version,
+                'state' => str_starts_with($version, 'dev-') ? 'alpha' : 'stable',
+                'icon' => $icon !== '' ? $icon : $listImage,
+                'title' => $title !== '' ? $title : $key,
+                'description' => $description,
+                'is_premium' => false,
+                'rating' => $catalogItem['rating'] ?? null,
+                'downloads' => $catalogItem['downloads'] ?? null,
+                'knowMoreUrl' => $knowMoreUrl,
+                'details' => [
+                    'extension_key' => $key,
+                    'documentation_link' => $documentationUrl,
+                    'product_link' => $knowMoreUrl,
+                ],
+            ];
+        }
+
+        return $free;
+    }
+
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    private function getFreeCatalogItemsByKey(): array
+    {
+        try {
+            $catalog = $this->catalogCacheService->getCatalog();
+        } catch (\Throwable) {
+            return [];
+        }
+
+        if ($catalog === []) {
+            return [];
+        }
+
+        $tabs = CatalogTabMapper::buildTabsFromCatalog($catalog);
+        $free = [];
+        foreach ($tabs as $tab) {
+            $items = $tab['items'] ?? [];
+            if (!is_array($items)) {
+                continue;
+            }
+            foreach ($items as $item) {
+                if (!is_array($item)) {
+                    continue;
+                }
+                $isFree = array_key_exists('isFree', $item)
+                    ? (bool)$item['isFree']
+                    : CatalogTabMapper::isFreeItem($item);
+                if (!$isFree) {
+                    continue;
+                }
+                $section = trim((string)($item['catalogSection'] ?? ''));
+                // My Extensions Free section lists free extensions (not templates).
+                if ($section === CatalogTabMapper::TAB_TEMPLATES) {
+                    continue;
+                }
+                $key = trim((string)($item['extensionKey'] ?? ''));
+                if ($key === '' || isset($free[$key])) {
+                    continue;
+                }
+                $free[$key] = $item;
+            }
+        }
+
+        return $free;
     }
 
     /**

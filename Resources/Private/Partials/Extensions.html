@@ -9,6 +9,7 @@
     <select id="extFilter" class="form-select w-auto flex-shrink-0">
         <option value="all" selected><f:translate key="license-extensions.filter-all" /></option>
         <option value="trial"><f:translate key="license-extensions.filter-trial" /></option>
+        <option value="free"><f:translate key="license-extensions.filter-free" /></option>
     </select>
     <button type="button" class="btn btn-primary refresh-data-button flex-shrink-0" data-type="extensions">
         <core:icon identifier="actions-refresh" size="small" />
@@ -17,5 +18,8 @@
 </div>
 
 <!-- Premium Extensions Section -->
-<f:render partial="PremiumExtension" arguments="{extensions:extensions.premium,composer:showUpdateButton}" />
+<f:render partial="PremiumExtension" arguments="{extensions:extensions.premium,composer:showUpdateButton,t3version:t3version}" />
+
+<!-- Free Extensions Section -->
+<f:render partial="FreeExtension" arguments="{extensions:extensions.free}" />
 </html>

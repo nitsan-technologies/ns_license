@@ -109,6 +109,7 @@ function filterCatalog(pane) {
     const searchText = searchInput.value.toLowerCase().trim();
     const cards = activePane.querySelectorAll('.catalog-card');
     let visibleCount = 0;
+    const sectionVisibility = {};
 
     cards.forEach((card) => {
         const cardName = (card.dataset.name || '').toLowerCase();
@@ -133,8 +134,23 @@ function filterCatalog(pane) {
         if (typeMatch && searchMatch) {
             card.style.display = '';
             visibleCount++;
+            const sectionElement = card.closest('.catalog-section');
+            if (sectionElement) {
+                const sectionId = sectionElement.getAttribute('data-catalog-section') || sectionElement.id || 'section';
+                sectionVisibility[sectionId] = (sectionVisibility[sectionId] || 0) + 1;
+            }
         } else {
             card.style.display = 'none';
+        }
+    });
+
+    activePane.querySelectorAll('.catalog-section').forEach((section) => {
+        const sectionId = section.getAttribute('data-catalog-section') || section.id || 'section';
+        const count = sectionVisibility[sectionId] || 0;
+        section.style.display = count > 0 ? '' : 'none';
+        const countEl = section.querySelector('.catalog-section-count');
+        if (countEl) {
+            countEl.textContent = String(count);
         }
     });
 
