@@ -1271,6 +1271,48 @@ function isDisposableEmail(email) {
 }
 
 /**
+ * Validate domain format (same rules as domains.js add-domain).
+ * Valid: docs.t3planet.de, typo3-src-12.4.38.ddev.site, localhost.
+ * @param {string} value
+ * @returns {boolean}
+ */
+function isValidDomainFormat(value) {
+  if (!value || typeof value !== 'string') {
+    return false;
+  }
+  value = value.replace(/^https?:\/\//, '').replace(/\/$/, '').trim();
+  if (!value) {
+    return false;
+  }
+  if (value.toLowerCase() === 'localhost') {
+    return true;
+  }
+  if (value.indexOf('.') === -1) {
+    return false;
+  }
+  if (!/[a-zA-Z]/.test(value)) {
+    return false;
+  }
+  if (!/^[a-zA-Z0-9.-]+$/.test(value)) {
+    return false;
+  }
+  if (/^[.-]|[.-]$/.test(value)) {
+    return false;
+  }
+  const labels = value.split('.');
+  for (let i = 0; i < labels.length; i++) {
+    const label = labels[i];
+    if (!label.length) {
+      return false;
+    }
+    if (!/^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(label)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
  * Validate the trial form. Returns { valid, values } or shows a warning.
  * @param {HTMLElement} modal
  * @returns {{extension_key:string, email:string, name:string, domain:string}|null}
@@ -1278,7 +1320,7 @@ function isDisposableEmail(email) {
 function readTrialForm(modal) {
   const email = (modal.querySelector('#gl-email')?.value || '').trim();
   const name = (modal.querySelector('#gl-name')?.value || '').trim();
-  const domain = (modal.querySelector('#gl-domain')?.value || '').trim();
+  let domain = (modal.querySelector('#gl-domain')?.value || '').trim();
   const terms = !!modal.querySelector('#gl-terms')?.checked;
 
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -1304,6 +1346,16 @@ function readTrialForm(modal) {
       modal.dataset.labelTitleWarning || 'Warning',
       modal.dataset.labelInvalidDomainMultiple || 'Please enter only one domain (comma-separated domains are not allowed).',
     );
+    return null;
+  }
+  domain = domain.replace(/^https?:\/\//, '').replace(/\/$/, '').trim();
+  if (!isValidDomainFormat(domain)) {
+    Notification.warning(
+      modal.dataset.labelTitleWarning || 'Warning',
+      modal.dataset.labelInvalidDomainFormat
+        || 'Enter a valid domain (e.g. docs.t3planet.de, typo3-src-12.4.38.ddev.site).',
+    );
+    modal.querySelector('#gl-domain')?.focus();
     return null;
   }
   if (!terms) {

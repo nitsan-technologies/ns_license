@@ -1376,6 +1376,10 @@
                 <source>Please enter only one domain (comma-separated domains are not allowed).</source>
                 <target>Bitte geben Sie nur eine Domain ein (kommagetrennte Domains sind nicht erlaubt).</target>
             </trans-unit>
+            <trans-unit id="license-get-new.form.error.domain_format">
+                <source>Enter a valid domain (e.g. t3planet.de, typo3-src-12.4.38.ddev.site).</source>
+                <target>Geben Sie eine gültige Domain ein (z. B. t3planet.de, typo3-src-12.4.38.ddev.site).</target>
+            </trans-unit>
             <trans-unit id="license-get-new.form.error.terms">
                 <source>Please accept the Terms &amp; Conditions and Privacy Policy.</source>
                 <target>Bitte akzeptieren Sie die Allgemeinen Geschäftsbedingungen und die Datenschutzerklärung.</target>

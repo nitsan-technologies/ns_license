@@ -1082,6 +1082,9 @@
             <trans-unit id="license-get-new.form.error.domain_multiple">
                 <source>Please enter only one domain (comma-separated domains are not allowed).</source>
             </trans-unit>
+            <trans-unit id="license-get-new.form.error.domain_format">
+                <source>Enter a valid domain (e.g. t3planet.de, typo3-src-12.4.38.ddev.site).</source>
+            </trans-unit>
             <trans-unit id="license-get-new.form.error.terms">
                 <source>Please accept the Terms &amp; Conditions and Privacy Policy.</source>
             </trans-unit>
