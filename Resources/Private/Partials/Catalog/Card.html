@@ -11,30 +11,41 @@
     <f:variable name="cardVariantClass" value="catalog-card--templates" />
     <f:variable name="isTemplatesTab" value="1" />
 </f:if>
+
+<f:variable name="placeholderImage" value="{f:uri.resource(path: 'EXT:ns_license/Resources/Public/Icons/catalog-placeholder.svg')}" />
+<f:variable name="cardImage" value="{placeholderImage}" />
+<f:if condition="{item.listImage}">
+    <f:variable name="cardImage" value="{item.listImage}" />
+</f:if>
+
 <div class="catalog-card {cardVariantClass} extension-card-wrapper" data-name="{item.name}"
     data-description="{item.description}" data-extension-key="{item.extensionKey}" data-is-free="{isFreeSection}">
     <div class="card card-size-small h-100">
         <f:if condition="{isTemplatesTab}">
-            <f:if condition="{item.listImage}">
-                <div class="catalog-card__image">
-                    <img src="{item.listImage}" alt="{item.name}" loading="lazy" />
-                </div>
-            </f:if>
+            <div class="catalog-card__image">
+                <img class="t3js-catalog-card-image{f:if(condition: item.listImage, else: ' is-placeholder')}"
+                    src="{cardImage}"
+                    alt="{item.name}"
+                    loading="lazy"
+                    data-fallback="{placeholderImage}" />
+            </div>
         </f:if>
         <div class="card-header">
             <f:if condition="{isTemplatesTab}">
                 <f:else>
-                    <f:if condition="{item.listImage}">
-                        <div class="catalog-card__image d-flex align-items-start justify-content-between mb-2">
-                            <img src="{item.listImage}" alt="{item.name}" loading="lazy" />
-                            <f:if condition="{item.version}">
-                                <span class="badge badge-default">{item.version}</span>
-                            </f:if>
-                        </div>
-                    </f:if>
+                    <div class="catalog-card__image d-flex align-items-start justify-content-between mb-2">
+                        <img class="t3js-catalog-card-image{f:if(condition: item.listImage, else: ' is-placeholder')}"
+                            src="{cardImage}"
+                            alt="{item.name}"
+                            loading="lazy"
+                            data-fallback="{placeholderImage}" />
+                        <f:if condition="{item.version}">
+                            <span class="badge badge-default">{item.version}</span>
+                        </f:if>
+                    </div>
                 </f:else>
             </f:if>
-           
+
             <div class="card-header-body mb-2">
                 <div class="d-flex align-items-center justify-content-start gap-2 flex-wrap">
                     <h2 class="card-title mb-0">{item.name}</h2>
