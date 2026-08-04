@@ -93,7 +93,52 @@ function bindCatalogFilters(pane) {
 }
 
 /**
+ * Ensure SVG data-URIs used as &lt;img src&gt; include xmlns (required by browsers).
+ * API listImage SVGs sometimes omit it, which makes the image fail and fall back to placeholder.
+ *
+ * @param {string} src
+ * @returns {string}
+ */
+function normalizeSvgDataUri(src) {
+    const value = String(src || '').trim();
+    if (!value.startsWith('data:image/svg+xml')) {
+        return value;
+    }
+
+    const comma = value.indexOf(',');
+    if (comma < 0) {
+        return value;
+    }
+
+    const meta = value.slice(0, comma);
+    const payload = value.slice(comma + 1);
+    let svg = '';
+    try {
+        svg = meta.includes(';base64')
+            ? atob(payload)
+            : decodeURIComponent(payload);
+    } catch (e) {
+        return value;
+    }
+
+    if (!svg || /xmlns\s*=/.test(svg)) {
+        return value;
+    }
+
+    const withNs = svg.replace(
+        /<svg(\s|>)/i,
+        '<svg xmlns="http://www.w3.org/2000/svg"$1'
+    );
+    if (withNs === svg) {
+        return value;
+    }
+
+    return `data:image/svg+xml;utf8,${encodeURIComponent(withNs)}`;
+}
+
+/**
  * Swap broken catalog card images to the extension placeholder icon.
+ * Also normalizes SVG data-URIs that are missing xmlns.
  *
  * @param {ParentNode|null} root
  */
@@ -108,7 +153,23 @@ function bindCatalogCardImageFallbacks(root) {
         }
         img.dataset.fallbackBound = '1';
 
+        const original = img.getAttribute('src') || '';
+        const normalized = normalizeSvgDataUri(original);
+        const didNormalize = !!(normalized && normalized !== original);
+        if (didNormalize) {
+            img.setAttribute('src', normalized);
+        }
+
         const applyFallback = () => {
+            // One more normalize attempt (in case src was set after bind).
+            const currentAttr = img.getAttribute('src') || '';
+            const retry = normalizeSvgDataUri(currentAttr);
+            if (retry && retry !== currentAttr && !img.dataset.svgNsRetried) {
+                img.dataset.svgNsRetried = '1';
+                img.src = retry;
+                return;
+            }
+
             const fallback = img.dataset.fallback || '';
             if (!fallback) {
                 return;
@@ -123,7 +184,9 @@ function bindCatalogCardImageFallbacks(root) {
         };
 
         img.addEventListener('error', applyFallback);
-        if (img.complete && img.naturalWidth === 0 && img.getAttribute('src')) {
+        // Only force-fallback immediately when we did not just rewrite the src
+        // (a rewrite starts a new load; wait for error/load instead).
+        if (!didNormalize && img.complete && img.naturalWidth === 0 && img.getAttribute('src')) {
             applyFallback();
         }
     });

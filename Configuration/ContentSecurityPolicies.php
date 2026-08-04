@@ -11,7 +11,8 @@ use TYPO3\CMS\Core\Security\ContentSecurityPolicy\UriValue;
 use TYPO3\CMS\Core\Type\Map;
 
 /**
- * Backend CSP: allow framing T3Planet / Pabbly checkout in Get New License Buy modal.
+ * Backend CSP: allow framing T3Planet / Pabbly checkout in Get New License Buy modal,
+ * and loading catalog/product images from T3Planet CDNs.
  *
  * Hosts must stay in sync with {@see \NITSAN\NsLicense\Service\Checkout\CheckoutUrlValidator}.
  */
@@ -23,7 +24,9 @@ return Map::fromEntries([
             Directive::FrameSrc,
             new UriValue('https://t3planet.shop'),
             new UriValue('*.t3planet.shop'),
+            new UriValue('https://t3planet.de'),
             new UriValue('*.t3planet.de'),
+            new UriValue('https://t3planet.com'),
             new UriValue('*.t3planet.com'),
             new UriValue('https://payments.pabbly.com'),
             new UriValue('*.pabbly.com'),
@@ -34,10 +37,22 @@ return Map::fromEntries([
             Directive::ConnectSrc,
             new UriValue('https://t3planet.shop'),
             new UriValue('*.t3planet.shop'),
+            new UriValue('https://t3planet.de'),
             new UriValue('*.t3planet.de'),
+            new UriValue('https://t3planet.com'),
             new UriValue('*.t3planet.com'),
             new UriValue('https://payments.pabbly.com'),
             new UriValue('*.pabbly.com'),
+        ),
+        new Mutation(
+            MutationMode::Extend,
+            Directive::ImgSrc,
+            new UriValue('https://t3planet.shop'),
+            new UriValue('*.t3planet.shop'),
+            new UriValue('https://t3planet.de'),
+            new UriValue('*.t3planet.de'),
+            new UriValue('https://t3planet.com'),
+            new UriValue('*.t3planet.com'),
         ),
     ),
 ]);

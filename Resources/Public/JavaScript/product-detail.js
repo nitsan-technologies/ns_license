@@ -39,6 +39,95 @@ function escapeHtml(text) {
 }
 
 /**
+ * Turn API HTML blurbs into readable plain text (no XSS via innerHTML).
+ * @param {unknown} value
+ * @returns {string}
+ */
+function htmlToPlainText(value) {
+  let raw = String(value ?? '').trim();
+  if (!raw) {
+    return '';
+  }
+  raw = raw
+    .replace(/<\s*br\s*\/?\s*>/gi, '\n')
+    .replace(/<\/\s*p\s*>/gi, '\n')
+    .replace(/<\s*p(?:\s[^>]*)?>/gi, '')
+    .replace(/<\/\s*(div|li|h[1-6]|tr)\s*>/gi, '\n')
+    .replace(/<[^>]+>/g, '');
+  // Decode entities only after tags are removed.
+  const ent = document.createElement('textarea');
+  ent.innerHTML = raw;
+  return (ent.value || '')
+    .replace(/\u00a0/g, ' ')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .replace(/[ \t]{2,}/g, ' ')
+    .trim();
+}
+
+/**
+ * Ensure SVG data-URIs used as &lt;img src&gt; include xmlns (required by browsers).
+ * @param {string} src
+ * @returns {string}
+ */
+function normalizeSvgDataUri(src) {
+  const value = String(src || '').trim();
+  if (!value.startsWith('data:image/svg+xml')) {
+    return value;
+  }
+
+  const comma = value.indexOf(',');
+  if (comma < 0) {
+    return value;
+  }
+
+  const meta = value.slice(0, comma);
+  const payload = value.slice(comma + 1);
+  let svg = '';
+  try {
+    svg = meta.includes(';base64')
+      ? atob(payload)
+      : decodeURIComponent(payload);
+  } catch (e) {
+    return value;
+  }
+
+  if (!svg || /xmlns\s*=/.test(svg)) {
+    return value;
+  }
+
+  const withNs = svg.replace(
+    /<svg(\s|>)/i,
+    '<svg xmlns="http://www.w3.org/2000/svg"$1'
+  );
+  if (withNs === svg) {
+    return value;
+  }
+
+  return `data:image/svg+xml;utf8,${encodeURIComponent(withNs)}`;
+}
+
+/**
+ * Merge detail API payload over list fallback without wiping non-empty image fields.
+ * @param {object} fallback
+ * @param {object} detail
+ * @returns {object}
+ */
+function mergeProductDetail(fallback, detail) {
+  const base = fallback && typeof fallback === 'object' ? fallback : {};
+  const next = detail && typeof detail === 'object' ? detail : {};
+  const merged = { ...base, ...next };
+  ['listImage', 'detailImage', 'icon', 'catalogSection', 'documentationUrl', 'documentationLink', 'documentation_link', 'productUrl', 'knowMoreUrl'].forEach((key) => {
+    const fromDetail = String(next[key] ?? '').trim();
+    const fromBase = String(base[key] ?? '').trim();
+    if (!fromDetail && fromBase) {
+      merged[key] = base[key];
+    }
+  });
+  return merged;
+}
+
+/**
  * @param {number|string|null|undefined} ts
  * @returns {string}
  */
@@ -93,6 +182,99 @@ function formatVersionSupport(version) {
 }
 
 /**
+ * Expand version support into major pills (e.g. "TYPO3 v12 to v14" → ["12 LTS","13 LTS","14 LTS"]).
+ * Prefers an array from the API when present.
+ * @param {object} item
+ * @returns {string[]}
+ */
+function parseTypo3VersionPills(item) {
+  const rawList = item.supportedVersions
+    || item.typo3Versions
+    || item.versionSupport
+    || null;
+  if (Array.isArray(rawList) && rawList.length) {
+    return rawList
+      .map((entry) => formatVersionPillLabel(entry))
+      .filter(Boolean);
+  }
+
+  const source = String(item.version ?? '').trim();
+  if (!source) {
+    return [];
+  }
+
+  const majors = [];
+  const seen = new Set();
+  const pushMajor = (n) => {
+    const major = Number.parseInt(String(n), 10);
+    if (!Number.isFinite(major) || major < 6 || major > 99 || seen.has(major)) {
+      return;
+    }
+    seen.add(major);
+    majors.push(major);
+  };
+
+  const rangeMatch = source.match(/v?(\d+)\s*(?:to|-|–|—)\s*v?(\d+)/i);
+  if (rangeMatch) {
+    const from = Number.parseInt(rangeMatch[1], 10);
+    const to = Number.parseInt(rangeMatch[2], 10);
+    if (Number.isFinite(from) && Number.isFinite(to)) {
+      const lo = Math.min(from, to);
+      const hi = Math.max(from, to);
+      for (let i = lo; i <= hi; i += 1) {
+        pushMajor(i);
+      }
+    }
+  }
+
+  if (!majors.length) {
+    const matches = source.matchAll(/\bv?(\d{1,2})\b/gi);
+    for (const match of matches) {
+      pushMajor(match[1]);
+    }
+  }
+
+  majors.sort((a, b) => a - b);
+  return majors.map((major) => formatVersionPillLabel(major));
+}
+
+/**
+ * @param {unknown} value
+ * @returns {string}
+ */
+function formatVersionPillLabel(value) {
+  const raw = String(value ?? '').trim();
+  if (!raw) {
+    return '';
+  }
+  if (/\bLTS\b/i.test(raw)) {
+    const major = raw.match(/(\d{1,2})/);
+    return major ? `${major[1]} LTS` : raw;
+  }
+  const major = raw.match(/(\d{1,2})/);
+  if (!major) {
+    return raw;
+  }
+  return `${major[1]} LTS`;
+}
+
+/**
+ * @param {HTMLElement} view
+ * @param {object} item
+ */
+function populateVersionSupport(view, item) {
+  const section = view.querySelector('.js-product-detail-version-section');
+  const pillsEl = view.querySelector('.js-product-detail-version-pills');
+  const pills = parseTypo3VersionPills(item);
+  if (pillsEl) {
+    pillsEl.innerHTML = pills.map((label) => (
+      `<span class="badge badge-success ns-product-detail__version-pill" role="listitem">${escapeHtml(label)}</span>`
+    )).join('');
+  }
+  setVisible(section, pills.length > 0);
+}
+
+/**
  * Exact fractional star fill (e.g. 4.6 → 92% of the 5-star row).
  * @param {unknown} rating
  * @returns {{ html: string, label: string }|null}
@@ -137,6 +319,49 @@ function sectionLabel(tab) {
 }
 
 /**
+ * Light marketing hero for AI Universe + Extensions detail pages.
+ * @param {string} tab
+ * @returns {boolean}
+ */
+function isLightHeroSection(tab) {
+  return tab === 'ai-universe' || tab === 'extensions';
+}
+
+/**
+ * Prefer product/extension version (e.g. v2.1.0); skip TYPO3 range strings.
+ * @param {object} item
+ * @returns {string}
+ */
+function formatProductVersionPill(item) {
+  const candidates = [
+    item.extensionVersion,
+    item.latestVersion,
+    item.productVersion,
+    item.versionNumber,
+  ];
+  for (const candidate of candidates) {
+    const raw = String(candidate ?? '').trim();
+    if (!raw) {
+      continue;
+    }
+    return /^v/i.test(raw) ? raw : `v${raw.replace(/^v/i, '')}`;
+  }
+  const version = String(item.version ?? '').trim();
+  if (!version) {
+    return '';
+  }
+  // Semver-like product version only (not "TYPO3 v12 to v14").
+  const semver = version.match(/\bv?(\d+\.\d+(?:\.\d+)?)\b/i);
+  if (semver && !/\bto\b|typo3/i.test(version)) {
+    return `v${semver[1]}`;
+  }
+  if (/^v?\d+\.\d+(?:\.\d+)?$/i.test(version)) {
+    return /^v/i.test(version) ? version : `v${version}`;
+  }
+  return '';
+}
+
+/**
  * @param {HTMLElement} view
  * @param {object} item
  */
@@ -146,18 +371,21 @@ function populateView(view, item) {
   const version = formatVersionSupport(item.version);
   const price = item.price || '';
   const isFree = !!(item.isFree || price === 'Free');
-  const heroImage = item.detailImage || item.listImage || '';
+  const catalogSection = item.catalogSection || '';
+  const section = sectionLabel(catalogSection);
+  const useLightHero = isLightHeroSection(catalogSection);
+  const productVersion = formatProductVersionPill(item);
+  const iconImage = normalizeSvgDataUri(item.icon || item.listImage || '');
+  // Light hero: prefer detail collage on the right; dark hero keeps full-bleed bg.
+  const collageImage = normalizeSvgDataUri(item.detailImage || '');
+  const heroImage = collageImage || normalizeSvgDataUri(item.listImage || '');
 
-  const crumbShop = view.querySelector('.js-product-detail-crumb-shop');
   const crumbSection = view.querySelector('.js-product-detail-crumb-section');
   const crumbSectionSep = view.querySelector('.js-product-detail-crumb-section-sep');
   const crumbName = view.querySelector('.js-product-detail-crumb-name');
-  if (crumbShop) {
-    crumbShop.textContent = view.dataset.labelShop || 'T3Planet Shop';
-  }
-  const section = sectionLabel(item.catalogSection || '');
   if (crumbSection) {
     crumbSection.textContent = section;
+    crumbSection.dataset.catalogTab = catalogSection || '';
   }
   setVisible(crumbSectionSep, !!section);
   setVisible(crumbSection, !!section);
@@ -167,25 +395,86 @@ function populateView(view, item) {
 
   const hero = view.querySelector('.js-product-detail-hero');
   const heroBg = view.querySelector('.js-product-detail-hero-bg');
+  const visualWrap = view.querySelector('.js-product-detail-hero-visual-wrap');
+  const visualImg = view.querySelector('.js-product-detail-hero-visual');
+  const lightVisualSrc = collageImage || '';
+
   if (hero) {
-    hero.classList.toggle('has-image', !!heroImage);
+    hero.classList.toggle('ns-product-detail__hero--light', useLightHero);
+    hero.classList.remove('ns-product-detail__hero--templates');
+    if (useLightHero) {
+      // Two-column: collage is an <img> on the right, not a full-bleed background.
+      hero.classList.toggle('has-image', false);
+      hero.classList.toggle('has-visual', !!lightVisualSrc);
+    } else {
+      hero.classList.toggle('has-image', !!heroImage);
+      hero.classList.toggle('has-visual', false);
+    }
   }
   if (heroBg) {
-    if (heroImage) {
+    if (!useLightHero && heroImage) {
       heroBg.style.backgroundImage = `url(${JSON.stringify(heroImage)})`;
     } else {
       heroBg.style.backgroundImage = '';
+    }
+  }
+  if (visualImg && visualWrap) {
+    // Avoid stacking multiple error handlers across product navigations.
+    visualImg.onload = null;
+    visualImg.onerror = null;
+    if (useLightHero && lightVisualSrc) {
+      visualImg.alt = name;
+      visualImg.onerror = () => {
+        const current = visualImg.getAttribute('src') || '';
+        const retried = normalizeSvgDataUri(current);
+        if (retried && retried !== current && !visualImg.dataset.svgNsRetried) {
+          visualImg.dataset.svgNsRetried = '1';
+          visualImg.src = retried;
+          return;
+        }
+        visualImg.removeAttribute('src');
+        visualImg.alt = '';
+        setVisible(visualWrap, false);
+        if (hero) {
+          hero.classList.remove('has-visual');
+        }
+      };
+      delete visualImg.dataset.svgNsRetried;
+      visualImg.src = lightVisualSrc;
+      setVisible(visualWrap, true);
+    } else {
+      visualImg.removeAttribute('src');
+      visualImg.alt = '';
+      setVisible(visualWrap, false);
+    }
+  }
+
+  const heroIcon = view.querySelector('.js-product-detail-hero-icon');
+  if (heroIcon) {
+    if (useLightHero && iconImage) {
+      heroIcon.src = iconImage;
+      heroIcon.alt = name;
+      setVisible(heroIcon, true);
+    } else {
+      heroIcon.removeAttribute('src');
+      heroIcon.alt = '';
+      setVisible(heroIcon, false);
     }
   }
 
   const badges = view.querySelector('.js-product-detail-badges');
   if (badges) {
     const parts = [];
-    if (item.category) {
+    if (useLightHero && section) {
+      parts.push(`<span class="badge badge-primary ns-product-detail__section-badge">${escapeHtml(section)}</span>`);
+    } else if (item.category) {
       parts.push(`<span class="badge badge-default">${escapeHtml(item.category)}</span>`);
     }
     if (item.badge) {
-      parts.push(`<span class="badge badge-warning">${escapeHtml(item.badge)}</span>`);
+      const promoClass = useLightHero
+        ? 'badge badge-default ns-product-detail__promo-badge'
+        : 'badge badge-warning';
+      parts.push(`<span class="${promoClass}">${escapeHtml(item.badge)}</span>`);
     }
     badges.innerHTML = parts.join('');
     setVisible(badges, parts.length > 0);
@@ -196,9 +485,37 @@ function populateView(view, item) {
     title.textContent = name;
   }
 
+  const heroDesc = view.querySelector('.js-product-detail-hero-desc');
+  if (heroDesc) {
+    // Hero prefers short description; fall back to long text.
+    const desc = htmlToPlainText(item.description || item.longDescription || '');
+    heroDesc.textContent = desc;
+    setVisible(heroDesc, !!desc);
+  }
+
   const subtitle = view.querySelector('.js-product-detail-subtitle');
   if (subtitle) {
-    subtitle.textContent = [key, version].filter(Boolean).join(' · ');
+    if (useLightHero) {
+      subtitle.textContent = key;
+      subtitle.classList.toggle('badge', !!key);
+      subtitle.classList.toggle('badge-default', !!key);
+      subtitle.classList.toggle('ns-product-detail__key-badge', !!key);
+    } else {
+      subtitle.textContent = [key, version].filter(Boolean).join(' · ');
+      subtitle.classList.remove('badge', 'badge-default', 'ns-product-detail__key-badge');
+    }
+  }
+
+  const productVersionEl = view.querySelector('.js-product-detail-product-version');
+  if (productVersionEl) {
+    if (useLightHero && productVersion) {
+      productVersionEl.textContent = productVersion;
+      productVersionEl.classList.add('badge', 'ns-product-detail__product-version');
+      setVisible(productVersionEl, true);
+    } else {
+      productVersionEl.textContent = '';
+      setVisible(productVersionEl, false);
+    }
   }
 
   const heroStats = view.querySelector('.js-product-detail-hero-stats');
@@ -231,9 +548,11 @@ function populateView(view, item) {
     setVisible(heroStats, bits.length > 0);
   }
 
+  populateVersionSupport(view, item);
+
   const longDescription = view.querySelector('.js-product-detail-long-description');
   const overviewSection = view.querySelector('.js-product-detail-overview-section');
-  const overviewText = item.longDescription || item.description || '';
+  const overviewText = htmlToPlainText(item.longDescription || item.description || '');
   if (longDescription) {
     longDescription.textContent = overviewText;
   }
@@ -256,7 +575,7 @@ function populateView(view, item) {
   const featuresEl = view.querySelector('.js-product-detail-features');
   const features = Array.isArray(item.features) ? item.features : [];
   if (featuresEl) {
-    const checkIcon = '<span class="ns-product-detail__feature-icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" focusable="false"><path fill="currentColor" d="M13.78 4.22a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0L2.22 7.28a.75.75 0 0 1 1.06-1.06L7 9.94l5.72-5.72a.75.75 0 0 1 1.06 0z"/></svg></span>';
+    const checkIcon = `<span class="ns-product-detail__feature-icon" aria-hidden="true">${getProductDetailIconHtml(view, 'feature-check')}</span>`;
     featuresEl.innerHTML = features.map((entry) => (
       `<li class="ns-product-detail__feature">${checkIcon}<span>${escapeHtml(String(entry))}</span></li>`
     )).join('');
@@ -629,7 +948,7 @@ function populateRelated(view, item) {
     const name = String(entry.name || extensionKey);
     const price = String(entry.price || '').trim();
     const badge = String(entry.badge || '').trim();
-    const listImage = String(entry.listImage || '').trim();
+    const listImage = normalizeSvgDataUri(String(entry.listImage || entry.icon || '').trim());
 
     const row = document.createElement('div');
     row.className = 'ns-product-detail__related-row';
@@ -642,6 +961,15 @@ function populateRelated(view, item) {
       img.src = listImage;
       img.alt = '';
       img.loading = 'lazy';
+      img.addEventListener('error', () => {
+        const retried = normalizeSvgDataUri(img.getAttribute('src') || '');
+        if (retried && retried !== img.getAttribute('src') && !img.dataset.svgNsRetried) {
+          img.dataset.svgNsRetried = '1';
+          img.src = retried;
+          return;
+        }
+        media.innerHTML = fallbackIcon;
+      }, { once: false });
       media.appendChild(img);
     } else {
       media.innerHTML = fallbackIcon;
@@ -842,14 +1170,32 @@ function populateResources(view, item) {
   }
   list.innerHTML = '';
   const externalIcon = getProductDetailIconHtml(view, 'resource-external');
+  const isGerman = String(document.documentElement.lang || '').toLowerCase().startsWith('de');
+  const reportIssueUrl = (
+    isGerman
+      ? (view.dataset.reportIssueUrlDe || 'https://t3planet.de/kontakt')
+      : (view.dataset.reportIssueUrlEn || 'https://t3planet.de/en/contact')
+  ).trim();
+  const docsUrl = String(
+    item.documentationUrl
+    || item.documentationLink
+    || item.documentation_link
+    || item.details?.documentation_link
+    || ''
+  ).trim();
   const links = [
     {
-      href: String(item.documentationUrl || item.documentationLink || item.documentation_link || '').trim(),
+      href: docsUrl,
       label: view.dataset.labelDocs || 'Extension Manual',
       icon: 'resource-docs',
     },
     {
-      href: String(item.productUrl || item.knowMoreUrl || '').trim(),
+      href: reportIssueUrl,
+      label: view.dataset.labelReportIssue || 'Found an issue',
+      icon: 'resource-report',
+    },
+    {
+      href: String(item.productUrl || item.knowMoreUrl || item.details?.product_link || '').trim(),
       label: view.dataset.labelProductPage || 'T3Planet Page',
       icon: 'resource-product',
     },
@@ -891,9 +1237,11 @@ function populateMeta(view, item, key, version) {
   if (!meta) {
     return;
   }
+  const authorLabel = view.dataset.labelAuthor || 'Author';
+  const companyLabel = view.dataset.labelCompany || 'Company';
   const rows = [
-    [view.dataset.labelAuthor || 'Author', item.author || 'Team T3Planet'],
-    [view.dataset.labelCompany || 'Company', item.company || 'T3Planet'],
+    [authorLabel, item.author || 'Team T3Planet'],
+    [companyLabel, item.company || 'T3Planet'],
     [view.dataset.labelLastUpdate || 'Last Update', formatDate(item.lastUpdate)],
     [view.dataset.labelFirstUpload || 'First Upload', formatDate(item.firstUpload)],
     [view.dataset.labelDownloads || 'Downloads', formatDownloads(item.downloads)],
@@ -902,9 +1250,13 @@ function populateMeta(view, item, key, version) {
     [view.dataset.labelVersion || 'Version', version],
   ].filter(([, value]) => value !== '' && value != null);
 
-  meta.innerHTML = rows.map(([label, value]) => (
-    `<div class="ns-product-detail__meta-row"><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(String(value))}</dd></div>`
-  )).join('');
+  meta.innerHTML = rows.map(([label, value]) => {
+    const muted = label === authorLabel || label === companyLabel;
+    const rowClass = muted
+      ? 'ns-product-detail__meta-row ns-product-detail__meta-row--muted'
+      : 'ns-product-detail__meta-row';
+    return `<div class="${rowClass}"><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(String(value))}</dd></div>`;
+  }).join('');
 }
 
 /**
@@ -952,6 +1304,22 @@ function populateDependencies(view, item) {
 }
 
 /**
+ * Leave product detail and optionally activate a catalog tab.
+ * @param {string} [catalogTab]
+ */
+function leaveDetailToCatalog(catalogTab = '') {
+  toggleDetailMode(false);
+  const tabKey = String(catalogTab || '').trim();
+  if (!tabKey) {
+    return;
+  }
+  const tabBtn = document.querySelector(`.t3js-catalog-tab[data-catalog-tab="${tabKey}"]`);
+  if (tabBtn && !tabBtn.classList.contains('active') && !tabBtn.classList.contains('is-active')) {
+    tabBtn.click();
+  }
+}
+
+/**
  * @param {boolean} show
  */
 function toggleDetailMode(show) {
@@ -989,6 +1357,13 @@ document.addEventListener('click', (e) => {
   if (back) {
     e.preventDefault();
     toggleDetailMode(false);
+    return;
+  }
+
+  const crumb = e.target.closest('.t3js-product-detail-crumb');
+  if (crumb) {
+    e.preventDefault();
+    leaveDetailToCatalog(crumb.dataset.catalogTab || '');
     return;
   }
 
@@ -1070,9 +1445,17 @@ document.addEventListener('click', (e) => {
     console.error(err);
   }
 
-  const listItem = items[extensionKey];
+  const listItem = items[extensionKey] ? { ...items[extensionKey] } : null;
   if (!listItem && !extensionKey) {
     return;
+  }
+  // Prefer explicit item.catalogSection; otherwise use the active catalog tab.
+  if (listItem && !listItem.catalogSection) {
+    const tabFromScript = script?.getAttribute('data-catalog-tab') || '';
+    const tabFromPane = pane?.getAttribute('data-catalog-tab')
+      || pane?.querySelector('.catalog-tab-content')?.getAttribute('data-catalog-tab')
+      || '';
+    listItem.catalogSection = tabFromScript || tabFromPane || '';
   }
 
   // Loader first, then content after detail data is ready.
@@ -1134,8 +1517,9 @@ function loadFullProductDetail(extensionKey, fallback) {
     .then((response) => response.resolve())
     .then((payload) => {
       if (payload?.success && payload.item && typeof payload.item === 'object') {
-        // Merge so list-only fields (e.g. catalogSection) are preserved when API omits them.
-        const merged = { ...fallback, ...payload.item };
+        // Merge so list-only fields (e.g. catalogSection, listImage) are preserved
+        // when the detail API omits them or returns empty strings.
+        const merged = mergeProductDetail(fallback, payload.item);
         detailCache[extensionKey] = merged;
         return merged;
       }

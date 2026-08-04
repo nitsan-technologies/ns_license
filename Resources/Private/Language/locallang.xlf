@@ -355,6 +355,9 @@
             <trans-unit id="license-catalog.detail.resource.docs">
                 <source>Extension Manual</source>
             </trans-unit>
+            <trans-unit id="license-catalog.detail.resource.report-issue">
+                <source>Found an issue</source>
+            </trans-unit>
             <trans-unit id="license-catalog.detail.resource.product">
                 <source>T3Planet Page</source>
             </trans-unit>
@@ -393,6 +396,12 @@
             </trans-unit>
             <trans-unit id="license-catalog.detail.overview">
                 <source>Overview</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.version-support">
+                <source>TYPO3 Version Support</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.version-support.label">
+                <source>This version supports TYPO3</source>
             </trans-unit>
             <trans-unit id="license-catalog.detail.tags">
                 <source>Tags</source>
