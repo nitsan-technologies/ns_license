@@ -2402,8 +2402,6 @@ body > .ns-license-module-shell.module {
 
 .ns-product-detail__meta-row dt {
   margin: 0;
-  color: var(--typo3-text-color-variant, light-dark(#6b7280, #9ca3af));
-  font-weight: 400;
 }
 
 .ns-product-detail__meta-row dd {
@@ -2413,22 +2411,38 @@ body > .ns-license-module-shell.module {
   word-break: break-word;
 }
 
+.ns-product-detail__dependencies {
+  margin: 0;
+  padding: 0.15rem 0.85rem;
+  border: 1px solid light-dark(#e5e7eb, #4b4b4b);
+  border-radius: var(--typo3-component-border-radius, 0.5rem);
+  background: transparent;
+}
+
 .ns-product-detail__dependencies li {
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
-  padding: 0.45rem 0;
-  border-bottom: 1px solid var(--ns-pd-border);
+  padding: 0.65rem 0;
+  border-bottom: 1px solid light-dark(#e5e7eb, #4b4b4b);
   font-size: 0.85rem;
 }
 
 .ns-product-detail__dependencies li:last-child {
   border-bottom: 0;
-  padding-bottom: 0;
 }
 
 .ns-product-detail__dependencies code {
   font-size: 0.8rem;
+  font-weight: 600;
+  color: inherit;
+  background: transparent;
+  padding: 0;
+}
+
+.ns-product-detail__dependencies .text-variant {
+  font-family: var(--typo3-font-family-monospace, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+  font-size: 0.78rem;
 }
 
 .ns-product-detail__related {

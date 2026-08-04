@@ -908,6 +908,7 @@ function populateMeta(view, item, key, version) {
 }
 
 /**
+ * Dependencies — static demo for now; later prefer item.dependencies from API.
  * @param {HTMLElement} view
  * @param {object} item
  */
@@ -918,6 +919,14 @@ function populateDependencies(view, item) {
   // Support map form { "pkg": "^12" } if ever present client-side.
   if (!Array.isArray(item.dependencies) && item.dependencies && typeof item.dependencies === 'object') {
     deps = Object.entries(item.dependencies).map(([key, version]) => ({ key, version }));
+  }
+  // Static fallback (mock) until API provides dependencies.
+  if (!deps.length) {
+    deps = [
+      { key: 'typo3/cms-core', version: '^12.4 || ^13.0 || ^14.0' },
+      { key: 'typo3/cms-backend', version: '^12.4 || ^13.0 || ^14.0' },
+      { key: 'typo3/cms-extbase', version: '^12.4 || ^13.0 || ^14.0' },
+    ];
   }
   if (!list) {
     return;
