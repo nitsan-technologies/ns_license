@@ -33,7 +33,7 @@
         <div class="card-header">
             <f:if condition="{isTemplatesTab}">
                 <f:else>
-                    <div class="catalog-card__image d-flex align-items-start justify-content-between mb-2">
+                    <div class="catalog-card__image d-flex align-items-start justify-content-between mb-3">
                         <img class="t3js-catalog-card-image{f:if(condition: item.listImage, else: ' is-placeholder')}"
                             src="{cardImage}"
                             alt="{item.name}"
@@ -46,7 +46,7 @@
                 </f:else>
             </f:if>
 
-            <div class="card-header-body mb-2">
+            <div class="card-header-body mb-3">
                 <div class="d-flex align-items-center justify-content-start gap-2 flex-wrap">
                     <h2 class="card-title mb-0">{item.name}</h2>
                     <f:if condition="{item.badge}">
@@ -59,7 +59,7 @@
             </div>
         </div>
         <div class="card-body pt-0">
-            <p class="card-text mb-0">{item.description}</p>
+            <p class="card-text mb-0 text-variant">{item.description}</p>
         </div>
         <div class="card-footer">
             <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap mb-2">
@@ -81,39 +81,41 @@
                     <div class="catalog-card-price fw-semibold text-nowrap ms-auto">{item.price}</div>
                 </f:if>
             </div>
-            <div class="actions-wrapper d-flex flex-wrap justify-content-start gap-2">
-                <f:if condition="{isFreeSection}">
-                    <f:then>
-                        <f:if condition="{item.knowMoreUrl}">
-                            <a href="{item.knowMoreUrl}" class="btn btn-link btn-sm" target="_blank" rel="noopener noreferrer">
-                                <span>
-                                    <f:translate key="license-shop.know-more" extensionName="ns_license" />
-                                </span>
-                                <core:icon identifier="actions-window-open" size="small" />
-                            </a>
-                        </f:if>
-                    </f:then>
-                    <f:else>
-                        <f:if condition="{item.extensionKey}">
-                            <button type="button" class="btn btn-primary btn-sm t3js-get-license-trigger"
-                                data-extension-key="{item.extensionKey}" data-gl-mode="trial">
-                                <core:icon identifier="actions-plus" size="small" />
-                                <span>
-                                    <f:translate key="license-shop.free-trial" extensionName="ns_license" />
-                                </span>
-                            </button>
-                        </f:if>
-                    </f:else>
-                </f:if>
-                <f:if condition="{item.liveDemoUrl}">
-                    <a href="{item.liveDemoUrl}" class="btn btn-default btn-sm" target="_blank"
-                        rel="noopener noreferrer">
-                        <core:icon identifier="actions-preview" size="small" />
-                        <span>
-                            <f:translate key="license-shop.live-demo" extensionName="ns_license" />
-                        </span>
-                    </a>
-                </f:if>
+            <div class="actions-wrapper d-flex flex-wrap justify-content-between gap-2">
+                <div class="actions-wrapper-inner">
+                    <f:if condition="{isFreeSection}">
+                        <f:then>
+                            <f:if condition="{item.knowMoreUrl}">
+                                <a href="{item.knowMoreUrl}" class="btn btn-link btn-sm" target="_blank" rel="noopener noreferrer">
+                                    <span>
+                                        <f:translate key="license-shop.know-more" extensionName="ns_license" />
+                                    </span>
+                                    <core:icon identifier="actions-window-open" size="small" />
+                                </a>
+                            </f:if>
+                        </f:then>
+                        <f:else>
+                            <f:if condition="{item.extensionKey}">
+                                <button type="button" class="btn btn-primary btn-sm t3js-get-license-trigger"
+                                    data-extension-key="{item.extensionKey}" data-gl-mode="trial">
+                                    <core:icon identifier="actions-plus" size="small" />
+                                    <span>
+                                        <f:translate key="license-shop.free-trial" extensionName="ns_license" />
+                                    </span>
+                                </button>
+                            </f:if>
+                        </f:else>
+                    </f:if>
+                    <f:if condition="{item.liveDemoUrl}">
+                        <a href="{item.liveDemoUrl}" class="btn btn-default btn-sm" target="_blank"
+                            rel="noopener noreferrer">
+                            <core:icon identifier="actions-preview" size="small" />
+                            <span>
+                                <f:translate key="license-shop.live-demo" extensionName="ns_license" />
+                            </span>
+                        </a>
+                    </f:if>
+                </div>
                 <f:if condition="{item.extensionKey}">
                     <button type="button" class="btn btn-default btn-sm t3js-product-detail-trigger"
                         data-extension-key="{item.extensionKey}">

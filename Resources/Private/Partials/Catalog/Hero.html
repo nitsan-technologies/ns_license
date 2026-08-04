@@ -12,7 +12,7 @@
     <div class="card card-size-large">
         <div class="card-body">
             <div class="row g-3 align-items-stretch">
-                <div class="col-md-6 col-lg-7">
+                <div class="col-md-6 col-lg-6">
                     <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
                         <f:if condition="{item.category}">
                             <span class="badge badge-default">{item.category}</span>
@@ -29,13 +29,53 @@
                         </span>
                     </div>
 
-                    <h2 class="card-title mb-1">{item.name}</h2>
-                    <p class="card-subtitle text-variant mb-3">
-                        {item.extensionKey}<f:if condition="{item.version}"> · v{item.version}</f:if>
-                    </p>
+                    <div class="catalog-hero__identity mb-3">
+                        <f:variable name="useT3KarmaWordmark" value="0" />
+                        <f:if condition="{catalogTab} == 'templates'">
+                            <f:if condition="{item.extensionKey} == 'ns_theme_t3karma'">
+                                <f:variable name="useT3KarmaWordmark" value="1" />
+                            </f:if>
+                        </f:if>
+
+                        <f:if condition="{useT3KarmaWordmark}">
+                            <f:then>
+                                <div class="catalog-hero__wordmark">
+                                    <img class="catalog-hero__wordmark-img"
+                                         src="{f:uri.resource(path: 'EXT:ns_license/Resources/Public/Icons/t3karma-wordmark.svg')}"
+                                         alt="{item.name}"
+                                         width="200"
+                                         height="47"
+                                         loading="lazy" />
+                                </div>
+                                <div class="catalog-hero__identity-text">
+                                    <h2 class="card-title catalog-hero__title visually-hidden mb-1">{item.name}</h2>
+                                    <p class="card-subtitle catalog-hero__meta text-variant mb-0">
+                                        {item.extensionKey}<f:if condition="{item.version}"> · v{item.version}</f:if>
+                                    </p>
+                                </div>
+                            </f:then>
+                            <f:else>
+                                <f:if condition="{item.listImage}">
+                                    <div class="catalog-hero__icon" aria-hidden="true">
+                                        <img class="catalog-hero__icon-img t3js-catalog-card-image"
+                                             src="{item.listImage}"
+                                             alt=""
+                                             loading="lazy"
+                                             data-fallback="{f:uri.resource(path: 'EXT:ns_license/Resources/Public/Icons/catalog-placeholder.svg')}" />
+                                    </div>
+                                </f:if>
+                                <div class="catalog-hero__identity-text">
+                                    <h2 class="card-title catalog-hero__title mb-1">{item.name}</h2>
+                                    <p class="card-subtitle catalog-hero__meta text-variant mb-0">
+                                        {item.extensionKey}<f:if condition="{item.version}"> · v{item.version}</f:if>
+                                    </p>
+                                </div>
+                            </f:else>
+                        </f:if>
+                    </div>
 
                     <f:if condition="{item.description}">
-                        <p class="card-text mb-3">{item.description}</p>
+                        <p class="card-text mb-3 text-variant">{item.description}</p>
                     </f:if>
 
                     <f:if condition="{item.rating} || {item.downloads} || {item.price}">
@@ -123,7 +163,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-6 col-lg-5">
+                <div class="col-md-6 col-lg-6">
                     <div class="catalog-hero__media">
                         <f:variable name="heroImage" value="{item.listImage}" />
                         <f:if condition="{item.detailImage}">
