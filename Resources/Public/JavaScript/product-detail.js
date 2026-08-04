@@ -4,10 +4,14 @@
  */
 
 import AjaxRequest from '@typo3/core/ajax/ajax-request.js';
+import { Collapse } from 'bootstrap';
 
 const VIEW_ID = 'product-detail-view';
 const LIST_SELECTOR = '#license-tab-content';
 const HEADER_SELECTOR = '.ns-license-tab-page-header';
+
+// Ensure Bootstrap Collapse data-api is registered for dynamically inserted panels (needed on v12).
+void Collapse;
 
 /** @type {Record<string, object>} */
 const detailCache = {};
@@ -260,6 +264,7 @@ function populateView(view, item) {
   setVisible(featuresSection, features.length > 0);
 
   populateExternalNav(view, item);
+  populateSecurity(view, item);
   populateChangelog(view, item);
   populateFaq(view, item);
   populateRelated(view, item);
@@ -271,8 +276,83 @@ function populateView(view, item) {
 }
 
 /**
+ * Append (or replace) a URL hash fragment.
+ * @param {string} url
+ * @param {string} hash  e.g. "features" or "#features"
+ * @returns {string}
+ */
+function withUrlHash(url, hash) {
+  const raw = String(url || '').trim();
+  const fragment = String(hash || '').replace(/^#/, '').trim();
+  if (!raw || !fragment) {
+    return raw;
+  }
+  try {
+    const parsed = new URL(raw, window.location.origin);
+    if (parsed.hash.replace(/^#/, '') === fragment) {
+      return raw;
+    }
+    parsed.hash = fragment;
+    // Preserve relative/absolute form when input had no origin-only absolute URL
+    if (/^[a-z][a-z0-9+.-]*:/i.test(raw)) {
+      return parsed.toString();
+    }
+    return `${parsed.pathname}${parsed.search}#${fragment}`;
+  } catch (e) {
+    return `${raw.split('#')[0]}#${fragment}`;
+  }
+}
+
+/**
+ * Security & Integrity — static for now; later wire item.checksum / sha256 from API.
+ * @param {HTMLElement} view
+ * @param {object} item
+ */
+function populateSecurity(view, item) {
+  const section = view.querySelector('.js-product-detail-security-section');
+  if (!section) {
+    return;
+  }
+  const checksumEl = view.querySelector('.js-product-detail-checksum');
+  const staticChecksum = String(section.dataset.staticChecksum || '').trim();
+  // Prefer API when present (future); fall back to static demo value.
+  const checksum = String(
+    item.sha256
+    || item.checksum
+    || item.sha256Checksum
+    || (item.security && (item.security.sha256 || item.security.checksum))
+    || staticChecksum
+    || ''
+  ).trim();
+  if (checksumEl) {
+    checksumEl.textContent = checksum;
+  }
+  setVisible(section, !!checksum);
+
+  const collapseEl = section.querySelector('#pd-security-verify');
+  const button = section.querySelector('[data-bs-target="#pd-security-verify"]');
+  if (collapseEl && button && !collapseEl.dataset.collapseBound) {
+    collapseEl.dataset.collapseBound = '1';
+    const instance = Collapse.getOrCreateInstance(collapseEl, { toggle: false });
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      instance.toggle();
+    });
+    collapseEl.addEventListener('show.bs.collapse', () => {
+      button.classList.remove('collapsed');
+      button.setAttribute('aria-expanded', 'true');
+    });
+    collapseEl.addEventListener('hide.bs.collapse', () => {
+      button.classList.add('collapsed');
+      button.setAttribute('aria-expanded', 'false');
+    });
+  }
+}
+
+/**
  * Meta-bar Features / Reviews / References → external product-page links.
  * Prefers API fields (featuresUrl / reviewsUrl / referencesUrl); falls back to productUrl.
+ * Always appends section hashes: #features, #review, #reference.
  * @param {HTMLElement} view
  * @param {object} item
  */
@@ -285,6 +365,11 @@ function populateExternalNav(view, item) {
     reviews: String(item.reviewsUrl || sectionUrls.reviews || navLinks.reviews || '').trim(),
     references: String(item.referencesUrl || sectionUrls.references || navLinks.references || '').trim(),
   };
+  const hashByKey = {
+    features: 'features',
+    reviews: 'review',
+    references: 'reference',
+  };
 
   view.querySelectorAll('.js-product-detail-ext-link').forEach((link) => {
     const key = String(link.dataset.extKey || '').trim();
@@ -294,7 +379,7 @@ function populateExternalNav(view, item) {
       link.removeAttribute('href');
       return;
     }
-    link.href = url;
+    link.href = withUrlHash(url, hashByKey[key] || key);
     setVisible(link, true);
   });
 }
@@ -313,7 +398,7 @@ function createCorePanel(opts) {
     <h3 class="panel-heading" role="tab">
       <div class="panel-heading-row">
         <button
-          class="panel-button${open ? '' : ' collapsed'}"
+          class="panel-button panel-heading-button${open ? '' : ' collapsed'}"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#${id}"
@@ -328,6 +413,24 @@ function createCorePanel(opts) {
     <div class="panel-collapse collapse${open ? ' show' : ''}" id="${id}" role="tabpanel">
       <div class="panel-body">${bodyHtml}</div>
     </div>`;
+
+  const collapseEl = el.querySelector('.panel-collapse');
+  const button = el.querySelector('.panel-button');
+  if (collapseEl && button) {
+    const instance = Collapse.getOrCreateInstance(collapseEl, { toggle: false });
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      instance.toggle();
+    });
+    collapseEl.addEventListener('show.bs.collapse', () => {
+      button.classList.remove('collapsed');
+      button.setAttribute('aria-expanded', 'true');
+    });
+    collapseEl.addEventListener('hide.bs.collapse', () => {
+      button.classList.add('collapsed');
+      button.setAttribute('aria-expanded', 'false');
+    });
+  }
   return el;
 }
 
@@ -805,6 +908,7 @@ function populateMeta(view, item, key, version) {
 }
 
 /**
+ * Dependencies — static demo for now; later prefer item.dependencies from API.
  * @param {HTMLElement} view
  * @param {object} item
  */
@@ -815,6 +919,14 @@ function populateDependencies(view, item) {
   // Support map form { "pkg": "^12" } if ever present client-side.
   if (!Array.isArray(item.dependencies) && item.dependencies && typeof item.dependencies === 'object') {
     deps = Object.entries(item.dependencies).map(([key, version]) => ({ key, version }));
+  }
+  // Static fallback (mock) until API provides dependencies.
+  if (!deps.length) {
+    deps = [
+      { key: 'typo3/cms-core', version: '^12.4 || ^13.0 || ^14.0' },
+      { key: 'typo3/cms-backend', version: '^12.4 || ^13.0 || ^14.0' },
+      { key: 'typo3/cms-extbase', version: '^12.4 || ^13.0 || ^14.0' },
+    ];
   }
   if (!list) {
     return;
@@ -859,7 +971,6 @@ function toggleDetailMode(show) {
     if (header) {
       header.classList.add('d-none');
     }
-    view.scrollIntoView({ behavior: 'smooth', block: 'start' });
   } else {
     view.classList.add('d-none');
     view.setAttribute('hidden', 'hidden');
@@ -902,6 +1013,32 @@ document.addEventListener('click', (e) => {
       const prev = copyBtn.getAttribute('title') || '';
       copyBtn.setAttribute('title', view?.dataset.labelCopied || 'Copied');
       setTimeout(() => copyBtn.setAttribute('title', prev), 1500);
+    };
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(() => {});
+    } else {
+      done();
+    }
+    return;
+  }
+
+  const copyChecksumBtn = e.target.closest('.t3js-product-detail-copy-checksum');
+  if (copyChecksumBtn) {
+    e.preventDefault();
+    const view = document.getElementById(VIEW_ID);
+    const section = view?.querySelector('.js-product-detail-security-section');
+    const code = view?.querySelector('.js-product-detail-checksum');
+    const text = (code?.textContent || '').trim();
+    if (!text) {
+      return;
+    }
+    const done = () => {
+      const prev = copyChecksumBtn.getAttribute('title') || '';
+      copyChecksumBtn.setAttribute(
+        'title',
+        section?.dataset.labelCopied || view?.dataset.labelCopied || 'Copied'
+      );
+      setTimeout(() => copyChecksumBtn.setAttribute('title', prev), 1500);
     };
     if (navigator.clipboard?.writeText) {
       navigator.clipboard.writeText(text).then(done).catch(() => {});

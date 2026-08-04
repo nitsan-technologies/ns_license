@@ -88,6 +88,45 @@ function bindCatalogFilters(pane) {
         typeFilter.dataset.bound = '1';
         typeFilter.addEventListener('change', () => filterCatalog(pane));
     }
+
+    bindCatalogCardImageFallbacks(pane);
+}
+
+/**
+ * Swap broken catalog card images to the extension placeholder icon.
+ *
+ * @param {ParentNode|null} root
+ */
+function bindCatalogCardImageFallbacks(root) {
+    if (!root) {
+        return;
+    }
+
+    root.querySelectorAll('img.t3js-catalog-card-image').forEach((img) => {
+        if (img.dataset.fallbackBound === '1') {
+            return;
+        }
+        img.dataset.fallbackBound = '1';
+
+        const applyFallback = () => {
+            const fallback = img.dataset.fallback || '';
+            if (!fallback) {
+                return;
+            }
+            const current = img.currentSrc || img.src || '';
+            if (current === fallback || img.getAttribute('src') === fallback) {
+                img.classList.add('is-placeholder');
+                return;
+            }
+            img.classList.add('is-placeholder');
+            img.src = fallback;
+        };
+
+        img.addEventListener('error', applyFallback);
+        if (img.complete && img.naturalWidth === 0 && img.getAttribute('src')) {
+            applyFallback();
+        }
+    });
 }
 
 /**

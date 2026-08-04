@@ -480,6 +480,50 @@
                 <source>Tags</source>
                 <target>Tags</target>
             </trans-unit>
+            <trans-unit id="license-catalog.detail.security">
+                <source>Security &amp; Integrity</source>
+                <target>Sicherheit &amp; Integrität</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.checksum-label">
+                <source>SHA-256 Checksum</source>
+                <target>SHA-256-Prüfsumme</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.checksum-hint">
+                <source>Verify this checksum after downloading to ensure the file is authentic and unmodified.</source>
+                <target>Prüfen Sie diese Checksumme nach dem Download, um sicherzustellen, dass die Datei authentisch und unverändert ist.</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.copy">
+                <source>Copy checksum</source>
+                <target>Checksumme kopieren</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.copied">
+                <source>Copied</source>
+                <target>Kopiert</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.pgp-title">
+                <source>PGP Signed by T3Planet</source>
+                <target>PGP-signiert von T3Planet</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.pgp-text">
+                <source>All releases are cryptographically signed with T3Planet's PGP key. Signed by</source>
+                <target>Alle Releases sind kryptografisch mit dem PGP-Schlüssel von T3Planet signiert. Signiert von</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.verify-title">
+                <source>How to verify the checksum</source>
+                <target>So prüfen Sie die Checksumme</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.verify-step1">
+                <source>Download the release archive from T3Planet or TER.</source>
+                <target>Laden Sie das Release-Archiv von T3Planet oder dem TER herunter.</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.verify-step2">
+                <source>Run the following command:</source>
+                <target>Führen Sie den folgenden Befehl aus:</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.verify-step3">
+                <source>Compare the output with the SHA-256 checksum above — they must match exactly.</source>
+                <target>Vergleichen Sie die Ausgabe mit der SHA-256-Prüfsumme oben — sie müssen exakt übereinstimmen.</target>
+            </trans-unit>
             <trans-unit id="license-catalog.detail.keywords">
                 <source>Keywords</source>
                 <target>Stichwörter</target>

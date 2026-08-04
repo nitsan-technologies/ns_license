@@ -207,6 +207,12 @@
             <trans-unit id="errorMessage.default">
                 <source>Sorry! Something is wrong to connect at our License system server, Please try again or submit support ticket at https://t3planet.com/support</source>
             </trans-unit>
+            <trans-unit id="systemRequirements.title">
+                <source>Server requirements for activation</source>
+            </trans-unit>
+            <trans-unit id="systemRequirements.note">
+                <source>License activation downloads the extension to your server. Please ensure PHP memory_limit is at least 1024M, max_execution_time is 60+ seconds, typo3temp is writable, and outbound HTTPS to composer.t3planet.cloud is allowed. If activation hangs or shows a blank page, ask your host to check these settings.</source>
+            </trans-unit>
             <trans-unit id="license-activation.footerTitle">
                 <source>Need Help With Domain Registration?</source>
             </trans-unit>
@@ -390,6 +396,39 @@
             </trans-unit>
             <trans-unit id="license-catalog.detail.tags">
                 <source>Tags</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security">
+                <source>Security &amp; Integrity</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.checksum-label">
+                <source>SHA-256 Checksum</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.checksum-hint">
+                <source>Verify this checksum after downloading to ensure the file is authentic and unmodified.</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.copy">
+                <source>Copy checksum</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.copied">
+                <source>Copied</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.pgp-title">
+                <source>PGP Signed by T3Planet</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.pgp-text">
+                <source>All releases are cryptographically signed with T3Planet's PGP key. Signed by</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.verify-title">
+                <source>How to verify the checksum</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.verify-step1">
+                <source>Download the release archive from T3Planet or TER.</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.verify-step2">
+                <source>Run the following command:</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.verify-step3">
+                <source>Compare the output with the SHA-256 checksum above — they must match exactly.</source>
             </trans-unit>
             <trans-unit id="license-catalog.detail.keywords">
                 <source>Keywords</source>
