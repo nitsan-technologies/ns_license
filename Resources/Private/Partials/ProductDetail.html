@@ -53,22 +53,22 @@
             <div class="ns-product-detail__hero-bg js-product-detail-hero-bg" aria-hidden="true"></div>
             <div class="ns-product-detail__hero-overlay" aria-hidden="true"></div>
             <div class="ns-product-detail__hero-inner card-body">
-                <div class="row align-items-end g-3">
-                    <div class="col-md-6 col-lg-7">
+                <div class="row align-items-center g-3">
+                    <div class="col-md-6 col-lg-7 js-product-detail-hero-text-col">
                         <div class="ns-product-detail__hero-content">
                             <div class="ns-product-detail__hero-topline">
                                 <img class="ns-product-detail__hero-icon js-product-detail-hero-icon d-none" alt="" width="40" height="40" />
                                 <div class="ns-product-detail__badges js-product-detail-badges"></div>
                             </div>
                             <h1 class="ns-product-detail__title js-product-detail-title"></h1>
-                            <p class="ns-product-detail__hero-desc js-product-detail-hero-desc text-variant d-none mb-0"></p>
+                            <p class="ns-product-detail__hero-desc js-product-detail-hero-desc d-none mb-0"></p>
                             <div class="ns-product-detail__identity">
                                 <p class="ns-product-detail__subtitle js-product-detail-subtitle mb-0"></p>
                                 <span class="ns-product-detail__product-version js-product-detail-product-version d-none"></span>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 col-lg-5">
+                    <div class="col-md-6 col-lg-5 js-product-detail-hero-visual-col">
                         <div class="ns-product-detail__hero-visual js-product-detail-hero-visual-wrap d-none">
                             <img class="ns-product-detail__hero-visual-img js-product-detail-hero-visual" alt="" />
                         </div>
@@ -91,112 +91,108 @@
 
     <div class="row g-3 ns-product-detail__layout">
         <div class="col-lg-9 ns-product-detail__main">
-            <section id="pd-overview" class="card ns-product-detail__section js-product-detail-overview-section">
-                <div class="card-header">
-                    <h2 class="card-title"><f:translate key="license-catalog.detail.overview" extensionName="ns_license" /></h2>
-                </div>
-                <div class="card-body">
-                    <div class="js-product-detail-long-description"></div>
-                </div>
-            </section>
-
-            <section class="card ns-product-detail__section js-product-detail-version-section d-none">
-                <div class="card-header">
-                    <h2 class="card-title"><f:translate key="license-catalog.detail.version-support" extensionName="ns_license" /></h2>
-                </div>
-                <div class="card-body">
-                    <div class="ns-product-detail__version-box">
-                        <p class="ns-product-detail__version-label mb-2"><f:translate key="license-catalog.detail.version-support.label" extensionName="ns_license" /></p>
-                        <div class="ns-product-detail__version-pills js-product-detail-version-pills" role="list"></div>
+            <section id="pd-overview" class="ns-product-detail__block js-product-detail-overview-section">
+                <h2 class="ns-product-detail__section-title"><f:translate key="license-catalog.detail.overview" extensionName="ns_license" /></h2>
+                <div class="card ns-product-detail__section">
+                    <div class="card-body">
+                        <div class="js-product-detail-long-description"></div>
                     </div>
                 </div>
             </section>
 
-            <section id="pd-features" class="card ns-product-detail__section js-product-detail-features-section d-none">
-                <div class="card-header">
-                    <h2 class="card-title"><f:translate key="license-catalog.detail.features" extensionName="ns_license" /></h2>
-                </div>
-                <div class="card-body">
-                    <div class="ns-product-detail__features js-product-detail-features"></div>
+            <section class="ns-product-detail__block js-product-detail-version-section d-none">
+                <h2 class="ns-product-detail__section-title"><f:translate key="license-catalog.detail.version-support" extensionName="ns_license" /></h2>
+                <div class="card ns-product-detail__section">
+                    <div class="card-body">
+                        <div class="ns-product-detail__version-box">
+                            <p class="ns-product-detail__version-label mb-2"><f:translate key="license-catalog.detail.version-support.label" extensionName="ns_license" /></p>
+                            <div class="ns-product-detail__version-pills js-product-detail-version-pills" role="list"></div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <section class="card ns-product-detail__section js-product-detail-related-section d-none"
+            <section id="pd-features" class="ns-product-detail__block js-product-detail-features-section d-none">
+                <h2 class="ns-product-detail__section-title"><f:translate key="license-catalog.detail.features" extensionName="ns_license" /></h2>
+                <div class="card ns-product-detail__section">
+                    <div class="card-body">
+                        <div class="ns-product-detail__features js-product-detail-features"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="ns-product-detail__block js-product-detail-related-section d-none"
                      data-label-view="{f:translate(key: 'license-catalog.detail.related.view', extensionName: 'ns_license')}">
-                <div class="card-header">
-                    <h2 class="card-title"><f:translate key="license-catalog.detail.related" extensionName="ns_license" /></h2>
-                </div>
-                <div class="card-body">
-                    <div class="ns-product-detail__related js-product-detail-related" role="list"></div>
+                <h2 class="ns-product-detail__section-title"><f:translate key="license-catalog.detail.related" extensionName="ns_license" /></h2>
+                <div class="ns-product-detail__related js-product-detail-related" role="list"></div>
+            </section>
+
+            <section class="ns-product-detail__block js-product-detail-keywords-section d-none">
+                <h2 class="ns-product-detail__section-title"><f:translate key="license-catalog.detail.tags" extensionName="ns_license" /></h2>
+                <div class="card ns-product-detail__section">
+                    <div class="card-body">
+                        <div class="ns-product-detail__keywords js-product-detail-keywords"></div>
+                    </div>
                 </div>
             </section>
 
-            <section class="card ns-product-detail__section js-product-detail-keywords-section d-none">
-                <div class="card-header">
-                    <h2 class="card-title"><f:translate key="license-catalog.detail.tags" extensionName="ns_license" /></h2>
-                </div>
-                <div class="card-body">
-                    <div class="ns-product-detail__keywords js-product-detail-keywords"></div>
-                </div>
-            </section>
-
-            <section class="card ns-product-detail__section js-product-detail-security-section"
+            <section class="ns-product-detail__block js-product-detail-security-section"
                      data-static-checksum="a3f2c8d9e14b7063f2a1c5d8e9b0f3a7c2d4e6b8f0a1c3d5e7b9f2a4c6d8e0b3"
                      data-label-copied="{f:translate(key: 'license-catalog.detail.security.copied', extensionName: 'ns_license')}">
-                <div class="card-header">
-                    <h2 class="card-title"><f:translate key="license-catalog.detail.security" extensionName="ns_license" /></h2>
-                </div>
-                <div class="card-body">
-                    <div class="ns-product-detail__security">
-                        <div class="ns-product-detail__security-block">
-                            <p class="ns-product-detail__security-label"><f:translate key="license-catalog.detail.security.checksum-label" extensionName="ns_license" /></p>
-                            <div class="ns-product-detail__checksum">
-                                <code class="js-product-detail-checksum">a3f2c8d9e14b7063f2a1c5d8e9b0f3a7c2d4e6b8f0a1c3d5e7b9f2a4c6d8e0b3</code>
-                                <button type="button"
-                                        class="btn btn-default btn-sm t3js-product-detail-copy-checksum"
-                                        title="{f:translate(key: 'license-catalog.detail.security.copy', extensionName: 'ns_license')}"
-                                        aria-label="{f:translate(key: 'license-catalog.detail.security.copy', extensionName: 'ns_license')}">
-                                    <core:icon identifier="actions-edit-copy" size="small" />
-                                </button>
+                <h2 class="ns-product-detail__section-title"><f:translate key="license-catalog.detail.security" extensionName="ns_license" /></h2>
+                <div class="card ns-product-detail__section">
+                    <div class="card-body">
+                        <div class="ns-product-detail__security">
+                            <div class="ns-product-detail__security-block">
+                                <p class="ns-product-detail__security-label"><f:translate key="license-catalog.detail.security.checksum-label" extensionName="ns_license" /></p>
+                                <div class="ns-product-detail__checksum">
+                                    <code class="js-product-detail-checksum">a3f2c8d9e14b7063f2a1c5d8e9b0f3a7c2d4e6b8f0a1c3d5e7b9f2a4c6d8e0b3</code>
+                                    <button type="button"
+                                            class="btn btn-default btn-sm t3js-product-detail-copy-checksum"
+                                            title="{f:translate(key: 'license-catalog.detail.security.copy', extensionName: 'ns_license')}"
+                                            aria-label="{f:translate(key: 'license-catalog.detail.security.copy', extensionName: 'ns_license')}">
+                                        <core:icon identifier="actions-edit-copy" size="small" />
+                                    </button>
+                                </div>
+                                <p class="ns-product-detail__security-hint text-variant mb-0"><f:translate key="license-catalog.detail.security.checksum-hint" extensionName="ns_license" /></p>
                             </div>
-                            <p class="ns-product-detail__security-hint text-variant mb-0"><f:translate key="license-catalog.detail.security.checksum-hint" extensionName="ns_license" /></p>
-                        </div>
 
-                        <div class="ns-product-detail__pgp alert alert-success mb-0" role="note">
-                            <div class="ns-product-detail__pgp-body">
-                                <p class="ns-product-detail__pgp-title mb-0"><f:translate key="license-catalog.detail.security.pgp-title" extensionName="ns_license" /></p>
-                                <p class="ns-product-detail__pgp-text text-variant mb-0">
-                                    <f:translate key="license-catalog.detail.security.pgp-text" extensionName="ns_license" />
-                                    <code>security@t3planet.de</code>.
-                                </p>
+                            <div class="ns-product-detail__pgp alert alert-success mb-0" role="note">
+                                <div class="ns-product-detail__pgp-body">
+                                    <p class="ns-product-detail__pgp-title mb-0"><f:translate key="license-catalog.detail.security.pgp-title" extensionName="ns_license" /></p>
+                                    <p class="ns-product-detail__pgp-text text-variant mb-0">
+                                        <f:translate key="license-catalog.detail.security.pgp-text" extensionName="ns_license" />
+                                        <code>security@t3planet.de</code>.
+                                    </p>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="panel-group ns-product-detail__panels ns-product-detail__security-verify mb-0" id="product-detail-security-verify">
-                            <div class="panel panel-default">
-                                <h3 class="panel-heading" role="tab">
-                                    <div class="panel-heading-row">
-                                        <button class="panel-button panel-heading-button collapsed"
-                                                type="button"
-                                                data-bs-toggle="collapse"
-                                                data-bs-target="#pd-security-verify"
-                                                aria-expanded="false"
-                                                aria-controls="pd-security-verify">
-                                            <div class="panel-title"><f:translate key="license-catalog.detail.security.verify-title" extensionName="ns_license" /></div>
-                                            <span class="caret"></span>
-                                        </button>
-                                    </div>
-                                </h3>
-                                <div class="panel-collapse collapse" id="pd-security-verify" role="tabpanel">
-                                    <div class="panel-body">
-                                        <ol class="ns-product-detail__security-steps mb-0">
-                                            <li><f:translate key="license-catalog.detail.security.verify-step1" extensionName="ns_license" /></li>
-                                            <li>
-                                                <f:translate key="license-catalog.detail.security.verify-step2" extensionName="ns_license" />
-                                                <code class="ns-product-detail__security-cmd">sha256sum &lt;archive.zip&gt;</code>
-                                            </li>
-                                            <li><f:translate key="license-catalog.detail.security.verify-step3" extensionName="ns_license" /></li>
-                                        </ol>
+                            <div class="panel-group ns-product-detail__panels ns-product-detail__security-verify mb-0" id="product-detail-security-verify">
+                                <div class="panel panel-default">
+                                    <h3 class="panel-heading" role="tab">
+                                        <div class="panel-heading-row">
+                                            <button class="panel-button panel-heading-button collapsed"
+                                                    type="button"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#pd-security-verify"
+                                                    aria-expanded="false"
+                                                    aria-controls="pd-security-verify">
+                                                <div class="panel-title"><f:translate key="license-catalog.detail.security.verify-title" extensionName="ns_license" /></div>
+                                                <span class="caret"></span>
+                                            </button>
+                                        </div>
+                                    </h3>
+                                    <div class="panel-collapse collapse" id="pd-security-verify" role="tabpanel">
+                                        <div class="panel-body">
+                                            <ol class="ns-product-detail__security-steps mb-0">
+                                                <li><f:translate key="license-catalog.detail.security.verify-step1" extensionName="ns_license" /></li>
+                                                <li>
+                                                    <f:translate key="license-catalog.detail.security.verify-step2" extensionName="ns_license" />
+                                                    <code class="ns-product-detail__security-cmd">sha256sum &lt;archive.zip&gt;</code>
+                                                </li>
+                                                <li><f:translate key="license-catalog.detail.security.verify-step3" extensionName="ns_license" /></li>
+                                            </ol>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -205,76 +201,68 @@
                 </div>
             </section>
 
-            <section class="card ns-product-detail__section js-product-detail-changelog-section d-none">
-                <div class="card-header">
-                    <h2 class="card-title"><f:translate key="license-catalog.detail.changelog" extensionName="ns_license" /></h2>
-                </div>
-                <div class="card-body">
-                    <div class="panel-group ns-product-detail__panels js-product-detail-changelog" id="product-detail-changelog"></div>
-                </div>
+            <section class="ns-product-detail__block js-product-detail-changelog-section d-none">
+                <h2 class="ns-product-detail__section-title"><f:translate key="license-catalog.detail.changelog" extensionName="ns_license" /></h2>
+                <div class="panel-group ns-product-detail__panels js-product-detail-changelog" id="product-detail-changelog"></div>
             </section>
 
-            <section id="pd-faq" class="card ns-product-detail__section js-product-detail-faq-section d-none">
-                <div class="card-header">
-                    <h2 class="card-title"><f:translate key="license-catalog.detail.faq" extensionName="ns_license" /></h2>
-                </div>
-                <div class="card-body">
-                    <div class="panel-group ns-product-detail__panels js-product-detail-faq" id="product-detail-faq"></div>
-                </div>
+            <section id="pd-faq" class="ns-product-detail__block js-product-detail-faq-section d-none">
+                <h2 class="ns-product-detail__section-title"><f:translate key="license-catalog.detail.faq" extensionName="ns_license" /></h2>
+                <div class="panel-group ns-product-detail__panels js-product-detail-faq" id="product-detail-faq"></div>
             </section>
         </div>
 
         <aside class="col-lg-3 ns-product-detail__sidebar">
-            <div class="card card-size-small ns-product-detail__card js-product-detail-cta-card w-100">
-                <div class="card-header">
-                    <h3 class="card-title"><f:translate key="license-catalog.detail.get-started" extensionName="ns_license" /></h3>
-                </div>
-                <div class="card-body">
-                    <div class="ns-product-detail__cta-actions js-product-detail-actions d-flex flex-column gap-2"></div>
-                </div>
-            </div>
-
-            <div class="card card-size-small ns-product-detail__card js-product-detail-composer-section d-none w-100">
-                <div class="card-header">
-                    <h3 class="card-title"><f:translate key="license-catalog.detail.composer" extensionName="ns_license" /></h3>
-                </div>
-                <div class="card-body">
-                    <div class="ns-product-detail__composer">
-                        <code class="js-product-detail-composer"></code>
-                        <button type="button"
-                                class="btn btn-default btn-sm t3js-product-detail-copy-composer"
-                                title="{f:translate(key: 'license-catalog.detail.composer.copy', extensionName: 'ns_license')}"
-                                aria-label="{f:translate(key: 'license-catalog.detail.composer.copy', extensionName: 'ns_license')}">
-                            <core:icon identifier="actions-edit-copy" size="small" />
-                        </button>
+            <div class="ns-product-detail__block js-product-detail-cta-card w-100">
+                <h3 class="ns-product-detail__section-title"><f:translate key="license-catalog.detail.get-started" extensionName="ns_license" /></h3>
+                <div class="card card-size-small ns-product-detail__card w-100">
+                    <div class="card-body">
+                        <div class="ns-product-detail__cta-actions js-product-detail-actions d-flex flex-column gap-2"></div>
                     </div>
                 </div>
             </div>
 
-            <div class="card card-size-small ns-product-detail__card js-product-detail-resources-section d-none w-100">
-                <div class="card-header">
-                    <h3 class="card-title"><f:translate key="license-catalog.detail.resources" extensionName="ns_license" /></h3>
-                </div>
-                <div class="card-body">
-                    <ul class="ns-product-detail__resources list-unstyled mb-0 js-product-detail-resources"></ul>
+            <div class="ns-product-detail__block js-product-detail-composer-section d-none w-100">
+                <h3 class="ns-product-detail__section-title"><f:translate key="license-catalog.detail.composer" extensionName="ns_license" /></h3>
+                <div class="card card-size-small ns-product-detail__card w-100">
+                    <div class="card-body">
+                        <div class="ns-product-detail__composer">
+                            <code class="js-product-detail-composer"></code>
+                            <button type="button"
+                                    class="btn btn-default btn-sm t3js-product-detail-copy-composer"
+                                    title="{f:translate(key: 'license-catalog.detail.composer.copy', extensionName: 'ns_license')}"
+                                    aria-label="{f:translate(key: 'license-catalog.detail.composer.copy', extensionName: 'ns_license')}">
+                                <core:icon identifier="actions-edit-copy" size="small" />
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="card card-size-small ns-product-detail__card w-100">
-                <div class="card-header">
-                    <h3 class="card-title"><f:translate key="license-catalog.detail.meta" extensionName="ns_license" /></h3>
-                </div>
-                <div class="card-body">
-                    <dl class="ns-product-detail__meta mb-0 js-product-detail-meta"></dl>
+            <div class="ns-product-detail__block js-product-detail-resources-section d-none w-100">
+                <h3 class="ns-product-detail__section-title"><f:translate key="license-catalog.detail.resources" extensionName="ns_license" /></h3>
+                <div class="card card-size-small ns-product-detail__card w-100">
+                    <div class="card-body">
+                        <ul class="ns-product-detail__resources list-unstyled mb-0 js-product-detail-resources"></ul>
+                    </div>
                 </div>
             </div>
 
-            <div class="card card-size-small ns-product-detail__card js-product-detail-dependencies-section w-100">
-                <div class="card-header">
-                    <h3 class="card-title"><f:translate key="license-catalog.detail.dependencies" extensionName="ns_license" /></h3>
+            <div class="ns-product-detail__block w-100">
+                <h3 class="ns-product-detail__section-title"><f:translate key="license-catalog.detail.meta" extensionName="ns_license" /></h3>
+                <div class="card card-size-small ns-product-detail__card w-100">
+                    <div class="card-body">
+                        <dl class="ns-product-detail__meta mb-0 js-product-detail-meta"></dl>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <ul class="ns-product-detail__dependencies list-unstyled mb-0 js-product-detail-dependencies"></ul>
+            </div>
+
+            <div class="ns-product-detail__block js-product-detail-dependencies-section w-100">
+                <h3 class="ns-product-detail__section-title"><f:translate key="license-catalog.detail.dependencies" extensionName="ns_license" /></h3>
+                <div class="card card-size-small ns-product-detail__card w-100">
+                    <div class="card-body">
+                        <ul class="ns-product-detail__dependencies list-unstyled mb-0 js-product-detail-dependencies"></ul>
+                    </div>
                 </div>
             </div>
         </aside>

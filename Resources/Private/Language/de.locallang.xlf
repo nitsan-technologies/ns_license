@@ -665,8 +665,8 @@
                 <target>Alle Sektionen</target>
             </trans-unit>
             <trans-unit id="license-shop.know-more">
-                <source>Get Free Extension</source>
-                <target>Kostenlose Extension laden</target>
+                <source>Know More</source>
+                <target>Mehr erfahren</target>
             </trans-unit>
             <trans-unit id="license-shop.live-demo">
                 <source>Live Demo</source>

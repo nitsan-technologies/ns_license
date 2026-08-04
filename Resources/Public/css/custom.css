@@ -336,7 +336,6 @@ body > .ns-license-module-shell.module {
 
 .ns-license-module .actions-wrapper {
   align-items: center;
-  border-top: 1px solid light-dark(#e3e2e2, #4b4b4b);
   margin-bottom: 0;
   padding-top: 10px;
 }
@@ -694,6 +693,62 @@ body > .ns-license-module-shell.module {
 .ns-license-module .card-icon img {
   max-width: 32px;
   max-height: 32px;
+}
+
+/* My Extensions — Free cards: icon / title / key·version stack */
+.ns-license-module .extension-free-card .card-header {
+  float: none;
+}
+
+.ns-license-module .extension-free-card__topline {
+  width: 100%;
+}
+
+.ns-license-module .extension-free-card__icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: light-dark(#f3f4f6, #3a3a3a);
+}
+
+.ns-license-module .extension-free-card__icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  object-fit: cover;
+}
+
+.ns-license-module .extension-free-card .card-header-body {
+  overflow: visible;
+  display: block;
+}
+
+.ns-license-module .extension-free-card .card-title {
+  line-height: 1.3;
+  font-size: 1.05rem;
+}
+
+.ns-license-module .extension-free-card .card-subtitle {
+  display: block;
+  margin-top: 0.2rem;
+  word-break: break-word;
+}
+
+.ns-license-module .extension-free-card .card-footer {
+  margin-top: auto;
+  border-top: 1px solid light-dark(#e5e7eb, #4b4b4b);
+  padding-top: 0.75rem;
+  padding-inline: 0;
+}
+
+.ns-license-module .extension-free-card .card-footer > * {
+  padding-inline: var(--typo3-card-padding, 1rem);
 }
 
 
@@ -1114,7 +1169,7 @@ body > .ns-license-module-shell.module {
 .ns-get-license-modal .gl-success__icon .t3js-icon,
 .ns-get-license-modal .gl-success__icon .icon-markup,
 .ns-get-license-modal .gl-success__icon svg {
-  color: inherit;
+  color: oklch(0.596 0.145 163.225);
 }
 
 .ns-get-license-modal .gl-success__icon svg,
@@ -1591,6 +1646,12 @@ body > .ns-license-module-shell.module {
   min-width: 0;
 }
 
+.catalog-hero__identity--wordmark {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
 .catalog-hero__icon {
   flex-shrink: 0;
   width: 3.5rem;
@@ -1753,16 +1814,17 @@ body > .ns-license-module-shell.module {
 
 .catalog-card--templates .catalog-card__image {
   width: 100%;
-  height: auto;
+  height: 16rem;
   margin: 0;
   padding: 0;
   border-radius: 0;
-  background: transparent;
+  background: light-dark(#f3f4f6, #2a2a2a);
+  overflow: hidden;
 }
 
 .catalog-card--templates .catalog-card__image img {
   width: 100%;
-  height: auto;
+  height: 100%;
   max-height: none;
   object-fit: cover;
   object-position: center top;
@@ -1849,7 +1911,7 @@ body > .ns-license-module-shell.module {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  min-height: 16rem;
+  min-height: 25rem;
   margin: 0;
   overflow: hidden;
   isolation: isolate;
@@ -1922,7 +1984,6 @@ body > .ns-license-module-shell.module {
   z-index: 2;
   min-width: 0;
   flex: 1 1 16rem;
-  max-width: 42rem;
 }
 
 .ns-product-detail__badges {
@@ -2014,12 +2075,33 @@ body > .ns-license-module-shell.module {
 
 .ns-product-detail__hero--light .ns-product-detail__hero-inner.card-body {
   display: block;
-  padding: 1.5rem 1.35rem 1.25rem;
+  padding: 1.15rem 1.25rem 1.1rem;
 }
 
 .ns-product-detail__hero--light .ns-product-detail__hero-content {
   max-width: none;
   flex: none;
+}
+
+/* Crop soft collage padding; keep Templates full-bleed hero unchanged */
+.ns-product-detail__hero--light .ns-product-detail__hero-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.ns-product-detail__hero--light .ns-product-detail__hero-visual-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: contain;
+  object-position: center;
 }
 
 .ns-product-detail__hero-visual {
@@ -2285,12 +2367,14 @@ body > .ns-license-module-shell.module {
 .ns-product-detail__main {
   display: flex;
   flex-direction: column;
+  gap: 1.50rem;
   min-width: 0;
 }
 
 .ns-product-detail__sidebar {
   display: flex;
   flex-direction: column;
+  gap: 1.50rem;
   min-width: 0;
   height: fit-content;
 }
@@ -2306,20 +2390,25 @@ body > .ns-license-module-shell.module {
   }
 }
 
-.ns-product-detail__section .card-header,
-.ns-product-detail__card .card-header {
-  padding-bottom: 0.5rem;
+.ns-product-detail__block {
+  min-width: 0;
+}
+
+.ns-product-detail__section-title {
+  margin: 0 0 0.7rem;
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--typo3-text-color-base, light-dark(#111827, #f3f4f6));
+}
+
+.ns-product-detail__block > .card {
+  margin-bottom: 0;
 }
 
 .ns-product-detail__section .card-body,
 .ns-product-detail__card .card-body {
-  padding-top: 0.65rem;
-}
-
-.ns-product-detail__section .card-title,
-.ns-product-detail__card .card-title {
-  margin-bottom: 0;
-  font-size: 1.05rem;
+  padding-top: var(--typo3-card-padding, 1rem);
 }
 
 .ns-product-detail__version-box {
@@ -2741,6 +2830,61 @@ body > .ns-license-module-shell.module {
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
+}
+
+.ns-product-detail__related.ns-product-detail__related--cards {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0;
+}
+
+.ns-product-detail__related-card {
+  margin-bottom: 0;
+  overflow: hidden;
+  height: auto;
+}
+
+.ns-product-detail__related-card-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: light-dark(#f3f4f6, #2a2a2a);
+  line-height: 0;
+  min-height: 7rem;
+}
+
+.ns-product-detail__related-card-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 9rem;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.ns-product-detail__related-card-image .ns-product-detail__related-fallback-icon {
+  margin: 1.5rem;
+  opacity: 0.55;
+}
+
+.ns-product-detail__related-card .card-header {
+  padding: 0.85rem var(--typo3-card-padding, 1rem) 0.75rem;
+}
+
+.ns-product-detail__related-card .card-header-body {
+  margin-bottom: 0;
+}
+
+.ns-product-detail__related-card .card-title {
+  font-size: 1rem;
+}
+
+.ns-product-detail__related-card .card-footer {
+  margin-top: 0;
+  border-top: 1px solid light-dark(#e5e7eb, #4b4b4b);
+  padding: 0.75rem var(--typo3-card-padding, 1rem);
 }
 
 .ns-product-detail__related-row {

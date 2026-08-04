@@ -29,28 +29,28 @@
                         </span>
                     </div>
 
-                    <div class="catalog-hero__identity mb-3">
-                        <f:variable name="useT3KarmaWordmark" value="0" />
-                        <f:if condition="{catalogTab} == 'templates'">
-                            <f:if condition="{item.extensionKey} == 'ns_theme_t3karma'">
-                                <f:variable name="useT3KarmaWordmark" value="1" />
-                            </f:if>
+                    <f:variable name="useT3KarmaWordmark" value="0" />
+                    <f:if condition="{catalogTab} == 'templates'">
+                        <f:if condition="{item.extensionKey} == 'ns_theme_t3karma'">
+                            <f:variable name="useT3KarmaWordmark" value="1" />
                         </f:if>
+                    </f:if>
 
+                    <div class="catalog-hero__identity mb-3{f:if(condition: useT3KarmaWordmark, then: ' catalog-hero__identity--wordmark')}">
                         <f:if condition="{useT3KarmaWordmark}">
                             <f:then>
                                 <div class="catalog-hero__wordmark">
                                     <img class="catalog-hero__wordmark-img"
                                          src="{f:uri.resource(path: 'EXT:ns_license/Resources/Public/Icons/t3karma-wordmark.svg')}"
                                          alt="{item.name}"
-                                         width="200"
-                                         height="47"
+                                         width="204"
+                                         height="37"
                                          loading="lazy" />
                                 </div>
                                 <div class="catalog-hero__identity-text">
                                     <h2 class="card-title catalog-hero__title visually-hidden mb-1">{item.name}</h2>
                                     <p class="card-subtitle catalog-hero__meta text-variant mb-0">
-                                        {item.extensionKey}<f:if condition="{item.version}"> · v{item.version}</f:if>
+                                        {item.extensionKey}<f:if condition="{item.version}"> · {item.version}</f:if>
                                     </p>
                                 </div>
                             </f:then>

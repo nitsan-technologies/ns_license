@@ -380,6 +380,23 @@ function populateView(view, item) {
   const collageImage = normalizeSvgDataUri(item.detailImage || '');
   const heroImage = collageImage || normalizeSvgDataUri(item.listImage || '');
 
+  const isTemplates = catalogSection === 'templates';
+  const heroTextCol = view.querySelector('.js-product-detail-hero-text-col');
+  const heroVisualCol = view.querySelector('.js-product-detail-hero-visual-col');
+  if (heroTextCol) {
+    heroTextCol.classList.toggle('col-md-6', !isTemplates);
+    heroTextCol.classList.toggle('col-lg-7', !isTemplates);
+    heroTextCol.classList.toggle('col-md-12', isTemplates);
+    heroTextCol.classList.toggle('col-lg-12', isTemplates);
+  }
+  if (heroVisualCol) {
+    heroVisualCol.classList.toggle('col-md-6', !isTemplates);
+    heroVisualCol.classList.toggle('col-lg-5', !isTemplates);
+    heroVisualCol.classList.toggle('col-md-12', isTemplates);
+    heroVisualCol.classList.toggle('col-lg-12', isTemplates);
+    heroVisualCol.classList.toggle('d-none', isTemplates);
+  }
+
   const crumbSection = view.querySelector('.js-product-detail-crumb-section');
   const crumbSectionSep = view.querySelector('.js-product-detail-crumb-section-sep');
   const crumbName = view.querySelector('.js-product-detail-crumb-name');
@@ -917,7 +934,34 @@ function populateFaq(view, item) {
 }
 
 /**
- * Frequently Bought Together rows from relatedProducts (slim catalog cards).
+ * Attach list/icon image with SVG data-uri retry + fallback.
+ * @param {HTMLElement} media
+ * @param {string} listImage
+ * @param {string} fallbackIcon
+ */
+function fillRelatedMedia(media, listImage, fallbackIcon) {
+  if (!listImage) {
+    media.innerHTML = fallbackIcon;
+    return;
+  }
+  const img = document.createElement('img');
+  img.src = listImage;
+  img.alt = '';
+  img.loading = 'lazy';
+  img.addEventListener('error', () => {
+    const retried = normalizeSvgDataUri(img.getAttribute('src') || '');
+    if (retried && retried !== img.getAttribute('src') && !img.dataset.svgNsRetried) {
+      img.dataset.svgNsRetried = '1';
+      img.src = retried;
+      return;
+    }
+    media.innerHTML = fallbackIcon;
+  }, { once: false });
+  media.appendChild(img);
+}
+
+/**
+ * Frequently Bought Together — slim rows by default; Templates use card grid.
  * @param {HTMLElement} view
  * @param {object} item
  */
@@ -935,7 +979,12 @@ function populateRelated(view, item) {
   }
 
   const viewLabel = section?.dataset.labelView || 'View';
+  const useCards = String(item.catalogSection || '') === 'templates';
   const fallbackIcon = '<svg class="ns-product-detail__related-fallback-icon" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2.5 13.8 8h5.7l-4.6 3.4 1.8 5.5L12 13.7 7.3 16.9l1.8-5.5L4.5 8h5.7L12 2.5z"/></svg>';
+
+  container.classList.toggle('ns-product-detail__related--cards', useCards);
+  container.classList.toggle('row', useCards);
+  container.classList.toggle('g-3', useCards);
 
   entries.forEach((entry) => {
     if (!entry || typeof entry !== 'object') {
@@ -950,30 +999,72 @@ function populateRelated(view, item) {
     const badge = String(entry.badge || '').trim();
     const listImage = normalizeSvgDataUri(String(entry.listImage || entry.icon || '').trim());
 
+    if (useCards) {
+      const col = document.createElement('div');
+      col.className = 'col-md-6 col-xl-4';
+      col.setAttribute('role', 'listitem');
+
+      const card = document.createElement('div');
+      card.className = 'card card-size-small ns-product-detail__related-card';
+
+      const media = document.createElement('div');
+      media.className = 'ns-product-detail__related-card-image';
+      fillRelatedMedia(media, listImage, fallbackIcon);
+
+      const header = document.createElement('div');
+      header.className = 'card-header';
+      const headerBody = document.createElement('div');
+      headerBody.className = 'card-header-body';
+      const titleRow = document.createElement('div');
+      titleRow.className = 'd-flex align-items-center justify-content-start gap-2 flex-wrap';
+      const title = document.createElement('h3');
+      title.className = 'card-title mb-0';
+      title.textContent = name;
+      titleRow.appendChild(title);
+      if (badge) {
+        const badgeEl = document.createElement('span');
+        badgeEl.className = 'badge badge-primary flex-shrink-0';
+        badgeEl.textContent = badge;
+        titleRow.appendChild(badgeEl);
+      }
+      const keyEl = document.createElement('span');
+      keyEl.className = 'card-subtitle';
+      keyEl.textContent = extensionKey;
+      headerBody.appendChild(titleRow);
+      headerBody.appendChild(keyEl);
+      header.appendChild(headerBody);
+
+      const footer = document.createElement('div');
+      footer.className = 'card-footer';
+      const footerRow = document.createElement('div');
+      footerRow.className = 'd-flex align-items-center justify-content-between gap-2 flex-wrap';
+      const priceEl = document.createElement('span');
+      priceEl.className = 'ns-product-detail__related-price';
+      priceEl.textContent = price;
+      const viewBtn = document.createElement('button');
+      viewBtn.type = 'button';
+      viewBtn.className = 'btn btn-default btn-sm t3js-product-detail-trigger';
+      viewBtn.dataset.extensionKey = extensionKey;
+      viewBtn.textContent = viewLabel;
+      footerRow.appendChild(priceEl);
+      footerRow.appendChild(viewBtn);
+      footer.appendChild(footerRow);
+
+      card.appendChild(media);
+      card.appendChild(header);
+      card.appendChild(footer);
+      col.appendChild(card);
+      container.appendChild(col);
+      return;
+    }
+
     const row = document.createElement('div');
     row.className = 'ns-product-detail__related-row';
     row.setAttribute('role', 'listitem');
 
     const media = document.createElement('div');
     media.className = 'ns-product-detail__related-media';
-    if (listImage) {
-      const img = document.createElement('img');
-      img.src = listImage;
-      img.alt = '';
-      img.loading = 'lazy';
-      img.addEventListener('error', () => {
-        const retried = normalizeSvgDataUri(img.getAttribute('src') || '');
-        if (retried && retried !== img.getAttribute('src') && !img.dataset.svgNsRetried) {
-          img.dataset.svgNsRetried = '1';
-          img.src = retried;
-          return;
-        }
-        media.innerHTML = fallbackIcon;
-      }, { once: false });
-      media.appendChild(img);
-    } else {
-      media.innerHTML = fallbackIcon;
-    }
+    fillRelatedMedia(media, listImage, fallbackIcon);
 
     const body = document.createElement('div');
     body.className = 'ns-product-detail__related-body';
