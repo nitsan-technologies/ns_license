@@ -3,7 +3,7 @@
 <f:if condition="{extensions}">
 <div id="premium-section" class="extension-section">
     <div class="catalog-list-heading d-flex align-items-center gap-2 mb-3">
-        <h3 class="h5 mb-0">
+        <h3 class="h4 mb-0 catalog-section-heading">
             <f:translate key="license-extensions.section-title-premium" extensionName="ns_license" />
             ({f:count(subject: extensions)})
         </h3>
@@ -30,15 +30,43 @@
                     <div class="col-md-6 col-xl-4 extension-card-wrapper extension-{extensionStatusType}" data-name="{extension.title}" data-key="{extension.key}" data-status="{extensionStatus}">
                         <div class="card card-size-small h-100 w-100">
                     <div class="card-header">
-                        <div class="card-icon">
-                            <f:if condition="{extension.icon}">
-                                <f:then><img src="{extension.icon}" alt="{extension.title}" width="32" height="32" /></f:then>
-                                <f:else><core:icon identifier="actions-brand-typo3" size="medium" alternativeMarkupIdentifier="inline" /></f:else>
-                            </f:if>
-                        </div>
+                        <f:if condition="{extension.key}">
+                            <f:then>
+                                <button type="button"
+                                    class="card-icon catalog-card__media-btn t3js-product-detail-trigger"
+                                    data-extension-key="{extension.key}"
+                                    aria-label="{extension.title}">
+                                    <f:if condition="{extension.icon}">
+                                        <f:then><img src="{extension.icon}" alt="{extension.title}" width="32" height="32" /></f:then>
+                                        <f:else><core:icon identifier="actions-brand-typo3" size="medium" alternativeMarkupIdentifier="inline" /></f:else>
+                                    </f:if>
+                                </button>
+                            </f:then>
+                            <f:else>
+                                <div class="card-icon">
+                                    <f:if condition="{extension.icon}">
+                                        <f:then><img src="{extension.icon}" alt="{extension.title}" width="32" height="32" /></f:then>
+                                        <f:else><core:icon identifier="actions-brand-typo3" size="medium" alternativeMarkupIdentifier="inline" /></f:else>
+                                    </f:if>
+                                </div>
+                            </f:else>
+                        </f:if>
                         <div class="card-header-body">
                             <div class="d-flex align-items-center justify-content-between gap-2">
-                                <h2 class="card-title text-truncate mb-0">{extension.title}</h2>
+                                <f:if condition="{extension.key}">
+                                    <f:then>
+                                        <h2 class="card-title text-truncate mb-0">
+                                            <button type="button"
+                                                class="catalog-card__title-btn t3js-product-detail-trigger text-truncate"
+                                                data-extension-key="{extension.key}">
+                                                {extension.title}
+                                            </button>
+                                        </h2>
+                                    </f:then>
+                                    <f:else>
+                                        <h2 class="card-title text-truncate mb-0">{extension.title}</h2>
+                                    </f:else>
+                                </f:if>
                                 <f:if condition="{extension.key} == 'ns_t3af'">
                                     <f:then>
                                         <f:if condition="{extension.oss} || {extension.trial}">

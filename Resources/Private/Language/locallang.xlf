@@ -304,6 +304,15 @@
             <trans-unit id="license-catalog.sort.price-desc">
                 <source>Price: High → Low</source>
             </trans-unit>
+            <trans-unit id="license-catalog.view.label">
+                <source>Catalog view</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.view.card">
+                <source>Card view</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.view.list">
+                <source>List view</source>
+            </trans-unit>
             <trans-unit id="license-catalog.hero.most-popular">
                 <source>Most Popular</source>
             </trans-unit>
@@ -482,7 +491,7 @@
                 <source>Frontend Demo</source>
             </trans-unit>
             <trans-unit id="license-catalog.detail.demo.backend">
-                <source>Backend Demo</source>
+                <source>Demo</source>
             </trans-unit>
             <trans-unit id="license-catalog.detail.meta">
                 <source>Details</source>
@@ -522,6 +531,9 @@
             </trans-unit>
             <trans-unit id="license-tabs.website-builder">
                 <source>Website Builder</source>
+            </trans-unit>
+            <trans-unit id="license-header.account">
+                <source>Account</source>
             </trans-unit>
             <!-- Extensions Filter Labels -->
             <trans-unit id="license-extensions.search-placeholder">
@@ -567,7 +579,7 @@
                 <source>Know More</source>
             </trans-unit>
             <trans-unit id="license-shop.live-demo">
-                <source>Live Demo</source>
+                <source>Demo</source>
             </trans-unit>
             <trans-unit id="license-shop.free-trial">
                 <source>Free Trial</source>

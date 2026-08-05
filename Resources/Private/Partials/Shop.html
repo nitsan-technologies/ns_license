@@ -123,11 +123,19 @@
                                             </f:if>
                                         </f:else>
                                     </f:if>
-                                    <f:if condition="{item.liveDemoUrl}">
-                                        <a href="{item.liveDemoUrl}" class="btn btn-default btn-sm" target="_blank" rel="noopener noreferrer">
-                                            <core:icon identifier="actions-preview" size="small" />
-                                            <span><f:translate key="license-shop.live-demo" extensionName="ns_license" /></span>
-                                        </a>
+                                    <f:if condition="{section.id} == 'free-templates' || {section.id} == 'premium-templates' || {section.id} == 'templates'">
+                                        <f:else>
+                                            <f:variable name="backendDemoUrl" value="{item.liveDemoUrl}" />
+                                            <f:if condition="{item.backendDemoUrl}">
+                                                <f:variable name="backendDemoUrl" value="{item.backendDemoUrl}" />
+                                            </f:if>
+                                            <f:if condition="{backendDemoUrl}">
+                                                <a href="{backendDemoUrl}" class="btn btn-default btn-sm" target="_blank" rel="noopener noreferrer">
+                                                    <core:icon identifier="actions-preview" size="small" />
+                                                    <span><f:translate key="license-catalog.detail.demo.backend" extensionName="ns_license" /></span>
+                                                </a>
+                                            </f:if>
+                                        </f:else>
                                     </f:if>
                                 </div>
                             </div>

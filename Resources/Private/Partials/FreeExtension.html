@@ -3,7 +3,7 @@
 <f:if condition="{extensions}">
 <div id="free-section" class="extension-section mt-4">
     <div class="catalog-list-heading d-flex align-items-center gap-2 mb-3">
-        <h3 class="h5 mb-0">
+        <h3 class="h4 mb-0 catalog-section-heading">
             <f:translate key="license-extensions.section-title-free" extensionName="ns_license" />
             ({f:count(subject: extensions)})
         </h3>
@@ -15,16 +15,44 @@
                 <div class="card card-size-small h-100 w-100 extension-free-card">
                     <div class="card-header">
                         <div class="extension-free-card__topline d-flex align-items-start justify-content-between gap-2 mb-2">
-                            <div class="extension-free-card__icon mb-2" aria-hidden="true">
-                                <f:if condition="{extension.icon}">
-                                    <f:then><img src="{extension.icon}" alt="" width="40" height="40" /></f:then>
-                                    <f:else><core:icon identifier="actions-brand-typo3" size="medium" alternativeMarkupIdentifier="inline" /></f:else>
-                                </f:if>
-                            </div>
+                            <f:if condition="{extension.key}">
+                                <f:then>
+                                    <button type="button"
+                                        class="extension-free-card__icon mb-2 catalog-card__media-btn t3js-product-detail-trigger"
+                                        data-extension-key="{extension.key}"
+                                        aria-label="{extension.title}">
+                                        <f:if condition="{extension.icon}">
+                                            <f:then><img src="{extension.icon}" alt="" width="40" height="40" /></f:then>
+                                            <f:else><core:icon identifier="actions-brand-typo3" size="medium" alternativeMarkupIdentifier="inline" /></f:else>
+                                        </f:if>
+                                    </button>
+                                </f:then>
+                                <f:else>
+                                    <div class="extension-free-card__icon mb-2" aria-hidden="true">
+                                        <f:if condition="{extension.icon}">
+                                            <f:then><img src="{extension.icon}" alt="" width="40" height="40" /></f:then>
+                                            <f:else><core:icon identifier="actions-brand-typo3" size="medium" alternativeMarkupIdentifier="inline" /></f:else>
+                                        </f:if>
+                                    </div>
+                                </f:else>
+                            </f:if>
                             <span class="badge badge-success flex-shrink-0"><f:translate key="license-activation.badge.free" extensionName="ns_license" /></span>
                         </div>
                         <div class="card-header-body">
-                            <h2 class="card-title mb-1">{extension.title}</h2>
+                            <f:if condition="{extension.key}">
+                                <f:then>
+                                    <h2 class="card-title mb-1">
+                                        <button type="button"
+                                            class="catalog-card__title-btn t3js-product-detail-trigger"
+                                            data-extension-key="{extension.key}">
+                                            {extension.title}
+                                        </button>
+                                    </h2>
+                                </f:then>
+                                <f:else>
+                                    <h2 class="card-title mb-1">{extension.title}</h2>
+                                </f:else>
+                            </f:if>
                             <span class="card-subtitle">
                                 {extension.key}<f:if condition="{extension.version}"> · {extension.version}</f:if>
                             </span>

@@ -39,14 +39,31 @@
                     <div class="catalog-hero__identity mb-3{f:if(condition: useT3KarmaWordmark, then: ' catalog-hero__identity--wordmark')}">
                         <f:if condition="{useT3KarmaWordmark}">
                             <f:then>
-                                <div class="catalog-hero__wordmark">
-                                    <img class="catalog-hero__wordmark-img"
-                                         src="{f:uri.resource(path: 'EXT:ns_license/Resources/Public/Icons/t3karma-wordmark.svg')}"
-                                         alt="{item.name}"
-                                         width="204"
-                                         height="37"
-                                         loading="lazy" />
-                                </div>
+                                <f:if condition="{item.extensionKey}">
+                                    <f:then>
+                                        <button type="button"
+                                            class="catalog-hero__wordmark catalog-card__media-btn t3js-product-detail-trigger"
+                                            data-extension-key="{item.extensionKey}"
+                                            aria-label="{item.name}">
+                                            <img class="catalog-hero__wordmark-img"
+                                                 src="{f:uri.resource(path: 'EXT:ns_license/Resources/Public/Icons/t3karma-wordmark.svg')}"
+                                                 alt="{item.name}"
+                                                 width="204"
+                                                 height="37"
+                                                 loading="lazy" />
+                                        </button>
+                                    </f:then>
+                                    <f:else>
+                                        <div class="catalog-hero__wordmark">
+                                            <img class="catalog-hero__wordmark-img"
+                                                 src="{f:uri.resource(path: 'EXT:ns_license/Resources/Public/Icons/t3karma-wordmark.svg')}"
+                                                 alt="{item.name}"
+                                                 width="204"
+                                                 height="37"
+                                                 loading="lazy" />
+                                        </div>
+                                    </f:else>
+                                </f:if>
                                 <div class="catalog-hero__identity-text">
                                     <h2 class="card-title catalog-hero__title visually-hidden mb-1">{item.name}</h2>
                                     <p class="card-subtitle catalog-hero__meta text-variant mb-0">
@@ -56,16 +73,45 @@
                             </f:then>
                             <f:else>
                                 <f:if condition="{item.listImage}">
-                                    <div class="catalog-hero__icon" aria-hidden="true">
-                                        <img class="catalog-hero__icon-img t3js-catalog-card-image"
-                                             src="{item.listImage}"
-                                             alt=""
-                                             loading="lazy"
-                                             data-fallback="{f:uri.resource(path: 'EXT:ns_license/Resources/Public/Icons/catalog-placeholder.svg')}" />
-                                    </div>
+                                    <f:if condition="{item.extensionKey}">
+                                        <f:then>
+                                            <button type="button"
+                                                class="catalog-hero__icon catalog-card__media-btn t3js-product-detail-trigger"
+                                                data-extension-key="{item.extensionKey}"
+                                                aria-label="{item.name}">
+                                                <img class="catalog-hero__icon-img t3js-catalog-card-image"
+                                                     src="{item.listImage}"
+                                                     alt=""
+                                                     loading="lazy"
+                                                     data-fallback="{f:uri.resource(path: 'EXT:ns_license/Resources/Public/Icons/catalog-placeholder.svg')}" />
+                                            </button>
+                                        </f:then>
+                                        <f:else>
+                                            <div class="catalog-hero__icon" aria-hidden="true">
+                                                <img class="catalog-hero__icon-img t3js-catalog-card-image"
+                                                     src="{item.listImage}"
+                                                     alt=""
+                                                     loading="lazy"
+                                                     data-fallback="{f:uri.resource(path: 'EXT:ns_license/Resources/Public/Icons/catalog-placeholder.svg')}" />
+                                            </div>
+                                        </f:else>
+                                    </f:if>
                                 </f:if>
                                 <div class="catalog-hero__identity-text">
-                                    <h2 class="card-title catalog-hero__title mb-1">{item.name}</h2>
+                                    <f:if condition="{item.extensionKey}">
+                                        <f:then>
+                                            <h2 class="card-title catalog-hero__title mb-1">
+                                                <button type="button"
+                                                    class="catalog-card__title-btn t3js-product-detail-trigger"
+                                                    data-extension-key="{item.extensionKey}">
+                                                    {item.name}
+                                                </button>
+                                            </h2>
+                                        </f:then>
+                                        <f:else>
+                                            <h2 class="card-title catalog-hero__title mb-1">{item.name}</h2>
+                                        </f:else>
+                                    </f:if>
                                     <p class="card-subtitle catalog-hero__meta text-variant mb-0">
                                         {item.extensionKey}<f:if condition="{item.version}"> · v{item.version}</f:if>
                                     </p>
@@ -146,11 +192,19 @@
                                 </f:if>
                             </f:else>
                         </f:if>
-                        <f:if condition="{item.liveDemoUrl}">
-                            <a href="{item.liveDemoUrl}" class="btn btn-default" target="_blank" rel="noopener noreferrer">
-                                <core:icon identifier="actions-preview" size="small" />
-                                <span><f:translate key="license-shop.live-demo" extensionName="ns_license" /></span>
-                            </a>
+                        <f:if condition="{catalogTab} == 'templates'">
+                            <f:else>
+                                <f:variable name="backendDemoUrl" value="{item.liveDemoUrl}" />
+                                <f:if condition="{item.backendDemoUrl}">
+                                    <f:variable name="backendDemoUrl" value="{item.backendDemoUrl}" />
+                                </f:if>
+                                <f:if condition="{backendDemoUrl}">
+                                    <a href="{backendDemoUrl}" class="btn btn-default" target="_blank" rel="noopener noreferrer">
+                                        <core:icon identifier="actions-preview" size="small" />
+                                        <span><f:translate key="license-catalog.detail.demo.backend" extensionName="ns_license" /></span>
+                                    </a>
+                                </f:if>
+                            </f:else>
                         </f:if>
                         <f:if condition="{item.extensionKey}">
                             <button type="button"
@@ -171,7 +225,19 @@
                         </f:if>
                         <f:if condition="{heroImage}">
                             <f:then>
-                                <img class="catalog-hero__media-img" src="{heroImage}" alt="{item.name}" loading="lazy" />
+                                <f:if condition="{item.extensionKey}">
+                                    <f:then>
+                                        <button type="button"
+                                            class="catalog-hero__media-btn catalog-card__media-btn t3js-product-detail-trigger"
+                                            data-extension-key="{item.extensionKey}"
+                                            aria-label="{item.name}">
+                                            <img class="catalog-hero__media-img" src="{heroImage}" alt="{item.name}" loading="lazy" />
+                                        </button>
+                                    </f:then>
+                                    <f:else>
+                                        <img class="catalog-hero__media-img" src="{heroImage}" alt="{item.name}" loading="lazy" />
+                                    </f:else>
+                                </f:if>
                             </f:then>
                             <f:else>
                                 <div class="catalog-hero__media-fallback" aria-hidden="true">
