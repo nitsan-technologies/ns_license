@@ -42,6 +42,7 @@ class ExtensionListService
 
     /**
      * Returns installed extensions grouped as premium (with license) and free.
+     * Free items are catalog free products that are installed and not already licensed.
      *
      * @return array{premium: array<string, array>, free: array<string, array>}
      */
@@ -146,7 +147,7 @@ class ExtensionListService
     }
 
     /**
-     * Free catalog products (empty price + downloads != 0), enriched when installed.
+     * Installed free catalog products (empty price + downloads != 0).
      * Excludes keys that already appear under premium (licensed).
      *
      * @param array<string, array> $premium
@@ -166,19 +167,20 @@ class ExtensionListService
             }
 
             $package = $this->getPackage($key);
-            $packageMetaData = $package ? $package->getPackageMetaData() : null;
+            if (!$package) {
+                continue;
+            }
+
+            $packageMetaData = $package->getPackageMetaData();
             $version = $packageMetaData ? (string)$packageMetaData->getVersion() : trim((string)($catalogItem['version'] ?? ''));
             $icon = '';
-            $packagePath = '';
-            if ($package) {
-                $packagePath = $package->getPackagePath();
-                if ($this->typo3Version === 12) {
-                    $iconRel = ExtensionManagementUtility::getExtensionIcon($packagePath);
-                } else {
-                    $iconRel = $package->getPackageIcon() ?: '';
-                }
-                $icon = $iconRel ? PathUtility::getAbsoluteWebPath($packagePath . $iconRel) : '';
+            $packagePath = $package->getPackagePath();
+            if ($this->typo3Version === 12) {
+                $iconRel = ExtensionManagementUtility::getExtensionIcon($packagePath);
+            } else {
+                $iconRel = $package->getPackageIcon() ?: '';
             }
+            $icon = $iconRel ? PathUtility::getAbsoluteWebPath($packagePath . $iconRel) : '';
 
             $title = trim((string)($catalogItem['name'] ?? ''));
             $description = (string)($catalogItem['description'] ?? '');
