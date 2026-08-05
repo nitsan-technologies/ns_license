@@ -7,9 +7,24 @@
             <input type="search" id="catalogSearch-{catalogTab}" class="form-control search-input catalog-search" placeholder="{f:translate(key: 'license-catalog.search-placeholder', extensionName: 'ns_license')}">
         </div>
         <select id="catalogFilter-{catalogTab}" class="form-select w-auto flex-shrink-0 catalog-filter">
-            <option value="all" selected><f:translate key="license-catalog.filter-all" extensionName="ns_license" /></option>
+            <option value="all" selected>
+                <f:if condition="{catalogTab} == 'templates'">
+                    <f:then>
+                        <f:translate key="license-catalog.filter-all-templates" extensionName="ns_license" />
+                    </f:then>
+                    <f:else>
+                        <f:translate key="license-catalog.filter-all" extensionName="ns_license" />
+                    </f:else>
+                </f:if>
+            </option>
             <option value="premium"><f:translate key="license-catalog.filter-premium" extensionName="ns_license" /></option>
             <option value="free"><f:translate key="license-catalog.filter-free" extensionName="ns_license" /></option>
+        </select>
+        <select id="catalogSort-{catalogTab}" class="form-select w-auto flex-shrink-0 catalog-sort" aria-label="{f:translate(key: 'license-catalog.sort.label', extensionName: 'ns_license')}">
+            <option value="popular" selected><f:translate key="license-catalog.sort.popular" extensionName="ns_license" /></option>
+            <option value="rated"><f:translate key="license-catalog.sort.rated" extensionName="ns_license" /></option>
+            <option value="price-asc"><f:translate key="license-catalog.sort.price-asc" extensionName="ns_license" /></option>
+            <option value="price-desc"><f:translate key="license-catalog.sort.price-desc" extensionName="ns_license" /></option>
         </select>
         <button type="button" class="btn btn-primary refresh-data-button flex-shrink-0" data-type="shop">
             <core:icon identifier="actions-refresh" size="small" />
