@@ -128,16 +128,29 @@ function mergeProductDetail(fallback, detail) {
 }
 
 /**
- * @param {number|string|null|undefined} ts
+ * @param {number|string|null|undefined} ts  Unix seconds, ms, or parseable date string
  * @returns {string}
  */
 function formatDate(ts) {
-  const n = Number(ts);
-  if (!n || Number.isNaN(n)) {
+  if (ts === null || ts === undefined || ts === '') {
+    return '';
+  }
+  let date;
+  if (typeof ts === 'number' || (/^\d+(\.\d+)?$/.test(String(ts).trim()))) {
+    const n = Number(ts);
+    if (!n || Number.isNaN(n)) {
+      return '';
+    }
+    // Heuristic: values above year ~2001 in ms are millisecond timestamps.
+    date = new Date(n > 1e12 ? n : n * 1000);
+  } else {
+    date = new Date(String(ts).trim());
+  }
+  if (Number.isNaN(date.getTime())) {
     return '';
   }
   try {
-    return new Date(n * 1000).toLocaleDateString(undefined, {
+    return date.toLocaleDateString(undefined, {
       day: 'numeric',
       month: 'short',
       year: 'numeric',
@@ -161,24 +174,6 @@ function formatDownloads(value) {
     return (k % 1 === 0 ? k.toFixed(0) : k.toFixed(1)) + 'k';
   }
   return String(value);
-}
-
-/**
- * Normalize compatibility label (e.g. "TYPO3 v12 to v14" → "v12 to v14").
- * @param {unknown} version
- * @returns {string}
- */
-function formatVersionSupport(version) {
-  let v = String(version ?? '').trim();
-  if (!v) {
-    return '';
-  }
-  v = v.replace(/\bv?TYPO3\b\s*/gi, '').replace(/\s+/g, ' ').trim();
-  if (!v) {
-    return '';
-  }
-  v = v.replace(/\b(?!v)(\d+)/gi, 'v$1');
-  return v;
 }
 
 /**
@@ -334,8 +329,8 @@ function isLightHeroSection(tab) {
  */
 function formatProductVersionPill(item) {
   const candidates = [
-    item.extensionVersion,
     item.latestVersion,
+    item.extensionVersion,
     item.productVersion,
     item.versionNumber,
   ];
@@ -368,7 +363,6 @@ function formatProductVersionPill(item) {
 function populateView(view, item) {
   const name = item.name || '';
   const key = item.extensionKey || '';
-  const version = formatVersionSupport(item.version);
   const price = item.price || '';
   const isFree = !!(item.isFree || price === 'Free');
   const catalogSection = item.catalogSection || '';
@@ -512,20 +506,16 @@ function populateView(view, item) {
 
   const subtitle = view.querySelector('.js-product-detail-subtitle');
   if (subtitle) {
-    if (useLightHero) {
-      subtitle.textContent = key;
-      subtitle.classList.toggle('badge', !!key);
-      subtitle.classList.toggle('badge-default', !!key);
-      subtitle.classList.toggle('ns-product-detail__key-badge', !!key);
-    } else {
-      subtitle.textContent = [key, version].filter(Boolean).join(' · ');
-      subtitle.classList.remove('badge', 'badge-default', 'ns-product-detail__key-badge');
-    }
+    // Key badge in hero for all catalog types (extensions, templates, AI).
+    subtitle.textContent = key;
+    subtitle.classList.toggle('badge', !!key);
+    subtitle.classList.toggle('badge-default', !!key);
+    subtitle.classList.toggle('ns-product-detail__key-badge', !!key);
   }
 
   const productVersionEl = view.querySelector('.js-product-detail-product-version');
   if (productVersionEl) {
-    if (useLightHero && productVersion) {
+    if (productVersion) {
       productVersionEl.textContent = productVersion;
       productVersionEl.classList.add('badge', 'ns-product-detail__product-version');
       setVisible(productVersionEl, true);
@@ -533,6 +523,13 @@ function populateView(view, item) {
       productVersionEl.textContent = '';
       setVisible(productVersionEl, false);
     }
+  }
+
+  const productStateEl = view.querySelector('.js-product-detail-product-state');
+  if (productStateEl) {
+    productStateEl.textContent = 'stable';
+    productStateEl.classList.add('badge', 'ns-product-detail__product-state');
+    setVisible(productStateEl, true);
   }
 
   const heroStats = view.querySelector('.js-product-detail-hero-stats');
@@ -607,7 +604,7 @@ function populateView(view, item) {
   populateActions(view, item, key, isFree, price);
   populateComposer(view, item);
   populateResources(view, item);
-  populateMeta(view, item, key, version);
+  populateMeta(view, item, key);
   populateDependencies(view, item);
 }
 
@@ -1366,9 +1363,8 @@ function vendorDefaultsForExtensionKey(key) {
  * @param {HTMLElement} view
  * @param {object} item
  * @param {string} key
- * @param {string} version
  */
-function populateMeta(view, item, key, version) {
+function populateMeta(view, item, key) {
   const meta = view.querySelector('.js-product-detail-meta');
   if (!meta) {
     return;
@@ -1377,15 +1373,31 @@ function populateMeta(view, item, key, version) {
   const companyLabel = view.dataset.labelCompany || 'Company';
   const author = resolveProductAuthor(item, key);
   const company = resolveProductCompany(item, key);
+  const productVersion = formatProductVersionPill(item);
+  const displayVersion = String(item.version || '').trim();
+  // Details only: never show bare "AI" — use Backend (templates → Sitepackage).
+  let category = String(item.category || '').trim();
+  if (/^ai$/i.test(category)) {
+    category = 'Backend';
+  } else if (!category) {
+    if (item.catalogSection === 'templates') {
+      category = 'Sitepackage';
+    } else if (item.catalogSection) {
+      category = 'Backend';
+    }
+  }
+  const lastUpdateLabel = formatDate(item.lastUpdate)
+    || formatChangelogDate(Array.isArray(item.changelog) && item.changelog[0] ? item.changelog[0].date : '');
+  const firstUploadLabel = formatDate(item.firstUpload);
   const rows = [
     [authorLabel, author],
     [companyLabel, company],
-    [view.dataset.labelLastUpdate || 'Last Update', formatDate(item.lastUpdate)],
-    [view.dataset.labelFirstUpload || 'First Upload', formatDate(item.firstUpload)],
+    [view.dataset.labelLastUpdate || 'Last Update', lastUpdateLabel],
+    [view.dataset.labelFirstUpload || 'First Upload', firstUploadLabel],
     [view.dataset.labelDownloads || 'Downloads', formatDownloads(item.downloads)],
-    [view.dataset.labelCategory || 'Category', item.category || ''],
+    [view.dataset.labelCategory || 'Category', category],
     [view.dataset.labelExtensionKey || 'Extension Key', key],
-    [view.dataset.labelVersion || 'Version', version],
+    [view.dataset.labelVersion || 'Version', productVersion || displayVersion],
   ].filter(([, value]) => value !== '' && value != null);
 
   meta.innerHTML = rows.map(([label, value]) => {

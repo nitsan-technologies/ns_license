@@ -2600,6 +2600,35 @@ button.catalog-hero__wordmark.catalog-card__media-btn {
   line-height: 1.3;
 }
 
+.ns-product-detail__product-state {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.55rem;
+  border-radius: var(--typo3-component-border-radius, 0.4rem);
+  border: 1px solid #bbf7d0;
+  background: #ecfdf5;
+  color: #047857;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-transform: lowercase;
+}
+
+/* Dark / image heroes (templates): keep badges readable on photo */
+.ns-license-module .ns-product-detail__hero.has-image .ns-product-detail__product-version {
+  background: #ffffff;
+  border-color: rgba(255, 255, 255, 0.9);
+  color: #6d28d9;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.ns-license-module .ns-product-detail__hero.has-image .ns-product-detail__product-state {
+  background: #ffffff;
+  border-color: rgba(255, 255, 255, 0.9);
+  color: #047857;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
 .ns-license-module .ns-product-detail__hero--light .ns-product-detail__badges .badge {
   box-shadow: none;
 }
@@ -2650,6 +2679,12 @@ button.catalog-hero__wordmark.catalog-card__media-btn {
     background: rgba(167, 139, 250, 0.18);
     border-color: rgba(233, 213, 255, 0.35);
     color: #c4b5fd;
+  }
+
+  .ns-product-detail__hero--light .ns-product-detail__product-state {
+    background: rgba(16, 185, 129, 0.16);
+    border-color: rgba(167, 243, 208, 0.35);
+    color: #6ee7b7;
   }
 }
 
