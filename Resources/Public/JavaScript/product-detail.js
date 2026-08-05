@@ -164,24 +164,6 @@ function formatDownloads(value) {
 }
 
 /**
- * Normalize compatibility label (e.g. "TYPO3 v12 to v14" → "v12 to v14").
- * @param {unknown} version
- * @returns {string}
- */
-function formatVersionSupport(version) {
-  let v = String(version ?? '').trim();
-  if (!v) {
-    return '';
-  }
-  v = v.replace(/\bv?TYPO3\b\s*/gi, '').replace(/\s+/g, ' ').trim();
-  if (!v) {
-    return '';
-  }
-  v = v.replace(/\b(?!v)(\d+)/gi, 'v$1');
-  return v;
-}
-
-/**
  * Expand version support into major pills (e.g. "TYPO3 v12 to v14" → ["12 LTS","13 LTS","14 LTS"]).
  * Prefers an array from the API when present.
  * @param {object} item
@@ -334,8 +316,8 @@ function isLightHeroSection(tab) {
  */
 function formatProductVersionPill(item) {
   const candidates = [
-    item.extensionVersion,
     item.latestVersion,
+    item.extensionVersion,
     item.productVersion,
     item.versionNumber,
   ];
@@ -368,7 +350,6 @@ function formatProductVersionPill(item) {
 function populateView(view, item) {
   const name = item.name || '';
   const key = item.extensionKey || '';
-  const version = formatVersionSupport(item.version);
   const price = item.price || '';
   const isFree = !!(item.isFree || price === 'Free');
   const catalogSection = item.catalogSection || '';
@@ -512,20 +493,16 @@ function populateView(view, item) {
 
   const subtitle = view.querySelector('.js-product-detail-subtitle');
   if (subtitle) {
-    if (useLightHero) {
-      subtitle.textContent = key;
-      subtitle.classList.toggle('badge', !!key);
-      subtitle.classList.toggle('badge-default', !!key);
-      subtitle.classList.toggle('ns-product-detail__key-badge', !!key);
-    } else {
-      subtitle.textContent = [key, version].filter(Boolean).join(' · ');
-      subtitle.classList.remove('badge', 'badge-default', 'ns-product-detail__key-badge');
-    }
+    // Key badge in hero for all catalog types (extensions, templates, AI).
+    subtitle.textContent = key;
+    subtitle.classList.toggle('badge', !!key);
+    subtitle.classList.toggle('badge-default', !!key);
+    subtitle.classList.toggle('ns-product-detail__key-badge', !!key);
   }
 
   const productVersionEl = view.querySelector('.js-product-detail-product-version');
   if (productVersionEl) {
-    if (useLightHero && productVersion) {
+    if (productVersion) {
       productVersionEl.textContent = productVersion;
       productVersionEl.classList.add('badge', 'ns-product-detail__product-version');
       setVisible(productVersionEl, true);
@@ -533,6 +510,13 @@ function populateView(view, item) {
       productVersionEl.textContent = '';
       setVisible(productVersionEl, false);
     }
+  }
+
+  const productStateEl = view.querySelector('.js-product-detail-product-state');
+  if (productStateEl) {
+    productStateEl.textContent = 'stable';
+    productStateEl.classList.add('badge', 'ns-product-detail__product-state');
+    setVisible(productStateEl, true);
   }
 
   const heroStats = view.querySelector('.js-product-detail-hero-stats');
@@ -607,7 +591,7 @@ function populateView(view, item) {
   populateActions(view, item, key, isFree, price);
   populateComposer(view, item);
   populateResources(view, item);
-  populateMeta(view, item, key, version);
+  populateMeta(view, item, key);
   populateDependencies(view, item);
 }
 
@@ -1364,9 +1348,8 @@ function vendorDefaultsForExtensionKey(key) {
  * @param {HTMLElement} view
  * @param {object} item
  * @param {string} key
- * @param {string} version
  */
-function populateMeta(view, item, key, version) {
+function populateMeta(view, item, key) {
   const meta = view.querySelector('.js-product-detail-meta');
   if (!meta) {
     return;
@@ -1383,7 +1366,6 @@ function populateMeta(view, item, key, version) {
     [view.dataset.labelDownloads || 'Downloads', formatDownloads(item.downloads)],
     [view.dataset.labelCategory || 'Category', item.category || ''],
     [view.dataset.labelExtensionKey || 'Extension Key', key],
-    [view.dataset.labelVersion || 'Version', version],
   ].filter(([, value]) => value !== '' && value != null);
 
   meta.innerHTML = rows.map(([label, value]) => {

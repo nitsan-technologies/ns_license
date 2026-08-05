@@ -496,6 +496,10 @@
                 <source>Version</source>
                 <target>Version</target>
             </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.state">
+                <source>State</source>
+                <target>Status</target>
+            </trans-unit>
             <trans-unit id="license-catalog.detail.overview">
                 <source>Overview</source>
                 <target>Übersicht</target>
