@@ -136,8 +136,7 @@
                 </div>
             </section>
 
-            <section class="ns-product-detail__block js-product-detail-security-section"
-                     data-static-checksum="a3f2c8d9e14b7063f2a1c5d8e9b0f3a7c2d4e6b8f0a1c3d5e7b9f2a4c6d8e0b3"
+            <section class="ns-product-detail__block js-product-detail-security-section d-none"
                      data-label-copied="{f:translate(key: 'license-catalog.detail.security.copied', extensionName: 'ns_license')}">
                 <h2 class="ns-product-detail__section-title"><f:translate key="license-catalog.detail.security" extensionName="ns_license" /></h2>
                 <div class="card ns-product-detail__section">
@@ -146,7 +145,7 @@
                             <div class="ns-product-detail__security-block">
                                 <p class="ns-product-detail__security-label"><f:translate key="license-catalog.detail.security.checksum-label" extensionName="ns_license" /></p>
                                 <div class="ns-product-detail__checksum">
-                                    <code class="js-product-detail-checksum">a3f2c8d9e14b7063f2a1c5d8e9b0f3a7c2d4e6b8f0a1c3d5e7b9f2a4c6d8e0b3</code>
+                                    <code class="js-product-detail-checksum"></code>
                                     <button type="button"
                                             class="btn btn-default btn-sm t3js-product-detail-copy-checksum"
                                             title="{f:translate(key: 'license-catalog.detail.security.copy', extensionName: 'ns_license')}"
@@ -188,7 +187,7 @@
                                                 <li><f:translate key="license-catalog.detail.security.verify-step1" extensionName="ns_license" /></li>
                                                 <li>
                                                     <f:translate key="license-catalog.detail.security.verify-step2" extensionName="ns_license" />
-                                                    <code class="ns-product-detail__security-cmd">sha256sum &lt;archive.zip&gt;</code>
+                                                    <code class="ns-product-detail__security-cmd">sha1sum &lt;archive.zip&gt;</code>
                                                 </li>
                                                 <li><f:translate key="license-catalog.detail.security.verify-step3" extensionName="ns_license" /></li>
                                             </ol>
@@ -257,7 +256,7 @@
                 </div>
             </div>
 
-            <div class="ns-product-detail__block js-product-detail-dependencies-section w-100">
+            <div class="ns-product-detail__block js-product-detail-dependencies-section w-100 d-none">
                 <h3 class="ns-product-detail__section-title"><f:translate key="license-catalog.detail.dependencies" extensionName="ns_license" /></h3>
                 <ul class="ns-product-detail__dependencies list-unstyled mb-0 js-product-detail-dependencies"></ul>
             </div>

@@ -410,10 +410,10 @@
                 <source>Security &amp; Integrity</source>
             </trans-unit>
             <trans-unit id="license-catalog.detail.security.checksum-label">
-                <source>SHA-256 Checksum</source>
+                <source>SHA-1 Checksum</source>
             </trans-unit>
             <trans-unit id="license-catalog.detail.security.checksum-hint">
-                <source>Verify this checksum after downloading to ensure the file is authentic and unmodified.</source>
+                <source>Verify this Composer SHA-1 checksum after downloading to ensure the file is authentic and unmodified.</source>
             </trans-unit>
             <trans-unit id="license-catalog.detail.security.copy">
                 <source>Copy checksum</source>
@@ -437,7 +437,7 @@
                 <source>Run the following command:</source>
             </trans-unit>
             <trans-unit id="license-catalog.detail.security.verify-step3">
-                <source>Compare the output with the SHA-256 checksum above — they must match exactly.</source>
+                <source>Compare the output with the SHA-1 checksum above — they must match exactly.</source>
             </trans-unit>
             <trans-unit id="license-catalog.detail.keywords">
                 <source>Keywords</source>
