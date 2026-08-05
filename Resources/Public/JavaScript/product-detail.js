@@ -128,16 +128,29 @@ function mergeProductDetail(fallback, detail) {
 }
 
 /**
- * @param {number|string|null|undefined} ts
+ * @param {number|string|null|undefined} ts  Unix seconds, ms, or parseable date string
  * @returns {string}
  */
 function formatDate(ts) {
-  const n = Number(ts);
-  if (!n || Number.isNaN(n)) {
+  if (ts === null || ts === undefined || ts === '') {
+    return '';
+  }
+  let date;
+  if (typeof ts === 'number' || (/^\d+(\.\d+)?$/.test(String(ts).trim()))) {
+    const n = Number(ts);
+    if (!n || Number.isNaN(n)) {
+      return '';
+    }
+    // Heuristic: values above year ~2001 in ms are millisecond timestamps.
+    date = new Date(n > 1e12 ? n : n * 1000);
+  } else {
+    date = new Date(String(ts).trim());
+  }
+  if (Number.isNaN(date.getTime())) {
     return '';
   }
   try {
-    return new Date(n * 1000).toLocaleDateString(undefined, {
+    return date.toLocaleDateString(undefined, {
       day: 'numeric',
       month: 'short',
       year: 'numeric',
@@ -1358,14 +1371,31 @@ function populateMeta(view, item, key) {
   const companyLabel = view.dataset.labelCompany || 'Company';
   const author = resolveProductAuthor(item, key);
   const company = resolveProductCompany(item, key);
+  const productVersion = formatProductVersionPill(item);
+  const displayVersion = String(item.version || '').trim();
+  // Details only: never show bare "AI" — use Backend (templates → Sitepackage).
+  let category = String(item.category || '').trim();
+  if (/^ai$/i.test(category)) {
+    category = 'Backend';
+  } else if (!category) {
+    if (item.catalogSection === 'templates') {
+      category = 'Sitepackage';
+    } else if (item.catalogSection) {
+      category = 'Backend';
+    }
+  }
+  const lastUpdateLabel = formatDate(item.lastUpdate)
+    || formatChangelogDate(Array.isArray(item.changelog) && item.changelog[0] ? item.changelog[0].date : '');
+  const firstUploadLabel = formatDate(item.firstUpload);
   const rows = [
     [authorLabel, author],
     [companyLabel, company],
-    [view.dataset.labelLastUpdate || 'Last Update', formatDate(item.lastUpdate)],
-    [view.dataset.labelFirstUpload || 'First Upload', formatDate(item.firstUpload)],
+    [view.dataset.labelLastUpdate || 'Last Update', lastUpdateLabel],
+    [view.dataset.labelFirstUpload || 'First Upload', firstUploadLabel],
     [view.dataset.labelDownloads || 'Downloads', formatDownloads(item.downloads)],
-    [view.dataset.labelCategory || 'Category', item.category || ''],
+    [view.dataset.labelCategory || 'Category', category],
     [view.dataset.labelExtensionKey || 'Extension Key', key],
+    [view.dataset.labelVersion || 'Version', productVersion || displayVersion],
   ].filter(([, value]) => value !== '' && value != null);
 
   meta.innerHTML = rows.map(([label, value]) => {
