@@ -99,7 +99,8 @@ function bindCatalogFilters(pane) {
     bindCatalogCardImageFallbacks(pane);
 }
 
-const CATALOG_VIEW_STORAGE_KEY = 'ns-license-catalog-view';
+const CATALOG_VIEW_STORAGE_KEY = 'ns-license-catalog-view-v2';
+const CATALOG_VIEW_STORAGE_KEY_LEGACY = 'ns-license-catalog-view';
 
 /**
  * @param {HTMLElement} pane
@@ -118,8 +119,13 @@ function bindCatalogViewToggle(pane) {
  */
 function readStoredCatalogView() {
     try {
-        const saved = localStorage.getItem(CATALOG_VIEW_STORAGE_KEY) || 'card';
-        return saved === 'list' ? 'list' : 'card';
+        const saved = localStorage.getItem(CATALOG_VIEW_STORAGE_KEY);
+        if (saved === 'list' || saved === 'card') {
+            return saved;
+        }
+        // Drop legacy preference so default stays card for everyone once.
+        localStorage.removeItem(CATALOG_VIEW_STORAGE_KEY_LEGACY);
+        return 'card';
     } catch (err) {
         return 'card';
     }

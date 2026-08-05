@@ -592,6 +592,10 @@
                 <source>References</source>
                 <target>Referenzen</target>
             </trans-unit>
+            <trans-unit id="license-catalog.detail.documentation">
+                <source>Documentation</source>
+                <target>Dokumentation</target>
+            </trans-unit>
             <trans-unit id="license-catalog.detail.changelog">
                 <source>Changelog</source>
                 <target>Changelog</target>
