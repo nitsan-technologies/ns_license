@@ -248,26 +248,6 @@
                 <source>Sorry! Something is wrong to connect at our License system server, Please try again or submit support ticket at https://t3planet.com/support</source>
                 <target>Verbindung zum Lizenzserver fehlgeschlagen. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support: https://t3planet.com/support</target>
             </trans-unit>
-            <trans-unit id="systemRequirements.title">
-                <source>Server requirements for activation</source>
-                <target>Serveranforderungen für die Aktivierung</target>
-            </trans-unit>
-            <trans-unit id="systemRequirements.note">
-                <source>Some server settings may block classic (non-Composer) license activation, which downloads the extension ZIP to your server. Fix the items below, or ask your host if activation hangs or shows a blank page. Outbound HTTPS to composer.t3planet.cloud must also be allowed.</source>
-                <target>Einige Server-Einstellungen können die klassische (Nicht-Composer-)Lizenzaktivierung blockieren, bei der das Extension-ZIP auf Ihren Server heruntergeladen wird. Beheben Sie die folgenden Punkte, oder bitten Sie Ihren Hoster um Hilfe, wenn die Aktivierung hängt oder eine leere Seite zeigt. Ausgehende HTTPS-Verbindungen zu composer.t3planet.cloud müssen ebenfalls erlaubt sein.</target>
-            </trans-unit>
-            <trans-unit id="systemRequirements.fail.memory_limit">
-                <source>PHP memory_limit is below 1024M (current value is too low for ZIP download/extract).</source>
-                <target>PHP memory_limit liegt unter 1024M (aktueller Wert ist zu niedrig für ZIP-Download/Entpacken).</target>
-            </trans-unit>
-            <trans-unit id="systemRequirements.fail.max_execution_time">
-                <source>PHP max_execution_time is below 60 seconds.</source>
-                <target>PHP max_execution_time liegt unter 60 Sekunden.</target>
-            </trans-unit>
-            <trans-unit id="systemRequirements.fail.typo3temp">
-                <source>The typo3temp directory is missing or not writable.</source>
-                <target>Das Verzeichnis typo3temp fehlt oder ist nicht beschreibbar.</target>
-            </trans-unit>
             <trans-unit id="license-activation.footerTitle">
                 <source>Need Help With Domain Registration?</source>
                 <target>Hilfe bei der Domainregistrierung?</target>

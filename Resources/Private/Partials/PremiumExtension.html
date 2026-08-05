@@ -292,6 +292,13 @@
                                 <core:icon identifier="actions-delete" size="small" />
                                 <f:translate key="license-deactivation.action" />
                             </f:link.action>
+                            <f:if condition="{extension.key}">
+                                <button type="button" class="btn btn-default t3js-product-detail-trigger"
+                                    data-extension-key="{extension.key}">
+                                    <core:icon identifier="actions-document-view" size="small" />
+                                    <span><f:translate key="license-catalog.detail" extensionName="ns_license" /></span>
+                                </button>
+                            </f:if>
                         </div>
                     </div>
                         </div>

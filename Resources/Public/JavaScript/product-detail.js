@@ -1002,7 +1002,7 @@ function populateRelated(view, item) {
       col.setAttribute('role', 'listitem');
 
       const card = document.createElement('div');
-      card.className = 'card card-size-small ns-product-detail__related-card';
+      card.className = 'card card-size-small ns-product-detail__related-card w-100';
 
       const media = document.createElement('div');
       media.className = 'ns-product-detail__related-card-image';
