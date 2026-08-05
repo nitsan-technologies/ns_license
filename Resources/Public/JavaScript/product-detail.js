@@ -1306,6 +1306,52 @@ function populateResources(view, item) {
 }
 
 /**
+ * @param {object} item
+ * @param {string} key
+ * @returns {string}
+ */
+function resolveProductAuthor(item, key) {
+  const fromItem = String(item?.author || '').trim();
+  if (fromItem) {
+    return fromItem;
+  }
+  return vendorDefaultsForExtensionKey(key).author;
+}
+
+/**
+ * @param {object} item
+ * @param {string} key
+ * @returns {string}
+ */
+function resolveProductCompany(item, key) {
+  const fromItem = String(item?.company || '').trim();
+  if (fromItem) {
+    return fromItem;
+  }
+  return vendorDefaultsForExtensionKey(key).company;
+}
+
+/**
+ * Client-side fallback when detail payload has no author/company yet.
+ * @param {string} key
+ * @returns {{author: string, company: string}}
+ */
+function vendorDefaultsForExtensionKey(key) {
+  const extensionKey = String(key || '').trim();
+  const byKey = {
+    tonictypes_pro: { author: 'TonicTypes', company: 'TonicTypes' },
+    dataviewer_pro: { author: 'Aix', company: 'Aix' },
+  };
+  if (byKey[extensionKey]) {
+    return byKey[extensionKey];
+  }
+  if (extensionKey.startsWith('ns_')) {
+    return { author: 'Team T3Planet', company: 'T3Planet' };
+  }
+  return { author: '', company: '' };
+}
+
+/**
  * @param {HTMLElement} view
  * @param {object} item
  * @param {string} key
@@ -1318,9 +1364,11 @@ function populateMeta(view, item, key, version) {
   }
   const authorLabel = view.dataset.labelAuthor || 'Author';
   const companyLabel = view.dataset.labelCompany || 'Company';
+  const author = resolveProductAuthor(item, key);
+  const company = resolveProductCompany(item, key);
   const rows = [
-    [authorLabel, item.author || 'Team T3Planet'],
-    [companyLabel, item.company || 'T3Planet'],
+    [authorLabel, author],
+    [companyLabel, company],
     [view.dataset.labelLastUpdate || 'Last Update', formatDate(item.lastUpdate)],
     [view.dataset.labelFirstUpload || 'First Upload', formatDate(item.firstUpload)],
     [view.dataset.labelDownloads || 'Downloads', formatDownloads(item.downloads)],

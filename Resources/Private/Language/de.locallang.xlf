@@ -376,14 +376,6 @@
                 <source>Sort products</source>
                 <target>Produkte sortieren</target>
             </trans-unit>
-            <trans-unit id="license-catalog.sort.popular">
-                <source>Most Popular</source>
-                <target>Beliebteste</target>
-            </trans-unit>
-            <trans-unit id="license-catalog.sort.rated">
-                <source>Highest Rated</source>
-                <target>Bestbewertet</target>
-            </trans-unit>
             <trans-unit id="license-catalog.sort.price-asc">
                 <source>Price: Low → High</source>
                 <target>Preis: Niedrig → Hoch</target>

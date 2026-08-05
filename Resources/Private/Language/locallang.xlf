@@ -298,12 +298,6 @@
             <trans-unit id="license-catalog.sort.label">
                 <source>Sort products</source>
             </trans-unit>
-            <trans-unit id="license-catalog.sort.popular">
-                <source>Most Popular</source>
-            </trans-unit>
-            <trans-unit id="license-catalog.sort.rated">
-                <source>Highest Rated</source>
-            </trans-unit>
             <trans-unit id="license-catalog.sort.price-asc">
                 <source>Price: Low → High</source>
             </trans-unit>
