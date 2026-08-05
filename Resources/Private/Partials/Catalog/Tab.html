@@ -1,6 +1,6 @@
 <html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
       xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers" data-namespace-typo3-fluid="true">
-<div class="catalog-tab-content" data-catalog-tab="{catalogTab}">
+<div class="catalog-tab-content" data-catalog-tab="{catalogTab}" data-catalog-view="card">
     <div class="search-section d-flex flex-nowrap align-items-center gap-2 mb-3">
         <div class="input-group flex-grow-1">
             <label class="visually-hidden" for="catalogSearch-{catalogTab}"><f:translate key="license-catalog.search-placeholder" extensionName="ns_license" /></label>
@@ -26,6 +26,24 @@
             <option value="price-asc"><f:translate key="license-catalog.sort.price-asc" extensionName="ns_license" /></option>
             <option value="price-desc"><f:translate key="license-catalog.sort.price-desc" extensionName="ns_license" /></option>
         </select>
+        <div class="btn-group catalog-view-toggle flex-shrink-0" role="group" aria-label="{f:translate(key: 'license-catalog.view.label', extensionName: 'ns_license')}">
+            <button type="button"
+                class="btn btn-default catalog-view-toggle__btn is-active"
+                data-catalog-view="card"
+                title="{f:translate(key: 'license-catalog.view.card', extensionName: 'ns_license')}"
+                aria-label="{f:translate(key: 'license-catalog.view.card', extensionName: 'ns_license')}"
+                aria-pressed="true">
+                <core:icon identifier="actions-viewmode-tiles" size="small" />
+            </button>
+            <button type="button"
+                class="btn btn-default catalog-view-toggle__btn"
+                data-catalog-view="list"
+                title="{f:translate(key: 'license-catalog.view.list', extensionName: 'ns_license')}"
+                aria-label="{f:translate(key: 'license-catalog.view.list', extensionName: 'ns_license')}"
+                aria-pressed="false">
+                <core:icon identifier="actions-viewmode-list" size="small" />
+            </button>
+        </div>
         <button type="button" class="btn btn-primary refresh-data-button flex-shrink-0" data-type="shop">
             <core:icon identifier="actions-refresh" size="small" />
             <f:translate key="license-extensions.get-updates" />

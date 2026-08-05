@@ -101,7 +101,9 @@
                     </f:if>
                 </div>
                 <f:if condition="{item.extensionKey}">
-                    <span class="card-subtitle">{item.extensionKey}</span>
+                    <span class="card-subtitle">
+                        {item.extensionKey}<f:if condition="{item.version}"> · {item.version}</f:if>
+                    </span>
                 </f:if>
             </div>
         </div>

@@ -95,8 +95,90 @@ function bindCatalogFilters(pane) {
         sortSelect.addEventListener('change', () => filterCatalog(pane));
     }
 
+    bindCatalogViewToggle(pane);
     bindCatalogCardImageFallbacks(pane);
 }
+
+const CATALOG_VIEW_STORAGE_KEY = 'ns-license-catalog-view';
+
+/**
+ * @param {HTMLElement} pane
+ */
+function bindCatalogViewToggle(pane) {
+    const tabContent = pane.querySelector('.catalog-tab-content');
+    if (!tabContent) {
+        return;
+    }
+    const saved = readStoredCatalogView();
+    applyCatalogView(tabContent, saved);
+}
+
+/**
+ * @returns {'card'|'list'}
+ */
+function readStoredCatalogView() {
+    try {
+        const saved = localStorage.getItem(CATALOG_VIEW_STORAGE_KEY) || 'card';
+        return saved === 'list' ? 'list' : 'card';
+    } catch (err) {
+        return 'card';
+    }
+}
+
+/**
+ * @param {HTMLElement} tabContent
+ * @param {'card'|'list'} view
+ */
+function applyCatalogView(tabContent, view) {
+    if (!(tabContent instanceof HTMLElement)) {
+        return;
+    }
+    const next = view === 'list' ? 'list' : 'card';
+    tabContent.setAttribute('data-catalog-view', next);
+    tabContent.classList.toggle('catalog-view--list', next === 'list');
+    tabContent.classList.toggle('catalog-view--card', next === 'card');
+
+    tabContent.querySelectorAll('.catalog-view-toggle__btn').forEach((btn) => {
+        const active = btn.getAttribute('data-catalog-view') === next;
+        btn.classList.toggle('is-active', active);
+        btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+}
+
+/**
+ * @param {EventTarget|null} target
+ * @returns {Element|null}
+ */
+function asElement(target) {
+    if (target instanceof Element) {
+        return target;
+    }
+    if (target && typeof target === 'object' && 'parentElement' in target) {
+        return /** @type {{ parentElement: Element|null }} */ (target).parentElement;
+    }
+    return null;
+}
+
+// Delegated handler so view toggle works after AJAX catalog inject / icon clicks.
+document.addEventListener('click', (e) => {
+    const el = asElement(e.target);
+    const btn = el?.closest?.('.catalog-view-toggle__btn');
+    if (!btn) {
+        return;
+    }
+    const tabContent = btn.closest('.catalog-tab-content');
+    if (!tabContent) {
+        return;
+    }
+    e.preventDefault();
+    const view = btn.getAttribute('data-catalog-view') === 'list' ? 'list' : 'card';
+    applyCatalogView(tabContent, view);
+    try {
+        localStorage.setItem(CATALOG_VIEW_STORAGE_KEY, view);
+    } catch (err) {
+        // ignore quota / private mode
+    }
+});
 
 /**
  * Ensure SVG data-URIs used as &lt;img src&gt; include xmlns (required by browsers).
@@ -691,17 +773,28 @@ function initializeFilters() {
     };
 
     const updateTabPageHeader = (tab) => {
-        const title = tab?.getAttribute('data-page-title');
-        const subtitle = tab?.getAttribute('data-page-subtitle');
-        const titleEl = document.querySelector('.ns-license-tab-page-header__title');
+        if (!tab) {
+            return;
+        }
+        const title = (tab.getAttribute('data-page-title') || tab.textContent || '').trim();
+        const subtitle = (tab.getAttribute('data-page-subtitle') || '').trim();
+        const sectionEl = document.querySelector('.ns-license-tab-page-header__section');
         const subtitleEl = document.querySelector('.ns-license-tab-page-header__subtitle');
-        if (titleEl && title) {
-            titleEl.textContent = title;
+        if (sectionEl && title) {
+            sectionEl.textContent = title;
         }
         if (subtitleEl && subtitle) {
             subtitleEl.textContent = subtitle;
         }
     };
+
+    // Keep header in sync for Bootstrap tab events and our custom clicks.
+    moduleTabsContainer?.addEventListener('shown.bs.tab', (event) => {
+        const tab = event.target?.closest?.('.nav-link');
+        if (tab && tab.hasAttribute('data-page-title')) {
+            updateTabPageHeader(tab);
+        }
+    });
 
     const servicesCategoryFilter = document.querySelector('#servicesCategoryFilter');
     const servicesSearch = document.querySelector('#servicesSearch');

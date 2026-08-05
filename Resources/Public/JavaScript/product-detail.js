@@ -1173,10 +1173,10 @@ function populateActions(view, item, key, isFree, price) {
   }
 
   if (item.liveDemoUrl || item.frontendDemoUrl || item.backendDemoUrl) {
-    // liveDemoUrl is the catalog "Live Demo" → Backend Demo (new tab).
+    // liveDemoUrl is the catalog demo link → Demo button (new tab).
     const backendUrl = item.backendDemoUrl || item.liveDemoUrl || '';
     const frontendUrl = item.frontendDemoUrl || '';
-    const backendLabel = view.dataset.labelDemoBackend || view.dataset.labelDemo || 'Backend Demo';
+    const backendLabel = view.dataset.labelDemoBackend || view.dataset.labelDemo || 'Demo';
 
     if (frontendUrl) {
       const fe = document.createElement('a');

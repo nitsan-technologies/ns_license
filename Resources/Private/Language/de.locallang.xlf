@@ -392,6 +392,18 @@
                 <source>Price: High → Low</source>
                 <target>Preis: Hoch → Niedrig</target>
             </trans-unit>
+            <trans-unit id="license-catalog.view.label">
+                <source>Catalog view</source>
+                <target>Katalogansicht</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.view.card">
+                <source>Card view</source>
+                <target>Kartenansicht</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.view.list">
+                <source>List view</source>
+                <target>Listenansicht</target>
+            </trans-unit>
             <trans-unit id="license-catalog.list-heading">
                 <source>All products</source>
                 <target>Alle Produkte</target>
@@ -609,8 +621,8 @@
                 <target>Frontend-Demo</target>
             </trans-unit>
             <trans-unit id="license-catalog.detail.demo.backend">
-                <source>Backend Demo</source>
-                <target>Backend-Demo</target>
+                <source>Demo</source>
+                <target>Demo</target>
             </trans-unit>
             <trans-unit id="license-catalog.detail.meta">
                 <source>Details</source>
@@ -717,8 +729,8 @@
                 <target>Mehr erfahren</target>
             </trans-unit>
             <trans-unit id="license-shop.live-demo">
-                <source>Backend Demo</source>
-                <target>Backend-Demo</target>
+                <source>Demo</source>
+                <target>Demo</target>
             </trans-unit>
             <trans-unit id="license-shop.free-trial">
                 <source>Free Trial</source>
