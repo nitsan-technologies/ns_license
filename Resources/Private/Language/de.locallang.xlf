@@ -568,6 +568,14 @@
                 <source>View</source>
                 <target>Ansehen</target>
             </trans-unit>
+            <trans-unit id="license-catalog.detail.demo.frontend">
+                <source>Frontend Demo</source>
+                <target>Frontend-Demo</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.demo.backend">
+                <source>Backend Demo</source>
+                <target>Backend-Demo</target>
+            </trans-unit>
             <trans-unit id="license-catalog.detail.meta">
                 <source>Details</source>
                 <target>Details</target>
@@ -611,6 +619,10 @@
             <trans-unit id="license-tabs.website-builder">
                 <source>Website Builder</source>
                 <target>Website-Builder</target>
+            </trans-unit>
+            <trans-unit id="license-header.account">
+                <source>Account</source>
+                <target>Konto</target>
             </trans-unit>
             <trans-unit id="license-extensions.search-placeholder">
                 <source>Search my extensions...</source>
@@ -669,8 +681,8 @@
                 <target>Mehr erfahren</target>
             </trans-unit>
             <trans-unit id="license-shop.live-demo">
-                <source>Live Demo</source>
-                <target>Live-Demo</target>
+                <source>Backend Demo</source>
+                <target>Backend-Demo</target>
             </trans-unit>
             <trans-unit id="license-shop.free-trial">
                 <source>Free Trial</source>

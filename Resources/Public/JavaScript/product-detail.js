@@ -1173,9 +1173,12 @@ function populateActions(view, item, key, isFree, price) {
   }
 
   if (item.liveDemoUrl || item.frontendDemoUrl || item.backendDemoUrl) {
-    const frontendUrl = item.frontendDemoUrl || item.liveDemoUrl || '';
-    const backendUrl = item.backendDemoUrl || '';
-    if (frontendUrl && backendUrl) {
+    // liveDemoUrl is the catalog "Live Demo" → Backend Demo (new tab).
+    const backendUrl = item.backendDemoUrl || item.liveDemoUrl || '';
+    const frontendUrl = item.frontendDemoUrl || '';
+    const backendLabel = view.dataset.labelDemoBackend || view.dataset.labelDemo || 'Backend Demo';
+
+    if (frontendUrl) {
       const fe = document.createElement('a');
       fe.href = frontendUrl;
       fe.target = '_blank';
@@ -1186,31 +1189,19 @@ function populateActions(view, item, key, isFree, price) {
         external: true,
       });
       actions.appendChild(fe);
+    }
 
+    if (backendUrl) {
       const be = document.createElement('a');
       be.href = backendUrl;
       be.target = '_blank';
       be.rel = 'noopener noreferrer';
       be.className = 'btn btn-default';
       setProductDetailCtaContent(view, be, {
-        label: view.dataset.labelDemoBackend || 'Backend Demo',
+        label: backendLabel,
         external: true,
       });
       actions.appendChild(be);
-    } else {
-      const demoUrl = frontendUrl || backendUrl;
-      const demo = document.createElement('a');
-      demo.href = demoUrl;
-      demo.target = '_blank';
-      demo.rel = 'noopener noreferrer';
-      demo.className = 'btn btn-default';
-      setProductDetailCtaContent(view, demo, {
-        label: backendUrl && !frontendUrl
-          ? (view.dataset.labelDemoBackend || 'Backend Demo')
-          : (view.dataset.labelDemo || 'Live Demo'),
-        external: true,
-      });
-      actions.appendChild(demo);
     }
   }
 
