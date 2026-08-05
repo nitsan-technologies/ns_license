@@ -1,7 +1,7 @@
 <html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
       xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers" data-namespace-typo3-fluid="true">
 <f:if condition="{extensions}">
-<div id="free-section" class="extension-section">
+<div id="free-section" class="extension-section mt-4">
     <div class="catalog-list-heading d-flex align-items-center gap-2 mb-3">
         <h3 class="h5 mb-0">
             <f:translate key="license-extensions.section-title-free" extensionName="ns_license" />
@@ -32,33 +32,51 @@
                     </div>
                     <div class="card-body">
                         <f:if condition="{extension.description}">
-                            <p class="card-text text-variant">{extension.description}</p>
+                            <p class="card-text text-variant mb-0">{extension.description}</p>
                         </f:if>
                     </div>
                     <div class="card-footer">
-                        <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap">
-                            <div class="actions-wrapper d-flex flex-wrap gap-2 mb-0">
+                        <f:if condition="{extension.rating} || {extension.downloads}">
+                            <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap mb-2">
+                                <div class="meta-info mb-0">
+                                    <f:if condition="{extension.rating}">
+                                        <div class="meta-item">
+                                            <core:icon identifier="actions-star" size="small" />
+                                            <span>{extension.rating}</span>
+                                        </div>
+                                    </f:if>
+                                    <f:if condition="{extension.downloads}">
+                                        <div class="meta-item">
+                                            <core:icon identifier="actions-download" size="small" />
+                                            <span>{extension.downloads}</span>
+                                        </div>
+                                    </f:if>
+                                </div>
+                            </div>
+                        </f:if>
+                        <div class="actions-wrapper d-flex flex-wrap justify-content-between gap-2 mb-0">
+                            <div class="actions-wrapper-inner d-flex flex-wrap gap-2">
+                                <f:if condition="{extension.key}">
+                                    <button type="button" class="btn btn-primary btn-sm t3js-get-license-trigger"
+                                        data-extension-key="{extension.key}" data-gl-mode="trial">
+                                        <core:icon identifier="actions-plus" size="small" />
+                                        <span><f:translate key="license-shop.free-trial" extensionName="ns_license" /></span>
+                                    </button>
+                                </f:if>
                                 <f:if condition="{extension.knowMoreUrl}">
                                     <a href="{extension.knowMoreUrl}" class="btn btn-default btn-sm" target="_blank" rel="noopener noreferrer">
+                                        <span><f:translate key="license-shop.know-more" extensionName="ns_license" /></span>
                                         <core:icon identifier="actions-window-open" size="small" />
-                                        <span><f:translate key="license-catalog.detail" extensionName="ns_license" /></span>
                                     </a>
                                 </f:if>
                             </div>
-                            <div class="meta-info mb-0">
-                                <f:if condition="{extension.rating}">
-                                    <div class="meta-item">
-                                        <core:icon identifier="actions-star" size="small" />
-                                        <span>{extension.rating}</span>
-                                    </div>
-                                </f:if>
-                                <f:if condition="{extension.downloads}">
-                                    <div class="meta-item">
-                                        <core:icon identifier="actions-download" size="small" />
-                                        <span>{extension.downloads}</span>
-                                    </div>
-                                </f:if>
-                            </div>
+                            <f:if condition="{extension.key}">
+                                <button type="button" class="btn btn-default btn-sm t3js-product-detail-trigger"
+                                    data-extension-key="{extension.key}">
+                                    <core:icon identifier="actions-document-view" size="small" />
+                                    <span><f:translate key="license-catalog.detail" extensionName="ns_license" /></span>
+                                </button>
+                            </f:if>
                         </div>
                     </div>
                 </div>
