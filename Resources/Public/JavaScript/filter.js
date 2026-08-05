@@ -214,7 +214,7 @@ function filterCatalog(pane) {
     }
 
     const filterValue = typeFilter.value || 'all';
-    const sortValue = activePane.querySelector('.catalog-sort')?.value || 'popular';
+    const sortValue = activePane.querySelector('.catalog-sort')?.value || 'price-desc';
     const searchText = searchInput.value.toLowerCase().trim();
     const cards = activePane.querySelectorAll('.catalog-card');
     let visibleCount = 0;
@@ -282,46 +282,6 @@ function filterCatalog(pane) {
  * @param {string|undefined|null} value
  * @returns {number}
  */
-function parseCatalogDownloads(value) {
-    const raw = String(value ?? '').trim().toLowerCase().replace(/,/g, '');
-    if (raw === '') {
-        return 0;
-    }
-    const match = raw.match(/^([\d.]+)\s*([kmb])?$/i);
-    if (!match) {
-        const digits = parseFloat(raw.replace(/[^\d.]/g, ''));
-        return Number.isFinite(digits) ? digits : 0;
-    }
-    const num = parseFloat(match[1]);
-    if (!Number.isFinite(num)) {
-        return 0;
-    }
-    const unit = (match[2] || '').toLowerCase();
-    if (unit === 'k') {
-        return num * 1000;
-    }
-    if (unit === 'm') {
-        return num * 1000000;
-    }
-    if (unit === 'b') {
-        return num * 1000000000;
-    }
-    return num;
-}
-
-/**
- * @param {string|undefined|null} value
- * @returns {number}
- */
-function parseCatalogRating(value) {
-    const num = parseFloat(String(value ?? '').replace(',', '.').replace(/[^\d.]/g, ''));
-    return Number.isFinite(num) ? num : 0;
-}
-
-/**
- * @param {string|undefined|null} value
- * @returns {number}
- */
 function parseCatalogPrice(value) {
     const raw = String(value ?? '').trim();
     if (raw === '' || /^free$/i.test(raw)) {
@@ -343,36 +303,6 @@ function parseCatalogPrice(value) {
     }
     const num = parseFloat(cleaned);
     return Number.isFinite(num) ? num : 0;
-}
-
-/**
- * @param {HTMLElement} card
- * @returns {number}
- */
-function getCardDownloads(card) {
-    const fromValue = card.dataset.downloadsValue;
-    if (fromValue !== undefined && fromValue !== '') {
-        const num = parseFloat(fromValue);
-        if (Number.isFinite(num)) {
-            return num;
-        }
-    }
-    return parseCatalogDownloads(card.dataset.downloads);
-}
-
-/**
- * @param {HTMLElement} card
- * @returns {number}
- */
-function getCardRating(card) {
-    const fromValue = card.dataset.ratingValue;
-    if (fromValue !== undefined && fromValue !== '') {
-        const num = parseFloat(fromValue);
-        if (Number.isFinite(num)) {
-            return num;
-        }
-    }
-    return parseCatalogRating(card.dataset.rating);
 }
 
 /**
@@ -416,15 +346,11 @@ function sortCatalogCards(pane, sortValue) {
 
         cards.sort((a, b) => {
             let cmp = 0;
-            if (sortValue === 'rated') {
-                cmp = getCardRating(b) - getCardRating(a);
-            } else if (sortValue === 'price-asc') {
+            if (sortValue === 'price-asc') {
                 cmp = getCardPrice(a) - getCardPrice(b);
-            } else if (sortValue === 'price-desc') {
-                cmp = getCardPrice(b) - getCardPrice(a);
             } else {
-                // popular (default): downloads descending
-                cmp = getCardDownloads(b) - getCardDownloads(a);
+                // price-desc (default)
+                cmp = getCardPrice(b) - getCardPrice(a);
             }
             if (cmp !== 0) {
                 return cmp;

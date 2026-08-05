@@ -28,12 +28,11 @@ class ExtensionListService
     public function __construct(
         NsLicenseRepository $nsLicenseRepository,
         PackageManager $packageManager,
-        ?CatalogCacheService $catalogCacheService = null
+        CatalogCacheService $catalogCacheService
     ) {
         $this->nsLicenseRepository = $nsLicenseRepository;
         $this->packageManager = $packageManager;
-        $this->catalogCacheService = $catalogCacheService
-            ?? GeneralUtility::makeInstance(CatalogCacheService::class);
+        $this->catalogCacheService = $catalogCacheService;
         $this->typo3Version = GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion();
         $this->siteRoot = rtrim(Environment::getPublicPath() . '/', '/') . '/';
         $this->composerSiteRoot = Environment::getProjectPath() . '/';

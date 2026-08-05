@@ -28,22 +28,18 @@ final class LicenseService
     protected $extensionListService;
     protected ComposerApiClient $composerApiClient;
 
-    public function __construct(?ExtensionListService $extensionListService = null, ?ComposerApiClient $composerApiClient = null)
-    {
+    public function __construct(
+        ExtensionListService $extensionListService,
+        ComposerApiClient $composerApiClient
+    ) {
         $this->dependencyOrderingService = GeneralUtility::makeInstance(DependencyOrderingService::class);
         $this->packageManager = GeneralUtility::makeInstance(PackageManager::class);
         $this->cacheManager = GeneralUtility::makeInstance(CacheManager::class);
         $this->nsLicenseRepository = GeneralUtility::makeInstance(NsLicenseRepository::class);
         $versionInformation = GeneralUtility::makeInstance(Typo3Version::class);
         $this->typo3Version = $versionInformation->getMajorVersion();
-        $this->extensionListService = $extensionListService
-            ?? GeneralUtility::makeInstance(
-                ExtensionListService::class,
-                $this->nsLicenseRepository,
-                $this->packageManager
-            );
-        $this->composerApiClient = $composerApiClient
-            ?? GeneralUtility::makeInstance(ComposerApiClient::class);
+        $this->extensionListService = $extensionListService;
+        $this->composerApiClient = $composerApiClient;
     }
 
    
