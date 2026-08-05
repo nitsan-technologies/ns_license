@@ -211,7 +211,16 @@
                 <source>Server requirements for activation</source>
             </trans-unit>
             <trans-unit id="systemRequirements.note">
-                <source>License activation downloads the extension to your server. Please ensure PHP memory_limit is at least 1024M, max_execution_time is 60+ seconds, typo3temp is writable, and outbound HTTPS to composer.t3planet.cloud is allowed. If activation hangs or shows a blank page, ask your host to check these settings.</source>
+                <source>Some server settings may block classic (non-Composer) license activation, which downloads the extension ZIP to your server. Fix the items below, or ask your host if activation hangs or shows a blank page. Outbound HTTPS to composer.t3planet.cloud must also be allowed.</source>
+            </trans-unit>
+            <trans-unit id="systemRequirements.fail.memory_limit">
+                <source>PHP memory_limit is below 1024M (current value is too low for ZIP download/extract).</source>
+            </trans-unit>
+            <trans-unit id="systemRequirements.fail.max_execution_time">
+                <source>PHP max_execution_time is below 60 seconds.</source>
+            </trans-unit>
+            <trans-unit id="systemRequirements.fail.typo3temp">
+                <source>The typo3temp directory is missing or not writable.</source>
             </trans-unit>
             <trans-unit id="license-activation.footerTitle">
                 <source>Need Help With Domain Registration?</source>
@@ -431,13 +440,19 @@
                 <source>How to verify the checksum</source>
             </trans-unit>
             <trans-unit id="license-catalog.detail.security.verify-step1">
-                <source>Download the release archive from T3Planet or TER.</source>
+                <source>Download the Composer release zip for this product version from the T3Planet Composer repository (the same archive Composer installs — not a TER zip).</source>
             </trans-unit>
             <trans-unit id="license-catalog.detail.security.verify-step2">
-                <source>Run the following command:</source>
+                <source>Run one of the following commands on the downloaded zip:</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.verify-step2-linux">
+                <source>Linux</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.verify-step2-macos">
+                <source>macOS</source>
             </trans-unit>
             <trans-unit id="license-catalog.detail.security.verify-step3">
-                <source>Compare the output with the SHA-1 checksum above — they must match exactly.</source>
+                <source>Compare the output with the SHA-1 checksum above for this version — they must match exactly.</source>
             </trans-unit>
             <trans-unit id="license-catalog.detail.keywords">
                 <source>Keywords</source>

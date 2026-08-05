@@ -253,8 +253,20 @@
                 <target>Serveranforderungen für die Aktivierung</target>
             </trans-unit>
             <trans-unit id="systemRequirements.note">
-                <source>License activation downloads the extension to your server. Please ensure PHP memory_limit is at least 1024M, max_execution_time is 60+ seconds, typo3temp is writable, and outbound HTTPS to composer.t3planet.cloud is allowed. If activation hangs or shows a blank page, ask your host to check these settings.</source>
-                <target>Bei der Lizenzaktivierung wird die Extension auf Ihren Server heruntergeladen. Bitte stellen Sie sicher, dass PHP memory_limit mindestens 1024M beträgt, max_execution_time mindestens 60 Sekunden ist, typo3temp beschreibbar ist und ausgehende HTTPS-Verbindungen zu composer.t3planet.cloud erlaubt sind. Bei hängender Aktivierung oder leerer Seite bitten Sie Ihren Hoster, diese Einstellungen zu prüfen.</target>
+                <source>Some server settings may block classic (non-Composer) license activation, which downloads the extension ZIP to your server. Fix the items below, or ask your host if activation hangs or shows a blank page. Outbound HTTPS to composer.t3planet.cloud must also be allowed.</source>
+                <target>Einige Server-Einstellungen können die klassische (Nicht-Composer-)Lizenzaktivierung blockieren, bei der das Extension-ZIP auf Ihren Server heruntergeladen wird. Beheben Sie die folgenden Punkte, oder bitten Sie Ihren Hoster um Hilfe, wenn die Aktivierung hängt oder eine leere Seite zeigt. Ausgehende HTTPS-Verbindungen zu composer.t3planet.cloud müssen ebenfalls erlaubt sein.</target>
+            </trans-unit>
+            <trans-unit id="systemRequirements.fail.memory_limit">
+                <source>PHP memory_limit is below 1024M (current value is too low for ZIP download/extract).</source>
+                <target>PHP memory_limit liegt unter 1024M (aktueller Wert ist zu niedrig für ZIP-Download/Entpacken).</target>
+            </trans-unit>
+            <trans-unit id="systemRequirements.fail.max_execution_time">
+                <source>PHP max_execution_time is below 60 seconds.</source>
+                <target>PHP max_execution_time liegt unter 60 Sekunden.</target>
+            </trans-unit>
+            <trans-unit id="systemRequirements.fail.typo3temp">
+                <source>The typo3temp directory is missing or not writable.</source>
+                <target>Das Verzeichnis typo3temp fehlt oder ist nicht beschreibbar.</target>
             </trans-unit>
             <trans-unit id="license-activation.footerTitle">
                 <source>Need Help With Domain Registration?</source>
@@ -525,16 +537,24 @@
                 <target>So prüfen Sie die Checksumme</target>
             </trans-unit>
             <trans-unit id="license-catalog.detail.security.verify-step1">
-                <source>Download the release archive from T3Planet or TER.</source>
-                <target>Laden Sie das Release-Archiv von T3Planet oder dem TER herunter.</target>
+                <source>Download the Composer release zip for this product version from the T3Planet Composer repository (the same archive Composer installs — not a TER zip).</source>
+                <target>Laden Sie das Composer-Release-ZIP für diese Produktversion aus dem T3Planet-Composer-Repository herunter (dasselbe Archiv, das Composer installiert — kein TER-ZIP).</target>
             </trans-unit>
             <trans-unit id="license-catalog.detail.security.verify-step2">
-                <source>Run the following command:</source>
-                <target>Führen Sie den folgenden Befehl aus:</target>
+                <source>Run one of the following commands on the downloaded zip:</source>
+                <target>Führen Sie einen der folgenden Befehle auf dem heruntergeladenen ZIP aus:</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.verify-step2-linux">
+                <source>Linux</source>
+                <target>Linux</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.verify-step2-macos">
+                <source>macOS</source>
+                <target>macOS</target>
             </trans-unit>
             <trans-unit id="license-catalog.detail.security.verify-step3">
-                <source>Compare the output with the SHA-1 checksum above — they must match exactly.</source>
-                <target>Vergleichen Sie die Ausgabe mit der SHA-1-Prüfsumme oben — sie müssen exakt übereinstimmen.</target>
+                <source>Compare the output with the SHA-1 checksum above for this version — they must match exactly.</source>
+                <target>Vergleichen Sie die Ausgabe mit der SHA-1-Prüfsumme oben für diese Version — sie müssen exakt übereinstimmen.</target>
             </trans-unit>
             <trans-unit id="license-catalog.detail.keywords">
                 <source>Keywords</source>

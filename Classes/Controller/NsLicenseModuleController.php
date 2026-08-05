@@ -11,6 +11,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use NITSAN\NsLicense\Service\LicenseService;
 use NITSAN\NsLicense\Service\CatalogCacheService;
 use NITSAN\NsLicense\Service\CatalogTabMapper;
+use NITSAN\NsLicense\Service\ClassicActivationRequirementsService;
 use NITSAN\NsLicense\Service\ExtensionListService;
 use NITSAN\NsLicense\Service\ExtensionArchiveService;
 use NITSAN\NsLicense\Service\ProductBundleRegistry;
@@ -81,6 +82,7 @@ class NsLicenseModuleController extends ActionController
         protected readonly CheckoutUrlBuilder $checkoutUrlBuilder,
         protected readonly CheckoutReturnUrlBuilder $checkoutReturnUrlBuilder,
         protected readonly CatalogCacheService $catalogCacheService,
+        protected readonly ClassicActivationRequirementsService $classicActivationRequirementsService,
     ) {}
 
     /**
@@ -110,7 +112,13 @@ class NsLicenseModuleController extends ActionController
         if ($this->isComposerMode) {
             $view->assign('showUpdateButton', 1);
         }
-        $view->assign('showSystemRequirements', !$this->isComposerMode);
+        // Classic mode only: cheap local ini/FS checks (no network). Skip when already OK.
+        $systemRequirementFailures = [];
+        if (!$this->isComposerMode) {
+            $systemRequirementFailures = $this->classicActivationRequirementsService->getFailedChecks($this->siteRoot);
+        }
+        $view->assign('showSystemRequirements', $systemRequirementFailures !== []);
+        $view->assign('systemRequirementFailures', $systemRequirementFailures);
         $view->assign('extensions', $extensions);
 
         $query = $this->request->getQueryParams();
