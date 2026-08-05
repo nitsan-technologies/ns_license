@@ -457,8 +457,8 @@
                 <target>Ressourcen</target>
             </trans-unit>
             <trans-unit id="license-catalog.detail.resource.docs">
-                <source>Extension Manual</source>
-                <target>Extension-Handbuch</target>
+                <source>Documentation</source>
+                <target>Dokumentation</target>
             </trans-unit>
             <trans-unit id="license-catalog.detail.resource.report-issue">
                 <source>Found an issue</source>

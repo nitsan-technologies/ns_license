@@ -368,7 +368,7 @@
                 <source>Resources</source>
             </trans-unit>
             <trans-unit id="license-catalog.detail.resource.docs">
-                <source>Extension Manual</source>
+                <source>Documentation</source>
             </trans-unit>
             <trans-unit id="license-catalog.detail.resource.report-issue">
                 <source>Found an issue</source>

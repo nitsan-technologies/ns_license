@@ -686,7 +686,7 @@ function populateSecurity(view, item) {
  * Meta-bar Features / Reviews / References / Documentation → external links.
  * Prefers API fields (featuresUrl / reviewsUrl / referencesUrl / documentationUrl);
  * Features/Reviews/References fall back to productUrl + section hashes.
- * Documentation uses the same URL as Extension Manual (no productUrl fallback).
+ * Documentation uses the same URL as the Resources Documentation link (no productUrl fallback).
  * @param {HTMLElement} view
  * @param {object} item
  */
@@ -1276,7 +1276,7 @@ function populateResources(view, item) {
   const links = [
     {
       href: docsUrl,
-      label: view.dataset.labelDocs || 'Extension Manual',
+      label: view.dataset.labelDocs || 'Documentation',
       icon: 'resource-docs',
     },
     {
