@@ -356,6 +356,42 @@
                 <source>Most Popular Template</source>
                 <target>Beliebtestes Template</target>
             </trans-unit>
+            <trans-unit id="license-catalog.filter-all">
+                <source>All Extensions</source>
+                <target>Alle Extensions</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.filter-all-templates">
+                <source>All Templates</source>
+                <target>Alle Templates</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.filter-premium">
+                <source>Premium Only</source>
+                <target>Nur Premium</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.filter-free">
+                <source>Free Only</source>
+                <target>Nur kostenlose</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.sort.label">
+                <source>Sort products</source>
+                <target>Produkte sortieren</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.sort.popular">
+                <source>Most Popular</source>
+                <target>Beliebteste</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.sort.rated">
+                <source>Highest Rated</source>
+                <target>Bestbewertet</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.sort.price-asc">
+                <source>Price: Low → High</source>
+                <target>Preis: Niedrig → Hoch</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.sort.price-desc">
+                <source>Price: High → Low</source>
+                <target>Preis: Hoch → Niedrig</target>
+            </trans-unit>
             <trans-unit id="license-catalog.list-heading">
                 <source>All products</source>
                 <target>Alle Produkte</target>
@@ -621,16 +657,16 @@
                 <target>Alle Extensions</target>
             </trans-unit>
             <trans-unit id="license-extensions.filter-premium">
-                <source>Premium Only</source>
-                <target>Nur Premium</target>
+                <source>Premium Extensions</source>
+                <target>Premium Extensions</target>
             </trans-unit>
             <trans-unit id="license-extensions.filter-trial">
                 <source>Trial Only</source>
                 <target>Nur Testversionen</target>
             </trans-unit>
             <trans-unit id="license-extensions.filter-free">
-                <source>Free Only</source>
-                <target>Nur kostenlose</target>
+                <source>Free Extensions</source>
+                <target>Kostenlose Extensions</target>
             </trans-unit>
             <trans-unit id="license-extensions.section-title-free">
                 <source>Free Extensions</source>

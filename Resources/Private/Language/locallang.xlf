@@ -284,13 +284,31 @@
                 <source>Search products...</source>
             </trans-unit>
             <trans-unit id="license-catalog.filter-all">
-                <source>All Products</source>
+                <source>All Extensions</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.filter-all-templates">
+                <source>All Templates</source>
             </trans-unit>
             <trans-unit id="license-catalog.filter-premium">
                 <source>Premium Only</source>
             </trans-unit>
             <trans-unit id="license-catalog.filter-free">
                 <source>Free Only</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.sort.label">
+                <source>Sort products</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.sort.popular">
+                <source>Most Popular</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.sort.rated">
+                <source>Highest Rated</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.sort.price-asc">
+                <source>Price: Low → High</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.sort.price-desc">
+                <source>Price: High → Low</source>
             </trans-unit>
             <trans-unit id="license-catalog.hero.most-popular">
                 <source>Most Popular</source>
@@ -516,13 +534,13 @@
                 <source>All Extensions</source>
             </trans-unit>
             <trans-unit id="license-extensions.filter-premium">
-                <source>Premium Only</source>
+                <source>Premium Extensions</source>
             </trans-unit>
             <trans-unit id="license-extensions.filter-trial">
                 <source>Trial Only</source>
             </trans-unit>
             <trans-unit id="license-extensions.filter-free">
-                <source>Free Only</source>
+                <source>Free Extensions</source>
             </trans-unit>
             <trans-unit id="license-extensions.section-title-free">
                 <source>Free Extensions</source>

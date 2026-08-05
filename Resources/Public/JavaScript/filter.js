@@ -77,6 +77,7 @@ function loadCatalogData(tabKey) {
 function bindCatalogFilters(pane) {
     const searchInput = pane.querySelector('.catalog-search');
     const typeFilter = pane.querySelector('.catalog-filter');
+    const sortSelect = pane.querySelector('.catalog-sort');
 
     if (searchInput && !searchInput.dataset.bound) {
         searchInput.dataset.bound = '1';
@@ -87,6 +88,11 @@ function bindCatalogFilters(pane) {
     if (typeFilter && !typeFilter.dataset.bound) {
         typeFilter.dataset.bound = '1';
         typeFilter.addEventListener('change', () => filterCatalog(pane));
+    }
+
+    if (sortSelect && !sortSelect.dataset.bound) {
+        sortSelect.dataset.bound = '1';
+        sortSelect.addEventListener('change', () => filterCatalog(pane));
     }
 
     bindCatalogCardImageFallbacks(pane);
@@ -208,6 +214,7 @@ function filterCatalog(pane) {
     }
 
     const filterValue = typeFilter.value || 'all';
+    const sortValue = activePane.querySelector('.catalog-sort')?.value || 'popular';
     const searchText = searchInput.value.toLowerCase().trim();
     const cards = activePane.querySelectorAll('.catalog-card');
     let visibleCount = 0;
@@ -256,6 +263,8 @@ function filterCatalog(pane) {
         }
     });
 
+    sortCatalogCards(activePane, sortValue);
+
     let noResultsMessage = activePane.querySelector('.no-catalog-results');
     if (visibleCount === 0) {
         if (!noResultsMessage) {
@@ -267,6 +276,168 @@ function filterCatalog(pane) {
     } else if (noResultsMessage) {
         noResultsMessage.remove();
     }
+}
+
+/**
+ * @param {string|undefined|null} value
+ * @returns {number}
+ */
+function parseCatalogDownloads(value) {
+    const raw = String(value ?? '').trim().toLowerCase().replace(/,/g, '');
+    if (raw === '') {
+        return 0;
+    }
+    const match = raw.match(/^([\d.]+)\s*([kmb])?$/i);
+    if (!match) {
+        const digits = parseFloat(raw.replace(/[^\d.]/g, ''));
+        return Number.isFinite(digits) ? digits : 0;
+    }
+    const num = parseFloat(match[1]);
+    if (!Number.isFinite(num)) {
+        return 0;
+    }
+    const unit = (match[2] || '').toLowerCase();
+    if (unit === 'k') {
+        return num * 1000;
+    }
+    if (unit === 'm') {
+        return num * 1000000;
+    }
+    if (unit === 'b') {
+        return num * 1000000000;
+    }
+    return num;
+}
+
+/**
+ * @param {string|undefined|null} value
+ * @returns {number}
+ */
+function parseCatalogRating(value) {
+    const num = parseFloat(String(value ?? '').replace(',', '.').replace(/[^\d.]/g, ''));
+    return Number.isFinite(num) ? num : 0;
+}
+
+/**
+ * @param {string|undefined|null} value
+ * @returns {number}
+ */
+function parseCatalogPrice(value) {
+    const raw = String(value ?? '').trim();
+    if (raw === '' || /^free$/i.test(raw)) {
+        return 0;
+    }
+    // Strip currency letters/symbols (incl. euro) and spaces; keep digits and separators.
+    let cleaned = raw.replace(/[^\d.,]/g, '');
+    if (cleaned === '') {
+        return 0;
+    }
+    if (cleaned.includes(',') && cleaned.includes('.')) {
+        if (cleaned.lastIndexOf(',') > cleaned.lastIndexOf('.')) {
+            cleaned = cleaned.replace(/\./g, '').replace(',', '.');
+        } else {
+            cleaned = cleaned.replace(/,/g, '');
+        }
+    } else if (cleaned.includes(',')) {
+        cleaned = cleaned.replace(',', '.');
+    }
+    const num = parseFloat(cleaned);
+    return Number.isFinite(num) ? num : 0;
+}
+
+/**
+ * @param {HTMLElement} card
+ * @returns {number}
+ */
+function getCardDownloads(card) {
+    const fromValue = card.dataset.downloadsValue;
+    if (fromValue !== undefined && fromValue !== '') {
+        const num = parseFloat(fromValue);
+        if (Number.isFinite(num)) {
+            return num;
+        }
+    }
+    return parseCatalogDownloads(card.dataset.downloads);
+}
+
+/**
+ * @param {HTMLElement} card
+ * @returns {number}
+ */
+function getCardRating(card) {
+    const fromValue = card.dataset.ratingValue;
+    if (fromValue !== undefined && fromValue !== '') {
+        const num = parseFloat(fromValue);
+        if (Number.isFinite(num)) {
+            return num;
+        }
+    }
+    return parseCatalogRating(card.dataset.rating);
+}
+
+/**
+ * @param {HTMLElement} card
+ * @returns {number}
+ */
+function getCardPrice(card) {
+    const fromValue = card.dataset.priceValue;
+    if (fromValue !== undefined && fromValue !== '') {
+        const num = parseFloat(fromValue);
+        if (Number.isFinite(num)) {
+            return num;
+        }
+    }
+    const fromAttr = parseCatalogPrice(card.dataset.price);
+    if (fromAttr > 0) {
+        return fromAttr;
+    }
+    const priceEl = card.querySelector('.catalog-card-price');
+    return parseCatalogPrice(priceEl?.textContent || '');
+}
+
+/**
+ * Reorder cards within each section container by the selected sort mode.
+ *
+ * @param {HTMLElement} pane
+ * @param {string} sortValue
+ */
+function sortCatalogCards(pane, sortValue) {
+    pane.querySelectorAll('.catalog-card-container').forEach((container) => {
+        let cards = [];
+        try {
+            cards = Array.from(container.querySelectorAll(':scope > .catalog-card'));
+        } catch (err) {
+            cards = Array.from(container.querySelectorAll('.catalog-card'));
+        }
+
+        if (cards.length < 2) {
+            return;
+        }
+
+        cards.sort((a, b) => {
+            let cmp = 0;
+            if (sortValue === 'rated') {
+                cmp = getCardRating(b) - getCardRating(a);
+            } else if (sortValue === 'price-asc') {
+                cmp = getCardPrice(a) - getCardPrice(b);
+            } else if (sortValue === 'price-desc') {
+                cmp = getCardPrice(b) - getCardPrice(a);
+            } else {
+                // popular (default): downloads descending
+                cmp = getCardDownloads(b) - getCardDownloads(a);
+            }
+            if (cmp !== 0) {
+                return cmp;
+            }
+            const nameA = (a.dataset.name || '').toLowerCase();
+            const nameB = (b.dataset.name || '').toLowerCase();
+            return nameA.localeCompare(nameB);
+        });
+
+        const fragment = document.createDocumentFragment();
+        cards.forEach((card) => fragment.appendChild(card));
+        container.appendChild(fragment);
+    });
 }
 
 function loadServicesData() {
@@ -432,14 +603,20 @@ function filterExtensions() {
     const sectionVisibility = {};
 
     extensionCards.forEach((card) => {
-        const cardStatus = card.dataset.status || '';
         const cardName = card.dataset.name || '';
         const cardKey = card.dataset.key || '';
         const descriptionElement = card.querySelector('.card-body .card-text, .card-body p');
         const cardDescription = descriptionElement ? descriptionElement.textContent.toLowerCase() : '';
         const keySpan = card.querySelector('.card-subtitle');
         const extensionKey = keySpan ? keySpan.textContent.toLowerCase() : '';
-        const statusMatch = (statusFilterValue === 'all' || statusFilterValue === cardStatus);
+        const sectionElement = card.closest('#premium-section, #free-section');
+        const sectionId = sectionElement ? sectionElement.getAttribute('id') : '';
+        let statusMatch = statusFilterValue === 'all';
+        if (statusFilterValue === 'premium') {
+            statusMatch = sectionId === 'premium-section';
+        } else if (statusFilterValue === 'free') {
+            statusMatch = sectionId === 'free-section';
+        }
 
         let searchMatch = true;
         if (searchText) {
@@ -452,9 +629,7 @@ function filterExtensions() {
         if (statusMatch && searchMatch) {
             card.style.display = '';
             visibleCount++;
-            const sectionElement = card.closest('#premium-section, #free-section');
-            if (sectionElement) {
-                const sectionId = sectionElement.getAttribute('id');
+            if (sectionId) {
                 if (!sectionVisibility[sectionId]) {
                     sectionVisibility[sectionId] = 0;
                 }

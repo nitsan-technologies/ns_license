@@ -99,6 +99,9 @@ final class CatalogTabMapper
                 if ($item['isFree'] && trim((string)($item['price'] ?? '')) === '') {
                     $item['price'] = 'Free';
                 }
+                $item['priceValue'] = self::parsePriceValue($item['price'] ?? null);
+                $item['ratingValue'] = self::parseRatingValue($item['rating'] ?? null);
+                $item['downloadsValue'] = self::parseDownloadsCount($item['downloads'] ?? 0);
                 $tabs[$tab]['items'][] = $item;
             }
         }
@@ -131,12 +134,55 @@ final class CatalogTabMapper
                     } else {
                         $item['isFree'] = (bool)$item['isFree'];
                     }
+                    $item['priceValue'] = self::parsePriceValue($item['price'] ?? null);
+                    $item['ratingValue'] = self::parseRatingValue($item['rating'] ?? null);
+                    $item['downloadsValue'] = self::parseDownloadsCount($item['downloads'] ?? 0);
                     $normalized[$tabKey]['items'][] = $item;
                 }
             }
         }
 
         return $normalized;
+    }
+
+    /**
+     * Numeric price for client-side sorting (Free / empty → 0).
+     */
+    public static function parsePriceValue(mixed $value): float
+    {
+        $raw = trim((string)$value);
+        if ($raw === '' || strcasecmp($raw, 'Free') === 0) {
+            return 0.0;
+        }
+
+        // Keep digits and separators; prefer last comma/dot as decimal when both exist.
+        $cleaned = preg_replace('/[^\d.,]/', '', $raw) ?? '';
+        if ($cleaned === '') {
+            return 0.0;
+        }
+        if (str_contains($cleaned, ',') && str_contains($cleaned, '.')) {
+            if (strrpos($cleaned, ',') > strrpos($cleaned, '.')) {
+                $cleaned = str_replace('.', '', $cleaned);
+                $cleaned = str_replace(',', '.', $cleaned);
+            } else {
+                $cleaned = str_replace(',', '', $cleaned);
+            }
+        } elseif (str_contains($cleaned, ',')) {
+            $cleaned = str_replace(',', '.', $cleaned);
+        }
+
+        return is_numeric($cleaned) ? (float)$cleaned : 0.0;
+    }
+
+    public static function parseRatingValue(mixed $value): float
+    {
+        if (is_int($value) || is_float($value)) {
+            return max(0.0, (float)$value);
+        }
+        $raw = str_replace(',', '.', trim((string)$value));
+        $raw = preg_replace('/[^\d.]/', '', $raw) ?? '';
+
+        return is_numeric($raw) ? (float)$raw : 0.0;
     }
 
     private static function parseDownloadsCount(mixed $value): int
