@@ -336,6 +336,7 @@ body > .ns-license-module-shell.module {
 
 .ns-license-module .actions-wrapper {
   align-items: center;
+  border-top: 1px solid light-dark(#e3e2e2, #4b4b4b);
   margin-bottom: 0;
   padding-top: 10px;
 }
@@ -740,15 +741,13 @@ body > .ns-license-module-shell.module {
   word-break: break-word;
 }
 
-.ns-license-module .extension-free-card .card-footer {
-  margin-top: auto;
-  border-top: 1px solid light-dark(#e5e7eb, #4b4b4b);
-  padding-top: 0.75rem;
-  padding-inline: 0;
+.ns-license-module .extension-free-card {
+  display: flex;
+  flex-direction: column;
 }
 
-.ns-license-module .extension-free-card .card-footer > * {
-  padding-inline: var(--typo3-card-padding, 1rem);
+.ns-license-module .extension-free-card .card-body {
+  flex: 1 1 auto;
 }
 
 
