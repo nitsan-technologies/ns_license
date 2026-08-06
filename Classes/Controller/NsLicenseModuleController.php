@@ -9,9 +9,13 @@ use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use NITSAN\NsLicense\Service\LicenseService;
+use NITSAN\NsLicense\Service\CatalogCacheService;
+use NITSAN\NsLicense\Service\CatalogTabMapper;
 use NITSAN\NsLicense\Service\ExtensionListService;
 use NITSAN\NsLicense\Service\ExtensionArchiveService;
 use NITSAN\NsLicense\Service\ProductBundleRegistry;
+use NITSAN\NsLicense\Service\Checkout\CheckoutUrlBuilder;
+use NITSAN\NsLicense\Service\Checkout\CheckoutReturnUrlBuilder;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
@@ -22,9 +26,6 @@ use TYPO3\CMS\Core\Service\DependencyOrderingService;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use NITSAN\NsLicense\Domain\Repository\NsLicenseRepository;
-use TYPO3\CMS\Extensionmanager\Utility\FileHandlingUtility;
-use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
-use TYPO3\CMS\Extensionmanager\Service\ExtensionManagementService;
 
 /***
  *
@@ -46,8 +47,6 @@ class NsLicenseModuleController extends ActionController
 
     protected $isComposerMode = false;
 
-    protected $composerSiteRoot = false;
-
     protected int $typo3Version = 0;
     
     /**
@@ -56,24 +55,17 @@ class NsLicenseModuleController extends ActionController
     private mixed $cacheManager;
 
 
-    /**
-     * @param ModuleTemplateFactory $moduleTemplateFactory
-     * @param RequestFactory $requestFactory
-     * @param FileHandlingUtility $fileHandlingUtility
-     * @param ExtensionManagementService $managementService
-     * @param ContentObjectRenderer $contentObject
-     */
     public function __construct(
         protected readonly ModuleTemplateFactory $moduleTemplateFactory,
         protected readonly RequestFactory $requestFactory,
-        protected readonly FileHandlingUtility $fileHandlingUtility,
-        protected readonly ExtensionManagementService $managementService,
-        protected readonly ContentObjectRenderer $contentObject,
         protected readonly NsLicenseRepository $nsLicenseRepository,
         protected readonly LicenseService $licenseService,
         protected readonly ExtensionListService $extensionListService,
         protected readonly ExtensionArchiveService $extensionArchiveService,
         protected readonly DependencyOrderingService $dependencyOrderingService,
+        protected readonly CheckoutUrlBuilder $checkoutUrlBuilder,
+        protected readonly CheckoutReturnUrlBuilder $checkoutReturnUrlBuilder,
+        protected readonly CatalogCacheService $catalogCacheService,
     ) {}
 
     /**
@@ -104,40 +96,191 @@ class NsLicenseModuleController extends ActionController
             $view->assign('showUpdateButton', 1);
         }
         $view->assign('extensions', $extensions);
+
+        $query = $this->request->getQueryParams();
+        $purchaseSuccess = !empty($query['purchase_success']);
+        // Opaque encrypted token from composer API (base64url charset).
+        $purchaseToken = preg_replace('/[^A-Za-z0-9_-]/', '', (string)($query['purchase_token'] ?? '')) ?? '';
+        $view->assign('purchaseSuccess', $purchaseSuccess);
+        $view->assign('purchaseToken', $purchaseToken);
+        if ($purchaseSuccess && $purchaseToken === '') {
+            $this->addFlashMessage(
+                LocalizationUtility::translate('license-get-new.buy.success.flash', 'NsLicense')
+                    ?: 'Payment received. Check your email for the license key, then Activate it on this page.',
+                LocalizationUtility::translate('license-get-new.buy.success.title', 'NsLicense')
+                    ?: 'Purchase successful',
+                ContextualFeedbackSeverity::OK,
+            );
+        }
+
         return $view->renderResponse('NsLicenseModule/Index');
     }
 
     /**
-     * Shop action - displays shop data
-     * @return ResponseInterface
+     * Catalog tab AJAX action — returns HTML for AI Universe / Extensions / Templates.
      */
-    public function getShopDataAction(): ResponseInterface
+    public function getCatalogDataAction(): ResponseInterface
     {
-        $view = $this->initializeModuleTemplate($this->request);
-        $shopData = $this->loadSyncData('shop');
-        $view->assign('shopData', $shopData);
-        return $view->renderResponse('NsLicenseModule/Shop');
-    }
-
-    /**
-     * Services action - displays services data
-     * @return ResponseInterface
-     */
-    public function getServicesDataAction(): ResponseInterface
-    {
-        $view = $this->initializeModuleTemplate($this->request);
-        if ($this->isComposerMode) {
-            $view->assign('showUpdateButton', 1);
+        $tab = (string)($this->request->getArgument('tab') ?? CatalogTabMapper::TAB_AI_UNIVERSE);
+        if (!in_array($tab, CatalogTabMapper::getAllowedTabs(), true)) {
+            $tab = CatalogTabMapper::TAB_AI_UNIVERSE;
         }
-        $categories = $this->loadSyncData('services');
-        $view->assign('servicesData', ['categories' => is_array($categories) ? $categories : []]);
-        return $view->renderResponse('NsLicenseModule/Services');
+
+        $catalog = $this->catalogCacheService->getCatalog();
+        $tabs = CatalogTabMapper::buildTabsFromCatalog($catalog);
+        $tabData = $tabs[$tab] ?? ['title' => '', 'items' => []];
+        $items = is_array($tabData['items'] ?? null) ? $tabData['items'] : [];
+
+        $heroItem = null;
+        $premiumItems = [];
+        $freeItems = [];
+        foreach ($items as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+            $isFree = array_key_exists('isFree', $item)
+                ? (bool)$item['isFree']
+                : CatalogTabMapper::isFreeItem($item);
+            $item['isFree'] = $isFree;
+
+            if ($heroItem === null && !$isFree && $this->isMostPopularBadge((string)($item['badge'] ?? ''))) {
+                $heroItem = $item;
+                continue;
+            }
+            if ($isFree) {
+                $freeItems[] = $item;
+            } else {
+                $premiumItems[] = $item;
+            }
+        }
+
+        if (is_array($heroItem)) {
+            $heroItem = $this->enrichHeroFromDetail($heroItem);
+        }
+
+        $itemsByKey = [];
+        foreach ($items as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+            $key = trim((string)($item['extensionKey'] ?? ''));
+            if ($key !== '') {
+                $itemsByKey[$key] = $item;
+            }
+        }
+
+        $view = $this->initializeModuleTemplate($this->request);
+        $view->assignMultiple([
+            'catalogTab' => $tab,
+            'catalogData' => $tabData,
+            'catalogPremiumItems' => $premiumItems,
+            'catalogFreeItems' => $freeItems,
+            'catalogHeroItem' => $heroItem,
+            'catalogItemsJson' => json_encode($itemsByKey, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE),
+            't3version' => $this->typo3Version,
+        ]);
+
+        return $view->renderResponse('NsLicenseModule/Catalog');
+    }
+
+    private function isMostPopularBadge(string $badge): bool
+    {
+        $normalized = strtolower(trim($badge));
+        if ($normalized === '') {
+            return false;
+        }
+
+        return str_contains($normalized, 'most popular')
+            || str_contains($normalized, 'beliebteste');
     }
 
     /**
-     * Load synchronized data from database
-     * @param string $type 'shop', 'services', or 'extensions'
-     * @return array
+     * Catalog list payloads often omit detail fields (features, detailImage).
+     * Pull them from product detail for the hero banner.
+     *
+     * @param array<string, mixed> $heroItem
+     * @return array<string, mixed>
+     */
+    private function enrichHeroFromDetail(array $heroItem): array
+    {
+        $extensionKey = trim((string)($heroItem['extensionKey'] ?? ''));
+        if ($extensionKey === '') {
+            return $heroItem;
+        }
+
+        $needsFeatures = !is_array($heroItem['features'] ?? null) || $heroItem['features'] === [];
+        $needsDetailImage = trim((string)($heroItem['detailImage'] ?? '')) === '';
+
+        if (!$needsFeatures && !$needsDetailImage) {
+            if (is_array($heroItem['features'] ?? null)) {
+                $heroItem['features'] = $this->normalizeFeatureLabels($heroItem['features']);
+            }
+            return $heroItem;
+        }
+
+        $detail = $this->catalogCacheService->fetchProductDetail($extensionKey);
+        if (!is_array($detail)) {
+            if (is_array($heroItem['features'] ?? null) && $heroItem['features'] !== []) {
+                $heroItem['features'] = $this->normalizeFeatureLabels($heroItem['features']);
+            }
+            return $heroItem;
+        }
+
+        if ($needsFeatures) {
+            $features = $detail['features'] ?? null;
+            if (is_array($features) && $features !== []) {
+                $heroItem['features'] = $this->normalizeFeatureLabels($features);
+            }
+        } elseif (is_array($heroItem['features'] ?? null)) {
+            $heroItem['features'] = $this->normalizeFeatureLabels($heroItem['features']);
+        }
+
+        if ($needsDetailImage) {
+            $detailImage = trim((string)($detail['detailImage'] ?? ''));
+            if ($detailImage !== '') {
+                $heroItem['detailImage'] = $detailImage;
+            }
+        }
+
+        return $heroItem;
+    }
+
+    /**
+     * @param list<mixed>|array<int|string, mixed> $features
+     * @return list<string>
+     */
+    private function normalizeFeatureLabels(array $features): array
+    {
+        $labels = [];
+        foreach ($features as $feature) {
+            if (is_string($feature) || is_numeric($feature)) {
+                $label = trim((string)$feature);
+            } elseif (is_array($feature)) {
+                $label = trim((string)(
+                    $feature['label']
+                    ?? $feature['title']
+                    ?? $feature['name']
+                    ?? $feature['text']
+                    ?? ''
+                ));
+            } else {
+                continue;
+            }
+            if ($label !== '') {
+                $labels[] = $label;
+            }
+            if (count($labels) >= 5) {
+                break;
+            }
+        }
+
+        return $labels;
+    }
+
+    /**
+     * Load synchronized data from database (e.g. extension access logs).
+     *
+     * @return array<int|string, mixed>
      */
     protected function loadSyncData(string $type): array
     {
@@ -161,7 +304,10 @@ class NsLicenseModuleController extends ActionController
         $params = $this->request->getArguments();
         $extKey = $params['extension']['extension_key'];
         if (isset($params['extension']['license_key']) && $params['extension']['license_key'] != '') {
-            $updateStatus = $this->licenseService->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['extension']['license_key'] . '&ns_updates=1&typo3_version=' . $this->typo3Version);
+            $updateStatus = $this->licenseService->fetchLicense(
+                'domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['extension']['license_key'] . '&ns_updates=1&typo3_version=' . $this->typo3Version,
+                $extKey
+            );
             if (!isset($params['action'])) {
                 return $this->redirect('list');
             }
@@ -206,7 +352,10 @@ class NsLicenseModuleController extends ActionController
     protected function deactivationAction(): ResponseInterface
     {
         $params = $this->request->getArguments();
-        $this->licenseService->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['extension']['license_key'] . '&deactivate=1');
+        $this->licenseService->fetchLicense(
+            'domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['extension']['license_key'] . '&deactivate=1',
+            $params['extension']['extension_key'] ?? null
+        );
         $this->nsLicenseRepository->deactivate($params['extension']['license_key'], $params['extension']['extension_key']);
         $extFolder = $this->extensionListService->getExtensionFolder($params['extension']['extension_key']);
         $this->licenseService->updateFiles($extFolder, $params['extension']['extension_key']);
@@ -227,29 +376,73 @@ class NsLicenseModuleController extends ActionController
     }
 
     /**
+     * When true, downloadExtension returns a result array instead of redirecting (AJAX activate).
+     */
+    protected bool $returnActivationAsArray = false;
+
+    /**
+     * End activation with either a JSON-friendly result array or flash + redirect.
+     *
+     * @return array{success:bool, message:string, title?:string}|ResponseInterface
+     */
+    protected function finishActivation(
+        string $message,
+        string $title = '',
+        ContextualFeedbackSeverity $severity = ContextualFeedbackSeverity::OK
+    ): array|ResponseInterface {
+        if ($this->returnActivationAsArray) {
+            return [
+                'success' => $severity === ContextualFeedbackSeverity::OK,
+                'message' => $message,
+                'title' => $title,
+            ];
+        }
+        $this->addFlashMessage(
+            $message,
+            $title !== '' ? $title : ($severity === ContextualFeedbackSeverity::OK ? 'OK' : 'ERROR'),
+            $severity
+        );
+
+        return $this->redirect('list');
+    }
+
+    /**
      * action activation.
      *
      * @param array $params
+     * @return array{success:bool, message:string, title?:string}|ResponseInterface|null
      */
     public function downloadExtension($params = null, $fromWhere = null)
     {
         $isRepair = '';
         if (isset($params['license']) && $params['license'] != '') {
             if (isset($params['activation']) && $params['activation']) {
-                $licenseData = $this->licenseService->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license'] . '&activation=1&typo3_version=' . $this->typo3Version);
+                $licenseData = $this->licenseService->fetchLicense(
+                    'domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license'] . '&activation=1&typo3_version=' . $this->typo3Version,
+                    $params['extension']['extension_key'] ?? null
+                );
             } else {
-                $licenseData = $this->licenseService->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license'] . '&typo3_version=' . $this->typo3Version);
+                $licenseData = $this->licenseService->fetchLicense(
+                    'domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $params['license'] . '&typo3_version=' . $this->typo3Version,
+                    $params['extension']['extension_key'] ?? ($params['extension_key'] ?? null)
+                );
             }
             if (isset($params['extension']) && is_array($licenseData)) {
                 if ($params['extension']['isUpdateAction'] && empty($licenseData['isUpdatable'])) {
-                    $this->addFlashMessage(LocalizationUtility::translate('errorMessage.license_expired', 'NsLicense'), 'Your annual License key is expired', ContextualFeedbackSeverity::ERROR);
-                    return $this->redirect('list');
+                    return $this->finishActivation(
+                        LocalizationUtility::translate('errorMessage.license_expired', 'NsLicense'),
+                        'Your annual License key is expired',
+                        ContextualFeedbackSeverity::ERROR
+                    );
                 }
             }
             if (isset($params['action']) && is_array($licenseData)) {
                 if ($params['action'] === 'activation' && isset($licenseData['isUpdatable']) && !$licenseData['isUpdatable']) {
-                    $this->addFlashMessage(LocalizationUtility::translate('errorMessage.license_expired', 'NsLicense'), 'Your annual License key is expired', ContextualFeedbackSeverity::ERROR);
-                    return $this->redirect('list');
+                    return $this->finishActivation(
+                        LocalizationUtility::translate('errorMessage.license_expired', 'NsLicense'),
+                        'Your annual License key is expired',
+                        ContextualFeedbackSeverity::ERROR
+                    );
                 }
             }
 
@@ -267,15 +460,22 @@ class NsLicenseModuleController extends ActionController
                 if (!empty($licenseData['existing'])) {
                     $extVersion = GeneralUtility::makeInstance(PackageManager::class, $this->dependencyOrderingService)->getPackage($licenseData['extension_key'])->getPackageMetaData()->getVersion();
                     $this->nsLicenseRepository->insertNewData(json_decode(json_encode($licenseData)), $extVersion);
-                    $this->addFlashMessage('EXT:' . ($licenseData['extension_key'] ?? '') . LocalizationUtility::translate('license-activation.activated', 'NsLicense'), 'EXT:' . ($licenseData['extension_key'] ?? ''), ContextualFeedbackSeverity::OK);
-                    return $this->redirect('list');
+                    return $this->finishActivation(
+                        'EXT:' . ($licenseData['extension_key'] ?? '') . LocalizationUtility::translate('license-activation.activated', 'NsLicense'),
+                        'EXT:' . ($licenseData['extension_key'] ?? ''),
+                        ContextualFeedbackSeverity::OK
+                    );
                 }
 
                 $isAvailable = $this->nsLicenseRepository->fetchData($licenseData['extension_key'] ?? '');
-                if ($isAvailable && $params['overwrite'] == 1) {
+                $isVersionUpdate = ($fromWhere === 'fromUpdate') || !empty($params['isUpdateAction']);
+                $licenseRecordOnlyUpdate = false;
+
+                if ($isAvailable && $isVersionUpdate) {
+                    // List "Update" action: reinstall ZIP (extension files change).
                     try {
                         if (!$this->isComposerMode) {
-                            $overwrite = (bool)($params['overwrite'] ?? false);
+                            $overwrite = true;
                             $extensionKey = (string)($licenseData['extension_key'] ?? '');
                             // Install bundled foundation dependency first, then main extension.
                             // ns_t3af: license + repair only — never zip-install the product itself.
@@ -307,13 +507,23 @@ class NsLicenseModuleController extends ActionController
                         $this->cacheManager->flushCaches();
                     } catch (\Exception $e) {
                         if (str_contains($e->getMessage(), 'Unable to open zip')) {
-                            $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense', [$licenseData['extension_key'] ?? '', $this->typo3Version]), $licenseData['extension_key'] ?? '', ContextualFeedbackSeverity::ERROR);
-                        } else {
-                            $this->addFlashMessage(LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'), $licenseData['extension_key'] ?? '', ContextualFeedbackSeverity::ERROR);
+                            return $this->finishActivation(
+                                LocalizationUtility::translate('errorMessage.error4', 'NsLicense', [$licenseData['extension_key'] ?? '', $this->typo3Version]),
+                                $licenseData['extension_key'] ?? '',
+                                ContextualFeedbackSeverity::ERROR
+                            );
                         }
-                        return $this->redirect('list');
+                        return $this->finishActivation(
+                            LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'),
+                            $licenseData['extension_key'] ?? '',
+                            ContextualFeedbackSeverity::ERROR
+                        );
                     }
                     $this->nsLicenseRepository->updateData(json_decode(json_encode($licenseData)), 1);
+                } elseif ($isAvailable) {
+                    // Trial → paid (or key exchange): update DB only; leave installed extension as-is.
+                    $this->nsLicenseRepository->updateData(json_decode(json_encode($licenseData)), 1);
+                    $licenseRecordOnlyUpdate = true;
                 } elseif (!$isAvailable) {
                     // OPTION 1. Repairing > Let's just repair, If the product already there in typo3conf/ext + needs repair
                     $extFolder = $this->extensionListService->getExtensionFolder($licenseData['extension_key'] ?? '');
@@ -323,13 +533,11 @@ class NsLicenseModuleController extends ActionController
                         $isRepair = 'Yes';
                     }
 
-                    // OPTION 2. Overriding > Else let's continue to download extension
+                    // OPTION 2. First-time download when not already licensed locally
                     else {
-                        if (!$this->isComposerMode) {
-                            $overwrite = (bool)($params['overwrite'] ?? false);
-                        }
                         try {
                             if (!$this->isComposerMode) {
+                                $overwrite = false;
                                 $extensionKey = (string)($licenseData['extension_key'] ?? '');
                                 // Install bundled foundation dependency first, then main extension.
                                 // ns_t3af: license + repair only — never zip-install the product itself.
@@ -348,11 +556,17 @@ class NsLicenseModuleController extends ActionController
                             $this->cacheManager->flushCaches();
                         } catch (\Exception $e) {
                             if (str_contains($e->getMessage(), 'Unable to open zip')) {
-                                $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense', [$licenseData['extension_key'] ?? '', $this->typo3Version]), $licenseData['extension_key'] ?? '', ContextualFeedbackSeverity::ERROR);
-                            } else {
-                                $this->addFlashMessage(LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'), $licenseData['extension_key'] ?? '', ContextualFeedbackSeverity::ERROR);
+                                return $this->finishActivation(
+                                    LocalizationUtility::translate('errorMessage.error4', 'NsLicense', [$licenseData['extension_key'] ?? '', $this->typo3Version]),
+                                    $licenseData['extension_key'] ?? '',
+                                    ContextualFeedbackSeverity::ERROR
+                                );
                             }
-                            return $this->redirect('list');
+                            return $this->finishActivation(
+                                LocalizationUtility::translate('errorMessage.default', 'NsLicense'),
+                                $licenseData['extension_key'] ?? '',
+                                ContextualFeedbackSeverity::ERROR
+                            );
                         }
                     }
                     // Free Packagist AF may ship with an empty extension_download_url map.
@@ -361,31 +575,29 @@ class NsLicenseModuleController extends ActionController
                         && empty($licenseData['extension_download_url'])
                         && ($licenseData['extension_key'] ?? '') !== 'ns_t3af'
                     ) {
-                        $this->addFlashMessage(LocalizationUtility::translate('errorMessage.error4', 'NsLicense', [$licenseData['extension_key'] ?? '', $this->typo3Version]), $licenseData['extension_key'] ?? '', ContextualFeedbackSeverity::ERROR);
-                        return $this->redirect('list');
+                        return $this->finishActivation(
+                            LocalizationUtility::translate('errorMessage.error4', 'NsLicense', [$licenseData['extension_key'] ?? '', $this->typo3Version]),
+                            $licenseData['extension_key'] ?? '',
+                            ContextualFeedbackSeverity::ERROR
+                        );
                     }
                     $this->nsLicenseRepository->insertNewData(json_decode(json_encode($licenseData)));
-                } else {
-                    $this->addFlashMessage(LocalizationUtility::translate('license-activation.overwrite_message', 'NsLicense'), 'EXT:' . ($licenseData['extension_key'] ?? ''), ContextualFeedbackSeverity::ERROR);
-                    return $this->redirect('list');
                 }
 
                 // Is it from Update version?
                 if ($fromWhere == 'fromUpdate') {
-                    $this->addFlashMessage(LocalizationUtility::translate('license-activation.downloaded_successfully_from_update', 'NsLicense'), 'EXT:' . ($licenseData['extension_key'] ?? ''), ContextualFeedbackSeverity::OK);
+                    $successMessage = LocalizationUtility::translate('license-activation.downloaded_successfully_from_update', 'NsLicense');
+                } elseif ($isRepair == 'Yes') {
+                    $successMessage = LocalizationUtility::translate('license-activation.extension_repair', 'NsLicense');
+                } elseif ($licenseRecordOnlyUpdate) {
+                    $successMessage = LocalizationUtility::translate('license-activation.activated', 'NsLicense');
+                } else {
+                    $messageKey = $this->isComposerMode
+                        ? 'license-activation.activated_composer_success'
+                        : 'license-activation.downloaded_successfully';
+                    $successMessage = LocalizationUtility::translate($messageKey, 'NsLicense');
                 }
-
-                // Seems from New license key registration
-                else {
-                    if ($isRepair == 'Yes') {
-                        $this->addFlashMessage(LocalizationUtility::translate('license-activation.extension_repair', 'NsLicense'), 'EXT:' . ($licenseData['extension_key'] ?? ''), ContextualFeedbackSeverity::OK);
-                    } else {
-                        $messageKey = $this->isComposerMode
-                            ? 'license-activation.activated_composer_success'
-                            : 'license-activation.downloaded_successfully';
-                        $this->addFlashMessage(LocalizationUtility::translate($messageKey, 'NsLicense'), 'EXT:' . ($licenseData['extension_key'] ?? ''), ContextualFeedbackSeverity::OK);
-                    }
-                }
+                $successTitle = 'EXT:' . ($licenseData['extension_key'] ?? '');
 
                 // Special code for EXT.ns_revolution_slider
                 if (isset($params['extension_key']) && $params['extension_key'] == 'ns_revolution_slider') {
@@ -422,8 +634,7 @@ class NsLicenseModuleController extends ActionController
                                 }
                             }
                         } catch (\Exception $e) {
-                            $this->addFlashMessage($e->getMessage(), 'Extension not updated', ContextualFeedbackSeverity::ERROR);
-                            return $this->redirect('list');
+                            return $this->finishActivation($e->getMessage(), 'Extension not updated', ContextualFeedbackSeverity::ERROR);
                         }
                     }
 
@@ -446,8 +657,7 @@ class NsLicenseModuleController extends ActionController
                         GeneralUtility::mkdir_deep($revsliderUploadFolder);
                         GeneralUtility::copyDirectory($revsliderSourceFolder, $revsliderUploadFolder);
                     } catch (\Exception $e) {
-                        $this->addFlashMessage($e->getMessage(), 'Extension not updated', ContextualFeedbackSeverity::ERROR);
-                        return $this->redirect('list');
+                        return $this->finishActivation($e->getMessage(), 'Extension not updated', ContextualFeedbackSeverity::ERROR);
                     }
 
                     // Update Path in Database (If Composer Mode)
@@ -456,8 +666,7 @@ class NsLicenseModuleController extends ActionController
                     }
                 }
 
-                // Successfully redirect to license listing
-                return $this->redirect('list');
+                return $this->finishActivation($successMessage, $successTitle, ContextualFeedbackSeverity::OK);
             }
             $title = is_array($licenseData) ? ($licenseData['extKey'] ?? 'ERROR') : 'ERROR';
             $message = LocalizationUtility::translate('errorMessage.default', 'NsLicense');
@@ -465,12 +674,14 @@ class NsLicenseModuleController extends ActionController
                 $license_type = $licenseData['license_type'] ?? '';
                 $message = LocalizationUtility::translate('errorMessage.' . $licenseData['error_code'], 'NsLicense', [$license_type]);
             }
-            $this->addFlashMessage($message, $title, ContextualFeedbackSeverity::ERROR);
-            return $this->redirect('list');
+            return $this->finishActivation($message, $title, ContextualFeedbackSeverity::ERROR);
         }
 
-        // Successfully redirect to license listing
-        return $this->redirect('list');
+        return $this->finishActivation(
+            LocalizationUtility::translate('errorMessage.license_not_entered', 'NsLicense') ?: 'Please enter a license key.',
+            'ERROR',
+            ContextualFeedbackSeverity::ERROR
+        );
     }
    
 
@@ -770,6 +981,41 @@ class NsLicenseModuleController extends ActionController
     }
 
     /**
+     * Return full catalog product detail (tags, features, FAQ, changelog) for one extension key.
+     * List cards stay slim; detail loads on demand to avoid oversized customer caches.
+     */
+    public function getCatalogProductDetailAction(ServerRequestInterface $request): JsonResponse
+    {
+        $params = $request->getQueryParams();
+        $body = $request->getParsedBody();
+        if (is_array($body)) {
+            $params = array_merge($params, $body);
+        }
+        $extensionKey = trim((string)($params['extensionKey'] ?? ''));
+        if ($extensionKey === '') {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'extensionKey is required.',
+                'error_code' => 'missing_extension_key',
+            ], 400);
+        }
+
+        $item = $this->catalogCacheService->fetchProductDetail($extensionKey);
+        if ($item === null) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Product detail not found.',
+                'error_code' => 'product_not_found',
+            ], 404);
+        }
+
+        return new JsonResponse([
+            'success' => true,
+            'item' => $item,
+        ]);
+    }
+
+    /**
      * Fetch and update data from API based on type
      * Supports types: 'shop', 'services', 'extensions'
      * 
@@ -797,7 +1043,7 @@ class NsLicenseModuleController extends ActionController
                 $isSuccess = $result && isset($result['status']) && $result['status'] && isset($result['logs']);
                 $successMessageKey = 'fetchData.success.extension_logs_updated';
             } elseif ($type === 'shop') {
-                $isSuccess = $result && isset($result['sections']) && is_array($result['sections']);
+                $isSuccess = $result && ((isset($result['sections']) && is_array($result['sections'])) || (isset($result['tabs']) && is_array($result['tabs'])));
                 $successMessageKey = 'fetchData.success.shop_updated';
             } else {
                 $isSuccess = $result && isset($result['categories']) && is_array($result['categories']);
@@ -862,6 +1108,319 @@ class NsLicenseModuleController extends ActionController
         return $view->renderResponse('NsLicenseModule/Logs');
     }
 
+    /**
+     * Get New License modal: return the list of products (trial/purchase).
+     *
+     * @param ServerRequestInterface $request
+     * @return JsonResponse
+     */
+    public function getProductsAction(ServerRequestInterface $request): JsonResponse
+    {
+        try {
+            $result = $this->licenseService->getProducts();
+            $status = !empty($result['success']) ? 200 : 502;
+            return new JsonResponse($result, $status);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'error_code' => 'error',
+                'message' => 'Error: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get New License modal: start a free trial (sends an email OTP).
+     *
+     * @param ServerRequestInterface $request
+     * @return JsonResponse
+     */
+    public function startTrialAction(ServerRequestInterface $request): JsonResponse
+    {
+        $params = $request->getParsedBody() ?? [];
+        $extensionKey = trim((string) ($params['extension_key'] ?? ''));
+        $email = trim((string) ($params['email'] ?? ''));
+        $name = trim((string) ($params['name'] ?? ''));
+        $domain = trim((string) ($params['domain'] ?? ''));
+        $termsAccepted = !empty($params['terms_accepted']);
+
+        if ($extensionKey === '' || $email === '') {
+            return new JsonResponse([
+                'success' => false,
+                'error_code' => 'invalid_data',
+                'message' => LocalizationUtility::translate('errorMessage.invalid_data', 'NsLicense', ['Invalid input data']),
+            ], 400);
+        }
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return new JsonResponse([
+                'success' => false,
+                'error_code' => 'invalid_email',
+                'message' => LocalizationUtility::translate('license-get-new.form.error.email', 'NsLicense') ?: 'Please enter a valid email address.',
+            ], 400);
+        }
+        if ($domain === '') {
+            return new JsonResponse([
+                'success' => false,
+                'error_code' => 'invalid_domain',
+                'message' => LocalizationUtility::translate('license-get-new.form.error.domain', 'NsLicense') ?: 'Please enter your domain.',
+            ], 400);
+        }
+        if (str_contains($domain, ',') || str_contains($domain, ';')) {
+            return new JsonResponse([
+                'success' => false,
+                'error_code' => 'invalid_domain',
+                'message' => LocalizationUtility::translate('license-get-new.form.error.domain_multiple', 'NsLicense')
+                    ?: 'Please enter only one domain (comma-separated domains are not allowed).',
+            ], 400);
+        }
+        if (!$termsAccepted) {
+            return new JsonResponse([
+                'success' => false,
+                'error_code' => 'terms_required',
+                'message' => LocalizationUtility::translate('license-get-new.form.error.terms', 'NsLicense') ?: 'Please accept the Terms & Conditions and Privacy Policy.',
+            ], 400);
+        }
+
+        try {
+            $result = $this->licenseService->startTrial([
+                'extension_key' => $extensionKey,
+                'email' => $email,
+                'name' => $name,
+                'domain' => $domain,
+                'extension_name' => trim((string) ($params['extension_name'] ?? '')),
+                'price_annual' => trim((string) ($params['price_annual'] ?? '')),
+                'price_lifetime' => trim((string) ($params['price_lifetime'] ?? '')),
+                'language' => trim((string) ($params['language'] ?? 'en')),
+                'terms_accepted' => $termsAccepted,
+            ]);
+            $status = !empty($result['success']) ? 200 : 400;
+            return new JsonResponse($result, $status);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'error_code' => 'error',
+                'message' => 'Error: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get New License modal: verify the trial OTP and create the trial license.
+     *
+     * @param ServerRequestInterface $request
+     * @return JsonResponse
+     */
+    public function verifyTrialOtpAction(ServerRequestInterface $request): JsonResponse
+    {
+        $params = $request->getParsedBody() ?? [];
+        $extensionKey = trim((string) ($params['extension_key'] ?? ''));
+        $email = trim((string) ($params['email'] ?? ''));
+        $otp = trim((string) ($params['otp'] ?? ''));
+
+        if ($extensionKey === '' || $email === '' || $otp === '') {
+            return new JsonResponse([
+                'success' => false,
+                'error_code' => 'invalid_data',
+                'message' => LocalizationUtility::translate('errorMessage.invalid_data', 'NsLicense', ['Invalid input data']),
+            ], 400);
+        }
+
+        try {
+            $result = $this->licenseService->verifyTrialOtp([
+                'extension_key' => $extensionKey,
+                'email' => $email,
+                'otp' => $otp,
+            ]);
+            $status = !empty($result['success']) ? 200 : 400;
+            return new JsonResponse($result, $status);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'error_code' => 'error',
+                'message' => 'Error: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get New License modal: validate catalog checkout URL for Buy / Purchase.
+     */
+    public function prepareCheckoutAction(ServerRequestInterface $request): JsonResponse
+    {
+        $params = $request->getParsedBody() ?? [];
+        $extensionKey = trim((string) ($params['extension_key'] ?? ''));
+
+        if ($extensionKey === '') {
+            return new JsonResponse([
+                'success' => false,
+                'error_code' => 'invalid_data',
+                'message' => LocalizationUtility::translate('errorMessage.invalid_data', 'NsLicense', ['Invalid input data']),
+            ], 400);
+        }
+
+        try {
+            $catalog = $this->licenseService->getProducts();
+            if (empty($catalog['success']) || !isset($catalog['products']) || !is_array($catalog['products'])) {
+                return new JsonResponse([
+                    'success' => false,
+                    'error_code' => $catalog['error_code'] ?? 'error',
+                    'message' => $catalog['message']
+                        ?? (LocalizationUtility::translate('license-get-new.error.load_failed', 'NsLicense') ?: 'Failed to load products'),
+                ], 502);
+            }
+
+            $product = null;
+            foreach ($catalog['products'] as $row) {
+                if (!is_array($row)) {
+                    continue;
+                }
+                if (trim((string) ($row['extensionKey'] ?? '')) === $extensionKey) {
+                    $product = $row;
+                    break;
+                }
+            }
+
+            if ($product === null) {
+                return new JsonResponse([
+                    'success' => false,
+                    'error_code' => 'product_not_found',
+                    'message' => LocalizationUtility::translate('license-get-new.buy.unavailable', 'NsLicense')
+                        ?: 'Purchase is not available for this product.',
+                ], 404);
+            }
+
+            $rawCheckoutUrl = trim((string) ($product['checkoutUrl'] ?? ''));
+            $redirectParam = trim((string) ($product['checkoutRedirectParam'] ?? ''));
+            $returnUrl = $this->checkoutReturnUrlBuilder->fromModule(['purchase_success' => '1']);
+            $checkoutUrl = $this->checkoutUrlBuilder->normalize($rawCheckoutUrl, $returnUrl, $redirectParam);
+            if ($checkoutUrl === '') {
+                return new JsonResponse([
+                    'success' => false,
+                    'error_code' => 'checkout_unavailable',
+                    'message' => LocalizationUtility::translate('license-get-new.buy.unavailable', 'NsLicense')
+                        ?: 'Purchase is not available for this product.',
+                ], 422);
+            }
+
+            // RedirectTo (checkout_redirect_param) is optional: open checkout without it.
+            // When set, CheckoutUrlBuilder already appends ?cf_redirectto_*=returnUrl.
+            return new JsonResponse([
+                'success' => true,
+                'checkoutUrl' => $checkoutUrl,
+                'returnUrl' => $returnUrl,
+                'extensionKey' => $extensionKey,
+                'name' => (string) ($product['name'] ?? $extensionKey),
+                'priceAnnual' => (string) ($product['priceAnnual'] ?? ''),
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'error_code' => 'error',
+                'message' => 'Error: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get New License modal: resolve encrypted purchase_token from checkout redirect.
+     * Decrypts on composer API only; returns license_key for the success UI.
+     */
+    public function resolvePurchaseTokenAction(ServerRequestInterface $request): JsonResponse
+    {
+        $params = $request->getParsedBody() ?? [];
+        if (!is_array($params)) {
+            $params = [];
+        }
+        $token = preg_replace('/[^A-Za-z0-9_-]/', '', (string)($params['purchase_token'] ?? '')) ?? '';
+
+        if ($token === '') {
+            return new JsonResponse([
+                'success' => false,
+                'error_code' => 'invalid_data',
+                'message' => LocalizationUtility::translate('errorMessage.invalid_data', 'NsLicense', ['Invalid input data']),
+            ], 400);
+        }
+
+        try {
+            $result = $this->licenseService->resolvePurchaseToken($token);
+            $status = !empty($result['success']) ? 200 : 400;
+
+            return new JsonResponse($result, $status);
+        } catch (\Throwable $e) {
+            return new JsonResponse([
+                'success' => false,
+                'error_code' => 'error',
+                'message' => 'Error: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get New License modal: activate the license key shown on the success step.
+     * Reuses downloadExtension (activation=1) and returns JSON instead of redirecting.
+     */
+    public function activateLicenseAction(ServerRequestInterface $request): JsonResponse
+    {
+        $params = $request->getParsedBody() ?? [];
+        if (!is_array($params)) {
+            $params = [];
+        }
+        $license = preg_replace('/[^a-zA-Z0-9]/', '', (string)($params['license'] ?? '')) ?? '';
+
+        if ($license === '') {
+            return new JsonResponse([
+                'success' => false,
+                'error_code' => 'license_not_entered',
+                'message' => LocalizationUtility::translate('errorMessage.license_not_entered', 'NsLicense')
+                    ?: 'Please enter a license key.',
+            ], 400);
+        }
+
+        try {
+            $this->ensureBackendRuntimeInitialized();
+            $this->returnActivationAsArray = true;
+            $result = $this->downloadExtension([
+                'license' => $license,
+                'activation' => true,
+            ]);
+            $this->returnActivationAsArray = false;
+
+            if (!is_array($result)) {
+                return new JsonResponse([
+                    'success' => true,
+                    'message' => LocalizationUtility::translate('license-activation.downloaded_successfully', 'NsLicense')
+                        ?: 'License activated.',
+                ]);
+            }
+
+            $status = !empty($result['success']) ? 200 : 400;
+
+            return new JsonResponse($result, $status);
+        } catch (\Throwable $e) {
+            $this->returnActivationAsArray = false;
+
+            return new JsonResponse([
+                'success' => false,
+                'error_code' => 'error',
+                'message' => 'Error: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Ensure properties normally set in Extbase initializeAction (AJAX routes skip it).
+     */
+    protected function ensureBackendRuntimeInitialized(): void
+    {
+        if ($this->typo3Version > 0 && is_string($this->siteRoot) && $this->siteRoot !== '') {
+            return;
+        }
+        $this->cacheManager = GeneralUtility::makeInstance(CacheManager::class);
+        $this->siteRoot = rtrim(Environment::getPublicPath(), '/') . '/';
+        $this->isComposerMode = Environment::isComposerMode();
+        $this->typo3Version = GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion();
+    }
+
      /**
      * downloadZipFile.
      *
@@ -886,6 +1445,9 @@ class NsLicenseModuleController extends ActionController
             // Let's take backup to /uploads/ns_license/
             $this->extensionArchiveService->getBackupToUploadFolder($extKey);
         } catch (\Throwable $e) {
+            if ($this->returnActivationAsArray) {
+                throw $e;
+            }
             $this->addFlashMessage($e->getMessage(), 'Your server has an issue connecting with our license system; Please get in touch with your server administrator with the below error message.', ContextualFeedbackSeverity::ERROR);
             // Let's only redirect if we are at TYPO3 backend module (ignore at Login)
             $params = $this->request->getArguments();

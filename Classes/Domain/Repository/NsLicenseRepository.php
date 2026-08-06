@@ -3,7 +3,6 @@
 namespace NITSAN\NsLicense\Domain\Repository;
 
 use Doctrine\DBAL\Exception;
-use Doctrine\DBAL\DBALException;
 use NITSAN\NsLicense\Service\ProductBundleRegistry;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -25,7 +24,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 class NsLicenseRepository
 {
     /**
-     * @throws DBALException
+     * @throws Exception
      * @throws \Doctrine\DBAL\Driver\Exception
      * @throws Exception
      */
@@ -100,7 +99,7 @@ class NsLicenseRepository
 
     /**
      * @throws Exception
-     * @throws DBALException
+     * @throws Exception
      * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function fetchData($extensionKey = null)
@@ -123,7 +122,7 @@ class NsLicenseRepository
      * @param string $licenseKey
      * @return array
      * @throws Exception
-     * @throws DBALException
+     * @throws Exception
      * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function fetchDataByLicenseKey(string $licenseKey): array
@@ -142,7 +141,7 @@ class NsLicenseRepository
     }
 
     /**
-     * @throws DBALException
+     * @throws Exception
      */
     public function updateData($data, $ltsCheck = 0): void
     {
@@ -215,7 +214,7 @@ class NsLicenseRepository
     }
 
     /**
-     * @throws DBALException
+     * @throws Exception
      */
     public function deactivate($licenseKey, $extensionKey)
     {
@@ -286,7 +285,7 @@ class NsLicenseRepository
      * @param string $domain
      * @param string $environment (production, staging, local)
      * @return bool
-     * @throws DBALException
+     * @throws Exception
      */
     public function addDomain(string $extensionKey, string $domain, string $environment): bool
     {
@@ -339,7 +338,7 @@ class NsLicenseRepository
      * @param string $domain
      * @param string $environment (production, staging, local)
      * @return bool
-     * @throws DBALException
+     * @throws Exception
      */
     public function removeDomain(string $extensionKey, string $domain, string $environment): bool
     {
@@ -386,7 +385,7 @@ class NsLicenseRepository
      * @param string $domain
      * @param string $environment (production, staging, local)
      * @return bool
-     * @throws DBALException
+     * @throws Exception
      */
     public function removeDomainByLicenseKey(string $licenseKey, string $domain, string $environment): bool
     {
@@ -428,7 +427,7 @@ class NsLicenseRepository
      * @param string $newDomain
      * @param string $environment production, staging, local
      * @return bool
-     * @throws DBALException
+     * @throws Exception
      */
     public function updateDomain(string $extensionKey, string $oldDomain, string $newDomain, string $environment): bool
     {
@@ -475,7 +474,7 @@ class NsLicenseRepository
      * @param string $newDomain
      * @param string $environment production, staging, local
      * @return bool
-     * @throws DBALException
+     * @throws Exception
      */
     public function updateDomainByLicenseKey(string $licenseKey, string $oldDomain, string $newDomain, string $environment): bool
     {
@@ -517,7 +516,7 @@ class NsLicenseRepository
      * @param string $licenseKey
      * @param int $expirationDate
      * @return bool
-     * @throws DBALException
+     * @throws Exception
      */
     public function updateTrialExtended(string $licenseKey, int $expirationDate): bool
     {
@@ -589,7 +588,7 @@ class NsLicenseRepository
      * @param string $dataType Type of data: 'shop', 'services', 'logs' (or 'extensions' which maps to 'logs')
      * @param array $data Data to save (will be JSON encoded)
      * @return bool True on success, false on failure
-     * @throws DBALException
+     * @throws Exception
      * @throws Exception
      */
     public function saveSyncData(string $dataType, array $data): bool
@@ -652,7 +651,7 @@ class NsLicenseRepository
      * @param string $dataType Type of data: 'shop', 'services', 'logs' (or 'extensions' which maps to 'logs')
      * @return array Decoded data array, empty array if not found or invalid
      * @throws Exception
-     * @throws DBALException
+     * @throws Exception
      * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function getSyncData(string $dataType): array

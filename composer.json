@@ -1,7 +1,7 @@
 {
   "name": "nitsan/ns-license",
   "type": "typo3-cms-extension",
-  "description": "License Manager - Manage License(s) of your purchased from T3Planet such as TYPO3 Templates and TYPO3 Extensions.",
+  "description": "License Manager — activate and manage licenses for T3Planet TYPO3 templates and extensions.",
   "keywords": [
     "TYPO3 CMS",
     "license",
@@ -32,6 +32,11 @@
   "autoload": {
     "psr-4": {
       "NITSAN\\NsLicense\\": "Classes/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "NITSAN\\NsLicense\\Tests\\": "Tests/"
     }
   },
   "replace": {

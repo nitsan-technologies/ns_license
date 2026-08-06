@@ -1,0 +1,454 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers" data-namespace-typo3-fluid="true">
+<div id="get-license-modal" class="t3js-modal modal fade modal-type-default modal-severity-default modal-style-default ns-license-modal ns-get-license-modal modal-size-medium position-fixed top-50 start-50 translate-middle p-0 border-0" tabindex="-1" data-bs-keyboard="true"
+    data-label-no-products="{f:translate(key: 'license-get-new.no_products', extensionName: 'ns_license')}"
+    data-label-other-products="{f:translate(key: 'license-get-new.other_products', extensionName: 'ns_license')}"
+    data-label-search-no-match="{f:translate(key: 'license-get-new.search_no_match', extensionName: 'ns_license')}"
+    data-label-load-error="{f:translate(key: 'license-get-new.error.load_failed', extensionName: 'ns_license')}"
+    data-label-select-product="{f:translate(key: 'license-get-new.select_product_first', extensionName: 'ns_license')}"
+    data-label-invalid-email="{f:translate(key: 'license-get-new.form.error.email', extensionName: 'ns_license')}"
+    data-label-disposable-email="{f:translate(key: 'license-get-new.form.error.disposable_email', extensionName: 'ns_license')}"
+    data-label-invalid-domain="{f:translate(key: 'license-get-new.form.error.domain', extensionName: 'ns_license')}"
+    data-label-invalid-domain-multiple="{f:translate(key: 'license-get-new.form.error.domain_multiple', extensionName: 'ns_license')}"
+    data-label-invalid-domain-format="{f:translate(key: 'license-get-new.form.error.domain_format', extensionName: 'ns_license')}"
+    data-label-terms-required="{f:translate(key: 'license-get-new.form.error.terms', extensionName: 'ns_license')}"
+    data-label-generic-error="{f:translate(key: 'license-get-new.error.generic', extensionName: 'ns_license')}"
+    data-label-title-warning="{f:translate(key: 'license-get-new.notification.warning', extensionName: 'ns_license')}"
+    data-label-title-error="{f:translate(key: 'license-get-new.notification.error', extensionName: 'ns_license')}"
+    data-label-title-success="{f:translate(key: 'license-get-new.notification.success', extensionName: 'ns_license')}"
+    data-label-title-info="{f:translate(key: 'license-get-new.notification.info', extensionName: 'ns_license')}"
+    data-label-otp-sent="{f:translate(key: 'license-get-new.otp.sent_to', extensionName: 'ns_license')}"
+    data-label-otp-invalid="{f:translate(key: 'license-get-new.otp.error.invalid', extensionName: 'ns_license')}"
+    data-label-attempts-left="{f:translate(key: 'license-get-new.otp.attempts_left', extensionName: 'ns_license')}"
+    data-label-buy-unavailable="{f:translate(key: 'license-get-new.buy.unavailable', extensionName: 'ns_license')}"
+    data-label-buy-price-empty="{f:translate(key: 'license-get-new.buy.price_empty', extensionName: 'ns_license')}"
+    data-label-checkout-invalid="{f:translate(key: 'license-get-new.buy.checkout_invalid', extensionName: 'ns_license')}"
+    data-label-checkout-open-tab="{f:translate(key: 'license-get-new.buy.open_new_tab', extensionName: 'ns_license')}"
+    data-label-checkout-title="{f:translate(key: 'license-get-new.buy.checkout_title', extensionName: 'ns_license')}"
+    data-label-buy-success-title="{f:translate(key: 'license-get-new.buy.success.title', extensionName: 'ns_license')}"
+    data-label-buy-success-subtitle="{f:translate(key: 'license-get-new.buy.success.subtitle', extensionName: 'ns_license')}"
+    data-label-buy-success-email="{f:translate(key: 'license-get-new.buy.success.email_note', extensionName: 'ns_license')}"
+    data-label-trial-success-title="{f:translate(key: 'license-get-new.success.title', extensionName: 'ns_license')}"
+    data-label-trial-success-subtitle="{f:translate(key: 'license-get-new.success.subtitle', extensionName: 'ns_license')}"
+    data-label-trial-success-email="{f:translate(key: 'license-get-new.success.email_note', extensionName: 'ns_license')}"
+    data-label-activating="{f:translate(key: 'license-get-new.success.activating', extensionName: 'ns_license')}"
+    data-label-activate-failed="{f:translate(key: 'license-get-new.success.activate_failed', extensionName: 'ns_license')}"
+    data-label-activate-missing-key="{f:translate(key: 'license-get-new.success.activate_missing_key', extensionName: 'ns_license')}"
+    data-label-wizard-meta="{f:translate(key: 'license-get-new.wizard.meta', extensionName: 'ns_license')}"
+    data-label-wizard-kicker-before="{f:translate(key: 'license-get-new.wizard.kicker.before', extensionName: 'ns_license')}"
+    data-label-wizard-kicker-of="{f:translate(key: 'license-get-new.wizard.kicker.of', extensionName: 'ns_license')}"
+    data-label-wizard-title-welcome="{f:translate(key: 'license-get-new.wizard.title.welcome', extensionName: 'ns_license')}"
+    data-label-wizard-title-products="{f:translate(key: 'license-get-new.wizard.title.products', extensionName: 'ns_license')}"
+    data-label-wizard-title-form="{f:translate(key: 'license-get-new.wizard.title.form', extensionName: 'ns_license')}"
+    data-label-wizard-title-purchase="{f:translate(key: 'license-get-new.wizard.title.purchase', extensionName: 'ns_license')}"
+    data-label-wizard-title-otp="{f:translate(key: 'license-get-new.wizard.title.otp', extensionName: 'ns_license')}"
+    data-label-wizard-title-success="{f:translate(key: 'license-get-new.wizard.title.success', extensionName: 'ns_license')}"
+    data-purchase-success="{f:if(condition: purchaseSuccess, then: '1', else: '0')}"
+    data-purchase-token="{purchaseToken}">
+    <div class="modal-dialog">
+        <div class="t3js-modal-content modal-content">
+            <div class="modal-header gl-wizard-header">
+                <div class="gl-wizard-header__main w-100">
+                    <div class="gl-wizard-header-top">
+                        <p class="gl-wizard-kicker small text-variant mb-2" id="gl-wizard-step-label">
+                            <span class="gl-wizard-kicker__icon" aria-hidden="true">
+                                <core:icon identifier="actions-star" size="small" alternativeMarkupIdentifier="inline" />
+                            </span>
+                            <span><f:translate key="license-get-new.wizard.kicker.before" extensionName="ns_license" /></span>
+                            <span class="js-gl-wizard-step">1</span>
+                            <span class="js-gl-wizard-of"><f:translate key="license-get-new.wizard.kicker.of" extensionName="ns_license" /></span>
+                            <span class="js-gl-wizard-total">5</span>
+                        </p>
+                        <button type="button" class="btn btn-default btn-sm t3js-modal-close gl-wizard-close" data-bs-dismiss="modal" aria-label="{f:translate(key: 'license-activation.update_extension_btn_cancel', extensionName: 'ns_license')}">
+                            <core:icon identifier="actions-close" size="small" alternativeMarkupIdentifier="inline" />
+                        </button>
+                    </div>
+                    <h2 class="h2 mb-3 js-get-license-title" id="gl-wizard-heading">
+                        <f:translate key="license-get-new.wizard.title.welcome" extensionName="ns_license" />
+                    </h2>
+                    <div class="gl-wizard-stepper d-flex flex-wrap gap-1" role="tablist" aria-label="{f:translate(key: 'license-get-new.wizard.stepper_label', extensionName: 'ns_license')}">
+                        <button type="button" class="btn btn-default btn-sm gl-wizard-step-btn is-active active" role="tab" data-wizard-step="welcome" aria-selected="true" tabindex="-1">
+                            <span class="gl-wizard-step-num" aria-hidden="true">1</span>
+                            <span class="gl-wizard-step-short"><f:translate key="license-get-new.wizard.step.welcome" extensionName="ns_license" /></span>
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm gl-wizard-step-btn is-locked" role="tab" data-wizard-step="products" aria-selected="false" tabindex="-1">
+                            <span class="gl-wizard-step-num" aria-hidden="true">2</span>
+                            <span class="gl-wizard-step-short"><f:translate key="license-get-new.wizard.step.products" extensionName="ns_license" /></span>
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm gl-wizard-step-btn is-locked" role="tab" data-wizard-step="details" aria-selected="false" tabindex="-1">
+                            <span class="gl-wizard-step-num" aria-hidden="true">3</span>
+                            <span class="gl-wizard-step-short"><f:translate key="license-get-new.wizard.step.details" extensionName="ns_license" /></span>
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm gl-wizard-step-btn is-locked" role="tab" data-wizard-step="otp" aria-selected="false" tabindex="-1">
+                            <span class="gl-wizard-step-num" aria-hidden="true">4</span>
+                            <span class="gl-wizard-step-short"><f:translate key="license-get-new.wizard.step.otp" extensionName="ns_license" /></span>
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm gl-wizard-step-btn is-locked" role="tab" data-wizard-step="success" aria-selected="false" tabindex="-1">
+                            <span class="gl-wizard-step-num" aria-hidden="true">5</span>
+                            <span class="gl-wizard-step-short"><f:translate key="license-get-new.wizard.step.success" extensionName="ns_license" /></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="t3js-modal-body modal-body">
+
+                <!-- Step: welcome -->
+                <div class="get-license-step gl-wizard-panel" data-step="welcome">
+                    <div class="card card-size-small w-100">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <f:if condition="{t3version} == 14">
+                                    <f:then>
+                                        <core:icon identifier="submodule-nslicense-v14" size="medium" alternativeMarkupIdentifier="inline" />
+                                    </f:then>
+                                    <f:else>
+                                        <core:icon identifier="submodule-nslicense-v12" size="medium" alternativeMarkupIdentifier="inline" />
+                                    </f:else>
+                                </f:if>
+                            </div>
+                            <div class="card-header-body">
+                                <div class="card-title mb-1"><f:translate key="license-get-new.wizard.intro.title" extensionName="ns_license" /></div>
+                                <p class="mb-0 text-variant"><f:translate key="license-get-new.wizard.intro.text" extensionName="ns_license" /></p>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="mt-0"><f:translate key="license-get-new.wizard.checklist.title" extensionName="ns_license" /></h3>
+                    <ul class="gl-wizard-preview-list list-group mb-3">
+                        <li class="gl-wizard-preview-item list-group-item d-flex align-items-center gap-3">
+                            <span class="flex-shrink-0" aria-hidden="true"><core:icon identifier="actions-key" size="small" alternativeMarkupIdentifier="inline" /></span>
+                            <div class="gl-wizard-preview-copy">
+                                <div class="fw-semibold"><f:translate key="license-get-new.wizard.checklist.product.title" extensionName="ns_license" /></div>
+                                <div class="text-variant small"><f:translate key="license-get-new.wizard.checklist.product.text" extensionName="ns_license" /></div>
+                            </div>
+                            <span class="badge badge-success flex-shrink-0" aria-hidden="true"><core:icon identifier="actions-check" size="small" alternativeMarkupIdentifier="inline" /></span>
+                        </li>
+                        <li class="gl-wizard-preview-item list-group-item d-flex align-items-center gap-3">
+                            <span class="flex-shrink-0" aria-hidden="true"><core:icon identifier="actions-lightbulb-on" size="small" alternativeMarkupIdentifier="inline" /></span>
+                            <div class="gl-wizard-preview-copy">
+                                <div class="fw-semibold"><f:translate key="license-get-new.wizard.checklist.mode.title" extensionName="ns_license" /></div>
+                                <div class="text-variant small"><f:translate key="license-get-new.wizard.checklist.mode.text" extensionName="ns_license" /></div>
+                            </div>
+                            <span class="badge badge-success flex-shrink-0" aria-hidden="true"><core:icon identifier="actions-check" size="small" alternativeMarkupIdentifier="inline" /></span>
+                        </li>
+                        <li class="gl-wizard-preview-item list-group-item d-flex align-items-center gap-3">
+                            <span class="flex-shrink-0" aria-hidden="true"><core:icon identifier="actions-check" size="small" alternativeMarkupIdentifier="inline" /></span>
+                            <div class="gl-wizard-preview-copy">
+                                <div class="fw-semibold"><f:translate key="license-get-new.wizard.checklist.activate.title" extensionName="ns_license" /></div>
+                                <div class="text-variant small"><f:translate key="license-get-new.wizard.checklist.activate.text" extensionName="ns_license" /></div>
+                            </div>
+                            <span class="badge badge-success flex-shrink-0" aria-hidden="true"><core:icon identifier="actions-check" size="small" alternativeMarkupIdentifier="inline" /></span>
+                        </li>
+                    </ul>
+                    <div class="callout callout-info mb-2" role="note">
+                        <div class="callout-body">
+                            <p class="mb-0"><f:translate key="license-get-new.wizard.callout" extensionName="ns_license" /></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step: product selection -->
+                <div class="get-license-step gl-wizard-panel" data-step="products" style="display: none;">
+                    <f:comment>
+                        <p class="gl-wizard-panel-lead small text-variant mb-0"><f:translate key="license-get-new.wizard.mode.sub" extensionName="ns_license" /></p>
+                    </f:comment>
+
+                    <!-- Searchable product combobox -->
+                    <div class="mb-0 get-license-product-picker">
+                        <label class="form-label fw-bold" for="gl-product-combobox"><f:translate key="license-get-new.select_product" extensionName="ns_license" /></label>
+                        <div class="gl-combobox" style="display: none;">
+                            <input type="hidden" id="gl-product-select" value="">
+                            <div class="gl-combobox__control input-group">
+                                <input type="text" id="gl-product-combobox" class="form-control gl-combobox__input" autocomplete="off"
+                                    role="combobox" aria-expanded="false" aria-controls="gl-product-listbox" aria-autocomplete="list"
+                                    placeholder="{f:translate(key: 'license-get-new.search_product_placeholder', extensionName: 'ns_license')}"
+                                    aria-label="{f:translate(key: 'license-get-new.search_product', extensionName: 'ns_license')}" disabled>
+                                <button type="button" class="btn btn-default gl-combobox__toggle" tabindex="-1" aria-label="{f:translate(key: 'license-get-new.choose_product', extensionName: 'ns_license')}" disabled>
+                                    <span aria-hidden="true">▾</span>
+                                </button>
+                            </div>
+                            <div id="gl-product-listbox" class="gl-combobox__menu" role="listbox" hidden></div>
+                        </div>
+                    </div>
+
+                    <!-- Loading placeholder -->
+                    <div class="get-license-products-loading text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden"><f:translate key="license-loading.loading" extensionName="ns_license" /></span>
+                        </div>
+                        <p class="mt-3 text-variant mb-0"><f:translate key="license-get-new.loading" extensionName="ns_license" /></p>
+                    </div>
+
+                    <!-- Empty / error state -->
+                    <div class="get-license-products-empty text-center py-4 text-variant" style="display: none;"></div>
+
+                    <!-- Hidden radios kept for existing selection / AJAX flow -->
+                    <div class="visually-hidden" aria-hidden="true">
+                        <input class="form-check-input" type="radio" name="gl-mode" id="gl-mode-trial" value="trial" checked>
+                        <input class="form-check-input" type="radio" name="gl-mode" id="gl-mode-buy" value="buy">
+                    </div>
+
+                    <div class="gl-mode gl-wizard-mode gl-mode-actions pt-3" role="radiogroup" aria-label="{f:translate(key: 'license-get-new.wizard.mode.heading', extensionName: 'ns_license')}" style="display: none;">
+                        <button type="button" class="gl-mode__card gl-mode__card--trial is-active" data-gl-mode="trial" aria-pressed="true">
+                            <div class="gl-mode__content">
+                                <div class="gl-mode__title-row">
+                                    <span class="gl-mode__icon" aria-hidden="true">
+                                        <core:icon identifier="actions-rocket" size="small" alternativeMarkupIdentifier="inline" />
+                                    </span>
+                                    <span class="gl-mode__title"><f:translate key="license-get-new.wizard.mode.trial.title" extensionName="ns_license" /></span>
+                                </div>
+                                <p class="gl-mode__desc"><f:translate key="license-get-new.wizard.mode.trial.desc" extensionName="ns_license" /></p>
+                                <div class="gl-mode__meta gl-mode__meta--checks pb-2">
+                                    <span class="ok"><core:icon identifier="actions-check" size="small" alternativeMarkupIdentifier="inline" /> <f:translate key="license-get-new.wizard.mode.trial.meta1" extensionName="ns_license" /></span>
+                                    <span class="ok"><core:icon identifier="actions-check" size="small" alternativeMarkupIdentifier="inline" /> <f:translate key="license-get-new.wizard.mode.trial.meta2" extensionName="ns_license" /></span>
+                                    <span class="ok"><core:icon identifier="actions-check" size="small" alternativeMarkupIdentifier="inline" /> <f:translate key="license-get-new.wizard.mode.trial.meta3" extensionName="ns_license" /></span>
+                                </div>
+                                <p class="gl-mode__pricing"><f:translate key="license-get-new.wizard.mode.trial.pricing" extensionName="ns_license" /></p>
+                            </div>
+                        </button>
+
+                        <button type="button" class="gl-mode__card gl-mode__card--buy" data-gl-mode="buy" aria-pressed="false">
+                            <div class="gl-mode__content">
+                                <div class="gl-mode__title-row">
+                                    <span class="gl-mode__icon" aria-hidden="true">
+                                        <core:icon identifier="actions-cart" size="small" alternativeMarkupIdentifier="inline" />
+                                    </span>
+                                    <span class="gl-mode__title"><f:translate key="license-get-new.wizard.mode.buy.button" extensionName="ns_license" /></span>
+                                </div>
+                                <p class="gl-mode__desc"><f:translate key="license-get-new.wizard.mode.buy.desc" extensionName="ns_license" /></p>
+                                <div class="gl-mode__meta gl-mode__meta--checks">
+                                    <span class="muted"><core:icon identifier="actions-check" size="small" alternativeMarkupIdentifier="inline" /> <f:translate key="license-get-new.wizard.mode.buy.meta1" extensionName="ns_license" /></span>
+                                    <span class="muted"><core:icon identifier="actions-check" size="small" alternativeMarkupIdentifier="inline" /> <f:translate key="license-get-new.wizard.mode.buy.meta2" extensionName="ns_license" /></span>
+                                    <span class="muted"><core:icon identifier="actions-check" size="small" alternativeMarkupIdentifier="inline" /> <f:translate key="license-get-new.wizard.mode.buy.meta3" extensionName="ns_license" /></span>
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                    <p class="get-license-buy-hint text-variant small mt-2 mb-0" style="display: none;"></p>
+                </div>
+
+                <!-- Step: trial form -->
+                <div class="get-license-step gl-wizard-panel" data-step="form" style="display: none;">
+                    <f:comment>
+                        <p class="gl-wizard-panel-lead small text-variant mb-0"><f:translate key="license-get-new.wizard.form.lead" extensionName="ns_license" /></p>
+                    </f:comment>
+
+                    <div class="card card-size-small gl-selected-product-card w-100">
+                        <div class="card-header">
+                            <div class="card-header-body min-w-0">
+                                <div class="card-title mb-1 js-gl-selected-name"></div>
+                                <f:comment>
+                                    <span class="card-subtitle text-variant js-gl-selected-key"></span>
+                                </f:comment>
+                            </div>
+                        </div>
+                        <div class="card-body pt-0 js-gl-selected-desc-wrap" style="display: none;">
+                            <p class="card-text text-variant small mb-0 js-gl-selected-desc"></p>
+                        </div>
+                    </div>
+
+                    <form class="gl-trial-form gl-wizard-form" novalidate>
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <label class="form-label" for="gl-name"><f:translate key="license-get-new.form.name" extensionName="ns_license" /></label>
+                                <input type="text" id="gl-name" class="form-control" placeholder="{f:translate(key: 'license-get-new.form.name_placeholder', extensionName: 'ns_license')}">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label" for="gl-email">
+                                    <f:translate key="license-get-new.form.email" extensionName="ns_license" />
+                                    <span class="text-danger" aria-hidden="true"> *</span>
+                                </label>
+                                <input type="email" id="gl-email" class="form-control" required placeholder="{f:translate(key: 'license-get-new.form.email_placeholder', extensionName: 'ns_license')}">
+                            </div>
+                        </div>
+                        <div class="gl-wizard-field mb-3">
+                            <label class="form-label" for="gl-domain">
+                                <f:translate key="license-get-new.form.domain" extensionName="ns_license" />
+                                <span class="text-danger" aria-hidden="true"> *</span>
+                            </label>
+                            <input type="text" id="gl-domain" class="form-control" required placeholder="{f:translate(key: 'license-get-new.form.domain_placeholder', extensionName: 'ns_license')}">
+                            <div class="form-text text-variant"><f:translate key="license-get-new.form.domain_help" extensionName="ns_license" /></div>
+                        </div>
+                        <div class="form-check gl-wizard-terms">
+                            <input class="form-check-input" type="checkbox" id="gl-terms">
+                            <label class="form-check-label" for="gl-terms">
+                                <f:translate key="license-get-new.form.terms_prefix" extensionName="ns_license" />
+                                <a href="https://t3planet.de/agb" target="_blank" rel="noopener"><f:translate key="license-get-new.form.terms_link" extensionName="ns_license" /></a>
+                                <f:translate key="license-get-new.form.terms_and" extensionName="ns_license" />
+                                <a href="https://t3planet.de/privacy-policy" target="_blank" rel="noopener"><f:translate key="license-get-new.form.privacy_link" extensionName="ns_license" /></a>
+                            </label>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Step: purchase summary + checkout -->
+                <div class="get-license-step gl-wizard-panel" data-step="purchase" style="display: none;">
+                    <f:comment>
+                        <p class="gl-wizard-panel-lead small text-variant mb-0"><f:translate key="license-get-new.wizard.purchase.lead" extensionName="ns_license" /></p>
+                    </f:comment>
+
+                    <div class="card card-size-small gl-selected-product-card w-100">
+                        <div class="card-header">
+                            <div class="card-header-body min-w-0">
+                                <div class="card-title mb-1 js-gl-buy-name"></div>
+                                <span class="card-subtitle text-variant js-gl-buy-key"></span>
+                            </div>
+                        </div>
+                        <div class="card-body pt-0 js-gl-buy-desc-wrap" style="display: none;">
+                            <p class="card-text text-variant small mb-0 js-gl-buy-desc"></p>
+                        </div>
+                    </div>
+
+                    <div class="card card-size-small gl-buy-price-card w-100">
+                        <div class="card-body">
+                            <span class="text-variant d-block small mb-1"><f:translate key="license-get-new.buy.price_label" extensionName="ns_license" /></span>
+                            <div class="d-flex align-items-baseline gap-1 flex-wrap">
+                                <span class="fw-bold fs-4 js-gl-buy-price mb-0"></span>
+                                <span class="text-variant small js-gl-buy-price-suffix"><f:translate key="license-get-new.buy.billing_annual" extensionName="ns_license" /></span>
+                            </div>
+                            <p class="text-variant small mb-0 mt-2"><f:translate key="license-get-new.buy.help" extensionName="ns_license" /></p>
+                            <div class="js-gl-buy-feedback text-danger small mt-2" style="display:none;" role="alert"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-check gl-wizard-terms">
+                        <input class="form-check-input" type="checkbox" id="gl-buy-terms">
+                        <label class="form-check-label" for="gl-buy-terms">
+                            <f:translate key="license-get-new.form.terms_prefix" extensionName="ns_license" />
+                            <a href="https://t3planet.de/agb" target="_blank" rel="noopener"><f:translate key="license-get-new.form.terms_link" extensionName="ns_license" /></a>
+                            <f:translate key="license-get-new.form.terms_and" extensionName="ns_license" />
+                            <a href="https://t3planet.de/privacy-policy" target="_blank" rel="noopener"><f:translate key="license-get-new.form.privacy_link" extensionName="ns_license" /></a>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Step: OTP verification -->
+                <div class="get-license-step gl-wizard-panel" data-step="otp" style="display: none;">
+                    <div class="gl-otp-wrapper text-center">
+                        <div class="gl-otp-icon mb-2" aria-hidden="true">
+                            <core:icon identifier="actions-key" size="small" alternativeMarkupIdentifier="inline" />
+                        </div>
+                        <h4 class="gl-otp-title mb-1"><f:translate key="license-get-new.otp.title" extensionName="ns_license" /></h4>
+                        <p class="gl-otp-sent text-variant mb-3 js-gl-otp-sent"></p>
+                        <div class="gl-otp-digits" role="group" aria-label="{f:translate(key: 'license-get-new.otp.title', extensionName: 'ns_license')}">
+                            <input type="text" class="form-control gl-otp-digit" inputmode="numeric" autocomplete="one-time-code" maxlength="1" data-otp-index="0" placeholder="-" aria-label="Digit 1">
+                            <input type="text" class="form-control gl-otp-digit" inputmode="numeric" autocomplete="off" maxlength="1" data-otp-index="1" placeholder="-" aria-label="Digit 2">
+                            <input type="text" class="form-control gl-otp-digit" inputmode="numeric" autocomplete="off" maxlength="1" data-otp-index="2" placeholder="-" aria-label="Digit 3">
+                            <input type="text" class="form-control gl-otp-digit" inputmode="numeric" autocomplete="off" maxlength="1" data-otp-index="3" placeholder="-" aria-label="Digit 4">
+                            <input type="text" class="form-control gl-otp-digit" inputmode="numeric" autocomplete="off" maxlength="1" data-otp-index="4" placeholder="-" aria-label="Digit 5">
+                            <input type="text" class="form-control gl-otp-digit" inputmode="numeric" autocomplete="off" maxlength="1" data-otp-index="5" placeholder="-" aria-label="Digit 6">
+                        </div>
+                        <input type="hidden" id="gl-otp" value="">
+                        <div class="gl-otp-feedback text-danger small mt-2" style="display:none;"></div>
+                        <div class="gl-otp-resend mt-3">
+                            <span class="text-variant small"><f:translate key="license-get-new.otp.no_code" extensionName="ns_license" /></span>
+                            <button type="button" class="btn btn-link btn-sm p-0 align-baseline t3js-get-license-resend"><f:translate key="license-get-new.otp.resend" extensionName="ns_license" /></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step: success (trial + purchase-with-key show the license key) -->
+                <div class="get-license-step gl-wizard-panel" data-step="success" style="display: none;">
+                    <div class="gl-success text-center">
+                        <div class="gl-success__icon mb-3" aria-hidden="true">
+                            <core:icon identifier="actions-check" size="large" alternativeMarkupIdentifier="inline" />
+                        </div>
+                        <h4 class="mb-2 js-gl-success-title"><f:translate key="license-get-new.success.title" extensionName="ns_license" /></h4>
+                        <p class="text-variant mb-3 js-gl-success-subtitle"><f:translate key="license-get-new.success.subtitle" extensionName="ns_license" /></p>
+                        <div class="gl-success__license d-inline-block text-start p-3 js-gl-success-key-wrap">
+                            <div class="gl-success__license-header">
+                                <span class="text-variant small"><f:translate key="license-get-new.success.license_key" extensionName="ns_license" /></span>
+                                <button type="button"
+                                    class="btn btn-link t3js-copy-license-key js-gl-copy-license-key"
+                                    data-license-key=""
+                                    title="{f:translate(key: 'license-get-new.success.license_key', extensionName: 'ns_license')}"
+                                    aria-label="{f:translate(key: 'license-get-new.success.license_key', extensionName: 'ns_license')}">
+                                    <core:icon identifier="actions-clipboard" size="small" alternativeMarkupIdentifier="inline" />
+                                </button>
+                            </div>
+                            <code class="js-gl-license-key user-select-all"></code>
+                        </div>
+                        <p class="text-variant small mt-3 mb-0 js-gl-success-email-note"><f:translate key="license-get-new.success.email_note" extensionName="ns_license" /></p>
+                    </div>
+                </div>
+
+            </div>
+            <div class="t3js-modal-footer modal-footer gl-wizard-footer">
+                <!-- Welcome -->
+                <div class="gl-wizard-footer-row w-100" data-step-footer="welcome">
+                    <div class="ms-auto">
+                        <button type="button" class="btn btn-primary t3js-get-license-start">
+                            <span><f:translate key="license-get-new.wizard.button.start" extensionName="ns_license" /></span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Products: Cancel + Continue -->
+                <div class="gl-wizard-footer-row w-100" data-step-footer="products" style="display:none;">
+                    <button type="button" class="btn btn-default t3js-modal-close" data-bs-dismiss="modal">
+                        <span><f:translate key="license-activation.update_extension_btn_cancel" extensionName="ns_license" /></span>
+                    </button>
+                    <div class="ms-auto">
+                        <button type="button" class="btn btn-primary t3js-get-license-continue" disabled>
+                            <span><f:translate key="license-get-new.button.continue" extensionName="ns_license" /></span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Form: Back + Send Code (ns_t3af btn-group pattern) -->
+                <div class="gl-wizard-footer-row w-100" data-step-footer="form" style="display:none;">
+                    <div class="ms-auto btn-group" role="group">
+                        <button type="button" class="btn btn-default t3js-get-license-back" data-back-to="products">
+                            <span><f:translate key="license-get-new.button.back" extensionName="ns_license" /></span>
+                        </button>
+                        <button type="button" class="btn btn-primary t3js-get-license-send-code"
+                            data-label-default="{f:translate(key: 'license-get-new.form.submit', extensionName: 'ns_license')}"
+                            data-label-sending="{f:translate(key: 'license-get-new.form.sending', extensionName: 'ns_license')}">
+                            <span class="label"><f:translate key="license-get-new.form.submit" extensionName="ns_license" /></span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Purchase: Back + Pay -->
+                <div class="gl-wizard-footer-row w-100" data-step-footer="purchase" style="display:none;">
+                    <div class="ms-auto btn-group" role="group">
+                        <button type="button" class="btn btn-default t3js-get-license-back" data-back-to="products">
+                            <span><f:translate key="license-get-new.button.back" extensionName="ns_license" /></span>
+                        </button>
+                        <button type="button" class="btn btn-primary t3js-get-license-pay"
+                            data-label-default="{f:translate(key: 'license-get-new.buy.pay', extensionName: 'ns_license')}"
+                            data-label-loading="{f:translate(key: 'license-get-new.buy.preparing', extensionName: 'ns_license')}">
+                            <span class="label"><f:translate key="license-get-new.buy.pay" extensionName="ns_license" /></span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- OTP: Back + Verify -->
+                <div class="gl-wizard-footer-row w-100" data-step-footer="otp" style="display:none;">
+                    <div class="ms-auto btn-group" role="group">
+                        <button type="button" class="btn btn-default t3js-get-license-back" data-back-to="form">
+                            <span><f:translate key="license-get-new.button.back" extensionName="ns_license" /></span>
+                        </button>
+                        <button type="button" class="btn btn-primary t3js-get-license-verify"
+                            data-label-default="{f:translate(key: 'license-get-new.otp.verify', extensionName: 'ns_license')}"
+                            data-label-verifying="{f:translate(key: 'license-get-new.otp.verifying', extensionName: 'ns_license')}">
+                            <span class="label"><f:translate key="license-get-new.otp.verify" extensionName="ns_license" /></span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Success: Close (dismiss) + Activate license (optional install) -->
+                <div class="gl-wizard-footer-row w-100 justify-content-end gap-2" data-step-footer="success" style="display:none;">
+                    <button type="button" class="btn btn-default t3js-modal-close t3js-get-license-close" data-bs-dismiss="modal">
+                        <span><f:translate key="license-get-new.success.close" extensionName="ns_license" /></span>
+                    </button>
+                    <button type="button" class="btn btn-primary t3js-get-license-done js-gl-activate-license"
+                        data-label-default="{f:translate(key: 'license-get-new.success.activate', extensionName: 'ns_license')}"
+                        data-label-activating="{f:translate(key: 'license-get-new.success.activating', extensionName: 'ns_license')}">
+                        <span class="label"><f:translate key="license-get-new.success.activate" extensionName="ns_license" /></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace NITSAN\NsLicense\Service;
 
 use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Service\DependencyOrderingService;
@@ -26,22 +28,18 @@ final class LicenseService
     protected $extensionListService;
     protected ComposerApiClient $composerApiClient;
 
-    public function __construct(?ExtensionListService $extensionListService = null, ?ComposerApiClient $composerApiClient = null)
-    {
+    public function __construct(
+        ExtensionListService $extensionListService,
+        ComposerApiClient $composerApiClient
+    ) {
         $this->dependencyOrderingService = GeneralUtility::makeInstance(DependencyOrderingService::class);
         $this->packageManager = GeneralUtility::makeInstance(PackageManager::class);
         $this->cacheManager = GeneralUtility::makeInstance(CacheManager::class);
         $this->nsLicenseRepository = GeneralUtility::makeInstance(NsLicenseRepository::class);
         $versionInformation = GeneralUtility::makeInstance(Typo3Version::class);
         $this->typo3Version = $versionInformation->getMajorVersion();
-        $this->extensionListService = $extensionListService
-            ?? GeneralUtility::makeInstance(
-                ExtensionListService::class,
-                $this->nsLicenseRepository,
-                $this->packageManager
-            );
-        $this->composerApiClient = $composerApiClient
-            ?? GeneralUtility::makeInstance(ComposerApiClient::class);
+        $this->extensionListService = $extensionListService;
+        $this->composerApiClient = $composerApiClient;
     }
 
    
@@ -53,7 +51,10 @@ final class LicenseService
             setcookie('serverConnectionTime', (string) 1, time() + 60 * 60 * 24 * 14);
 
             if ($checkType == 'checkTheme') {
-                $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_key=' . $extKey . '&typo3_version=' . $this->typo3Version);
+                $licenseData = $this->fetchLicense(
+                    'domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_key=' . $extKey . '&typo3_version=' . $this->typo3Version,
+                    $extKey
+                );
                 if (is_array($licenseData) && (isset($licenseData['status']) || isset($licenseData['checkTheme']))) {
                     return true;
                 }
@@ -61,7 +62,10 @@ final class LicenseService
             if ($extKey) {
                 $extData = $this->nsLicenseRepository->fetchData($extKey);
                 if (!empty($extData)) {
-                    $licenseData = $this->fetchLicense('domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $extData[0]['license_key'] . '&typo3_version=' . $this->typo3Version);
+                    $licenseData = $this->fetchLicense(
+                        'domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $extData[0]['license_key'] . '&typo3_version=' . $this->typo3Version,
+                        $extKey
+                    );
                     if (is_array($licenseData)) {
                         if (!empty($licenseData['serverError'])) {
                             return true;
@@ -121,15 +125,63 @@ final class LicenseService
     }
 
     /**
+     *
+     * @return array
+     */
+    private function buildEnvironmentParams(?string $extensionKey = null): array
+    {
+        $extensionVersion = '';
+        if ($extensionKey !== null && $extensionKey !== '') {
+            try {
+                if ($this->packageManager->isPackageActive($extensionKey)) {
+                    $extensionVersion = (string)$this->packageManager
+                        ->getPackage($extensionKey)
+                        ->getPackageMetaData()
+                        ->getVersion();
+                }
+            } catch (\Throwable $e) {
+                $extensionVersion = '';
+            }
+        }
+
+        return [
+            'composer_mode' => Environment::isComposerMode() ? 'composer' : 'classic',
+            'php_version' => PHP_VERSION,
+            'typo3_version' => (string)$this->typo3Version,
+            'extension_version' => $extensionVersion,
+        ];
+    }
+
+    /**
+     * Append environment query params; keep an existing typo3_version= (major) for dist filtering.
+     */
+    private function appendEnvironmentQuery(string $query, ?string $extensionKey = null): string
+    {
+        $parts = [];
+        foreach ($this->buildEnvironmentParams($extensionKey) as $key => $value) {
+            if ($key === 'typo3_version' && str_contains($query, 'typo3_version=')) {
+                continue;
+            }
+            $parts[] = rawurlencode($key) . '=' . rawurlencode((string)$value);
+        }
+        if ($parts === []) {
+            return $query;
+        }
+        return $query . ($query !== '' ? '&' : '') . implode('&', $parts);
+    }
+
+    /**
      * fetchLicense.
      *
-     * @param string $license
+     * @param string $license Query string for GetComposerDetails.php
+     * @param string|null $extensionKey Optional
      *
      * @return array|null
      **/
-    public function fetchLicense($license)
+    public function fetchLicense($license, ?string $extensionKey = null)
     {
         $apiBaseUrl = $this->getApiBaseUrl();
+        $license = $this->appendEnvironmentQuery((string)$license, $extensionKey);
         $url = $apiBaseUrl . 'GetComposerDetails.php?' . $license;
 
         try {
@@ -230,7 +282,11 @@ final class LicenseService
 
         // First, validate the license key by calling GetComposerDetails.php
         $currentDomain = GeneralUtility::getIndpEnv('HTTP_HOST');
-        $validateUrl = $apiBaseUrl . 'GetComposerDetails.php?domain=' . urlencode($currentDomain) . '&ns_license=' . urlencode($licenseKey) . '&typo3_version=' . $this->typo3Version;
+        $validateQuery = $this->appendEnvironmentQuery(
+            'domain=' . urlencode($currentDomain) . '&ns_license=' . urlencode($licenseKey) . '&typo3_version=' . $this->typo3Version,
+            $extensionKey !== '' ? $extensionKey : null
+        );
+        $validateUrl = $apiBaseUrl . 'GetComposerDetails.php?' . $validateQuery;
 
         try {
             $validateData = $this->composerApiClient->requestJsonArray($validateUrl, 'POST', []);
@@ -437,10 +493,13 @@ final class LicenseService
         // Determine API endpoint and method based on type
         if ($type === 'extensions') {
             $extensions = [];
+            $extensionVersions = [];
             $allLicense = $this->nsLicenseRepository->fetchData();
             if($allLicense){
                 foreach ($allLicense as $license) {
                     $extensions[$license['extension_key']] = $license['license_key'];
+                    $environmentForExt = $this->buildEnvironmentParams((string)$license['extension_key']);
+                    $extensionVersions[$license['extension_key']] = $environmentForExt['extension_version'];
                 }
             }
 
@@ -454,19 +513,27 @@ final class LicenseService
                     'error_code' => 'no_license_keys'
                 ];
             }
+            $environment = $this->buildEnvironmentParams();
+            unset($environment['extension_version']);
             $options = [
-                'body' => json_encode([
+                'body' => json_encode(array_merge([
                     'extensions' => $extensions,
-                    'typo3_version' => (string) $this->typo3Version,
-                ]),
+                    'extension_versions' => $extensionVersions,
+                ], $environment)),
                 'headers' => [
                     'Content-Type' => 'application/json'
                 ]
             ];
         } elseif ($type === 'shop') {
-            $url = $apiBaseUrl . 'GetShopAndServicesData.php?type=shop';
-            $method = 'GET';
-            $options = [];
+            $catalogCacheService = new CatalogCacheService(
+                $this->cacheManager,
+                $this->composerApiClient,
+                GeneralUtility::makeInstance(ExtensionConfiguration::class)
+            );
+            $data = $catalogCacheService->refreshFromApi();
+            return $this->isValidShopCatalog($data)
+                ? $data
+                : ['status' => false, 'message' => 'No data received from API'];
         } else {
             $url = $apiBaseUrl . 'GetShopAndServicesData.php?type=services';
             $method = 'GET';
@@ -495,10 +562,6 @@ final class LicenseService
                                 $this->nsLicenseRepository->insertNewData($licenseDataObj);
                             }
                         }
-                    }
-                } elseif ($type === 'shop') {
-                    if (isset($data['sections']) && is_array($data['sections'])) {
-                        $this->saveSyncDataToDatabase('shop', $data);
                     }
                 } else {
                     if (isset($data['categories']) && is_array($data['categories'])) {
@@ -530,6 +593,18 @@ final class LicenseService
      * @param array $data Data to save
      * @return bool
      */
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    protected function isValidShopCatalog(array $data): bool
+    {
+        if (isset($data['tabs']) && is_array($data['tabs'])) {
+            return true;
+        }
+
+        return isset($data['sections']) && is_array($data['sections']);
+    }
     protected function saveSyncDataToDatabase(string $type, array $data): bool
     {
         try {
@@ -540,13 +615,302 @@ final class LicenseService
     }
 
     /**
-     * Get API base URL based on environment
+     * Fetch the list of products for the "Get New License" modal.
+     * Shared by both the free-trial and purchase modes.
+     * Calls the signed GetProduct.php endpoint.
      *
-     * @return string
+     * @return array{success:bool, products?:array, error_code?:string, message?:string}
+     */
+    public function getProducts(): array
+    {
+        $url = $this->getApiBaseUrl() . 'GetProduct.php';
+
+        try {
+            $data = $this->composerApiClient->requestJsonArray($url, 'GET', [
+                'headers' => $this->buildSignedHeaders(''),
+            ]);
+
+            if (is_array($data) && !empty($data['status']) && isset($data['products']) && is_array($data['products'])) {
+                return [
+                    'success' => true,
+                    'products' => $data['products'],
+                ];
+            }
+
+            return [
+                'success' => false,
+                'error_code' => $data['error_code'] ?? 'error',
+                'message' => $data['message'] ?? 'Failed to load products',
+            ];
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            return [
+                'success' => false,
+                'error_code' => 'server_error',
+                'message' => 'Server connection error: ' . $e->getMessage(),
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'error_code' => 'error',
+                'message' => 'Error loading products: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Start a free trial: send the email OTP (step 1 of the trial flow).
+     * Signs the request and POSTs to StartTrial.php. No license is created here.
+     *
+     * @param array<string,mixed> $input Keys: extension_key, email, name, domain,
+     *        local_domain, staging_domain, language, terms_accepted, extension_name,
+     *        price_annual, price_lifetime
+     * @return array{success:bool, message?:string, error_code?:string, expires_in?:int, retry_after?:int, expiration_date_formatted?:string}
+     */
+    public function startTrial(array $input): array
+    {
+        $url = $this->getApiBaseUrl() . 'StartTrial.php';
+
+        $payload = [
+            'extension_key' => (string) ($input['extension_key'] ?? ''),
+            'email' => (string) ($input['email'] ?? ''),
+            'name' => (string) ($input['name'] ?? ''),
+            'domain' => (string) ($input['domain'] ?? ''),
+            'local_domain' => (string) ($input['local_domain'] ?? ''),
+            'staging_domain' => (string) ($input['staging_domain'] ?? ''),
+            'language' => (string) ($input['language'] ?? 'en'),
+            'terms_accepted' => !empty($input['terms_accepted']),
+            'extension_name' => (string) ($input['extension_name'] ?? ''),
+            'price_annual' => (string) ($input['price_annual'] ?? ''),
+            'price_lifetime' => (string) ($input['price_lifetime'] ?? ''),
+        ];
+
+        // The signature must cover the EXACT body bytes we transmit.
+        $rawBody = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $headers = $this->buildSignedHeaders($rawBody);
+        $headers['Content-Type'] = 'application/json';
+
+        try {
+            $data = $this->composerApiClient->requestJsonArray($url, 'POST', [
+                'headers' => $headers,
+                'body' => $rawBody,
+                'http_errors' => false,
+            ]);
+
+            if (is_array($data) && !empty($data['status'])) {
+                return [
+                    'success' => true,
+                    'message' => $data['message'] ?? 'Verification code sent.',
+                    'expires_in' => (int) ($data['expires_in'] ?? 600),
+                ];
+            }
+
+            $result = [
+                'success' => false,
+                'error_code' => $data['error_code'] ?? 'error',
+                'message' => $data['message'] ?? 'Failed to start the trial. Please try again.',
+            ];
+            if (isset($data['retry_after'])) {
+                $result['retry_after'] = (int) $data['retry_after'];
+            }
+            if (isset($data['expiration_date_formatted'])) {
+                $result['expiration_date_formatted'] = (string) $data['expiration_date_formatted'];
+            }
+            return $result;
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            return [
+                'success' => false,
+                'error_code' => 'server_error',
+                'message' => 'Server connection error: ' . $e->getMessage(),
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'error_code' => 'error',
+                'message' => 'Error starting trial: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Verify the trial OTP (step 2 of the trial flow). On success the server
+     * creates the trial license and returns its details.
+     *
+     * @param array<string,mixed> $input Keys: extension_key, email, otp
+     * @return array{success:bool, message?:string, error_code?:string, license_key?:string, order_id?:string, remaining_attempts?:int}
+     */
+    public function verifyTrialOtp(array $input): array
+    {
+        $url = $this->getApiBaseUrl() . 'VerifyTrialOtp.php';
+
+        $payload = [
+            'extension_key' => (string) ($input['extension_key'] ?? ''),
+            'email' => (string) ($input['email'] ?? ''),
+            'otp' => (string) ($input['otp'] ?? ''),
+        ];
+
+        $rawBody = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $headers = $this->buildSignedHeaders($rawBody);
+        $headers['Content-Type'] = 'application/json';
+
+        try {
+            $data = $this->composerApiClient->requestJsonArray($url, 'POST', [
+                'headers' => $headers,
+                'body' => $rawBody,
+                'http_errors' => false,
+            ]);
+
+            if (is_array($data) && !empty($data['status'])) {
+                return [
+                    'success' => true,
+                    'message' => $data['message'] ?? 'Trial license created successfully.',
+                    'extension_key' => $data['extension_key'] ?? $payload['extension_key'],
+                    'license_key' => $data['license_key'] ?? '',
+                    'user_name' => $data['user_name'] ?? '',
+                    'order_id' => $data['order_id'] ?? '',
+                    'expiration_date' => $data['expiration_date'] ?? '',
+                    'is_life_time' => $data['is_life_time'] ?? 0,
+                    'domain' => $data['domain'] ?? '',
+                ];
+            }
+
+            $result = [
+                'success' => false,
+                'error_code' => $data['error_code'] ?? 'error',
+                'message' => $data['message'] ?? 'Verification failed. Please try again.',
+            ];
+            if (isset($data['remaining_attempts'])) {
+                $result['remaining_attempts'] = (int) $data['remaining_attempts'];
+            }
+            return $result;
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            return [
+                'success' => false,
+                'error_code' => 'server_error',
+                'message' => 'Server connection error: ' . $e->getMessage(),
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'error_code' => 'error',
+                'message' => 'Error verifying code: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Resolve an encrypted purchase_token from the post-checkout redirect URL.
+     * Composer API decrypts; this extension never holds the encryption secret.
+     *
+     * @return array{success:bool, license_key?:string, message?:string, error_code?:string}
+     */
+    public function resolvePurchaseToken(string $purchaseToken): array
+    {
+        $url = $this->getApiBaseUrl() . 'ResolvePurchaseToken.php';
+
+        $payload = [
+            'purchase_token' => $purchaseToken,
+        ];
+
+        $rawBody = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $headers = $this->buildSignedHeaders($rawBody);
+        $headers['Content-Type'] = 'application/json';
+
+        try {
+            $data = $this->composerApiClient->requestJsonArray($url, 'POST', [
+                'headers' => $headers,
+                'body' => $rawBody,
+                'http_errors' => false,
+            ]);
+
+            if (is_array($data) && !empty($data['status'])) {
+                $licenseKey = trim((string)($data['license_key'] ?? ''));
+                if ($licenseKey === '') {
+                    return [
+                        'success' => false,
+                        'error_code' => 'invalid_token',
+                        'message' => 'Purchase token did not return a license key.',
+                    ];
+                }
+
+                return [
+                    'success' => true,
+                    'license_key' => $licenseKey,
+                ];
+            }
+
+            return [
+                'success' => false,
+                'error_code' => $data['error_code'] ?? 'error',
+                'message' => $data['message'] ?? 'Could not resolve purchase token.',
+            ];
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            return [
+                'success' => false,
+                'error_code' => 'server_error',
+                'message' => 'Server connection error: ' . $e->getMessage(),
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'error_code' => 'error',
+                'message' => 'Error resolving purchase token: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Get API base URL from extension configuration (falls back to production).
+     * Always returns a URL ending in a single trailing slash.
      */
     protected function getApiBaseUrl(): string
     {
+        $configured = $this->getExtensionConfiguration('apiBaseUrl', '');
+        if ($configured !== '') {
+            return rtrim($configured, '/') . '/';
+        }
+
         return 'https://composer.t3planet.cloud/API/';
+    }
+
+    /**
+     * Read a value from the ns_license extension configuration.
+     */
+    protected function getExtensionConfiguration(string $key, string $default = ''): string
+    {
+        try {
+            $value = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('ns_license', $key);
+            if (is_string($value) && trim($value) !== '') {
+                return trim($value);
+            }
+        } catch (\Throwable $e) {
+            // Configuration not available; use default.
+        }
+        return $default;
+    }
+
+    /**
+     * Build the HMAC authentication headers for a signed trial-API request.
+     * Returns an empty array when no shared secret is configured (the server
+     * then allows the request only in local development).
+     *
+     * @return array<string,string>
+     */
+    protected function buildSignedHeaders(string $rawBody = ''): array
+    {
+        $secret = $this->getExtensionConfiguration('sharedSecret');
+        if ($secret === '') {
+            return [];
+        }
+
+        $timestamp = (string) time();
+        $nonce = bin2hex(random_bytes(16));
+        $signature = hash_hmac('sha256', $timestamp . "\n" . $nonce . "\n" . $rawBody, $secret);
+
+        return [
+            'X-Timestamp' => $timestamp,
+            'X-Nonce' => $nonce,
+            'X-Signature' => $signature,
+        ];
     }
 
 }

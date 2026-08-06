@@ -9,3 +9,13 @@ $_EXTKEY = 'ns_license';
 
 // Register backend stylesheets
 $GLOBALS['TYPO3_CONF_VARS']['BE']['stylesheets']['ns_license'] = 'EXT:ns_license/Resources/Public/css/custom.css';
+
+// Catalog JSON cache (AI Universe / Extensions / Templates tabs)
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['ns_license_catalog'] ??= [
+    'frontend' => \TYPO3\CMS\Core\Cache\Frontend\VariableFrontend::class,
+    'backend' => \TYPO3\CMS\Core\Cache\Backend\Typo3DatabaseBackend::class,
+    'options' => [
+        'defaultLifetime' => 86400,
+    ],
+    'groups' => ['system'],
+];

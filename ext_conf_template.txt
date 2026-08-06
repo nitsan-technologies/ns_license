@@ -1,0 +1,2 @@
+# cat=api/basic/10; type=string; label=T3Planet API shared secret: Pre-filled with the T3Planet default; leave unchanged unless T3Planet support tells you otherwise.
+sharedSecret = 1d96d6fe6e2db9973b6e91d3603d4e03a1d4e095a2fba161799820a1720d2771

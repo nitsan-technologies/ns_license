@@ -1,29 +1,70 @@
-<div class="module-docheader t3js-module-docheader module-docheader-navigation pb-0 justify-content-end ns-license-module">
-    <div class="container">
-        <!-- Navigation Tabs -->
-        <ul class="nav nav-pills ns-license-nav-tabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="my-extensions-tab" data-bs-toggle="tab" data-bs-target="#extensions-pane" type="button" role="tab" aria-controls="extensions-pane" aria-selected="true">
-                    <f:translate key="license-tabs.my-extensions" />
-                    <f:variable name="premiumCount">{extensions.premium -> f:count()}</f:variable>
-                    <f:variable name="freeCount">{extensions.free -> f:count()}</f:variable>
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link t3js-shop-tab" id="shop-tab" data-bs-toggle="tab" data-bs-target="#shop-pane" data-shop-url="{f:uri.action(action: 'getShopData', absolute: 1)}" type="button" role="tab" aria-controls="shop-pane" aria-selected="false">
-                    <f:translate key="license-tabs.shop" />
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link t3js-services-tab" id="services-tab" data-bs-toggle="tab" data-bs-target="#services-pane" data-services-url="{f:uri.action(action: 'getServicesData', absolute: 1)}" type="button" role="tab" aria-controls="services-pane" aria-selected="false">
-                    <f:translate key="license-tabs.services" />
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a class="nav-link" href="https://t3planet.de/en/typo3-saas" target="_blank">
-                    <f:translate key="license-tabs.website-builder" />
-                </a>
-            </li>
-        </ul>
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers" data-namespace-typo3-fluid="true">
+<div class="module-docheader t3js-module-docheader module-docheader-navigation pb-0 ns-license-module-docheader justify-content-end">
+    <div class="ns-license-module-docheader__inner w-100">
+        <div class="d-flex flex-wrap align-items-end justify-content-between gap-2 ns-license-module-docheader__row">
+            <ul class="nav nav-pills ns-license-nav-tabs ns-license-nav-tabs--primary" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active is-active" id="my-extensions-tab" data-bs-toggle="tab" data-bs-target="#extensions-pane" type="button" role="tab" aria-controls="extensions-pane" aria-selected="true"
+                        data-page-title="{f:translate(key: 'license-tabs.my-extensions.title')}"
+                        data-page-subtitle="{f:translate(key: 'license-tabs.my-extensions.description')}">
+                        <f:translate key="license-tabs.my-extensions" />
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link t3js-catalog-tab" id="ai-universe-tab" data-bs-toggle="tab" data-bs-target="#ai-universe-pane" data-catalog-tab="ai-universe" data-catalog-url="{f:uri.action(action: 'getCatalogData', arguments: {tab: 'ai-universe'}, absolute: 1)}" type="button" role="tab" aria-controls="ai-universe-pane" aria-selected="false"
+                        data-page-title="{f:translate(key: 'license-tabs.ai-universe.title')}"
+                        data-page-subtitle="{f:translate(key: 'license-tabs.ai-universe.description')}">
+                        <f:translate key="license-tabs.ai-universe" />
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link t3js-catalog-tab" id="extensions-catalog-tab" data-bs-toggle="tab" data-bs-target="#extensions-catalog-pane" data-catalog-tab="extensions" data-catalog-url="{f:uri.action(action: 'getCatalogData', arguments: {tab: 'extensions'}, absolute: 1)}" type="button" role="tab" aria-controls="extensions-catalog-pane" aria-selected="false"
+                        data-page-title="{f:translate(key: 'license-tabs.extensions.title')}"
+                        data-page-subtitle="{f:translate(key: 'license-tabs.extensions.description')}">
+                        <f:translate key="license-tabs.extensions" />
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link t3js-catalog-tab" id="templates-tab" data-bs-toggle="tab" data-bs-target="#templates-pane" data-catalog-tab="templates" data-catalog-url="{f:uri.action(action: 'getCatalogData', arguments: {tab: 'templates'}, absolute: 1)}" type="button" role="tab" aria-controls="templates-pane" aria-selected="false"
+                        data-page-title="{f:translate(key: 'license-tabs.templates.title')}"
+                        data-page-subtitle="{f:translate(key: 'license-tabs.templates.description')}">
+                        <f:translate key="license-tabs.templates" />
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" href="https://t3planet.de/en/typo3-saas" target="_blank" rel="noopener noreferrer">
+                        <f:translate key="license-tabs.website-builder" />
+                    </a>
+                </li>
+            </ul>
+            <div class="d-flex flex-wrap align-items-end gap-2 ns-license-module-docheader__aside mb-0">
+                <div class="d-flex align-items-center gap-2 mb-0 ns-license-module-docheader-actions">
+                    <button type="button" class="btn btn-primary t3js-get-license-trigger d-inline-flex align-items-center gap-1">
+                        <span class="btn-icon" aria-hidden="true">
+                            <core:icon identifier="actions-plus" size="small" alternativeMarkupIdentifier="inline" />
+                        </span>
+                        <span><f:translate key="license-get-new.button.get_new" extensionName="ns_license" /></span>
+                    </button>
+                    <a class="btn btn-default ns-license-module-docheader-actions__icon d-inline-flex align-items-center justify-content-center"
+                       href="https://t3planet.de/support"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       title="{f:translate(key: 'license-footer.support', extensionName: 'ns_license')}"
+                       aria-label="{f:translate(key: 'license-footer.support', extensionName: 'ns_license')}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"></path></svg>
+                    </a>
+                    <a class="btn btn-default ns-license-module-docheader-actions__icon ns-license-module-docheader-actions__user d-inline-flex align-items-center justify-content-center"
+                       href="https://t3planet.shop/portal/signin/t3planet"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       title="{f:translate(key: 'license-header.account', extensionName: 'ns_license')}"
+                       aria-label="{f:translate(key: 'license-header.account', extensionName: 'ns_license')}">
+                        <core:icon identifier="actions-user" size="small" alternativeMarkupIdentifier="inline" />
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+</html>

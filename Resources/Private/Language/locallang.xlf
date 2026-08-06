@@ -247,14 +247,296 @@
             <trans-unit id="license-tabs.my-extensions">
                 <source>My Extensions</source>
             </trans-unit>
+            <trans-unit id="license-tabs.my-extensions.title">
+                <source>My Extensions</source>
+            </trans-unit>
+            <trans-unit id="license-tabs.my-extensions.description">
+                <source>Manage your licenses and discover new extensions</source>
+            </trans-unit>
+            <trans-unit id="license-tabs.ai-universe">
+                <source>AI Universe</source>
+            </trans-unit>
+            <trans-unit id="license-tabs.ai-universe.title">
+                <source>AI Universe</source>
+            </trans-unit>
+            <trans-unit id="license-tabs.ai-universe.description">
+                <source>Discover AI-powered TYPO3 extensions</source>
+            </trans-unit>
+            <trans-unit id="license-tabs.extensions">
+                <source>Extensions</source>
+            </trans-unit>
+            <trans-unit id="license-tabs.extensions.title">
+                <source>Extensions</source>
+            </trans-unit>
+            <trans-unit id="license-tabs.extensions.description">
+                <source>Browse premium and free TYPO3 extensions</source>
+            </trans-unit>
+            <trans-unit id="license-tabs.templates">
+                <source>Templates</source>
+            </trans-unit>
+            <trans-unit id="license-tabs.templates.title">
+                <source>Templates</source>
+            </trans-unit>
+            <trans-unit id="license-tabs.templates.description">
+                <source>Explore TYPO3 templates and sitepackages</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.search-placeholder">
+                <source>Search products...</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.filter-all">
+                <source>All Extensions</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.filter-all-templates">
+                <source>All Templates</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.filter-premium">
+                <source>Premium Only</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.filter-free">
+                <source>Free Only</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.sort.label">
+                <source>Sort products</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.sort.price-asc">
+                <source>Price: Low → High</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.sort.price-desc">
+                <source>Price: High → Low</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.view.label">
+                <source>Catalog view</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.view.card">
+                <source>Card view</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.view.list">
+                <source>List view</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.hero.most-popular">
+                <source>Most Popular</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.hero.most-popular-template">
+                <source>Most Popular Template</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.list-heading">
+                <source>All products</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.list-heading.templates">
+                <source>Premium Templates</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.list-heading.premium-extensions">
+                <source>Premium Extensions</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.list-heading.premium-templates">
+                <source>Premium Templates</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.list-heading.premium-ai">
+                <source>Premium AI Products</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.list-heading.free-extensions">
+                <source>Free Extensions</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.list-heading.free-templates">
+                <source>Free Templates</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.list-heading.free-ai">
+                <source>Free AI Products</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail">
+                <source>Detail</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.back">
+                <source>Back</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.buy-now">
+                <source>Buy Now</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.get-started">
+                <source>Get Started</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.composer">
+                <source>Composer Require</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.composer.copy">
+                <source>Copy</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.composer.copied">
+                <source>Copied</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.resources">
+                <source>Resources</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.resource.docs">
+                <source>Documentation</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.resource.report-issue">
+                <source>Found an issue</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.resource.product">
+                <source>T3Planet Page</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.resource.schedule">
+                <source>Schedule a Call</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.changelog.latest">
+                <source>Latest</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.author">
+                <source>Author</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.company">
+                <source>Company</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.last-update">
+                <source>Last Update</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.first-upload">
+                <source>First Upload</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.downloads">
+                <source>Downloads</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.category">
+                <source>Category</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.extension-key">
+                <source>Extension Key</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.version">
+                <source>Version</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta.state">
+                <source>State</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.empty">
+                <source>No products available. Click Get Updates to refresh the catalog.</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.overview">
+                <source>Overview</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.version-support">
+                <source>TYPO3 Version Support</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.version-support.label">
+                <source>This version supports TYPO3</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.tags">
+                <source>Tags</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security">
+                <source>Security &amp; Integrity</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.checksum-label">
+                <source>SHA-1 Checksum</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.checksum-hint">
+                <source>Verify this Composer SHA-1 checksum after downloading to ensure the file is authentic and unmodified.</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.copy">
+                <source>Copy checksum</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.copied">
+                <source>Copied</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.pgp-title">
+                <source>PGP Signed by T3Planet</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.pgp-text">
+                <source>All releases are cryptographically signed with T3Planet's PGP key. Signed by</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.verify-title">
+                <source>How to verify the checksum</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.verify-step1">
+                <source>Download the Composer release zip for this product version from the T3Planet Composer repository (the same archive Composer installs — not a TER zip).</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.verify-step2">
+                <source>Run one of the following commands on the downloaded zip:</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.verify-step2-linux">
+                <source>Linux</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.verify-step2-macos">
+                <source>macOS</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.security.verify-step3">
+                <source>Compare the output with the SHA-1 checksum above for this version — they must match exactly.</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.keywords">
+                <source>Keywords</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.features">
+                <source>Features</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.reviews">
+                <source>Reviews</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.references">
+                <source>References</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.documentation">
+                <source>Documentation</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.changelog">
+                <source>Changelog</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.faq">
+                <source>Frequently Asked Questions</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.related">
+                <source>Frequently Bought Together</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.related.view">
+                <source>View</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.demo.frontend">
+                <source>Frontend Demo</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.demo.backend">
+                <source>Demo</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.meta">
+                <source>Details</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.dependencies">
+                <source>Dependencies</source>
+            </trans-unit>
+            <trans-unit id="license-loading.catalog">
+                <source>Loading catalog...</source>
+            </trans-unit>
+            <trans-unit id="license-loading.error.catalog-url-not-found">
+                <source>Catalog URL not found.</source>
+            </trans-unit>
+            <trans-unit id="license-loading.error.catalog-failed">
+                <source>Failed to load catalog data. Please try again.</source>
+            </trans-unit>
+            <trans-unit id="license-loading.error.catalog-error">
+                <source>Error loading catalog data. Please refresh the page.</source>
+            </trans-unit>
             <trans-unit id="license-tabs.shop">
                 <source>T3Planet Shop</source>
+            </trans-unit>
+            <trans-unit id="license-tabs.shop.title">
+                <source>T3Planet Shop</source>
+            </trans-unit>
+            <trans-unit id="license-tabs.shop.description">
+                <source>Browse premium extensions, templates, and AI products</source>
             </trans-unit>
             <trans-unit id="license-tabs.services">
                 <source>TYPO3 Services</source>
             </trans-unit>
+            <trans-unit id="license-tabs.services.title">
+                <source>TYPO3 Services</source>
+            </trans-unit>
+            <trans-unit id="license-tabs.services.description">
+                <source>Find professional TYPO3 services for your projects</source>
+            </trans-unit>
             <trans-unit id="license-tabs.website-builder">
                 <source>Website Builder</source>
+            </trans-unit>
+            <trans-unit id="license-header.account">
+                <source>Account</source>
             </trans-unit>
             <!-- Extensions Filter Labels -->
             <trans-unit id="license-extensions.search-placeholder">
@@ -264,16 +546,25 @@
                 <source>All Extensions</source>
             </trans-unit>
             <trans-unit id="license-extensions.filter-premium">
-                <source>Premium Only</source>
+                <source>Premium Extensions</source>
             </trans-unit>
             <trans-unit id="license-extensions.filter-trial">
                 <source>Trial Only</source>
             </trans-unit>
             <trans-unit id="license-extensions.filter-free">
-                <source>Free Only</source>
+                <source>Free Extensions</source>
             </trans-unit>
             <trans-unit id="license-extensions.section-title-free">
                 <source>Free Extensions</source>
+            </trans-unit>
+            <trans-unit id="license-extensions.section-title-premium">
+                <source>Premium Extensions</source>
+            </trans-unit>
+            <trans-unit id="license-extensions.section-subtitle-free">
+                <source>100% free</source>
+            </trans-unit>
+            <trans-unit id="license-extensions.section-subtitle-premium">
+                <source>licensed extensions</source>
             </trans-unit>
             <trans-unit id="license-extensions.get-updates">
                 <source>Get Updates</source>
@@ -288,10 +579,13 @@
                 <source>All Sections</source>
             </trans-unit>
             <trans-unit id="license-shop.know-more">
-                <source>Get Free Extension</source>
+                <source>Know More</source>
             </trans-unit>
             <trans-unit id="license-shop.live-demo">
-                <source>Live Demo</source>
+                <source>Demo</source>
+            </trans-unit>
+            <trans-unit id="license-shop.free-trial">
+                <source>Free Trial</source>
             </trans-unit>
             <!-- Services Filter Labels -->
             <trans-unit id="license-services.search-placeholder">
@@ -407,6 +701,24 @@
             <trans-unit id="license-footer.developed-by">
                 <source>Developed with 💙 by Team T3Planet.</source>
             </trans-unit>
+            <trans-unit id="license-footer.developed-by.prefix">
+                <source>Developed with 💙 by Team </source>
+            </trans-unit>
+            <trans-unit id="license-footer.developed-by.brand">
+                <source>T3Planet.</source>
+            </trans-unit>
+            <trans-unit id="license-footer.developed-by.link">
+                <source>https://t3planet.de/en/</source>
+            </trans-unit>
+            <trans-unit id="license-footer.about">
+                <source>About</source>
+            </trans-unit>
+            <trans-unit id="license-footer.about.link">
+                <source>https://t3planet.de/en/</source>
+            </trans-unit>
+            <trans-unit id="license-footer.demo">
+                <source>Demo</source>
+            </trans-unit>
             <trans-unit id="license-footer.demo-guide">
                 <source>Demo Guide</source>
             </trans-unit>
@@ -446,6 +758,66 @@
             </trans-unit>
             <trans-unit id="license.renew">
                 <source>Renew</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.title">
+                <source>Renew Subscription</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.close">
+                <source>Close</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.cancel">
+                <source>Cancel</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.status_label">
+                <source>Status:</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.expiry_label">
+                <source>Expiry Date:</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.status.active">
+                <source>Active</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.status.expiring">
+                <source>Expiring Soon</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.status.expired">
+                <source>Expired</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.intro">
+                <source>Your annual subscription for this product is nearing renewal. Renew to keep uninterrupted access to product access, updates and support from our team.</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.step1_prefix">
+                <source>Step 1. Log in to your account:</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.step1_num">
+                <source>Step 1.</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.step1_text">
+                <source>Log in to your account:</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.step2">
+                <source>Step 2. Open the Invoice module and pay your renewal invoice.</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.step2_num">
+                <source>Step 2.</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.step2_text">
+                <source>Open the Invoice module and pay your renewal invoice.</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.step3">
+                <source>Step 3. Once we receive your payment, we'll manually activate your renewal within 2 business days and notify you by email.</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.step3_num">
+                <source>Step 3.</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.step3_text">
+                <source>Once we receive your payment, we'll manually activate your renewal within 2 business days and notify you by email.</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.note">
+                <source>Note: Renewals are currently processed manually. Auto-renewal is coming soon.</source>
+            </trans-unit>
+            <trans-unit id="license.renew.modal.cta">
+                <source>Renew Now</source>
             </trans-unit>
             <trans-unit id="license.buy">
                 <source>Buy</source>
@@ -574,6 +946,363 @@
             </trans-unit>
             <trans-unit id="extension.search.no_result">
                 <source>No extensions found matching your criteria</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.button.get_new">
+                <source>Get New License</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.modal.title">
+                <source>Get New License</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.modal.subtitle">
+                <source>Select a product to start a free 30-day trial or buy a license.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.meta">
+                <source>Get New License · Step %d of %d</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.kicker.before">
+                <source>Get New License · Step </source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.kicker.of">
+                <source> of </source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.stepper_label">
+                <source>License setup steps</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.step.welcome">
+                <source>Welcome</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.step.products">
+                <source>Mode</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.step.details">
+                <source>Details</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.step.otp">
+                <source>Verify</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.step.success">
+                <source>Done</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.title.welcome">
+                <source>Welcome to Get New License</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.title.products">
+                <source>Free Trial or Purchase</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.title.form">
+                <source>Trial details</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.form.lead">
+                <source>Enter your contact details and domain to receive a verification code for your free trial.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.purchase.lead">
+                <source>Review the price and terms, then continue to secure checkout for your full license.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.title.purchase">
+                <source>Confirm purchase</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.title.otp">
+                <source>Verify your email</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.title.success">
+                <source>You're all set</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.intro.title">
+                <source>T3Planet License Setup</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.intro.text">
+                <source>This short wizard helps you start a free trial or buy a license. It usually takes under 2 minutes.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.checklist.title">
+                <source>What you'll set up</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.checklist.product.title">
+                <source>Product</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.checklist.product.text">
+                <source>Pick the extension or template you want to license.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.checklist.mode.title">
+                <source>Trial or purchase</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.checklist.mode.text">
+                <source>Start a free 30-day trial or buy a full license.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.checklist.activate.title">
+                <source>Activate on this site</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.checklist.activate.text">
+                <source>Verify your email (trial) or complete checkout, then activate the key here.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.callout">
+                <source>You can close this wizard anytime and continue later from Get New License.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.button.skip">
+                <source>Skip step</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.button.start">
+                <source>Get Started</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.select_product">
+                <source>Select a product</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.search_product">
+                <source>Search products</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.search_product_placeholder">
+                <source>Search by name or extension key…</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.search_no_match">
+                <source>No products match your search.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.loading">
+                <source>Loading products…</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.no_products">
+                <source>No products are available right now.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.choose_product">
+                <source>Choose a product…</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.other_products">
+                <source>Other products</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.select_product_first">
+                <source>Please select a product first.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.error.load_failed">
+                <source>Could not load products. Please try again.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.error.generic">
+                <source>Something went wrong. Please try again.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.notification.warning">
+                <source>Warning</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.notification.error">
+                <source>Error</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.notification.success">
+                <source>Success</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.notification.info">
+                <source>Notice</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.mode.trial">
+                <source>Start Free Trial</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.mode.buy">
+                <source>Buy / Purchase</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.heading">
+                <source>License mode</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.sub">
+                <source>Choose how you want to get your license. You can switch between trial and purchase anytime before you continue.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.trial.title">
+                <source>Free Trial</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.trial.badge">
+                <source>Recommended</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.trial.desc">
+                <source>Start a free 30-day trial for the selected product. No payment required to evaluate features on your domain.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.trial.meta1">
+                <source>No credit card required</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.trial.meta2">
+                <source>Full feature access for 30 days</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.trial.meta3">
+                <source>Activate instantly after email verification</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.trial.pricing">
+                <source>Free for 30 days · Upgrade to a full license anytime</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.buy.title">
+                <source>Buy / Purchase</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.buy.button">
+                <source>Buy Now</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.buy.badge">
+                <source>Full license</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.buy.desc">
+                <source>Purchase a full license and complete checkout securely. Your license is activated automatically after payment.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.buy.meta1">
+                <source>Secure checkout on t3planet.shop</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.buy.meta2">
+                <source>Production-ready license key</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.wizard.mode.buy.meta3">
+                <source>Activate on this site after payment</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.form.selected_product">
+                <source>Selected product</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.form.name">
+                <source>Name</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.form.name_placeholder">
+                <source>Your name</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.form.email">
+                <source>Email</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.form.email_placeholder">
+                <source>you@example.com</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.form.domain">
+                <source>Domain</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.form.domain_placeholder">
+                <source>example.com</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.form.domain_help">
+                <source>Enter a single domain where you will use this extension (no comma-separated list).</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.form.terms_prefix">
+                <source>I agree to the</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.form.terms_link">
+                <source>Terms &amp; Conditions</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.form.terms_and">
+                <source>and</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.form.privacy_link">
+                <source>Privacy Policy</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.form.error.email">
+                <source>Please enter a valid email address.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.form.error.disposable_email">
+                <source>Temporary or disposable email addresses are not allowed.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.form.error.domain">
+                <source>Please enter your domain.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.form.error.domain_multiple">
+                <source>Please enter only one domain (comma-separated domains are not allowed).</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.form.error.domain_format">
+                <source>Enter a valid domain (e.g. t3planet.de, typo3-src-12.4.38.ddev.site).</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.form.error.terms">
+                <source>Please accept the Terms &amp; Conditions and Privacy Policy.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.form.sending">
+                <source>Sending…</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.form.submit">
+                <source>Send Code</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.otp.title">
+                <source>Verify Email</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.otp.sent_to">
+                <source>Please enter the 6-digit code we just sent to %s</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.otp.no_code">
+                <source>Didn't receive the code?</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.otp.resend">
+                <source>Resend code</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.otp.verify">
+                <source>Verify &amp; Activate</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.otp.verifying">
+                <source>Verifying…</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.otp.error.invalid">
+                <source>The code is incorrect or has expired. Please try again.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.otp.attempts_left">
+                <source>%d attempt(s) left.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.success.title">
+                <source>Your trial is ready!</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.success.subtitle">
+                <source>Your 30-day free trial license has been created.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.success.license_key">
+                <source>License key</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.success.email_note">
+                <source>We've also emailed the license details to you.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.success.done">
+                <source>Done</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.success.close">
+                <source>Close</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.success.activate">
+                <source>Activate license</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.success.activating">
+                <source>Activating…</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.success.activate_failed">
+                <source>Could not activate the license. You can Activate it manually on this page.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.success.activate_missing_key">
+                <source>No license key to activate. Check your email, then Activate it on this page.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.button.back">
+                <source>Back</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.button.continue">
+                <source>Continue</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.buy.unavailable">
+                <source>Purchase is not available for this product yet.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.buy.price_label">
+                <source>Price</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.buy.price_empty">
+                <source>See checkout</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.buy.billing_annual">
+                <source>/ year</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.buy.help">
+                <source>You will complete payment securely on t3planet.shop. After payment, your license is activated automatically.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.buy.pay">
+                <source>Proceed to payment</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.buy.preparing">
+                <source>Preparing…</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.buy.checkout_invalid">
+                <source>This checkout link is not allowed.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.buy.open_new_tab">
+                <source>Open in new tab</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.buy.checkout_title">
+                <source>T3Planet Checkout</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.buy.success.title">
+                <source>Your license is ready!</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.buy.success.subtitle">
+                <source>Your license has been created.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.buy.success.email_note">
+                <source>We've also emailed the license details to you.</source>
+            </trans-unit>
+            <trans-unit id="license-get-new.buy.success.flash">
+                <source>Payment received. Check your email for the license key, then Activate it on this page.</source>
             </trans-unit>
         </body>
     </file>

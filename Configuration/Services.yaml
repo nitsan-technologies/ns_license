@@ -18,11 +18,9 @@ services:
     arguments:
       $moduleTemplateFactory: '@TYPO3\CMS\Backend\Template\ModuleTemplateFactory'
       $requestFactory: '@TYPO3\CMS\Core\Http\RequestFactory'
-      $fileHandlingUtility: '@TYPO3\CMS\Extensionmanager\Utility\FileHandlingUtility'
-      $managementService: '@TYPO3\CMS\Extensionmanager\Service\ExtensionManagementService'
-      $contentObject: '@TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer'
       $nsLicenseRepository: '@NITSAN\NsLicense\Domain\Repository\NsLicenseRepository'
       $licenseService: '@NITSAN\NsLicense\Service\LicenseService'
+      $catalogCacheService: '@NITSAN\NsLicense\Service\CatalogCacheService'
 
   NITSAN\NsLicense\Domain\Repository\NsLicenseRepository:
     public: true
