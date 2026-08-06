@@ -680,9 +680,10 @@ function populateSecurity(view, item) {
 }
 
 /**
- * Meta-bar Features / Reviews / References → external product-page links.
- * Prefers API fields (featuresUrl / reviewsUrl / referencesUrl); falls back to productUrl.
- * Always appends section hashes: #features, #review, #reference.
+ * Meta-bar Features / Reviews / References / Documentation → external links.
+ * Prefers API fields (featuresUrl / reviewsUrl / referencesUrl / documentationUrl);
+ * Features/Reviews/References fall back to productUrl + section hashes.
+ * Documentation uses the same URL as the Resources Documentation link (no productUrl fallback).
  * @param {HTMLElement} view
  * @param {object} item
  */
@@ -690,10 +691,20 @@ function populateExternalNav(view, item) {
   const base = String(item.productUrl || item.knowMoreUrl || '').trim();
   const sectionUrls = (item.sectionUrls && typeof item.sectionUrls === 'object') ? item.sectionUrls : {};
   const navLinks = (item.navLinks && typeof item.navLinks === 'object') ? item.navLinks : {};
+  const docsUrl = String(
+    item.documentationUrl
+    || item.documentationLink
+    || item.documentation_link
+    || item.details?.documentation_link
+    || sectionUrls.documentation
+    || navLinks.documentation
+    || ''
+  ).trim();
   const byKey = {
     features: String(item.featuresUrl || sectionUrls.features || navLinks.features || '').trim(),
     reviews: String(item.reviewsUrl || sectionUrls.reviews || navLinks.reviews || '').trim(),
     references: String(item.referencesUrl || sectionUrls.references || navLinks.references || '').trim(),
+    documentation: docsUrl,
   };
   const hashByKey = {
     features: 'features',
@@ -703,13 +714,13 @@ function populateExternalNav(view, item) {
 
   view.querySelectorAll('.js-product-detail-ext-link').forEach((link) => {
     const key = String(link.dataset.extKey || '').trim();
-    const url = byKey[key] || base;
+    const url = byKey[key] || (key === 'documentation' ? '' : base);
     if (!url) {
       setVisible(link, false);
       link.removeAttribute('href');
       return;
     }
-    link.href = withUrlHash(url, hashByKey[key] || key);
+    link.href = hashByKey[key] ? withUrlHash(url, hashByKey[key]) : url;
     setVisible(link, true);
   });
 }
@@ -1262,7 +1273,7 @@ function populateResources(view, item) {
   const links = [
     {
       href: docsUrl,
-      label: view.dataset.labelDocs || 'Extension Manual',
+      label: view.dataset.labelDocs || 'Documentation',
       icon: 'resource-docs',
     },
     {

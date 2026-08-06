@@ -10,7 +10,17 @@
 
       <div class="ns-license-tab-page-header mb-3">
           <div class="ns-license-tab-page-header__main min-w-0">
-              <h1 class="mb-0 ns-license-tab-page-header__title">
+              <h1 class="mb-1 ns-license-tab-page-header__title align-items-center">
+                  <span class="ns-license-tab-page-header__icon" aria-hidden="true">
+                      <f:if condition="{t3version} == 14">
+                          <f:then>
+                              <core:icon identifier="submodule-nslicense-v14" size="medium" alternativeMarkupIdentifier="inline" />
+                          </f:then>
+                          <f:else>
+                              <core:icon identifier="submodule-nslicense-v12" size="medium" alternativeMarkupIdentifier="inline" />
+                          </f:else>
+                      </f:if>
+                  </span>
                   <span class="ns-license-tab-page-header__brand"><f:translate key="license-tabs.shop.title" extensionName="ns_license" /></span>
                   <span class="ns-license-tab-page-header__sep" aria-hidden="true">|</span>
                   <span class="ns-license-tab-page-header__section"><f:translate key="license-tabs.my-extensions.title" extensionName="ns_license" /></span>

@@ -154,6 +154,10 @@ class NsLicenseModuleController extends ActionController
             }
         }
 
+        if (is_array($heroItem)) {
+            $heroItem = $this->enrichHeroFromDetail($heroItem);
+        }
+
         $itemsByKey = [];
         foreach ($items as $item) {
             if (!is_array($item)) {
@@ -188,6 +192,89 @@ class NsLicenseModuleController extends ActionController
 
         return str_contains($normalized, 'most popular')
             || str_contains($normalized, 'beliebteste');
+    }
+
+    /**
+     * Catalog list payloads often omit detail fields (features, detailImage).
+     * Pull them from product detail for the hero banner.
+     *
+     * @param array<string, mixed> $heroItem
+     * @return array<string, mixed>
+     */
+    private function enrichHeroFromDetail(array $heroItem): array
+    {
+        $extensionKey = trim((string)($heroItem['extensionKey'] ?? ''));
+        if ($extensionKey === '') {
+            return $heroItem;
+        }
+
+        $needsFeatures = !is_array($heroItem['features'] ?? null) || $heroItem['features'] === [];
+        $needsDetailImage = trim((string)($heroItem['detailImage'] ?? '')) === '';
+
+        if (!$needsFeatures && !$needsDetailImage) {
+            if (is_array($heroItem['features'] ?? null)) {
+                $heroItem['features'] = $this->normalizeFeatureLabels($heroItem['features']);
+            }
+            return $heroItem;
+        }
+
+        $detail = $this->catalogCacheService->fetchProductDetail($extensionKey);
+        if (!is_array($detail)) {
+            if (is_array($heroItem['features'] ?? null) && $heroItem['features'] !== []) {
+                $heroItem['features'] = $this->normalizeFeatureLabels($heroItem['features']);
+            }
+            return $heroItem;
+        }
+
+        if ($needsFeatures) {
+            $features = $detail['features'] ?? null;
+            if (is_array($features) && $features !== []) {
+                $heroItem['features'] = $this->normalizeFeatureLabels($features);
+            }
+        } elseif (is_array($heroItem['features'] ?? null)) {
+            $heroItem['features'] = $this->normalizeFeatureLabels($heroItem['features']);
+        }
+
+        if ($needsDetailImage) {
+            $detailImage = trim((string)($detail['detailImage'] ?? ''));
+            if ($detailImage !== '') {
+                $heroItem['detailImage'] = $detailImage;
+            }
+        }
+
+        return $heroItem;
+    }
+
+    /**
+     * @param list<mixed>|array<int|string, mixed> $features
+     * @return list<string>
+     */
+    private function normalizeFeatureLabels(array $features): array
+    {
+        $labels = [];
+        foreach ($features as $feature) {
+            if (is_string($feature) || is_numeric($feature)) {
+                $label = trim((string)$feature);
+            } elseif (is_array($feature)) {
+                $label = trim((string)(
+                    $feature['label']
+                    ?? $feature['title']
+                    ?? $feature['name']
+                    ?? $feature['text']
+                    ?? ''
+                ));
+            } else {
+                continue;
+            }
+            if ($label !== '') {
+                $labels[] = $label;
+            }
+            if (count($labels) >= 5) {
+                break;
+            }
+        }
+
+        return $labels;
     }
 
     /**

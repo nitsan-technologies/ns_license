@@ -124,6 +124,21 @@
                         <p class="card-text mb-3 text-variant">{item.description}</p>
                     </f:if>
 
+                    <f:if condition="{item.features}">
+                        <ul class="catalog-hero__features list-unstyled mb-3">
+                            <f:for each="{item.features}" as="feature" iteration="i">
+                                <f:if condition="{i.index} < 5">
+                                    <li class="catalog-hero__feature">
+                                        <span class="catalog-hero__feature-icon" aria-hidden="true">
+                                            <core:icon identifier="actions-check" size="small" />
+                                        </span>
+                                        <span class="catalog-hero__feature-label">{feature}</span>
+                                    </li>
+                                </f:if>
+                            </f:for>
+                        </ul>
+                    </f:if>
+
                     <f:if condition="{item.rating} || {item.downloads} || {item.price}">
                         <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap mb-3">
                             <div class="meta-info mb-0">
@@ -141,21 +156,6 @@
                                 </f:if>
                             </div>
                         </div>
-                    </f:if>
-
-                    <f:if condition="{item.features}">
-                        <ul class="catalog-hero__features list-unstyled mb-3">
-                            <f:for each="{item.features}" as="feature" iteration="i">
-                                <f:if condition="{i.index} < 5">
-                                    <li class="d-flex align-items-start gap-2 mb-1">
-                                        <span class="text-success flex-shrink-0" aria-hidden="true">
-                                            <core:icon identifier="actions-check" size="small" />
-                                        </span>
-                                        <span>{feature}</span>
-                                    </li>
-                                </f:if>
-                            </f:for>
-                        </ul>
                     </f:if>
 
                     <div class="d-flex flex-wrap gap-2">
