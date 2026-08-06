@@ -144,7 +144,8 @@ class NsLicenseModuleController extends ActionController
             $isFree = CatalogTabMapper::isFreeItem($item);
             $item['isFree'] = $isFree;
 
-            if ($heroItem === null && !$isFree && $this->isMostPopularBadge((string)($item['badge'] ?? ''))) {
+            // Paid or free: first "Most Popular" / "Beliebteste" badge becomes the tab hero.
+            if ($heroItem === null && $this->isMostPopularBadge((string)($item['badge'] ?? ''))) {
                 $heroItem = $item;
                 continue;
             }
