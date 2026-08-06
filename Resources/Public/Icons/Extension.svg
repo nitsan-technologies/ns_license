@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Extension Manager icon (TYPO3 v13+): Resources/Public/Icons/Extension.svg -->
+  <rect width="32" height="32" fill="#a899e5"/>
+  <g transform="translate(1 4) scale(1.7)" fill="#ffffff">
+    <path d="M5.5 12a.5.5 0 1 1-.001 1.001A.5.5 0 0 1 5.5 12m0-1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11.5 12a.5.5 0 1 1-.001 1.001A.5.5 0 0 1 11.5 12m0-1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM3.75 2h-2.5a.25.25 0 0 0-.25.25v.5c0 .138.112.25.25.25H3l1 6v1.75c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-.5a.25.25 0 0 0-.25-.25H5V9h7.82a.25.25 0 0 0 .237-.171l1.833-5.5A.25.25 0 0 0 14.653 3H4v-.75A.25.25 0 0 0 3.75 2zm1.097 6L4.18 4h9.433l-1.334 4H4.847z"/>
+  </g>
+  <g fill="#ffffff" transform="translate(19 1)">
+    <path d="M5.5 0l1.65 3.85L11 5.5l-3.85 1.65L5.5 11l-1.65-3.85L0 5.5l3.85-1.65z"/>
+  </g>
+</svg>
