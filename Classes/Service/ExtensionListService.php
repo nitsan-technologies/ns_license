@@ -146,7 +146,7 @@ class ExtensionListService
     }
 
     /**
-     * Installed free catalog products (empty price + downloads != 0).
+     * Installed free catalog products (isFree / price Free / free sections).
      * Excludes keys that already appear under premium (licensed).
      *
      * @param array<string, array> $premium
@@ -246,9 +246,7 @@ class ExtensionListService
                 if (!is_array($item)) {
                     continue;
                 }
-                $isFree = array_key_exists('isFree', $item)
-                    ? (bool)$item['isFree']
-                    : CatalogTabMapper::isFreeItem($item);
+                $isFree = CatalogTabMapper::isFreeItem($item);
                 if (!$isFree) {
                     continue;
                 }

@@ -24,7 +24,10 @@ use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Service\DependencyOrderingService;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use TYPO3\CMS\Core\Http\HtmlResponse;
 use TYPO3\CMS\Core\Http\JsonResponse;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Fluid\View\StandaloneView;
 use NITSAN\NsLicense\Domain\Repository\NsLicenseRepository;
 
 /***
@@ -138,9 +141,7 @@ class NsLicenseModuleController extends ActionController
             if (!is_array($item)) {
                 continue;
             }
-            $isFree = array_key_exists('isFree', $item)
-                ? (bool)$item['isFree']
-                : CatalogTabMapper::isFreeItem($item);
+            $isFree = CatalogTabMapper::isFreeItem($item);
             $item['isFree'] = $isFree;
 
             if ($heroItem === null && !$isFree && $this->isMostPopularBadge((string)($item['badge'] ?? ''))) {
@@ -169,7 +170,16 @@ class NsLicenseModuleController extends ActionController
             }
         }
 
-        $view = $this->initializeModuleTemplate($this->request);
+        // Return a clean HTML fragment for AJAX (not a full ModuleTemplate shell).
+        $privatePath = ExtensionManagementUtility::extPath('ns_license') . 'Resources/Private/';
+        $view = GeneralUtility::makeInstance(StandaloneView::class);
+        if (method_exists($view, 'setRequest')) {
+            $view->setRequest($this->request);
+        }
+        $view->setTemplateRootPaths([$privatePath . 'Templates/']);
+        $view->setPartialRootPaths([$privatePath . 'Partials/']);
+        $view->setLayoutRootPaths([$privatePath . 'Layouts/']);
+        $view->setTemplatePathAndFilename($privatePath . 'Templates/NsLicenseModule/Catalog.html');
         $view->assignMultiple([
             'catalogTab' => $tab,
             'catalogData' => $tabData,
@@ -180,7 +190,7 @@ class NsLicenseModuleController extends ActionController
             't3version' => $this->typo3Version,
         ]);
 
-        return $view->renderResponse('NsLicenseModule/Catalog');
+        return new HtmlResponse($view->render());
     }
 
     private function isMostPopularBadge(string $badge): bool
