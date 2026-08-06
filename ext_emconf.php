@@ -1,7 +1,7 @@
 <?php
 
 $EM_CONF['ns_license'] = [
-    'title' => 'License Manager',
+    'title' => 'T3Planet Shop',
     'description' => 'Manage licenses of your TYPO3 templates and extensions purchased from T3Planet. Includes activation and license validation. Documentation available at https://docs.t3planet.com/en/latest/License/LicenseActivation/Index.html',
     'category' => 'templates',
     'author' => 'Team T3Planet',
