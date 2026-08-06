@@ -26,9 +26,6 @@ use TYPO3\CMS\Core\Service\DependencyOrderingService;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use NITSAN\NsLicense\Domain\Repository\NsLicenseRepository;
-use TYPO3\CMS\Extensionmanager\Utility\FileHandlingUtility;
-use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
-use TYPO3\CMS\Extensionmanager\Service\ExtensionManagementService;
 
 /***
  *
@@ -50,8 +47,6 @@ class NsLicenseModuleController extends ActionController
 
     protected $isComposerMode = false;
 
-    protected $composerSiteRoot = false;
-
     protected int $typo3Version = 0;
     
     /**
@@ -60,19 +55,9 @@ class NsLicenseModuleController extends ActionController
     private mixed $cacheManager;
 
 
-    /**
-     * @param ModuleTemplateFactory $moduleTemplateFactory
-     * @param RequestFactory $requestFactory
-     * @param FileHandlingUtility $fileHandlingUtility
-     * @param ExtensionManagementService $managementService
-     * @param ContentObjectRenderer $contentObject
-     */
     public function __construct(
         protected readonly ModuleTemplateFactory $moduleTemplateFactory,
         protected readonly RequestFactory $requestFactory,
-        protected readonly FileHandlingUtility $fileHandlingUtility,
-        protected readonly ExtensionManagementService $managementService,
-        protected readonly ContentObjectRenderer $contentObject,
         protected readonly NsLicenseRepository $nsLicenseRepository,
         protected readonly LicenseService $licenseService,
         protected readonly ExtensionListService $extensionListService,
@@ -132,8 +117,7 @@ class NsLicenseModuleController extends ActionController
     }
 
     /**
-     * Shop action - displays shop data
-     * @return ResponseInterface
+     * Catalog tab AJAX action — returns HTML for AI Universe / Extensions / Templates.
      */
     public function getCatalogDataAction(): ResponseInterface
     {
@@ -207,24 +191,9 @@ class NsLicenseModuleController extends ActionController
     }
 
     /**
-     * Services action - displays services data
-     * @return ResponseInterface
-     */
-    public function getServicesDataAction(): ResponseInterface
-    {
-        $view = $this->initializeModuleTemplate($this->request);
-        if ($this->isComposerMode) {
-            $view->assign('showUpdateButton', 1);
-        }
-        $categories = $this->loadSyncData('services');
-        $view->assign('servicesData', ['categories' => is_array($categories) ? $categories : []]);
-        return $view->renderResponse('NsLicenseModule/Services');
-    }
-
-    /**
-     * Load synchronized data from database
-     * @param string $type 'shop', 'services', or 'extensions'
-     * @return array
+     * Load synchronized data from database (e.g. extension access logs).
+     *
+     * @return array<int|string, mixed>
      */
     protected function loadSyncData(string $type): array
     {

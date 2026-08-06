@@ -7,7 +7,11 @@ namespace NITSAN\NsLicense\Service;
 /**
  * Maps ns_product_release_tags.json into catalog detail changelog entries.
  *
- * @internal Mirrors composer/API/Services/ReleaseNotesMapper.php
+ * Client fallback used when detail changelog is empty (GetGitlabReleaseTags).
+ * Intentionally preserves **FEATURE** markers (unlike the API/orders mappers)
+ * so product-detail.js can classify changelog lines.
+ *
+ * @internal
  */
 final class ReleaseNotesMapper
 {

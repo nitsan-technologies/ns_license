@@ -175,7 +175,7 @@ document.addEventListener('click', (e) => {
     .catch(() => Notification.error('Copy failed', 'Could not copy to clipboard'));
 });
 
-// Shop/Services Refresh Button - delegated click, single API call for shop and services data
+// Catalog / sync refresh button — delegated click
 document.addEventListener('click', (e) => {
   const button = e.target.closest('.refresh-data-button[data-type]');
   if (!button) return;

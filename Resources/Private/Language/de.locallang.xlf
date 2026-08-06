@@ -71,10 +71,6 @@
                 <source>Invalid License</source>
                 <target>Ungültige Lizenz</target>
             </trans-unit>
-            <trans-unit id="license-activation.badge.active">
-                <source>Active</source>
-                <target>Aktiv</target>
-            </trans-unit>
             <trans-unit id="license-activation.extkey">
                 <source>Extension Key</source>
                 <target>Extension-Key</target>
@@ -155,6 +151,38 @@
                      "only": ["%s"]<br />
                      }' <br /><br />]]>
                 </source>
+            </trans-unit>
+            <trans-unit id="license-activation.activated_composer_stepcs">
+                <source><![CDATA[
+                   <strong> Step1. </strong> composer config repositories.t3planet '{<br />
+                    "type": "composer",<br />
+                    "url": "https://composer.t3planet.cloud",<br />
+                    "only": ["%s" ,"nitsan/ns-t3cs"]<br />
+                    }' <br /><br />]]>
+                </source>
+                <target><![CDATA[
+                    <strong> Schritt 1: </strong> composer config repositories.t3planet '{<br />
+                     "type": "composer",<br />
+                     "url": "https://composer.t3planet.cloud",<br />
+                     "only": ["%s" ,"nitsan/ns-t3cs"]<br />
+                     }' <br /><br />]]>
+                </target>
+            </trans-unit>
+            <trans-unit id="license-activation.activated_composer_stepaf">
+                <source><![CDATA[
+                   <strong> Step1. </strong> composer config repositories.t3planet '{<br />
+                    "type": "composer",<br />
+                    "url": "https://composer.t3planet.cloud",<br />
+                    "only": ["%s"]<br />
+                    }' <br /><br />]]>
+                </source>
+                <target><![CDATA[
+                    <strong> Schritt 1: </strong> composer config repositories.t3planet '{<br />
+                     "type": "composer",<br />
+                     "url": "https://composer.t3planet.cloud",<br />
+                     "only": ["%s"]<br />
+                     }' <br /><br />]]>
+                </target>
             </trans-unit>
             <trans-unit id="license-activation.activated_composer_step2">
                 <source>&lt;strong&gt; Step2.&lt;/strong&gt; composer config http-basic.composer.t3planet.cloud</source>
@@ -355,6 +383,10 @@
             <trans-unit id="license-catalog.hero.most-popular-template">
                 <source>Most Popular Template</source>
                 <target>Beliebtestes Template</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.search-placeholder">
+                <source>Search products...</source>
+                <target>Produkte suchen...</target>
             </trans-unit>
             <trans-unit id="license-catalog.filter-all">
                 <source>All Extensions</source>
@@ -951,6 +983,18 @@
             <trans-unit id="license-loading.error.services-error">
                 <source>Error loading services data. Please refresh the page.</source>
                 <target>Fehler beim Laden der Services.</target>
+            </trans-unit>
+            <trans-unit id="license-loading.error.catalog-url-not-found">
+                <source>Catalog URL not found.</source>
+                <target>Katalog-URL nicht gefunden.</target>
+            </trans-unit>
+            <trans-unit id="license-loading.error.catalog-failed">
+                <source>Failed to load catalog data. Please try again.</source>
+                <target>Laden der Katalogdaten fehlgeschlagen. Bitte erneut versuchen.</target>
+            </trans-unit>
+            <trans-unit id="license-loading.error.catalog-error">
+                <source>Error loading catalog data. Please refresh the page.</source>
+                <target>Fehler beim Laden der Katalogdaten. Bitte Seite aktualisieren.</target>
             </trans-unit>
             <trans-unit id="license.renew">
                 <source>Renew</source>
@@ -1611,6 +1655,46 @@
             <trans-unit id="license-get-new.success.activate_missing_key">
                 <source>No license key to activate. Check your email, then Activate it on this page.</source>
                 <target>Kein Lizenzschlüssel zum Aktivieren. Prüfen Sie Ihre E-Mail und aktivieren Sie den Schlüssel auf dieser Seite.</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.buy.unavailable">
+                <source>Purchase is not available for this product yet.</source>
+                <target>Kauf ist für dieses Produkt noch nicht verfügbar.</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.buy.price_label">
+                <source>Price</source>
+                <target>Preis</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.buy.price_empty">
+                <source>See checkout</source>
+                <target>Siehe Checkout</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.buy.billing_annual">
+                <source>/ year</source>
+                <target>/ Jahr</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.buy.help">
+                <source>You will complete payment securely on t3planet.shop. After payment, your license is activated automatically.</source>
+                <target>Die Zahlung erfolgt sicher über t3planet.shop. Nach der Zahlung wird Ihre Lizenz automatisch aktiviert.</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.buy.pay">
+                <source>Proceed to payment</source>
+                <target>Zur Zahlung</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.buy.preparing">
+                <source>Preparing…</source>
+                <target>Wird vorbereitet…</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.buy.checkout_invalid">
+                <source>This checkout link is not allowed.</source>
+                <target>Dieser Checkout-Link ist nicht erlaubt.</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.buy.open_new_tab">
+                <source>Open in new tab</source>
+                <target>In neuem Tab öffnen</target>
+            </trans-unit>
+            <trans-unit id="license-get-new.buy.checkout_title">
+                <source>T3Planet Checkout</source>
+                <target>T3Planet Checkout</target>
             </trans-unit>
             <trans-unit id="license-get-new.buy.success.title">
                 <source>Your license is ready!</source>

@@ -1,6 +1,6 @@
 /**
  * Module: @nitsan/ns-license/filter
- * Filter and search functionality for catalog and services pages
+ * Filter and search functionality for catalog and My Extensions pages
  */
 
 import AjaxRequest from "@typo3/core/ajax/ajax-request.js";
@@ -10,7 +10,6 @@ const loadedDataCache = {
     'ai-universe': false,
     extensions: false,
     templates: false,
-    services: false,
 };
 
 /**
@@ -448,147 +447,6 @@ function sortCatalogCards(pane, sortValue) {
     });
 }
 
-function loadServicesData() {
-    if (loadedDataCache.services) {
-        return;
-    }
-
-    const servicesPane = document.querySelector('#services-pane');
-    const loadingPlaceholder = servicesPane?.querySelector('.services-loading-placeholder');
-    const contentContainer = servicesPane?.querySelector('.services-content');
-
-    if (!servicesPane || !loadingPlaceholder || !contentContainer) {
-        return;
-    }
-
-    const servicesTab = document.querySelector('#services-tab');
-    const servicesUrl = servicesTab?.getAttribute('data-services-url') || servicesPane.getAttribute('data-services-url');
-    const errorUrlNotFound = servicesPane.getAttribute('data-error-url-not-found') || 'Services URL not found.';
-    const errorFailed = servicesPane.getAttribute('data-error-failed') || 'Failed to load services data. Please try again.';
-    const errorLoading = servicesPane.getAttribute('data-error-loading') || 'Error loading services data. Please refresh the page.';
-
-    if (!servicesUrl) {
-        loadingPlaceholder.innerHTML = '<p class="text-danger">' + errorUrlNotFound + '</p>';
-        return;
-    }
-
-    loadingPlaceholder.style.display = 'block';
-    contentContainer.style.display = 'none';
-
-    new AjaxRequest(servicesUrl)
-        .get()
-        .then(async function (response) {
-            const html = await response.resolve();
-
-            if (html) {
-                loadingPlaceholder.style.display = 'none';
-                contentContainer.innerHTML = html;
-                contentContainer.style.display = 'block';
-                loadedDataCache.services = true;
-
-                setTimeout(() => {
-                    filterServices();
-                    const servicesCategoryFilter = document.querySelector('#servicesCategoryFilter');
-                    const servicesSearch = document.querySelector('#servicesSearch');
-
-                    if (servicesCategoryFilter) {
-                        servicesCategoryFilter.addEventListener('change', filterServices);
-                    }
-
-                    if (servicesSearch) {
-                        servicesSearch.addEventListener('input', filterServices);
-                        servicesSearch.addEventListener('keyup', filterServices);
-                    }
-                }, 100);
-            } else {
-                loadingPlaceholder.innerHTML = '<p class="text-danger">' + errorFailed + '</p>';
-                Notification.error('Error', errorFailed);
-            }
-        })
-        .catch(function (error) {
-            loadingPlaceholder.innerHTML = '<p class="text-danger">' + errorLoading + '</p>';
-            Notification.error('Error', errorLoading);
-            console.error('Error loading services data:', error);
-        });
-}
-
-function filterServices() {
-    const servicesPane = document.querySelector('#services-pane');
-
-    if (!servicesPane || !servicesPane.classList.contains('active')) {
-        return;
-    }
-
-    const categoryFilter = document.querySelector('#servicesCategoryFilter');
-    const searchInput = document.querySelector('#servicesSearch');
-
-    if (!categoryFilter || !searchInput) {
-        return;
-    }
-
-    const categoryFilterValue = categoryFilter.value || 'all';
-    const searchText = searchInput.value.toLowerCase().trim();
-    const serviceCards = document.querySelectorAll('.service-card-wrapper');
-    let visibleCount = 0;
-    const categoryVisibility = {};
-
-    serviceCards.forEach((card) => {
-        const cardCategory = card.dataset.category || '';
-        const cardName = card.dataset.name || '';
-        const cardDescription = card.dataset.description || '';
-        const categoryMatch = (categoryFilterValue === 'all' || categoryFilterValue === cardCategory);
-
-        let searchMatch = true;
-        if (searchText) {
-            searchMatch = cardName.toLowerCase().includes(searchText)
-                || cardDescription.toLowerCase().includes(searchText);
-        }
-
-        if (categoryMatch && searchMatch) {
-            card.style.display = '';
-            const col = card.closest('[class*="col-"]');
-            if (col) {
-                col.style.display = '';
-            }
-            visibleCount++;
-            if (!categoryVisibility[cardCategory]) {
-                categoryVisibility[cardCategory] = 0;
-            }
-            categoryVisibility[cardCategory]++;
-        } else {
-            card.style.display = 'none';
-            const col = card.closest('[class*="col-"]');
-            if (col) {
-                col.style.display = 'none';
-            }
-        }
-    });
-
-    const categorySections = document.querySelectorAll('.service-category-section');
-    categorySections.forEach((section) => {
-        const sectionTitleElement = section.querySelector('.extension-section__header-title, .extension-section-header .card-title, .card-header .card-title');
-        if (sectionTitleElement) {
-            const sectionTitle = sectionTitleElement.textContent.trim();
-            const hasVisibleItems = categoryVisibility[sectionTitle] > 0;
-            section.style.display = hasVisibleItems ? '' : 'none';
-        }
-    });
-
-    const extensionWrapper = document.querySelector('.extension-section-wrapper');
-    let noResultsMessage = document.querySelector('.no-services-results');
-
-    if (visibleCount === 0) {
-        if (!noResultsMessage && extensionWrapper) {
-            noResultsMessage = document.createElement('div');
-            noResultsMessage.className = 'no-services-results col-12 text-center py-5';
-            noResultsMessage.innerHTML = '<p class="text-variant">No services found matching your criteria.</p>';
-            extensionWrapper.appendChild(noResultsMessage);
-        }
-    } else if (noResultsMessage) {
-        noResultsMessage.remove();
-    }
-}
-
 function filterExtensions() {
     const extensionsPane = document.querySelector('#extensions-pane');
 
@@ -722,18 +580,6 @@ function initializeFilters() {
         }
     });
 
-    const servicesCategoryFilter = document.querySelector('#servicesCategoryFilter');
-    const servicesSearch = document.querySelector('#servicesSearch');
-
-    if (servicesCategoryFilter) {
-        servicesCategoryFilter.addEventListener('change', filterServices);
-    }
-
-    if (servicesSearch) {
-        servicesSearch.addEventListener('input', filterServices);
-        servicesSearch.addEventListener('keyup', filterServices);
-    }
-
     const extensionsStatusFilter = document.querySelector('#extFilter');
     const extensionsSearch = document.querySelector('#extSearch');
 
@@ -756,16 +602,7 @@ function initializeFilters() {
         });
     });
 
-    const servicesTab = document.querySelector('.t3js-services-tab, #services-tab');
     const extensionsTab = document.querySelector('#my-extensions-tab');
-
-    if (servicesTab) {
-        servicesTab.addEventListener('click', function (e) {
-            e.preventDefault();
-            loadServicesData();
-            activateMainTab(servicesTab, document.querySelector('#services-pane'));
-        });
-    }
 
     if (extensionsTab) {
         extensionsTab.addEventListener('click', function (e) {

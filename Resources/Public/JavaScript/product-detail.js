@@ -1499,7 +1499,7 @@ document.addEventListener('click', (e) => {
   }
 
   // Leaving detail when switching module tabs.
-  if (e.target.closest('.ns-license-nav-tabs .nav-link, .t3js-catalog-tab, .t3js-services-tab, #my-extensions-tab, #services-tab')) {
+  if (e.target.closest('.ns-license-nav-tabs .nav-link, .t3js-catalog-tab, #my-extensions-tab')) {
     const view = document.getElementById(VIEW_ID);
     if (view && !view.classList.contains('d-none')) {
       toggleDetailMode(false);
