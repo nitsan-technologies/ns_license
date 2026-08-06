@@ -71,7 +71,7 @@ class ExtensionListService
                     
                     if (isset($extDetails['license_key']) && $extDetails['license_key']) {
                         $domains = isset($extDetails['domains']) ? GeneralUtility::trimExplode(',', $extDetails['domains']) : [];
-                        $composerPackage = 'nitsan/' . str_replace('_', '-', $extDetails['extension_key']);
+                        $composerPackage = $this->resolveComposerPackageName((string)$extDetails['extension_key']);
                         $extensions['premium'][$extDetails['extension_key']] = [
                             'packagePath' => $package ? $package->getPackagePath() : '',
                             'key' => $package ? $package->getPackageKey() : $extDetails['extension_key'],
@@ -146,7 +146,7 @@ class ExtensionListService
     }
 
     /**
-     * Installed free catalog products (empty price + downloads != 0).
+     * Installed free catalog products (isFree / price Free / free sections).
      * Excludes keys that already appear under premium (licensed).
      *
      * @param array<string, array> $premium
@@ -199,7 +199,7 @@ class ExtensionListService
             $free[$key] = [
                 'packagePath' => $packagePath,
                 'key' => $key,
-                'composerPackage' => 'nitsan/' . str_replace('_', '-', $key),
+                'composerPackage' => $this->resolveComposerPackageName($key),
                 'version' => $version,
                 'state' => str_starts_with($version, 'dev-') ? 'alpha' : 'stable',
                 'icon' => $icon !== '' ? $icon : $listImage,
@@ -246,9 +246,7 @@ class ExtensionListService
                 if (!is_array($item)) {
                     continue;
                 }
-                $isFree = array_key_exists('isFree', $item)
-                    ? (bool)$item['isFree']
-                    : CatalogTabMapper::isFreeItem($item);
+                $isFree = CatalogTabMapper::isFreeItem($item);
                 if (!$isFree) {
                     continue;
                 }
@@ -266,6 +264,22 @@ class ExtensionListService
         }
 
         return $free;
+    }
+
+    /**
+     * Composer package name for install instructions (partner vendors kept as-is).
+     */
+    private function resolveComposerPackageName(string $extensionKey): string
+    {
+        $partnerPackages = [
+            'dataviewer_pro' => 'aix/dataviewer_pro',
+            'tonictypes_pro' => 'k3n/tonictypes_pro',
+        ];
+        if (isset($partnerPackages[$extensionKey])) {
+            return $partnerPackages[$extensionKey];
+        }
+
+        return 'nitsan/' . str_replace('_', '-', $extensionKey);
     }
 
     /**

@@ -24,3 +24,6 @@ services:
 
   NITSAN\NsLicense\Domain\Repository\NsLicenseRepository:
     public: true
+    
+  NITSAN\NsLicense\Service\LicenseService:
+    public: true

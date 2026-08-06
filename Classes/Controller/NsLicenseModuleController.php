@@ -24,13 +24,11 @@ use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Service\DependencyOrderingService;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use TYPO3\CMS\Core\Http\HtmlResponse;
 use TYPO3\CMS\Core\Http\JsonResponse;
-<<<<<<< Updated upstream
-=======
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\View\ViewFactoryData;
 use TYPO3\CMS\Core\View\ViewFactoryInterface;
->>>>>>> Stashed changes
 use NITSAN\NsLicense\Domain\Repository\NsLicenseRepository;
 
 /***
@@ -144,12 +142,11 @@ class NsLicenseModuleController extends ActionController
             if (!is_array($item)) {
                 continue;
             }
-            $isFree = array_key_exists('isFree', $item)
-                ? (bool)$item['isFree']
-                : CatalogTabMapper::isFreeItem($item);
+            $isFree = CatalogTabMapper::isFreeItem($item);
             $item['isFree'] = $isFree;
 
-            if ($heroItem === null && !$isFree && $this->isMostPopularBadge((string)($item['badge'] ?? ''))) {
+            // Paid or free: first "Most Popular" / "Beliebteste" badge becomes the tab hero.
+            if ($heroItem === null && $this->isMostPopularBadge((string)($item['badge'] ?? ''))) {
                 $heroItem = $item;
                 continue;
             }
@@ -175,12 +172,8 @@ class NsLicenseModuleController extends ActionController
             }
         }
 
-<<<<<<< Updated upstream
-        $view = $this->initializeModuleTemplate($this->request);
-=======
         // Return a clean HTML fragment for AJAX (not a full ModuleTemplate shell).
         $view = $this->createCatalogStandaloneView();
->>>>>>> Stashed changes
         $view->assignMultiple([
             'catalogTab' => $tab,
             'catalogData' => $tabData,
@@ -191,7 +184,7 @@ class NsLicenseModuleController extends ActionController
             't3version' => $this->typo3Version,
         ]);
 
-        return $view->renderResponse('NsLicenseModule/Catalog');
+        return new HtmlResponse($view->render());
     }
 
     /**

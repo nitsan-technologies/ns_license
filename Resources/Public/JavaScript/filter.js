@@ -50,7 +50,11 @@ function loadCatalogData(tabKey) {
 
             if (html) {
                 loadingPlaceholder.style.display = 'none';
-                contentContainer.innerHTML = html;
+                // Prefer the catalog fragment if a full module shell was returned.
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = html;
+                const fragment = wrapper.querySelector('.catalog-tab-content') || wrapper;
+                contentContainer.innerHTML = fragment.outerHTML || html;
                 contentContainer.style.display = 'block';
                 loadedDataCache[tabKey] = true;
 
