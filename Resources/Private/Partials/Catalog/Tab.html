@@ -1,6 +1,8 @@
 <html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
       xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers" data-namespace-typo3-fluid="true">
-<div class="catalog-tab-content" data-catalog-tab="{catalogTab}" data-catalog-view="card">
+<div class="catalog-tab-content" data-catalog-tab="{catalogTab}" data-catalog-view="card"
+     data-free-count="{f:count(subject: catalogFreeItems)}"
+     data-premium-count="{f:count(subject: catalogPremiumItems)}">
     <div class="search-section d-flex flex-nowrap align-items-center gap-2 mb-3">
         <div class="input-group flex-grow-1">
             <label class="visually-hidden" for="catalogSearch-{catalogTab}"><f:translate key="license-catalog.search-placeholder" extensionName="ns_license" /></label>
@@ -54,34 +56,9 @@
 
     <f:if condition="{catalogPremiumItems} || {catalogFreeItems} || {catalogHeroItem}">
         <f:then>
-            <f:if condition="{catalogPremiumItems}">
-                <div class="catalog-section catalog-section--premium" data-catalog-section="premium">
-                    <div class="catalog-list-heading d-flex align-items-center gap-2 mb-3">
-                        <h3 class="h4 mb-0 catalog-section-heading">
-                            <f:if condition="{catalogTab} == 'templates'">
-                                <f:then>
-                                    <f:translate key="license-catalog.list-heading.premium-templates" extensionName="ns_license" />
-                                </f:then>
-                                <f:else if="{catalogTab} == 'ai-universe'">
-                                    <f:translate key="license-catalog.list-heading.premium-ai" extensionName="ns_license" />
-                                </f:else>
-                                <f:else>
-                                    <f:translate key="license-catalog.list-heading.premium-extensions" extensionName="ns_license" />
-                                </f:else>
-                            </f:if>
-                            (<span class="catalog-section-count">{f:count(subject: catalogPremiumItems)}</span>)
-                        </h3>
-                    </div>
-                    <div class="card-container catalog-card-container">
-                        <f:for each="{catalogPremiumItems}" as="item">
-                            <f:render partial="Catalog/Card" arguments="{item: item, catalogTab: catalogTab}" />
-                        </f:for>
-                    </div>
-                </div>
-            </f:if>
-
-            <f:if condition="{catalogFreeItems}">
-                <div class="catalog-section catalog-section--free mt-4" data-catalog-section="free">
+            <!-- Free first so it is visible above long premium grids -->
+            <f:if condition="{catalogFreeItems -> f:count()} > 0">
+                <div class="catalog-section catalog-section--free" data-catalog-section="free">
                     <div class="catalog-list-heading d-flex align-items-center gap-2 mb-3">
                         <h3 class="h4 mb-0 catalog-section-heading">
                             <f:if condition="{catalogTab} == 'templates'">
@@ -101,6 +78,32 @@
                     </div>
                     <div class="card-container catalog-card-container">
                         <f:for each="{catalogFreeItems}" as="item">
+                            <f:render partial="Catalog/Card" arguments="{item: item, catalogTab: catalogTab}" />
+                        </f:for>
+                    </div>
+                </div>
+            </f:if>
+
+            <f:if condition="{catalogPremiumItems -> f:count()} > 0">
+                <div class="catalog-section catalog-section--premium mt-4" data-catalog-section="premium">
+                    <div class="catalog-list-heading d-flex align-items-center gap-2 mb-3">
+                        <h3 class="h4 mb-0 catalog-section-heading">
+                            <f:if condition="{catalogTab} == 'templates'">
+                                <f:then>
+                                    <f:translate key="license-catalog.list-heading.premium-templates" extensionName="ns_license" />
+                                </f:then>
+                                <f:else if="{catalogTab} == 'ai-universe'">
+                                    <f:translate key="license-catalog.list-heading.premium-ai" extensionName="ns_license" />
+                                </f:else>
+                                <f:else>
+                                    <f:translate key="license-catalog.list-heading.premium-extensions" extensionName="ns_license" />
+                                </f:else>
+                            </f:if>
+                            (<span class="catalog-section-count">{f:count(subject: catalogPremiumItems)}</span>)
+                        </h3>
+                    </div>
+                    <div class="card-container catalog-card-container">
+                        <f:for each="{catalogPremiumItems}" as="item">
                             <f:render partial="Catalog/Card" arguments="{item: item, catalogTab: catalogTab}" />
                         </f:for>
                     </div>

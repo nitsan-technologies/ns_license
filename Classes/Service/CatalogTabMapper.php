@@ -38,6 +38,7 @@ final class CatalogTabMapper
 
         if (
             $id === 'premium-templates'
+            || $id === 'free-templates'
             || (str_contains($title, 'template') && !str_contains($title, 'extension'))
         ) {
             return self::TAB_TEMPLATES;
@@ -47,20 +48,49 @@ final class CatalogTabMapper
     }
 
     /**
-     * Free when price is empty and downloads is not zero.
+     * Whether a shop section id is a free catalog section (mirrors CatalogPayloadBuilder).
+     */
+    public static function isFreeSectionId(string $sectionId): bool
+    {
+        return in_array(strtolower(trim($sectionId)), ['free-extensions', 'free-templates', 'free-ai'], true);
+    }
+
+    /**
+     * Free when payload/section says so, or display price is "Free".
+     * Matches server CatalogPayloadBuilder — do not gate on downloads.
      *
      * @param array<string, mixed> $item
      */
-    public static function isFreeItem(array $item): bool
+    public static function isFreeItem(array $item, bool $isFreeSection = false): bool
     {
-        $price = trim((string)($item['price'] ?? ''));
-        // Display label "Free" is set after classification; treat it as empty for the rule.
-        if (strcasecmp($price, 'Free') === 0) {
-            $price = '';
+        if ($isFreeSection) {
+            return true;
         }
-        $downloads = self::parseDownloadsCount($item['downloads'] ?? 0);
 
-        return $price === '' && $downloads !== 0;
+        if (array_key_exists('isFree', $item)) {
+            return filter_var($item['isFree'], FILTER_VALIDATE_BOOLEAN);
+        }
+
+        if ((int)($item['is_free'] ?? 0) === 1) {
+            return true;
+        }
+
+        $price = trim((string)($item['price'] ?? ''));
+        if ($price !== '' && strcasecmp($price, 'Free') === 0) {
+            return true;
+        }
+
+        $sectionId = strtolower(trim((string)($item['sectionId'] ?? '')));
+        if (self::isFreeSectionId($sectionId)) {
+            return true;
+        }
+
+        $sectionTitle = strtolower(trim((string)($item['section'] ?? '')));
+        if ($sectionTitle !== '' && str_starts_with($sectionTitle, 'free ')) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -87,6 +117,8 @@ final class CatalogTabMapper
             $sectionId = (string)($section['id'] ?? '');
             $sectionTitle = (string)($section['title'] ?? '');
             $tab = self::resolveTabForSection($sectionId, $sectionTitle);
+            $isFreeSection = self::isFreeSectionId($sectionId)
+                || str_starts_with(strtolower(trim($sectionTitle)), 'free ');
             $items = $section['items'] ?? [];
             if (!is_array($items)) {
                 continue;
@@ -95,7 +127,7 @@ final class CatalogTabMapper
                 if (!is_array($item)) {
                     continue;
                 }
-                $item['isFree'] = self::isFreeItem($item);
+                $item['isFree'] = self::isFreeItem($item, $isFreeSection);
                 if ($item['isFree'] && trim((string)($item['price'] ?? '')) === '') {
                     $item['price'] = 'Free';
                 }
@@ -128,12 +160,7 @@ final class CatalogTabMapper
                     if (!is_array($item)) {
                         continue;
                     }
-                    // Prefer payload isFree when present; otherwise apply dual rule.
-                    if (!array_key_exists('isFree', $item)) {
-                        $item['isFree'] = self::isFreeItem($item);
-                    } else {
-                        $item['isFree'] = (bool)$item['isFree'];
-                    }
+                    $item['isFree'] = self::isFreeItem($item);
                     $item['priceValue'] = self::parsePriceValue($item['price'] ?? null);
                     $item['ratingValue'] = self::parseRatingValue($item['rating'] ?? null);
                     $item['downloadsValue'] = self::parseDownloadsCount($item['downloads'] ?? 0);

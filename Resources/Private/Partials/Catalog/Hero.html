@@ -217,7 +217,16 @@
                     </div>
                 </div>
 
-                <div class="col-md-6 col-lg-6">
+                <f:variable name="heroMediaColClass" value="col-md-6 col-lg-6" />
+                <f:if condition="{catalogTab} == 'extensions'">
+                    <f:then>
+                        <f:variable name="heroMediaColClass" value="col-md-6 col-lg-4" />
+                    </f:then>
+                    <f:else if="{catalogTab} == 'ai-universe'">
+                        <f:variable name="heroMediaColClass" value="col-md-6 col-lg-5" />
+                    </f:else>
+                </f:if>
+                <div class="{heroMediaColClass}">
                     <div class="catalog-hero__media">
                         <f:variable name="heroImage" value="{item.listImage}" />
                         <f:if condition="{item.detailImage}">

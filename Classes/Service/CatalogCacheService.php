@@ -81,14 +81,14 @@ final class CatalogCacheService
 
     public function refreshFromApi(): array
     {
-        $entry = $this->getEntryFromCache();
-        $etag = is_array($entry) ? (string)($entry['etag'] ?? '') : '';
-        // Prefer conditional GET so unchanged catalogs return 304 (no heavy download).
-        $fresh = $this->fetchAndStore($etag, false);
+        // User-triggered refresh must bypass soft TTL / 304 and download a full body.
+        $this->flush();
+        $fresh = $this->fetchAndStore('', true);
         if ($fresh !== null) {
             return $fresh;
         }
 
+        $entry = $this->getEntryFromCache();
         return $entry['data'] ?? [];
     }
 
