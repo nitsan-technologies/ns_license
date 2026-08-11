@@ -21,9 +21,19 @@ services:
       $nsLicenseRepository: '@NITSAN\NsLicense\Domain\Repository\NsLicenseRepository'
       $licenseService: '@NITSAN\NsLicense\Service\LicenseService'
       $catalogCacheService: '@NITSAN\NsLicense\Service\CatalogCacheService'
+      $allLicensesService: '@NITSAN\NsLicense\Service\AllLicensesService'
 
   NITSAN\NsLicense\Domain\Repository\NsLicenseRepository:
     public: true
     
   NITSAN\NsLicense\Service\LicenseService:
+    public: true
+
+  NITSAN\NsLicense\Service\AllLicensesCacheService:
+    public: true
+
+  NITSAN\NsLicense\Service\AllLicensesService:
+    public: true
+
+  NITSAN\NsLicense\Controller\AllLicensesAjaxController:
     public: true

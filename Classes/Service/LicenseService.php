@@ -658,6 +658,183 @@ final class LicenseService
     }
 
     /**
+     * Send OTP for the All Licenses portfolio tab.
+     *
+     * @param array<string,mixed> $input Keys: email, language
+     * @return array{success:bool, message?:string, error_code?:string, expires_in?:int, retry_after?:int}
+     */
+    public function sendLicenseEmailOtp(array $input): array
+    {
+        $url = $this->getApiBaseUrl() . 'SendLicenseEmailOtp.php';
+
+        $payload = [
+            'email' => (string) ($input['email'] ?? ''),
+            'language' => (string) ($input['language'] ?? 'en'),
+        ];
+
+        $rawBody = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $headers = $this->buildSignedHeaders($rawBody);
+        $headers['Content-Type'] = 'application/json';
+
+        try {
+            $data = $this->composerApiClient->requestJsonArray($url, 'POST', [
+                'headers' => $headers,
+                'body' => $rawBody,
+                'http_errors' => false,
+            ]);
+
+            if (is_array($data) && !empty($data['status'])) {
+                return [
+                    'success' => true,
+                    'message' => $data['message'] ?? 'Verification code sent.',
+                    'expires_in' => (int) ($data['expires_in'] ?? 600),
+                ];
+            }
+
+            $result = [
+                'success' => false,
+                'error_code' => $data['error_code'] ?? 'error',
+                'message' => $data['message'] ?? 'Failed to send verification code. Please try again.',
+            ];
+            if (isset($data['retry_after'])) {
+                $result['retry_after'] = (int) $data['retry_after'];
+            }
+            return $result;
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            return [
+                'success' => false,
+                'error_code' => 'server_error',
+                'message' => 'Server connection error: ' . $e->getMessage(),
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'error_code' => 'error',
+                'message' => 'Error sending verification code: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Verify All Licenses email OTP and receive a short-lived verification token.
+     *
+     * @param array<string,mixed> $input Keys: email, otp
+     * @return array{success:bool, message?:string, error_code?:string, email?:string, verification_token?:string, expires_in?:int, remaining_attempts?:int}
+     */
+    public function verifyLicenseEmailOtp(array $input): array
+    {
+        $url = $this->getApiBaseUrl() . 'VerifyLicenseEmailOtp.php';
+
+        $payload = [
+            'email' => (string) ($input['email'] ?? ''),
+            'otp' => (string) ($input['otp'] ?? ''),
+        ];
+
+        $rawBody = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $headers = $this->buildSignedHeaders($rawBody);
+        $headers['Content-Type'] = 'application/json';
+
+        try {
+            $data = $this->composerApiClient->requestJsonArray($url, 'POST', [
+                'headers' => $headers,
+                'body' => $rawBody,
+                'http_errors' => false,
+            ]);
+
+            if (is_array($data) && !empty($data['status'])) {
+                return [
+                    'success' => true,
+                    'message' => $data['message'] ?? 'Email verified successfully.',
+                    'email' => (string) ($data['email'] ?? $payload['email']),
+                    'verification_token' => (string) ($data['verification_token'] ?? ''),
+                    'expires_in' => (int) ($data['expires_in'] ?? 1200),
+                ];
+            }
+
+            $result = [
+                'success' => false,
+                'error_code' => $data['error_code'] ?? 'error',
+                'message' => $data['message'] ?? 'Verification failed. Please try again.',
+            ];
+            if (isset($data['remaining_attempts'])) {
+                $result['remaining_attempts'] = (int) $data['remaining_attempts'];
+            }
+            return $result;
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            return [
+                'success' => false,
+                'error_code' => 'server_error',
+                'message' => 'Server connection error: ' . $e->getMessage(),
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'error_code' => 'error',
+                'message' => 'Error verifying code: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Fetch all licenses for a verified email (requires verification_token).
+     *
+     * @param array<string,mixed> $input Keys: email, verification_token
+     * @return array{success:bool, message?:string, error_code?:string, email?:string, summary?:array<string,int>, licenses?:list<array<string,mixed>>}
+     */
+    public function getLicensesByEmail(array $input): array
+    {
+        $url = $this->getApiBaseUrl() . 'GetLicensesByEmail.php';
+
+        $payload = [
+            'email' => (string) ($input['email'] ?? ''),
+            'verification_token' => (string) ($input['verification_token'] ?? ''),
+        ];
+
+        $rawBody = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $headers = $this->buildSignedHeaders($rawBody);
+        $headers['Content-Type'] = 'application/json';
+
+        try {
+            $data = $this->composerApiClient->requestJsonArray($url, 'POST', [
+                'headers' => $headers,
+                'body' => $rawBody,
+                'http_errors' => false,
+            ]);
+
+            if (is_array($data) && !empty($data['status'])) {
+                return [
+                    'success' => true,
+                    'email' => (string) ($data['email'] ?? $payload['email']),
+                    'summary' => is_array($data['summary'] ?? null) ? $data['summary'] : [
+                        'total' => 0,
+                        'active' => 0,
+                        'expiringSoon' => 0,
+                    ],
+                    'licenses' => is_array($data['licenses'] ?? null) ? $data['licenses'] : [],
+                ];
+            }
+
+            return [
+                'success' => false,
+                'error_code' => $data['error_code'] ?? 'error',
+                'message' => $data['message'] ?? 'Could not load licenses. Please try again.',
+            ];
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            return [
+                'success' => false,
+                'error_code' => 'server_error',
+                'message' => 'Server connection error: ' . $e->getMessage(),
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'error_code' => 'error',
+                'message' => 'Error loading licenses: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
      * Start a free trial: send the email OTP (step 1 of the trial flow).
      * Signs the request and POSTs to StartTrial.php. No license is created here.
      *
@@ -868,8 +1045,7 @@ final class LicenseService
         if ($configured !== '') {
             return rtrim($configured, '/') . '/';
         }
-
-        return 'https://composer.t3planet.cloud/API/';
+        return 'https://composer.thebetaspace.com/API/';
     }
 
     /**

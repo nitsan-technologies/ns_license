@@ -1,5 +1,6 @@
 <?php
 
+use NITSAN\NsLicense\Controller\AllLicensesAjaxController;
 use NITSAN\NsLicense\Controller\NsLicenseModuleController;
 
 return [
@@ -34,6 +35,22 @@ return [
     'verify_trial_otp' => [
         'path' => '/license/verify-trial-otp',
         'target' => NsLicenseModuleController::class . '::verifyTrialOtpAction'
+    ],
+    'send_license_email_otp' => [
+        'path' => '/license/send-license-email-otp',
+        'target' => AllLicensesAjaxController::class . '::sendLicenseEmailOtpAction'
+    ],
+    'verify_license_email_otp' => [
+        'path' => '/license/verify-license-email-otp',
+        'target' => AllLicensesAjaxController::class . '::verifyLicenseEmailOtpAction'
+    ],
+    'get_licenses_by_email' => [
+        'path' => '/license/get-licenses-by-email',
+        'target' => AllLicensesAjaxController::class . '::getLicensesByEmailAction'
+    ],
+    'clear_all_licenses_session' => [
+        'path' => '/license/clear-all-licenses-session',
+        'target' => AllLicensesAjaxController::class . '::clearAllLicensesSessionAction'
     ],
     'prepare_checkout' => [
         'path' => '/license/prepare-checkout',

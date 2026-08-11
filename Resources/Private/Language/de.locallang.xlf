@@ -1000,6 +1000,26 @@
                 <source>Error loading catalog data. Please refresh the page.</source>
                 <target>Fehler beim Laden der Katalogdaten. Bitte Seite aktualisieren.</target>
             </trans-unit>
+            <trans-unit id="license-all-licenses.column.actions">
+                <source>Actions</source>
+                <target>Aktionen</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.search.placeholder">
+                <source>Search by license key, extension, or domain...</source>
+                <target>Suche nach Lizenzschlüssel, Extension oder Domain...</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.filter.status.all">
+                <source>All statuses</source>
+                <target>Alle Status</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.button.export_csv">
+                <source>Export CSV</source>
+                <target>CSV exportieren</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.empty_filtered">
+                <source>No licenses match your filters.</source>
+                <target>Keine Lizenzen entsprechen Ihren Filtern.</target>
+            </trans-unit>
             <trans-unit id="license.renew">
                 <source>Renew</source>
                 <target>Verlängern</target>

@@ -10,6 +10,7 @@ use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use NITSAN\NsLicense\Service\LicenseService;
 use NITSAN\NsLicense\Service\CatalogCacheService;
+use NITSAN\NsLicense\Service\AllLicensesService;
 use NITSAN\NsLicense\Service\CatalogTabMapper;
 use NITSAN\NsLicense\Service\ExtensionListService;
 use NITSAN\NsLicense\Service\ExtensionArchiveService;
@@ -69,6 +70,7 @@ class NsLicenseModuleController extends ActionController
         protected readonly CheckoutUrlBuilder $checkoutUrlBuilder,
         protected readonly CheckoutReturnUrlBuilder $checkoutReturnUrlBuilder,
         protected readonly CatalogCacheService $catalogCacheService,
+        protected readonly AllLicensesService $allLicensesService,
     ) {}
 
     /**
@@ -106,6 +108,10 @@ class NsLicenseModuleController extends ActionController
         $purchaseToken = preg_replace('/[^A-Za-z0-9_-]/', '', (string)($query['purchase_token'] ?? '')) ?? '';
         $view->assign('purchaseSuccess', $purchaseSuccess);
         $view->assign('purchaseToken', $purchaseToken);
+        $view->assignMultiple(
+            $this->allLicensesService->getViewAssigns($this->allLicensesService->getBackendUserId())
+        );
+
         if ($purchaseSuccess && $purchaseToken === '') {
             $this->addFlashMessage(
                 LocalizationUtility::translate('license-get-new.buy.success.flash', 'NsLicense')

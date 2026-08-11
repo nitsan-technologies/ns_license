@@ -280,6 +280,135 @@
             <trans-unit id="license-tabs.templates.description">
                 <source>Explore TYPO3 templates and sitepackages</source>
             </trans-unit>
+            <trans-unit id="license-tabs.all-licenses">
+                <source>All Licenses</source>
+            </trans-unit>
+            <trans-unit id="license-tabs.all-licenses.title">
+                <source>All Licenses</source>
+            </trans-unit>
+            <trans-unit id="license-tabs.all-licenses.description">
+                <source>View every license linked to your email after secure OTP verification</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.verify.title">
+                <source>Verify your email</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.verify.description">
+                <source>Enter the purchaser email to receive a one-time code. After verification, all associated licenses are shown for a limited time.</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.email.label">
+                <source>Email address</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.email.placeholder">
+                <source>you@example.com</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.otp.label">
+                <source>Verification code</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.otp.placeholder">
+                <source>6-digit code</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.otp.sent_to">
+                <source>We sent a code to %s</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.button.send_otp">
+                <source>Send code</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.button.sending">
+                <source>Sending…</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.button.verify">
+                <source>Verify</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.button.verifying">
+                <source>Verifying…</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.button.resend">
+                <source>Resend code</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.button.refresh">
+                <source>Refresh</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.button.switch_email">
+                <source>Use different email</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.button.view_domains">
+                <source>View domains</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.verified_as">
+                <source>Showing licenses for</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.summary">
+                <source>%1$s total · %2$s active</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.summary.expiring">
+                <source> · %1$s expiring soon</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.column.product">
+                <source>Product</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.column.license_key">
+                <source>License key</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.column.expiry">
+                <source>Expiry</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.column.status">
+                <source>Status</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.column.domains">
+                <source>Domains</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.column.actions">
+                <source>Actions</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.search.placeholder">
+                <source>Search by license key, extension, or domain...</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.filter.status.all">
+                <source>All statuses</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.button.export_csv">
+                <source>Export CSV</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.empty">
+                <source>No licenses found for this email.</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.empty_filtered">
+                <source>No licenses match your filters.</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.lifetime">
+                <source>Lifetime</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.status.active">
+                <source>Active</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.status.expired">
+                <source>Expired</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.status.inactive">
+                <source>Inactive</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.domains.modal_title">
+                <source>Associated domains</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.domains.empty">
+                <source>No domains associated with this license.</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.error.email">
+                <source>Please enter a valid email address.</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.error.otp">
+                <source>Please enter the 6-digit code.</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.error.verify_failed">
+                <source>Verification failed. Please try again.</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.error.session_expired">
+                <source>Your verification session has expired. Please verify your email again.</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.session_cleared">
+                <source>Session cleared.</source>
+            </trans-unit>
             <trans-unit id="license-catalog.search-placeholder">
                 <source>Search products...</source>
             </trans-unit>
