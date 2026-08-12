@@ -251,24 +251,46 @@ document.addEventListener('click', (e) => {
   ]);
 });
 
-// Renew: fill Fluid renew modal status / expiry when it opens from a card trigger.
-document.addEventListener('show.bs.modal', (e) => {
-  const modal = e.target;
-  if (!(modal instanceof HTMLElement) || modal.id !== 'renew-license-modal') {
-    return;
+/**
+ * Show an in-page Bootstrap modal (TYPO3 v14 does not bind data-bs-toggle).
+ * @param {HTMLElement} modalElement
+ * @param {HTMLElement|null} [relatedTarget]
+ */
+function showInlineBootstrapModal(modalElement, relatedTarget) {
+  try {
+    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+      bootstrap.Modal.getOrCreateInstance(modalElement).show(relatedTarget);
+      return;
+    }
+    if (typeof window.bootstrap !== 'undefined' && window.bootstrap.Modal) {
+      window.bootstrap.Modal.getOrCreateInstance(modalElement).show(relatedTarget);
+      return;
+    }
+  } catch (e) {
+    // fall through
   }
-
-  const button = e.relatedTarget;
-  if (!(button instanceof HTMLElement) || !button.classList.contains('js-license-renew-trigger')) {
-    return;
+  modalElement.classList.add('show');
+  modalElement.style.display = 'block';
+  modalElement.removeAttribute('aria-hidden');
+  document.body.classList.add('modal-open');
+  document.body.style.overflow = 'hidden';
+  if (!document.querySelector('.modal-backdrop')) {
+    const backdrop = document.createElement('div');
+    backdrop.className = 'modal-backdrop fade show';
+    document.body.appendChild(backdrop);
   }
+}
 
+/**
+ * @param {HTMLElement} modal
+ * @param {HTMLElement} button
+ */
+function fillRenewModal(modal, button) {
   let days = Number.parseInt(button.dataset.days ?? '', 10);
   const expirationTs = Number.parseInt(button.dataset.expirationDate ?? '', 10);
   const statusBadge = modal.querySelector('.js-renew-status-badge');
   const expiryEl = modal.querySelector('.js-renew-expiry-date');
 
-  // Backward/partial payload safety: if data-days is missing, derive it from expiration timestamp.
   if (!Number.isFinite(days) && Number.isFinite(expirationTs) && expirationTs > 0) {
     days = Math.floor((expirationTs - Math.floor(Date.now() / 1000)) / 86400);
   }
@@ -305,4 +327,44 @@ document.addEventListener('show.bs.modal', (e) => {
       expiryEl.textContent = '—';
     }
   }
+}
+
+// Renew / Cancellation: open in-page modals in JS (same as View domains).
+document.addEventListener('click', (e) => {
+  const renewBtn = e.target.closest('.js-license-renew-trigger');
+  if (renewBtn) {
+    e.preventDefault();
+    const modal = document.getElementById('renew-license-modal');
+    if (!(modal instanceof HTMLElement)) {
+      return;
+    }
+    fillRenewModal(modal, renewBtn);
+    showInlineBootstrapModal(modal, renewBtn);
+    return;
+  }
+
+  const cancelBtn = e.target.closest('.js-license-cancellation-trigger');
+  if (!cancelBtn) {
+    return;
+  }
+  e.preventDefault();
+  const modal = document.getElementById('cancellation-license-modal');
+  if (modal instanceof HTMLElement) {
+    showInlineBootstrapModal(modal, cancelBtn);
+  }
+});
+
+// Keep filling Renew if anything else opens it via Bootstrap's show() + relatedTarget.
+document.addEventListener('show.bs.modal', (e) => {
+  const modal = e.target;
+  if (!(modal instanceof HTMLElement) || modal.id !== 'renew-license-modal') {
+    return;
+  }
+
+  const button = e.relatedTarget;
+  if (!(button instanceof HTMLElement) || !button.classList.contains('js-license-renew-trigger')) {
+    return;
+  }
+
+  fillRenewModal(modal, button);
 });

@@ -202,8 +202,6 @@
                                                 <f:if condition="{license.status} == 'expired' || {license.status} == 'inactive'">
                                                     <button type="button"
                                                             class="btn btn-default btn-sm js-license-renew-trigger"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#renew-license-modal"
                                                             data-days="{license.expirationDays}"
                                                             data-expiration-date="{license.expirationDate}">
                                                         <f:translate key="license.renew" extensionName="ns_license" />
@@ -212,9 +210,7 @@
 
                                                 <f:if condition="{license.status} == 'complete'">
                                                     <button type="button"
-                                                            class="btn btn-default btn-sm"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#cancellation-license-modal">
+                                                            class="btn btn-default btn-sm js-license-cancellation-trigger">
                                                         <f:translate key="license-all-licenses.button.cancellation" extensionName="ns_license" />
                                                     </button>
                                                 </f:if>

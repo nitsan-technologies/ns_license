@@ -377,8 +377,6 @@ function renderLicenseRow(license, labels) {
   const renewBtn = (status === 'expired' || status === 'inactive')
     ? `<button type="button"
                 class="btn btn-default btn-sm js-license-renew-trigger"
-                data-bs-toggle="modal"
-                data-bs-target="#renew-license-modal"
                 data-days="${escapeAttr(String(license.expirationDays ?? ''))}"
                 data-expiration-date="${escapeAttr(String(license.expirationDate ?? ''))}">
           ${escapeHtml(labels.renew)}
@@ -387,9 +385,7 @@ function renderLicenseRow(license, labels) {
 
   const cancelBtn = status === 'complete'
     ? `<button type="button"
-                class="btn btn-default btn-sm"
-                data-bs-toggle="modal"
-                data-bs-target="#cancellation-license-modal">
+                class="btn btn-default btn-sm js-license-cancellation-trigger">
           ${escapeHtml(labels.cancellationButton)}
         </button>`
     : '';
