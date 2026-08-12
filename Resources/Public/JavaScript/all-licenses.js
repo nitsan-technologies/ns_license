@@ -6,7 +6,9 @@
 import AjaxRequest from '@typo3/core/ajax/ajax-request.js';
 import Notification from '@typo3/backend/notification.js';
 
-const DEFAULT_RENEW_URL = 'https://t3planet.shop/portal/signin/t3planet';
+const DEFAULT_TABLE_COLSPAN = 10;
+/** Bump when table columns change (must match data-js-table-version on .ns-all-licenses). */
+const ALL_LICENSES_JS_TABLE_VERSION = 4;
 
 /**
  * @param {*} result
@@ -83,12 +85,18 @@ function readLabels(root) {
     statusActive: root.getAttribute('data-labels-status-active') || 'Active',
     statusExpired: root.getAttribute('data-labels-status-expired') || 'Expired',
     statusInactive: root.getAttribute('data-labels-status-inactive') || 'Inactive',
+    statusComplete: root.getAttribute('data-labels-status-complete') || 'Complete',
+    statusExisting: root.getAttribute('data-labels-status-existing') || 'Existing',
+    statusPending: root.getAttribute('data-labels-status-pending') || 'Pending',
+    statusOtpVerified: root.getAttribute('data-labels-status-otp-verified') || 'OTP verified',
+    statusTrialStarted: root.getAttribute('data-labels-status-trial-started') || 'Trial started',
     envProduction: root.getAttribute('data-labels-env-production') || 'Production',
     envStaging: root.getAttribute('data-labels-env-staging') || 'Staging',
     envLocal: root.getAttribute('data-labels-env-local') || 'Local',
     otpSentTo: root.getAttribute('data-labels-otp-sent-to') || 'We sent a code to %s',
     viewDomains: root.getAttribute('data-labels-view-domains') || 'View domains',
     renew: root.getAttribute('data-labels-renew') || 'Renew',
+    cancellationButton: root.getAttribute('data-labels-cancellation-button') || 'Cancellation',
     summary: root.getAttribute('data-labels-summary') || '%1$s total · %2$s active',
     summaryExpiring: root.getAttribute('data-labels-summary-expiring') || ' · %1$s expiring soon',
   };
@@ -101,13 +109,32 @@ function readLabels(root) {
  */
 function statusMeta(status, labels) {
   const key = String(status || '').toLowerCase();
-  if (key === 'active') {
-    return { label: labels.statusActive, badge: 'success' };
+  if (key === 'complete') {
+    return { label: labels.statusComplete, badge: 'success' };
+  }
+  if (key === 'existing') {
+    return { label: labels.statusExisting, badge: 'default' };
+  }
+  if (key === 'pending') {
+    return { label: labels.statusPending, badge: 'default' };
+  }
+  if (key === 'otp_verified') {
+    return { label: labels.statusOtpVerified, badge: 'warning' };
+  }
+  if (key === 'trial_started') {
+    return { label: labels.statusTrialStarted, badge: 'info' };
   }
   if (key === 'expired') {
     return { label: labels.statusExpired, badge: 'danger' };
   }
-  return { label: labels.statusInactive, badge: 'default' };
+  if (key === 'inactive') {
+    return { label: labels.statusInactive, badge: 'default' };
+  }
+  if (key === 'active') {
+    return { label: labels.statusActive, badge: 'success' };
+  }
+  const raw = String(status || '').trim();
+  return { label: raw || labels.statusInactive, badge: 'default' };
 }
 
 /**
@@ -194,6 +221,78 @@ function csvEscape(value) {
 }
 
 /**
+ * First non-empty production domain from a CSV string.
+ *
+ * @param {string} csv
+ * @returns {string}
+ */
+function firstProductionDomain(csv) {
+  return splitDomains(csv)[0] || '';
+}
+
+/**
+ * @param {string} licenseType
+ * @returns {string}
+ */
+function formatLicenseTypeLabel(licenseType) {
+  const value = String(licenseType || '').trim();
+  if (!value) {
+    return '—';
+  }
+  if (value.toUpperCase() === 'X') {
+    return '∞';
+  }
+  return value;
+}
+
+/**
+ * Fill missing fields from legacy API/cache payloads.
+ *
+ * @param {object} license
+ * @returns {object}
+ */
+function normalizeLicense(license) {
+  const row = { ...license };
+  if (!String(row.composerUsername || '').trim()) {
+    row.composerUsername = String(row.user_name || '').trim();
+  }
+  if (!String(row.primaryDomain || '').trim()) {
+    row.primaryDomain = firstProductionDomain(row.domains || '');
+  }
+  const maxLabel = String(row.domainsMaxLabel || '').trim();
+  if (!maxLabel || maxLabel === '—') {
+    row.domainsMaxLabel = formatLicenseTypeLabel(row.license_type || '');
+  }
+  return row;
+}
+
+/**
+ * @param {Array} licenses
+ * @returns {Array}
+ */
+function normalizeLicenses(licenses) {
+  if (!Array.isArray(licenses)) {
+    return [];
+  }
+  return licenses.map((license) => normalizeLicense(license));
+}
+
+/**
+ * @param {HTMLElement} tbody
+ * @returns {number}
+ */
+function countRenderedRowCells(tbody) {
+  if (!tbody) {
+    return 0;
+  }
+  const row = tbody.querySelector('tr:not([data-all-licenses-empty-row])');
+  if (!row) {
+    return 0;
+  }
+  return row.querySelectorAll('td').length;
+}
+
+/**
  * @param {object} license
  * @returns {string}
  */
@@ -203,6 +302,11 @@ function licenseSearchBlob(license) {
     license.extensionKey,
     license.licenseKey,
     license.projectName,
+    license.composerUsername,
+    license.latestVersion,
+    license.installedVersion,
+    license.primaryDomain,
+    license.domainsMaxLabel,
     license.domains,
     license.localDomains,
     license.stagingDomains,
@@ -235,35 +339,29 @@ function filterLicenses(licenses, query, status) {
 /**
  * @param {object} license
  * @param {object} labels
- * @param {string} renewUrl
  * @returns {string}
  */
-function renderLicenseRow(license, labels, renewUrl) {
+function renderLicenseRow(license, labels) {
   const title = license.title || license.extensionKey || '';
   const extensionKey = license.extensionKey || '';
   const licenseKey = license.licenseKey || '';
+  const composerUsername = license.composerUsername || '';
+  const licenseType = license.domainsMaxLabel || '—';
+  const latestVersion = license.latestVersion || '—';
+  const installedVersion = license.installedVersion || '—';
   const expiry = license.validUntilFormatted || (license.isLifeTime ? labels.lifetime : '—');
   const meta = statusMeta(license.status, labels);
   const domainsUsed = license.domainsUsed ?? 0;
-  const isLifeTime = Boolean(license.isLifeTime);
-  const actions = isLifeTime
-    ? ''
-    : `<a class="btn btn-default btn-sm"
-           href="${escapeAttr(renewUrl)}"
-           target="_blank"
-           rel="noopener noreferrer">${escapeHtml(labels.renew)}</a>`;
+  const primaryDomain = license.primaryDomain || '';
 
-  return `
-    <tr>
-      <td>
-        <div class="fw-semibold">${escapeHtml(title)}</div>
-        <div class="small text-variant">${escapeHtml(extensionKey)}</div>
-      </td>
-      <td><code class="user-select-all">${escapeHtml(licenseKey)}</code></td>
-      <td>${escapeHtml(expiry)}</td>
-      <td><span class="badge badge-${meta.badge}">${escapeHtml(meta.label)}</span></td>
-      <td>
-        <button type="button"
+  const composerCell = composerUsername
+    ? `<code class="user-select-all">${escapeHtml(composerUsername)}</code>`
+    : '<span class="text-variant">—</span>';
+  const domainCell = primaryDomain
+    ? `<code>${escapeHtml(primaryDomain)}</code>`
+    : '<span class="text-variant">—</span>';
+
+  const viewDomainsBtn = `<button type="button"
                 class="btn btn-default btn-sm t3js-all-licenses-domains"
                 data-license-key="${escapeAttr(licenseKey)}"
                 data-title="${escapeAttr(title)}"
@@ -273,9 +371,50 @@ function renderLicenseRow(license, labels, renewUrl) {
                 data-staging-domains="${escapeAttr(license.stagingDomains || '')}"
                 data-domains-used="${escapeAttr(String(domainsUsed))}">
           ${escapeHtml(labels.viewDomains)} (${domainsUsed})
-        </button>
+        </button>`;
+
+  const status = String(license.status || '');
+  const renewBtn = (status === 'expired' || status === 'inactive')
+    ? `<button type="button"
+                class="btn btn-default btn-sm js-license-renew-trigger"
+                data-bs-toggle="modal"
+                data-bs-target="#renew-license-modal"
+                data-days="${escapeAttr(String(license.expirationDays ?? ''))}"
+                data-expiration-date="${escapeAttr(String(license.expirationDate ?? ''))}">
+          ${escapeHtml(labels.renew)}
+        </button>`
+    : '';
+
+  const cancelBtn = status === 'complete'
+    ? `<button type="button"
+                class="btn btn-default btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#cancellation-license-modal">
+          ${escapeHtml(labels.cancellationButton)}
+        </button>`
+    : '';
+
+  return `
+    <tr>
+      <td>
+        <div class="fw-semibold">${escapeHtml(title)}</div>
+        <div class="small text-variant">${escapeHtml(extensionKey)}</div>
       </td>
-      <td>${actions}</td>
+      <td>${composerCell}</td>
+      <td><code class="user-select-all">${escapeHtml(licenseKey)}</code></td>
+      <td>${escapeHtml(licenseType)}</td>
+      <td>${escapeHtml(latestVersion)}</td>
+      <td>${escapeHtml(installedVersion)}</td>
+      <td>${escapeHtml(expiry)}</td>
+      <td><span class="badge badge-${meta.badge}">${escapeHtml(meta.label)}</span></td>
+      <td>${domainCell}</td>
+      <td>
+        <div class="d-flex flex-wrap gap-2">
+          ${renewBtn}
+          ${cancelBtn}
+          ${viewDomainsBtn}
+        </div>
+      </td>
     </tr>`;
 }
 
@@ -285,7 +424,7 @@ function renderLicenseRow(license, labels, renewUrl) {
  * @param {Array} licenses
  * @param {object} summary
  * @param {string} email
- * @param {{query?: string, status?: string, renewUrl?: string}} options
+ * @param {{query?: string, status?: string, tableColspan?: number}} options
  */
 function renderResults(root, labels, licenses, summary, email, options = {}) {
   const results = root.querySelector('[data-all-licenses-results]');
@@ -293,7 +432,7 @@ function renderResults(root, labels, licenses, summary, email, options = {}) {
   const tbody = root.querySelector('[data-all-licenses-tbody]');
   const emailEl = root.querySelector('[data-all-licenses-verified-email]');
   const summaryEl = root.querySelector('[data-all-licenses-summary]');
-  const renewUrl = options.renewUrl || root.getAttribute('data-renew-url') || DEFAULT_RENEW_URL;
+  const tableColspan = options.tableColspan ?? DEFAULT_TABLE_COLSPAN;
   const query = options.query ?? (root.querySelector('[data-all-licenses-search]')?.value || '');
   const status = options.status ?? (root.querySelector('[data-all-licenses-status-filter]')?.value || '');
   const filtered = filterLicenses(licenses, query, status);
@@ -323,16 +462,16 @@ function renderResults(root, labels, licenses, summary, email, options = {}) {
   }
 
   if (!licenses.length) {
-    tbody.innerHTML = `<tr data-all-licenses-empty-row><td colspan="6" class="text-variant">${escapeHtml(labels.empty)}</td></tr>`;
+    tbody.innerHTML = `<tr data-all-licenses-empty-row><td colspan="${tableColspan}" class="text-variant">${escapeHtml(labels.empty)}</td></tr>`;
     return filtered;
   }
 
   if (!filtered.length) {
-    tbody.innerHTML = `<tr data-all-licenses-empty-row><td colspan="6" class="text-variant">${escapeHtml(labels.emptyFiltered)}</td></tr>`;
+    tbody.innerHTML = `<tr data-all-licenses-empty-row><td colspan="${tableColspan}" class="text-variant">${escapeHtml(labels.emptyFiltered)}</td></tr>`;
     return filtered;
   }
 
-  tbody.innerHTML = filtered.map((license) => renderLicenseRow(license, labels, renewUrl)).join('');
+  tbody.innerHTML = filtered.map((license) => renderLicenseRow(license, labels)).join('');
   return filtered;
 }
 
@@ -344,9 +483,14 @@ function exportLicensesCsv(licenses, labels) {
   const headers = [
     'Product',
     'Extension key',
+    'Composer username',
     'License key',
+    'License type',
+    'Latest',
+    'Installed',
     'Expiry',
     'Status',
+    'Production domain',
     'Domains used',
     'Domains',
     'Local domains',
@@ -358,9 +502,14 @@ function exportLicensesCsv(licenses, labels) {
     return [
       license.title || '',
       license.extensionKey || '',
+      license.composerUsername || '',
       license.licenseKey || '',
+      license.domainsMaxLabel || '',
+      license.latestVersion || '',
+      license.installedVersion || '',
       expiry,
       meta.label,
+      license.primaryDomain || '',
       license.domainsUsed ?? 0,
       license.domains || '',
       license.localDomains || '',
@@ -573,32 +722,10 @@ function readInitialPayload(root) {
  */
 function initAllLicenses(root) {
   const labels = readLabels(root);
-  const renewUrl = root.getAttribute('data-renew-url') || DEFAULT_RENEW_URL;
+  const tableColspan = Number(root.getAttribute('data-table-colspan') || DEFAULT_TABLE_COLSPAN) || DEFAULT_TABLE_COLSPAN;
   let licensesCache = [];
   let summaryCache = { total: 0, active: 0, expiringSoon: 0 };
   let filteredCache = [];
-
-  // Prefer explicit data attributes when present (set from Fluid).
-  const otpSentTemplate = root.getAttribute('data-labels-otp-sent-to');
-  if (otpSentTemplate) {
-    labels.otpSentTo = otpSentTemplate;
-  }
-  const summaryTemplate = root.getAttribute('data-labels-summary');
-  if (summaryTemplate) {
-    labels.summary = summaryTemplate;
-  }
-  const summaryExpiringTemplate = root.getAttribute('data-labels-summary-expiring');
-  if (summaryExpiringTemplate) {
-    labels.summaryExpiring = summaryExpiringTemplate;
-  }
-  const viewDomainsLabel = root.getAttribute('data-labels-view-domains');
-  if (viewDomainsLabel) {
-    labels.viewDomains = viewDomainsLabel;
-  }
-  const renewLabel = root.getAttribute('data-labels-renew');
-  if (renewLabel) {
-    labels.renew = renewLabel;
-  }
 
   const emailInput = root.querySelector('#all-licenses-email');
   const otpInput = root.querySelector('#all-licenses-otp');
@@ -623,13 +750,13 @@ function initAllLicenses(root) {
       {
         query: searchInput?.value || '',
         status: statusFilter?.value || '',
-        renewUrl,
+        tableColspan,
       }
     );
   }
 
   function setPortfolio(licenses, summary, email) {
-    licensesCache = Array.isArray(licenses) ? licenses : [];
+    licensesCache = normalizeLicenses(licenses);
     summaryCache = summary || { total: 0, active: 0, expiringSoon: 0 };
     if (email) {
       root.setAttribute('data-email', email);
@@ -845,7 +972,28 @@ function initAllLicenses(root) {
 
   if (root.getAttribute('data-verified') === '1') {
     const initial = readInitialPayload(root);
-    setPortfolio(initial.licenses, initial.summary, root.getAttribute('data-email') || '');
+    licensesCache = normalizeLicenses(initial.licenses);
+    summaryCache = initial.summary;
+    const tbody = root.querySelector('[data-all-licenses-tbody]');
+    const renderedCols = countRenderedRowCells(tbody);
+    const domTableVersion = Number(root.getAttribute('data-js-table-version') || 0);
+    const ssrMatchesCurrentTable = renderedCols === tableColspan
+      && domTableVersion === ALL_LICENSES_JS_TABLE_VERSION;
+    if (ssrMatchesCurrentTable) {
+      const summaryEl = root.querySelector('[data-all-licenses-summary]');
+      if (summaryEl) {
+        const total = summaryCache?.total ?? licensesCache.length;
+        const active = summaryCache?.active ?? 0;
+        const expiringSoon = Number(summaryCache?.expiringSoon ?? 0);
+        let text = formatTemplate(labels.summary, total, active);
+        if (expiringSoon > 0) {
+          text += formatTemplate(labels.summaryExpiring, expiringSoon);
+        }
+        summaryEl.textContent = text;
+      }
+    } else {
+      setPortfolio(licensesCache, summaryCache, root.getAttribute('data-email') || '');
+    }
   }
 }
 

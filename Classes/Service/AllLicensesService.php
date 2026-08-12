@@ -14,6 +14,7 @@ final class AllLicensesService
     public function __construct(
         private readonly LicenseService $licenseService,
         private readonly AllLicensesCacheService $allLicensesCacheService,
+        private readonly AllLicensesLicenseNormalizer $allLicensesLicenseNormalizer,
     ) {}
 
     /**
@@ -31,11 +32,15 @@ final class AllLicensesService
         $emptySummary = ['total' => 0, 'active' => 0, 'expiringSoon' => 0];
         $cached = $beUserId > 0 ? $this->allLicensesCacheService->getForBackendUser($beUserId) : null;
 
+        $licenses = $cached !== null
+            ? $this->allLicensesLicenseNormalizer->normalizeList($cached['data']['licenses'] ?? [])
+            : [];
+
         return [
             'allLicensesVerified' => $cached !== null,
             'allLicensesEmail' => $cached['email'] ?? '',
             'allLicensesSummary' => $cached['data']['summary'] ?? $emptySummary,
-            'allLicenses' => $cached['data']['licenses'] ?? [],
+            'allLicenses' => $licenses,
         ];
     }
 
@@ -125,7 +130,7 @@ final class AllLicensesService
             $payload = [
                 'email' => $licensesResult['email'] ?? $email,
                 'summary' => $licensesResult['summary'] ?? ['total' => 0, 'active' => 0, 'expiringSoon' => 0],
-                'licenses' => $licensesResult['licenses'] ?? [],
+                'licenses' => $this->allLicensesLicenseNormalizer->normalizeList($licensesResult['licenses'] ?? []),
             ];
 
             if ($beUserId > 0) {
@@ -179,7 +184,7 @@ final class AllLicensesService
                 'success' => true,
                 'email' => $cached['email'],
                 'summary' => $cached['data']['summary'] ?? ['total' => 0, 'active' => 0, 'expiringSoon' => 0],
-                'licenses' => $cached['data']['licenses'] ?? [],
+                'licenses' => $this->allLicensesLicenseNormalizer->normalizeList($cached['data']['licenses'] ?? []),
                 'from_cache' => true,
                 'http_status' => 200,
             ];
@@ -201,7 +206,7 @@ final class AllLicensesService
             $payload = [
                 'email' => $licensesResult['email'] ?? $cached['email'],
                 'summary' => $licensesResult['summary'] ?? ['total' => 0, 'active' => 0, 'expiringSoon' => 0],
-                'licenses' => $licensesResult['licenses'] ?? [],
+                'licenses' => $this->allLicensesLicenseNormalizer->normalizeList($licensesResult['licenses'] ?? []),
             ];
             $this->allLicensesCacheService->set(
                 $beUserId,

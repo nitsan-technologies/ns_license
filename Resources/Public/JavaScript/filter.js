@@ -555,8 +555,27 @@ function initializeFilters() {
         });
     };
 
+    // #region agent log
+    const debugTabSnapshot = () => [...document.querySelectorAll('.ns-license-nav-tabs .nav-link')].map((el) => {
+        const cs = getComputedStyle(el);
+        return {
+            id: el.id || (el.textContent || '').trim().slice(0, 24),
+            className: el.className,
+            ariaSelected: el.getAttribute('aria-selected'),
+            color: cs.color,
+            backgroundColor: cs.backgroundColor,
+        };
+    });
+    const debugLogTabs = (location, message, hypothesisId, extra) => {
+        fetch('http://127.0.0.1:7327/ingest/a3b6ff86-d3dd-427a-807c-9c12f8131356',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'d5d27b'},body:JSON.stringify({sessionId:'d5d27b',runId:'pre-fix',hypothesisId,location,message,data:{tabs:debugTabSnapshot(),...extra},timestamp:Date.now()})}).catch(()=>{});
+    };
+    // #endregion
+
     const activateMainTab = (tab, pane) => {
         if (!tab || !pane) {
+            // #region agent log
+            debugLogTabs('filter.js:activateMainTab', 'activateMainTab skipped (missing tab/pane)', 'D', { clickedId: tab?.id || null, paneFound: !!pane });
+            // #endregion
             return;
         }
         clearMainTabState();
@@ -564,6 +583,12 @@ function initializeFilters() {
         tab.setAttribute('aria-selected', 'true');
         pane.classList.add('show', 'active');
         updateTabPageHeader(tab);
+        // #region agent log
+        debugLogTabs('filter.js:activateMainTab', 'after activateMainTab', 'A', { clickedId: tab.id });
+        requestAnimationFrame(() => {
+            debugLogTabs('filter.js:activateMainTab:raf', 'after rAF (Bootstrap may have run)', 'E', { clickedId: tab.id });
+        });
+        // #endregion
     };
 
     const updateTabPageHeader = (tab) => {
@@ -585,6 +610,9 @@ function initializeFilters() {
     // Keep header in sync for Bootstrap tab events and our custom clicks.
     moduleTabsContainer?.addEventListener('shown.bs.tab', (event) => {
         const tab = event.target?.closest?.('.nav-link');
+        // #region agent log
+        debugLogTabs('filter.js:shown.bs.tab', 'Bootstrap shown.bs.tab fired', 'E', { shownId: tab?.id || null });
+        // #endregion
         if (tab && tab.hasAttribute('data-page-title')) {
             updateTabPageHeader(tab);
         }
@@ -623,6 +651,23 @@ function initializeFilters() {
             }, 100);
         });
     }
+
+    // Same pattern as My Extensions / catalog tabs: manual activate (Bootstrap alone
+    // leaves All Licenses blank when sibling tabs use preventDefault + activateMainTab).
+    const allLicensesTab = document.querySelector('#all-licenses-tab');
+    if (allLicensesTab) {
+        allLicensesTab.addEventListener('click', function (e) {
+            e.preventDefault();
+            activateMainTab(allLicensesTab, document.querySelector('#all-licenses-pane'));
+        });
+    }
+
+    // #region agent log
+    debugLogTabs('filter.js:initializeFilters', 'filters initialized', 'C', {
+        myExtClasses: document.querySelector('#my-extensions-tab')?.className || null,
+        allLicensesHandlerAttached: !!allLicensesTab,
+    });
+    // #endregion
 }
 
 if (document.readyState === 'loading') {

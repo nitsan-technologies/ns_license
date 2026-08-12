@@ -28,7 +28,8 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Core\Http\HtmlResponse;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
-use TYPO3\CMS\Fluid\View\StandaloneView;
+use TYPO3\CMS\Core\View\ViewFactoryData;
+use TYPO3\CMS\Core\View\ViewFactoryInterface;
 use NITSAN\NsLicense\Domain\Repository\NsLicenseRepository;
 
 /***
@@ -178,15 +179,7 @@ class NsLicenseModuleController extends ActionController
         }
 
         // Return a clean HTML fragment for AJAX (not a full ModuleTemplate shell).
-        $privatePath = ExtensionManagementUtility::extPath('ns_license') . 'Resources/Private/';
-        $view = GeneralUtility::makeInstance(StandaloneView::class);
-        if (method_exists($view, 'setRequest')) {
-            $view->setRequest($this->request);
-        }
-        $view->setTemplateRootPaths([$privatePath . 'Templates/']);
-        $view->setPartialRootPaths([$privatePath . 'Partials/']);
-        $view->setLayoutRootPaths([$privatePath . 'Layouts/']);
-        $view->setTemplatePathAndFilename($privatePath . 'Templates/NsLicenseModule/Catalog.html');
+        $view = $this->createCatalogStandaloneView();
         $view->assignMultiple([
             'catalogTab' => $tab,
             'catalogData' => $tabData,
@@ -198,6 +191,45 @@ class NsLicenseModuleController extends ActionController
         ]);
 
         return new HtmlResponse($view->render());
+    }
+
+    /**
+     * Catalog AJAX fragment view — ViewFactory on TYPO3 13.3+/14; StandaloneView on 12 / early 13.
+     *
+     * StandaloneView was removed in TYPO3 14.0; ViewFactoryInterface exists since 13.3.
+     * Do not type-hint ViewFactoryInterface on the controller: that class is missing on TYPO3 12.
+     *
+     * @return object{assignMultiple: callable, render: callable}
+     */
+    protected function createCatalogStandaloneView(): object
+    {
+        $templatePathAndFilename = 'EXT:ns_license/Resources/Private/Templates/NsLicenseModule/Catalog.html';
+
+        // TYPO3 13.3+ / 14: generic view factory (StandaloneView removed in v14).
+        if (interface_exists(ViewFactoryInterface::class) && class_exists(ViewFactoryData::class)) {
+            /** @var ViewFactoryInterface $viewFactory */
+            $viewFactory = GeneralUtility::makeInstance(ViewFactoryInterface::class);
+            return $viewFactory->create(new ViewFactoryData(
+                templateRootPaths: ['EXT:ns_license/Resources/Private/Templates/'],
+                partialRootPaths: ['EXT:ns_license/Resources/Private/Partials/'],
+                layoutRootPaths: ['EXT:ns_license/Resources/Private/Layouts/'],
+                templatePathAndFilename: $templatePathAndFilename,
+                request: $this->request,
+            ));
+        }
+
+        // TYPO3 12 / early 13.x fallback.
+        $privatePath = ExtensionManagementUtility::extPath('ns_license') . 'Resources/Private/';
+        $view = GeneralUtility::makeInstance(\TYPO3\CMS\Fluid\View\StandaloneView::class);
+        if (method_exists($view, 'setRequest')) {
+            $view->setRequest($this->request);
+        }
+        $view->setTemplateRootPaths([$privatePath . 'Templates/']);
+        $view->setPartialRootPaths([$privatePath . 'Partials/']);
+        $view->setLayoutRootPaths([$privatePath . 'Layouts/']);
+        $view->setTemplatePathAndFilename($privatePath . 'Templates/NsLicenseModule/Catalog.html');
+
+        return $view;
     }
 
     private function isMostPopularBadge(string $badge): bool

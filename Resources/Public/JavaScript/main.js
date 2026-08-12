@@ -263,10 +263,15 @@ document.addEventListener('show.bs.modal', (e) => {
     return;
   }
 
-  const days = Number.parseInt(button.dataset.days ?? '', 10);
+  let days = Number.parseInt(button.dataset.days ?? '', 10);
   const expirationTs = Number.parseInt(button.dataset.expirationDate ?? '', 10);
   const statusBadge = modal.querySelector('.js-renew-status-badge');
   const expiryEl = modal.querySelector('.js-renew-expiry-date');
+
+  // Backward/partial payload safety: if data-days is missing, derive it from expiration timestamp.
+  if (!Number.isFinite(days) && Number.isFinite(expirationTs) && expirationTs > 0) {
+    days = Math.floor((expirationTs - Math.floor(Date.now() / 1000)) / 86400);
+  }
 
   let statusKey = 'active';
   let badgeClass = 'badge rounded-pill badge-success js-renew-status-badge';

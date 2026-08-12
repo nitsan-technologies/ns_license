@@ -3,7 +3,6 @@
 <div class="ns-all-licenses"
      data-verified="{f:if(condition: allLicensesVerified, then: '1', else: '0')}"
      data-email="{allLicensesEmail}"
-     data-renew-url="https://t3planet.shop/portal/signin/t3planet"
      data-labels-empty="{f:translate(key: 'license-all-licenses.empty', extensionName: 'ns_license')}"
      data-labels-empty-filtered="{f:translate(key: 'license-all-licenses.empty_filtered', extensionName: 'ns_license')}"
      data-labels-domains-empty="{f:translate(key: 'license-all-licenses.domains.empty', extensionName: 'ns_license')}"
@@ -11,6 +10,12 @@
      data-labels-status-active="{f:translate(key: 'license-all-licenses.status.active', extensionName: 'ns_license')}"
      data-labels-status-expired="{f:translate(key: 'license-all-licenses.status.expired', extensionName: 'ns_license')}"
      data-labels-status-inactive="{f:translate(key: 'license-all-licenses.status.inactive', extensionName: 'ns_license')}"
+     data-labels-status-complete="{f:translate(key: 'license-activation.badge.licensed', extensionName: 'ns_license')}"
+     data-labels-status-existing="{f:translate(key: 'license-all-licenses.status.existing', extensionName: 'ns_license')}"
+     data-labels-status-pending="{f:translate(key: 'license-all-licenses.status.pending', extensionName: 'ns_license')}"
+     data-labels-status-otp-verified="{f:translate(key: 'license-all-licenses.status.otp_verified', extensionName: 'ns_license')}"
+     data-labels-status-trial-started="{f:translate(key: 'license-all-licenses.status.trial_started', extensionName: 'ns_license')}"
+     data-labels-cancellation-button="{f:translate(key: 'license-all-licenses.button.cancellation', extensionName: 'ns_license')}"
      data-labels-env-production="{f:translate(key: 'license-domains.filter.environment.production', extensionName: 'ns_license')}"
      data-labels-env-staging="{f:translate(key: 'license-domains.filter.environment.staging', extensionName: 'ns_license')}"
      data-labels-env-local="{f:translate(key: 'license-domains.filter.environment.local', extensionName: 'ns_license')}"
@@ -18,7 +23,9 @@
      data-labels-view-domains="{f:translate(key: 'license-all-licenses.button.view_domains', extensionName: 'ns_license')}"
      data-labels-renew="{f:translate(key: 'license.renew', extensionName: 'ns_license')}"
      data-labels-summary="{f:translate(key: 'license-all-licenses.summary', extensionName: 'ns_license')}"
-     data-labels-summary-expiring="{f:translate(key: 'license-all-licenses.summary.expiring', extensionName: 'ns_license')}">
+     data-labels-summary-expiring="{f:translate(key: 'license-all-licenses.summary.expiring', extensionName: 'ns_license')}"
+     data-table-colspan="10"
+     data-js-table-version="4">
 
     <div class="ns-all-licenses__otp" data-all-licenses-otp style="{f:if(condition: allLicensesVerified, then: 'display:none', else: '')}">
         <div class="card card-size-large custom-card mb-3">
@@ -107,9 +114,13 @@
                 <label class="visually-hidden" for="all-licenses-status-filter"><f:translate key="license-all-licenses.column.status" extensionName="ns_license" /></label>
                 <select id="all-licenses-status-filter" class="form-select" data-all-licenses-status-filter style="min-width: 10rem;">
                     <option value=""><f:translate key="license-all-licenses.filter.status.all" extensionName="ns_license" /></option>
-                    <option value="active"><f:translate key="license-all-licenses.status.active" extensionName="ns_license" /></option>
-                    <option value="inactive"><f:translate key="license-all-licenses.status.inactive" extensionName="ns_license" /></option>
+                    <option value="complete"><f:translate key="license-activation.badge.licensed" extensionName="ns_license" /></option>
+                    <option value="trial_started"><f:translate key="license-all-licenses.status.trial_started" extensionName="ns_license" /></option>
+                    <option value="OTP_verified"><f:translate key="license-all-licenses.status.otp_verified" extensionName="ns_license" /></option>
+                    <option value="pending"><f:translate key="license-all-licenses.status.pending" extensionName="ns_license" /></option>
+                    <option value="existing"><f:translate key="license-all-licenses.status.existing" extensionName="ns_license" /></option>
                     <option value="expired"><f:translate key="license-all-licenses.status.expired" extensionName="ns_license" /></option>
+                    <option value="inactive"><f:translate key="license-all-licenses.status.inactive" extensionName="ns_license" /></option>
                 </select>
             </div>
             <button type="button" class="btn btn-default d-inline-flex align-items-center gap-1" data-all-licenses-export-csv>
@@ -123,10 +134,14 @@
                 <thead>
                     <tr>
                         <th><f:translate key="license-all-licenses.column.product" extensionName="ns_license" /></th>
+                        <th><f:translate key="license-all-licenses.column.composer_username" extensionName="ns_license" /></th>
                         <th><f:translate key="license-all-licenses.column.license_key" extensionName="ns_license" /></th>
+                        <th><f:translate key="license-all-licenses.column.license_type" extensionName="ns_license" /></th>
+                        <th><f:translate key="license-all-licenses.column.latest_version" extensionName="ns_license" /></th>
+                        <th><f:translate key="license-all-licenses.column.installed_version" extensionName="ns_license" /></th>
                         <th><f:translate key="license-all-licenses.column.expiry" extensionName="ns_license" /></th>
                         <th><f:translate key="license-all-licenses.column.status" extensionName="ns_license" /></th>
-                        <th><f:translate key="license-all-licenses.column.domains" extensionName="ns_license" /></th>
+                        <th><f:translate key="license-all-licenses.column.production_domain" extensionName="ns_license" /></th>
                         <th><f:translate key="license-all-licenses.column.actions" extensionName="ns_license" /></th>
                     </tr>
                 </thead>
@@ -140,39 +155,90 @@
                                             <div class="fw-semibold">{f:if(condition: license.title, then: license.title, else: license.extensionKey)}</div>
                                             <div class="small text-variant">{license.extensionKey}</div>
                                         </td>
-                                        <td><code class="user-select-all">{license.licenseKey}</code></td>
-                                        <td>{license.validUntilFormatted}</td>
-                                        <td><span class="badge badge-default">{license.status}</span></td>
                                         <td>
-                                            <button type="button"
-                                                    class="btn btn-default btn-sm t3js-all-licenses-domains"
-                                                    data-license-key="{license.licenseKey}"
-                                                    data-title="{license.title}"
-                                                    data-extension-key="{license.extensionKey}"
-                                                    data-domains="{license.domains}"
-                                                    data-local-domains="{license.localDomains}"
-                                                    data-staging-domains="{license.stagingDomains}"
-                                                    data-domains-used="{license.domainsUsed}">
-                                                <f:translate key="license-all-licenses.button.view_domains" extensionName="ns_license" />
-                                                ({license.domainsUsed})
-                                            </button>
+                                            <f:if condition="{license.composerUsername}">
+                                                <f:then><code class="user-select-all">{license.composerUsername}</code></f:then>
+                                                <f:else><span class="text-variant">—</span></f:else>
+                                            </f:if>
+                                        </td>
+                                        <td><code class="user-select-all">{license.licenseKey}</code></td>
+                                        <td>{license.domainsMaxLabel}</td>
+                                        <td>{license.latestVersion}</td>
+                                        <td>{license.installedVersion}</td>
+                                        <td>{license.validUntilFormatted}</td>
+                                        <td>
+                                            <f:switch expression="{license.status}">
+                                                <f:case value="complete">
+                                                    <span class="badge badge-success"><f:translate key="license-activation.badge.licensed" extensionName="ns_license" /></span>
+                                                </f:case>
+                                                <f:case value="existing">
+                                                    <span class="badge badge-default"><f:translate key="license-all-licenses.status.existing" extensionName="ns_license" /></span>
+                                                </f:case>
+                                                <f:case value="pending">
+                                                    <span class="badge badge-default"><f:translate key="license-all-licenses.status.pending" extensionName="ns_license" /></span>
+                                                </f:case>
+                                                <f:case value="trial_started">
+                                                    <span class="badge badge-info"><f:translate key="license-all-licenses.status.trial_started" extensionName="ns_license" /></span>
+                                                </f:case>
+                                                <f:case value="expired">
+                                                    <span class="badge badge-danger"><f:translate key="license-all-licenses.status.expired" extensionName="ns_license" /></span>
+                                                </f:case>
+                                                <f:case value="inactive">
+                                                    <span class="badge badge-default"><f:translate key="license-all-licenses.status.inactive" extensionName="ns_license" /></span>
+                                                </f:case>
+                                                <f:defaultCase>
+                                                    <span class="badge badge-default">{license.status}</span>
+                                                </f:defaultCase>
+                                            </f:switch>
                                         </td>
                                         <td>
-                                            <f:if condition="!{license.isLifeTime}">
-                                                <a class="btn btn-default btn-sm"
-                                                   href="https://t3planet.shop/portal/signin/t3planet"
-                                                   target="_blank"
-                                                   rel="noopener noreferrer">
-                                                    <f:translate key="license.renew" extensionName="ns_license" />
-                                                </a>
+                                            <f:if condition="{license.primaryDomain}">
+                                                <f:then><code>{license.primaryDomain}</code></f:then>
+                                                <f:else><span class="text-variant">—</span></f:else>
                                             </f:if>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex flex-wrap gap-2">
+                                                <f:if condition="{license.status} == 'expired' || {license.status} == 'inactive'">
+                                                    <button type="button"
+                                                            class="btn btn-default btn-sm js-license-renew-trigger"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#renew-license-modal"
+                                                            data-days="{license.expirationDays}"
+                                                            data-expiration-date="{license.expirationDate}">
+                                                        <f:translate key="license.renew" extensionName="ns_license" />
+                                                    </button>
+                                                </f:if>
+
+                                                <f:if condition="{license.status} == 'complete'">
+                                                    <button type="button"
+                                                            class="btn btn-default btn-sm"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#cancellation-license-modal">
+                                                        <f:translate key="license-all-licenses.button.cancellation" extensionName="ns_license" />
+                                                    </button>
+                                                </f:if>
+
+                                                <button type="button"
+                                                        class="btn btn-default btn-sm t3js-all-licenses-domains"
+                                                        data-license-key="{license.licenseKey}"
+                                                        data-title="{license.title}"
+                                                        data-extension-key="{license.extensionKey}"
+                                                        data-domains="{license.domains}"
+                                                        data-local-domains="{license.localDomains}"
+                                                        data-staging-domains="{license.stagingDomains}"
+                                                        data-domains-used="{license.domainsUsed}">
+                                                    <f:translate key="license-all-licenses.button.view_domains" extensionName="ns_license" />
+                                                    ({license.domainsUsed})
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 </f:for>
                             </f:then>
                             <f:else>
                                 <tr data-all-licenses-empty-row>
-                                    <td colspan="6" class="text-variant"><f:translate key="license-all-licenses.empty" extensionName="ns_license" /></td>
+                                    <td colspan="10" class="text-variant"><f:translate key="license-all-licenses.empty" extensionName="ns_license" /></td>
                                 </tr>
                             </f:else>
                         </f:if>

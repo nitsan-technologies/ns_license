@@ -1004,6 +1004,50 @@
                 <source>Actions</source>
                 <target>Aktionen</target>
             </trans-unit>
+            <trans-unit id="license-all-licenses.column.composer_username">
+                <source>Composer username</source>
+                <target>Composer-Benutzername</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.column.license_type">
+                <source>License type</source>
+                <target>Lizenztyp</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.column.latest_version">
+                <source>Latest</source>
+                <target>Aktuell</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.column.installed_version">
+                <source>Installed</source>
+                <target>Installiert</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.column.production_domain">
+                <source>Production domain</source>
+                <target>Produktionsdomain</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.status.existing">
+                <source>Existing</source>
+                <target>Vorhanden</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.status.pending">
+                <source>Pending</source>
+                <target>Ausstehend</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.status.otp_verified">
+                <source>OTP verified</source>
+                <target>OTP verifiziert</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.status.trial_started">
+                <source>Trial started</source>
+                <target>Testversion gestartet</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.status.expired">
+                <source>Expired</source>
+                <target>Abgelaufen</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.status.inactive">
+                <source>Inactive</source>
+                <target>Inaktiv</target>
+            </trans-unit>
             <trans-unit id="license-all-licenses.search.placeholder">
                 <source>Search by license key, extension, or domain...</source>
                 <target>Suche nach Lizenzschlüssel, Extension oder Domain...</target>
@@ -1015,6 +1059,10 @@
             <trans-unit id="license-all-licenses.button.export_csv">
                 <source>Export CSV</source>
                 <target>CSV exportieren</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.button.cancellation">
+                <source>Cancellation</source>
+                <target>Kündigung</target>
             </trans-unit>
             <trans-unit id="license-all-licenses.empty_filtered">
                 <source>No licenses match your filters.</source>
@@ -1103,6 +1151,54 @@
             <trans-unit id="license.renew.modal.cta">
                 <source>Renew Now</source>
                 <target>Jetzt verlängern</target>
+            </trans-unit>
+            <trans-unit id="license.cancellation.modal.title">
+                <source>Cancellation Request</source>
+                <target>Kündigungsanfrage</target>
+            </trans-unit>
+            <trans-unit id="license.cancellation.modal.close">
+                <source>Close</source>
+                <target>Schließen</target>
+            </trans-unit>
+            <trans-unit id="license.cancellation.modal.cancel">
+                <source>Cancel</source>
+                <target>Abbrechen</target>
+            </trans-unit>
+            <trans-unit id="license.cancellation.modal.intro">
+                <source>Need to cancel your subscription? Follow the steps below and our support team will assist you.</source>
+                <target>Möchten Sie Ihr Abonnement kündigen? Folgen Sie den Schritten unten, unser Support-Team hilft Ihnen weiter.</target>
+            </trans-unit>
+            <trans-unit id="license.cancellation.modal.step1_num">
+                <source>Step 1.</source>
+                <target>Schritt 1.</target>
+            </trans-unit>
+            <trans-unit id="license.cancellation.modal.step1_text">
+                <source>Log in to your account:</source>
+                <target>Melden Sie sich in Ihrem Konto an:</target>
+            </trans-unit>
+            <trans-unit id="license.cancellation.modal.step2_num">
+                <source>Step 2.</source>
+                <target>Schritt 2.</target>
+            </trans-unit>
+            <trans-unit id="license.cancellation.modal.step2_text">
+                <source>Submit your cancellation request from your account or contact support.</source>
+                <target>Senden Sie Ihre Kündigungsanfrage über Ihr Konto oder kontaktieren Sie den Support.</target>
+            </trans-unit>
+            <trans-unit id="license.cancellation.modal.step3_num">
+                <source>Step 3.</source>
+                <target>Schritt 3.</target>
+            </trans-unit>
+            <trans-unit id="license.cancellation.modal.step3_text">
+                <source>Our team will review and confirm cancellation by email.</source>
+                <target>Unser Team prüft die Anfrage und bestätigt die Kündigung per E-Mail.</target>
+            </trans-unit>
+            <trans-unit id="license.cancellation.modal.note">
+                <source>Note: Your request is handled by our support team and confirmation is sent by email.</source>
+                <target>Hinweis: Ihre Anfrage wird von unserem Support-Team bearbeitet und die Bestätigung per E-Mail gesendet.</target>
+            </trans-unit>
+            <trans-unit id="license.cancellation.modal.cta">
+                <source>Contact Support</source>
+                <target>Support kontaktieren</target>
             </trans-unit>
             <trans-unit id="license.buy">
                 <source>Buy</source>
