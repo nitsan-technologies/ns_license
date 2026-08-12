@@ -252,11 +252,63 @@ document.addEventListener('click', (e) => {
 });
 
 /**
+ * Hide an in-page Bootstrap modal (TYPO3 v14 does not bind data-bs-dismiss).
+ * @param {HTMLElement} modalElement
+ */
+function hideInlineBootstrapModal(modalElement) {
+  try {
+    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+      const instance = bootstrap.Modal.getInstance(modalElement);
+      if (instance) {
+        instance.hide();
+        return;
+      }
+    }
+    if (typeof window.bootstrap !== 'undefined' && window.bootstrap.Modal) {
+      const instance = window.bootstrap.Modal.getInstance(modalElement);
+      if (instance) {
+        instance.hide();
+        return;
+      }
+    }
+  } catch (e) {
+    // fall through
+  }
+  modalElement.classList.remove('show');
+  modalElement.style.display = 'none';
+  modalElement.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('modal-open');
+  document.body.style.overflow = '';
+  document.querySelectorAll('.modal-backdrop').forEach((el) => el.remove());
+}
+
+/**
  * Show an in-page Bootstrap modal (TYPO3 v14 does not bind data-bs-toggle).
  * @param {HTMLElement} modalElement
  * @param {HTMLElement|null} [relatedTarget]
  */
 function showInlineBootstrapModal(modalElement, relatedTarget) {
+  if (!modalElement.dataset.nsLicenseCloseBound) {
+    modalElement.dataset.nsLicenseCloseBound = '1';
+    modalElement.querySelectorAll('.t3js-modal-close, [data-bs-dismiss="modal"]').forEach((btn) => {
+      btn.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        hideInlineBootstrapModal(modalElement);
+      });
+    });
+    modalElement.addEventListener('click', (event) => {
+      if (event.target === modalElement) {
+        hideInlineBootstrapModal(modalElement);
+      }
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && modalElement.classList.contains('show')) {
+        hideInlineBootstrapModal(modalElement);
+      }
+    });
+  }
+
   try {
     if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
       bootstrap.Modal.getOrCreateInstance(modalElement).show(relatedTarget);
