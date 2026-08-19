@@ -308,7 +308,13 @@
                 <source>6-digit code</source>
             </trans-unit>
             <trans-unit id="license-all-licenses.otp.sent_to">
-                <source>We sent a code to %s</source>
+                <source>Please enter the 6-digit code we just sent to %s</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.otp.modal.title">
+                <source>Verify Email</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.otp.resend.prompt">
+                <source>Didn't receive the code?</source>
             </trans-unit>
             <trans-unit id="license-all-licenses.button.send_otp">
                 <source>Send code</source>
@@ -339,6 +345,15 @@
             </trans-unit>
             <trans-unit id="license-all-licenses.verified_as">
                 <source>Showing licenses for</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.badge.total">
+                <source>%s total</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.badge.active">
+                <source>%s active</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.badge.expiring">
+                <source>%s expiring soon</source>
             </trans-unit>
             <trans-unit id="license-all-licenses.summary">
                 <source>%1$s total · %2$s active</source>
@@ -379,8 +394,20 @@
             <trans-unit id="license-all-licenses.search.placeholder">
                 <source>Search by license key, extension, or domain...</source>
             </trans-unit>
+            <trans-unit id="license-all-licenses.filter.trial">
+                <source>Trial</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.filter.attention">
+                <source>Attention</source>
+            </trans-unit>
             <trans-unit id="license-all-licenses.filter.status.all">
                 <source>All statuses</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.tab.all">
+                <source>All</source>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.tab.attention">
+                <source>Needs attention</source>
             </trans-unit>
             <trans-unit id="license-all-licenses.button.export_csv">
                 <source>Export CSV</source>
@@ -525,6 +552,9 @@
             </trans-unit>
             <trans-unit id="license-catalog.detail.resources">
                 <source>Resources</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.contribute">
+                <source>Contribute</source>
             </trans-unit>
             <trans-unit id="license-catalog.detail.resource.docs">
                 <source>Documentation</source>
@@ -672,6 +702,9 @@
             </trans-unit>
             <trans-unit id="license-catalog.detail.demo.frontend">
                 <source>Frontend Demo</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.demo.live">
+                <source>Live Demo</source>
             </trans-unit>
             <trans-unit id="license-catalog.detail.demo.backend">
                 <source>Demo</source>

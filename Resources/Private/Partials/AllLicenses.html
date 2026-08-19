@@ -20,22 +20,30 @@
      data-labels-env-staging="{f:translate(key: 'license-domains.filter.environment.staging', extensionName: 'ns_license')}"
      data-labels-env-local="{f:translate(key: 'license-domains.filter.environment.local', extensionName: 'ns_license')}"
      data-labels-otp-sent-to="{f:translate(key: 'license-all-licenses.otp.sent_to', extensionName: 'ns_license')}"
+     data-labels-otp-invalid="{f:translate(key: 'license-all-licenses.error.otp', extensionName: 'ns_license')}"
+     data-labels-otp-resend-prompt="{f:translate(key: 'license-all-licenses.otp.resend.prompt', extensionName: 'ns_license')}"
      data-labels-view-domains="{f:translate(key: 'license-all-licenses.button.view_domains', extensionName: 'ns_license')}"
+     data-labels-license-key="{f:translate(key: 'license-all-licenses.column.license_key', extensionName: 'ns_license')}"
+     data-labels-copy="{f:translate(key: 'license-catalog.detail.composer.copy', extensionName: 'ns_license')}"
+     data-labels-copied="{f:translate(key: 'license-catalog.detail.composer.copied', extensionName: 'ns_license')}"
      data-labels-renew="{f:translate(key: 'license.renew', extensionName: 'ns_license')}"
      data-labels-summary="{f:translate(key: 'license-all-licenses.summary', extensionName: 'ns_license')}"
      data-labels-summary-expiring="{f:translate(key: 'license-all-licenses.summary.expiring', extensionName: 'ns_license')}"
-     data-table-colspan="10"
-     data-js-table-version="4">
+     data-labels-badge-total="{f:translate(key: 'license-all-licenses.badge.total', extensionName: 'ns_license')}"
+     data-labels-badge-active="{f:translate(key: 'license-all-licenses.badge.active', extensionName: 'ns_license')}"
+     data-labels-badge-expiring="{f:translate(key: 'license-all-licenses.badge.expiring', extensionName: 'ns_license')}"
+     data-table-colspan="8"
+     data-js-table-version="7">
 
     <div class="ns-all-licenses__otp" data-all-licenses-otp style="{f:if(condition: allLicensesVerified, then: 'display:none', else: '')}">
         <div class="card card-size-large custom-card mb-3">
             <div class="card-header">
                 <div class="card-header-body">
-                    <h2 class="card-title"><f:translate key="license-all-licenses.verify.title" extensionName="ns_license" /></h2>
+                    <h2 class="card-title mb-1"><f:translate key="license-all-licenses.verify.title" extensionName="ns_license" /></h2>
+                    <p class="text-variant mb-0"><f:translate key="license-all-licenses.verify.description" extensionName="ns_license" /></p>
                 </div>
             </div>
             <div class="card-body">
-                <p class="text-variant mb-3"><f:translate key="license-all-licenses.verify.description" extensionName="ns_license" /></p>
                 <div class="ns-all-licenses__alert alert alert-danger d-none" data-all-licenses-error role="alert"></div>
 
                 <div class="mb-3" data-all-licenses-email-step>
@@ -52,23 +60,6 @@
                     </div>
                 </div>
 
-                <div class="mb-0 d-none" data-all-licenses-otp-step>
-                    <label class="form-label" for="all-licenses-otp"><f:translate key="license-all-licenses.otp.label" extensionName="ns_license" /></label>
-                    <p class="small text-variant mb-2" data-all-licenses-otp-hint></p>
-                    <div class="d-flex flex-wrap gap-2 align-items-start">
-                        <input type="text" class="form-control" id="all-licenses-otp" name="all_licenses_otp" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code"
-                               placeholder="{f:translate(key: 'license-all-licenses.otp.placeholder', extensionName: 'ns_license')}"
-                               style="max-width: 12rem;" />
-                        <button type="button" class="btn btn-primary d-inline-flex align-items-center gap-1" data-all-licenses-verify-otp>
-                            <core:icon identifier="actions-check" size="small" alternativeMarkupIdentifier="inline" />
-                            <span data-all-licenses-verify-label><f:translate key="license-all-licenses.button.verify" extensionName="ns_license" /></span>
-                            <span class="d-none" data-all-licenses-verify-loading><f:translate key="license-all-licenses.button.verifying" extensionName="ns_license" /></span>
-                        </button>
-                        <button type="button" class="btn btn-default" data-all-licenses-resend-otp>
-                            <f:translate key="license-all-licenses.button.resend" extensionName="ns_license" />
-                        </button>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -76,18 +67,19 @@
     <div class="ns-all-licenses__results" data-all-licenses-results style="{f:if(condition: allLicensesVerified, then: '', else: 'display:none')}">
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
             <div>
-                <p class="mb-0 text-variant">
+                <h3 class="mb-2 text-secondary">
                     <f:translate key="license-all-licenses.verified_as" extensionName="ns_license" />
                     <strong data-all-licenses-verified-email>{allLicensesEmail}</strong>
-                </p>
-                <p class="mb-0 small text-variant" data-all-licenses-summary>
+                </h3>
+                <div class="d-flex flex-wrap align-items-center gap-1 mt-1" data-all-licenses-summary>
                     <f:if condition="{allLicensesVerified}">
-                        <f:translate key="license-all-licenses.summary" arguments="{0: allLicensesSummary.total, 1: allLicensesSummary.active}" extensionName="ns_license" />
+                        <span class="badge badge-default"><f:translate key="license-all-licenses.badge.total" arguments="{0: allLicensesSummary.total}" extensionName="ns_license" /></span>
+                        <span class="badge badge-success"><f:translate key="license-all-licenses.badge.active" arguments="{0: allLicensesSummary.active}" extensionName="ns_license" /></span>
                         <f:if condition="{allLicensesSummary.expiringSoon}">
-                            <f:translate key="license-all-licenses.summary.expiring" arguments="{0: allLicensesSummary.expiringSoon}" extensionName="ns_license" />
+                            <span class="badge badge-warning"><f:translate key="license-all-licenses.badge.expiring" arguments="{0: allLicensesSummary.expiringSoon}" extensionName="ns_license" /></span>
                         </f:if>
                     </f:if>
-                </p>
+                </div>
             </div>
             <div class="d-flex flex-wrap gap-2">
                 <button type="button" class="btn btn-default d-inline-flex align-items-center gap-1" data-all-licenses-refresh>
@@ -100,8 +92,8 @@
             </div>
         </div>
 
-        <div class="d-flex flex-wrap align-items-center gap-2 mb-3" data-all-licenses-toolbar>
-            <div class="flex-grow-1" style="min-width: 16rem;">
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-3 ns-all-licenses-toolbar" data-all-licenses-toolbar>
+            <div class="ns-all-licenses-toolbar__search">
                 <label class="visually-hidden" for="all-licenses-search"><f:translate key="license-all-licenses.search.placeholder" extensionName="ns_license" /></label>
                 <input type="search"
                        class="form-control"
@@ -112,15 +104,13 @@
             </div>
             <div>
                 <label class="visually-hidden" for="all-licenses-status-filter"><f:translate key="license-all-licenses.column.status" extensionName="ns_license" /></label>
-                <select id="all-licenses-status-filter" class="form-select" data-all-licenses-status-filter style="min-width: 10rem;">
-                    <option value=""><f:translate key="license-all-licenses.filter.status.all" extensionName="ns_license" /></option>
+                <select class="form-select" id="all-licenses-status-filter" data-all-licenses-status style="min-width: 12rem;">
+                    <option value=""><f:translate key="license-all-licenses.tab.all" extensionName="ns_license" /></option>
                     <option value="complete"><f:translate key="license-activation.badge.licensed" extensionName="ns_license" /></option>
-                    <option value="trial_started"><f:translate key="license-all-licenses.status.trial_started" extensionName="ns_license" /></option>
-                    <option value="OTP_verified"><f:translate key="license-all-licenses.status.otp_verified" extensionName="ns_license" /></option>
-                    <option value="pending"><f:translate key="license-all-licenses.status.pending" extensionName="ns_license" /></option>
-                    <option value="existing"><f:translate key="license-all-licenses.status.existing" extensionName="ns_license" /></option>
+                    <option value="trial_started"><f:translate key="license-all-licenses.filter.trial" extensionName="ns_license" /></option>
+                    <option value="inactive,existing,otp_verified"><f:translate key="license-all-licenses.filter.attention" extensionName="ns_license" /></option>
                     <option value="expired"><f:translate key="license-all-licenses.status.expired" extensionName="ns_license" /></option>
-                    <option value="inactive"><f:translate key="license-all-licenses.status.inactive" extensionName="ns_license" /></option>
+                    <option value="pending"><f:translate key="license-all-licenses.status.pending" extensionName="ns_license" /></option>
                 </select>
             </div>
             <button type="button" class="btn btn-default d-inline-flex align-items-center gap-1" data-all-licenses-export-csv>
@@ -129,22 +119,20 @@
             </button>
         </div>
 
-        <div class="table-fit">
-            <table class="table table-striped table-hover" data-all-licenses-table>
-                <thead>
+            <div class="table-fit">
+                    <table class="table table-striped table-hover" data-all-licenses-table>
+                        <thead>
                     <tr>
                         <th><f:translate key="license-all-licenses.column.product" extensionName="ns_license" /></th>
                         <th><f:translate key="license-all-licenses.column.composer_username" extensionName="ns_license" /></th>
                         <th><f:translate key="license-all-licenses.column.license_key" extensionName="ns_license" /></th>
-                        <th><f:translate key="license-all-licenses.column.license_type" extensionName="ns_license" /></th>
                         <th><f:translate key="license-all-licenses.column.latest_version" extensionName="ns_license" /></th>
-                        <th><f:translate key="license-all-licenses.column.installed_version" extensionName="ns_license" /></th>
                         <th><f:translate key="license-all-licenses.column.expiry" extensionName="ns_license" /></th>
                         <th><f:translate key="license-all-licenses.column.status" extensionName="ns_license" /></th>
                         <th><f:translate key="license-all-licenses.column.production_domain" extensionName="ns_license" /></th>
                         <th><f:translate key="license-all-licenses.column.actions" extensionName="ns_license" /></th>
                     </tr>
-                </thead>
+                        </thead>
                 <tbody data-all-licenses-tbody>
                     <f:if condition="{allLicensesVerified}">
                         <f:if condition="{allLicenses}">
@@ -157,14 +145,26 @@
                                         </td>
                                         <td>
                                             <f:if condition="{license.composerUsername}">
-                                                <f:then><code class="user-select-all">{license.composerUsername}</code></f:then>
+                                                <f:then>
+                                                    <span class="ns-all-licenses-copycell ns-all-licenses-copycell--user">
+                                                        <code class="ns-all-licenses-clip" title="{license.composerUsername}">{license.composerUsername}</code>
+                                                        <button type="button" class="btn btn-default btn-sm ns-all-licenses-copy" data-all-licenses-copy="{license.composerUsername}" title="{f:translate(key: 'license-catalog.detail.composer.copy', extensionName: 'ns_license')}" aria-label="{f:translate(key: 'license-catalog.detail.composer.copy', extensionName: 'ns_license')}">
+                                                            <core:icon identifier="actions-edit-copy" size="small" />
+                                                        </button>
+                                                    </span>
+                                                </f:then>
                                                 <f:else><span class="text-variant">—</span></f:else>
                                             </f:if>
                                         </td>
-                                        <td><code class="user-select-all">{license.licenseKey}</code></td>
-                                        <td>{license.domainsMaxLabel}</td>
+                                        <td>
+                                            <span class="ns-all-licenses-copycell ns-all-licenses-copycell--key">
+                                                <code class="ns-all-licenses-clip" title="{license.licenseKey}">{license.licenseKey}</code>
+                                                <button type="button" class="btn btn-default btn-sm ns-all-licenses-copy" data-all-licenses-copy="{license.licenseKey}" title="{f:translate(key: 'license-catalog.detail.composer.copy', extensionName: 'ns_license')}" aria-label="{f:translate(key: 'license-catalog.detail.composer.copy', extensionName: 'ns_license')}">
+                                                    <core:icon identifier="actions-edit-copy" size="small" />
+                                                </button>
+                                            </span>
+                                        </td>
                                         <td>{license.latestVersion}</td>
-                                        <td>{license.installedVersion}</td>
                                         <td>{license.validUntilFormatted}</td>
                                         <td>
                                             <f:switch expression="{license.status}">
@@ -193,12 +193,19 @@
                                         </td>
                                         <td>
                                             <f:if condition="{license.primaryDomain}">
-                                                <f:then><code>{license.primaryDomain}</code></f:then>
+                                                <f:then>
+                                                    <span class="ns-all-licenses-copycell ns-all-licenses-copycell--domain">
+                                                        <code class="ns-all-licenses-clip" title="{license.primaryDomain}">{license.primaryDomain}</code>
+                                                        <button type="button" class="btn btn-default btn-sm ns-all-licenses-copy" data-all-licenses-copy="{license.primaryDomain}" title="{f:translate(key: 'license-catalog.detail.composer.copy', extensionName: 'ns_license')}" aria-label="{f:translate(key: 'license-catalog.detail.composer.copy', extensionName: 'ns_license')}">
+                                                            <core:icon identifier="actions-edit-copy" size="small" />
+                                                        </button>
+                                                    </span>
+                                                </f:then>
                                                 <f:else><span class="text-variant">—</span></f:else>
                                             </f:if>
                                         </td>
                                         <td>
-                                            <div class="d-flex flex-wrap gap-2">
+                                            <div class="d-flex flex-nowrap gap-1">
                                                 <f:if condition="{license.status} == 'expired' || {license.status} == 'inactive'">
                                                     <button type="button"
                                                             class="btn btn-default btn-sm js-license-renew-trigger"
@@ -234,14 +241,15 @@
                             </f:then>
                             <f:else>
                                 <tr data-all-licenses-empty-row>
-                                    <td colspan="10" class="text-variant"><f:translate key="license-all-licenses.empty" extensionName="ns_license" /></td>
+                                    <td colspan="8" class="text-variant"><f:translate key="license-all-licenses.empty" extensionName="ns_license" /></td>
                                 </tr>
                             </f:else>
                         </f:if>
                     </f:if>
                 </tbody>
-            </table>
-        </div>
+                    </table>
+                </div>
+
     </div>
 
     <f:if condition="{allLicensesVerified}">
@@ -250,7 +258,7 @@
     </f:if>
 </div>
 
-<div id="all-licenses-domains-modal" class="t3js-modal modal fade modal-type-default modal-severity-default modal-style-default ns-license-modal modal-size-medium position-fixed top-50 start-50 translate-middle right-0 left-0 p-0 border-0" tabindex="-1" data-bs-keyboard="true">
+<div id="all-licenses-domains-modal" class="t3js-modal modal fade modal-type-default modal-severity-default modal-style-default ns-license-modal ns-all-licenses-domains-modal modal-size-small position-fixed top-50 start-50 translate-middle right-0 left-0 p-0 border-0" tabindex="-1" data-bs-keyboard="true">
     <div class="modal-dialog">
         <div class="t3js-modal-content modal-content">
             <div class="modal-header">
@@ -265,12 +273,52 @@
                 </button>
             </div>
             <div class="t3js-modal-body modal-body">
-                <p class="small text-variant mb-3"><code data-all-licenses-domains-key></code></p>
+                <div class="mb-3 ns-all-licenses-domains-key">
+                    <label class="form-label ns-all-licenses-domains-key__label"><f:translate key="license-all-licenses.column.license_key" extensionName="ns_license" /></label>
+                    <div data-all-licenses-domains-key></div>
+                </div>
                 <div data-all-licenses-domains-body></div>
             </div>
             <div class="t3js-modal-footer modal-footer">
                 <button type="button" class="btn btn-default" data-bs-dismiss="modal">
                     <f:translate key="license-activation.update_extension_btn_cancel" extensionName="ns_license" />
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="all-licenses-otp-modal" class="t3js-modal modal fade modal-type-default modal-severity-default modal-style-default ns-license-modal ns-all-licenses-otp-modal modal-size-small position-fixed top-50 start-50 translate-middle right-0 left-0 p-0 border-0" tabindex="-1" data-bs-keyboard="true" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="t3js-modal-content modal-content">
+            <div class="modal-header">
+                <h4 class="t3js-modal-title modal-title">
+                    <f:translate key="license-all-licenses.otp.modal.title" extensionName="ns_license" />
+                </h4>
+                <button type="button" class="t3js-modal-close close bg-transparent border-0" data-bs-dismiss="modal" aria-label="Close">
+                    <core:icon identifier="actions-close" size="small" />
+                </button>
+            </div>
+            <div class="t3js-modal-body modal-body">
+                <p class="mb-3" data-all-licenses-otp-hint></p>
+                <div class="ns-all-licenses__alert alert alert-danger d-none mb-3" data-all-licenses-otp-error role="alert"></div>
+                <label class="form-label visually-hidden" for="all-licenses-otp-digit-0"><f:translate key="license-all-licenses.otp.modal.title" extensionName="ns_license" /></label>
+                <div class="ns-all-licenses-otp-boxes" data-all-licenses-otp-boxes>
+                    <input type="text" class="form-control text-center" id="all-licenses-otp-digit-0" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="1" data-all-licenses-otp-digit="0" placeholder="-" />
+                    <input type="text" class="form-control text-center" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" aria-label="2" data-all-licenses-otp-digit="1" placeholder="-" />
+                    <input type="text" class="form-control text-center" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" aria-label="3" data-all-licenses-otp-digit="2" placeholder="-" />
+                    <input type="text" class="form-control text-center" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" aria-label="4" data-all-licenses-otp-digit="3" placeholder="-" />
+                    <input type="text" class="form-control text-center" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" aria-label="5" data-all-licenses-otp-digit="4" placeholder="-" />
+                    <input type="text" class="form-control text-center" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" aria-label="6" data-all-licenses-otp-digit="5" placeholder="-" />
+                </div>
+            </div>
+            <div class="t3js-modal-footer modal-footer">
+                <button type="button" class="btn btn-default" data-all-licenses-resend-otp>
+                    <f:translate key="license-all-licenses.button.resend" extensionName="ns_license" />
+                </button>
+                <button type="button" class="btn btn-primary d-inline-flex align-items-center gap-1" data-all-licenses-verify-otp>
+                    <span data-all-licenses-verify-label><f:translate key="license-all-licenses.button.verify" extensionName="ns_license" /></span>
+                    <span class="d-none" data-all-licenses-verify-loading><f:translate key="license-all-licenses.button.verifying" extensionName="ns_license" /></span>
                 </button>
             </div>
         </div>
