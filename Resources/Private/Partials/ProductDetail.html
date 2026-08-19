@@ -8,6 +8,7 @@
      data-label-buy="{f:translate(key: 'license-catalog.detail.buy-now', extensionName: 'ns_license')}"
      data-label-trial="{f:translate(key: 'license-shop.free-trial', extensionName: 'ns_license')}"
      data-label-demo="{f:translate(key: 'license-catalog.detail.demo.backend', extensionName: 'ns_license')}"
+     data-label-demo-live="{f:translate(key: 'license-catalog.detail.demo.live', extensionName: 'ns_license')}"
      data-label-demo-frontend="{f:translate(key: 'license-catalog.detail.demo.frontend', extensionName: 'ns_license')}"
      data-label-demo-backend="{f:translate(key: 'license-catalog.detail.demo.backend', extensionName: 'ns_license')}"
      data-label-know-more="{f:translate(key: 'license-shop.know-more', extensionName: 'ns_license')}"
@@ -21,8 +22,9 @@
      data-label-product-page="{f:translate(key: 'license-catalog.detail.resource.product', extensionName: 'ns_license')}"
      data-label-schedule-call="{f:translate(key: 'license-catalog.detail.resource.schedule', extensionName: 'ns_license')}"
      data-schedule-call-url="https://t3planet.de/kontakt"
-     data-report-issue-url-en="https://t3planet.de/en/contact"
-     data-report-issue-url-de="https://t3planet.de/kontakt"
+     data-schedule-call-url-en="https://t3planet.de/en/contact"
+     data-report-issue-url-en="https://t3planet.de/support"
+     data-report-issue-url-de="https://t3planet.de/support"
      data-label-copied="{f:translate(key: 'license-catalog.detail.composer.copied', extensionName: 'ns_license')}"
      data-label-latest="{f:translate(key: 'license-catalog.detail.changelog.latest', extensionName: 'ns_license')}"
      data-label-author="{f:translate(key: 'license-catalog.detail.meta.author', extensionName: 'ns_license')}"
@@ -253,6 +255,26 @@
                 <div class="card card-size-small ns-product-detail__card w-100">
                     <div class="card-body">
                         <ul class="ns-product-detail__resources list-unstyled mb-0 js-product-detail-resources"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ns-product-detail__block w-100">
+                <h3 class="ns-product-detail__section-title"><f:translate key="license-catalog.detail.contribute" extensionName="ns_license" /></h3>
+                <div class="card card-size-small ns-product-detail__card w-100">
+                    <div class="card-body">
+                        <ul class="ns-product-detail__resources list-unstyled mb-0">
+                            <li class="ns-product-detail__resource-item">
+                                <a class="ns-product-detail__resource-link"
+                                   href="https://t3planet.de/support"
+                                   target="_blank"
+                                   rel="noopener noreferrer">
+                                    <span class="ns-product-detail__resource-leading" aria-hidden="true"><core:icon identifier="actions-exclamation" size="small" /></span>
+                                    <span class="ns-product-detail__resource-label"><f:translate key="license-catalog.detail.resource.report-issue" extensionName="ns_license" /></span>
+                                    <span class="ns-product-detail__resource-external" aria-hidden="true"><core:icon identifier="actions-window-open" size="small" /></span>
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>

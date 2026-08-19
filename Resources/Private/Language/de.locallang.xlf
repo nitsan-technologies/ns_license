@@ -488,6 +488,10 @@
                 <source>Resources</source>
                 <target>Ressourcen</target>
             </trans-unit>
+            <trans-unit id="license-catalog.detail.contribute">
+                <source>Contribute</source>
+                <target>Mitwirken</target>
+            </trans-unit>
             <trans-unit id="license-catalog.detail.resource.docs">
                 <source>Documentation</source>
                 <target>Dokumentation</target>
@@ -651,6 +655,10 @@
             <trans-unit id="license-catalog.detail.demo.frontend">
                 <source>Frontend Demo</source>
                 <target>Frontend-Demo</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.demo.live">
+                <source>Live Demo</source>
+                <target>Live-Demo</target>
             </trans-unit>
             <trans-unit id="license-catalog.detail.demo.backend">
                 <source>Demo</source>
@@ -1052,9 +1060,69 @@
                 <source>Search by license key, extension, or domain...</source>
                 <target>Suche nach Lizenzschlüssel, Extension oder Domain...</target>
             </trans-unit>
+            <trans-unit id="license-all-licenses.badge.total">
+                <source>%s total</source>
+                <target>%s gesamt</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.badge.active">
+                <source>%s active</source>
+                <target>%s aktiv</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.badge.expiring">
+                <source>%s expiring soon</source>
+                <target>%s läuft bald ab</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.filter.trial">
+                <source>Trial</source>
+                <target>Testversion</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.filter.attention">
+                <source>Attention</source>
+                <target>Handlungsbedarf</target>
+            </trans-unit>
             <trans-unit id="license-all-licenses.filter.status.all">
                 <source>All statuses</source>
                 <target>Alle Status</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.tab.all">
+                <source>All</source>
+                <target>Alle</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.tab.attention">
+                <source>Needs attention</source>
+                <target>Handlungsbedarf</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.otp.sent_to">
+                <source>Please enter the 6-digit code we just sent to %s</source>
+                <target>Bitte geben Sie den 6-stelligen Code ein, den wir gerade an %s gesendet haben</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.otp.modal.title">
+                <source>Verify Email</source>
+                <target>E-Mail bestätigen</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.otp.resend.prompt">
+                <source>Didn't receive the code?</source>
+                <target>Code nicht erhalten?</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.button.verify">
+                <source>Verify</source>
+                <target>Bestätigen</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.button.verifying">
+                <source>Verifying…</source>
+                <target>Wird überprüft…</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.button.sending">
+                <source>Sending…</source>
+                <target>Wird gesendet…</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.error.otp">
+                <source>Please enter the 6-digit code.</source>
+                <target>Bitte geben Sie den 6-stelligen Code ein.</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.button.resend">
+                <source>Resend code</source>
+                <target>Code erneut senden</target>
             </trans-unit>
             <trans-unit id="license-all-licenses.button.export_csv">
                 <source>Export CSV</source>

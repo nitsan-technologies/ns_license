@@ -39,6 +39,53 @@ function escapeHtml(text) {
 }
 
 /**
+ * Backend UI language. t3planet.de is German-first; only treat explicit English as EN.
+ * @returns {boolean}
+ */
+function isEnglishBackendLang() {
+  return String(document.documentElement.lang || '').toLowerCase().startsWith('en');
+}
+
+/**
+ * Rewrite t3planet.de marketing URLs: DE has no /en/ prefix; EN uses /en/.
+ * Leaves docs.t3planet.de and other hosts unchanged.
+ * @param {string} url
+ * @returns {string}
+ */
+function localizeT3PlanetUrl(url) {
+  const value = String(url || '').trim();
+  if (!value) {
+    return '';
+  }
+  let parsed;
+  try {
+    parsed = new URL(value, window.location.origin);
+  } catch {
+    return value;
+  }
+  const host = parsed.hostname.replace(/^www\./i, '').toLowerCase();
+  if (host !== 't3planet.de') {
+    return value;
+  }
+  const path = parsed.pathname || '/';
+  const contactPath = path.replace(/\/$/, '') || '/';
+  if (contactPath === '/kontakt' || contactPath === '/contact' || contactPath === '/en/contact') {
+    parsed.pathname = isEnglishBackendLang() ? '/en/contact' : '/kontakt';
+    return parsed.toString();
+  }
+  const isEnPath = path === '/en' || path === '/en/' || path.startsWith('/en/');
+  if (isEnglishBackendLang()) {
+    if (!isEnPath) {
+      parsed.pathname = path === '/' ? '/en/' : `/en${path.startsWith('/') ? path : `/${path}`}`;
+    }
+  } else if (isEnPath) {
+    const stripped = path.replace(/^\/en(?=\/|$)/, '');
+    parsed.pathname = stripped === '' ? '/' : stripped;
+  }
+  return parsed.toString();
+}
+
+/**
  * Turn API HTML blurbs into readable plain text (no XSS via innerHTML).
  * @param {unknown} value
  * @returns {string}
@@ -720,7 +767,8 @@ function populateExternalNav(view, item) {
       link.removeAttribute('href');
       return;
     }
-    link.href = hashByKey[key] ? withUrlHash(url, hashByKey[key]) : url;
+    const localized = localizeT3PlanetUrl(url);
+    link.href = hashByKey[key] ? withUrlHash(localized, hashByKey[key]) : localized;
     setVisible(link, true);
   });
 }
@@ -1165,7 +1213,7 @@ function populateActions(view, item, key, isFree, price) {
     });
     actions.appendChild(trialBtn);
   } else if (isFree) {
-    const knowMoreUrl = item.knowMoreUrl || item.productUrl || '';
+    const knowMoreUrl = localizeT3PlanetUrl(item.knowMoreUrl || item.productUrl || '');
     if (knowMoreUrl) {
       const knowMore = document.createElement('a');
       knowMore.href = knowMoreUrl;
@@ -1181,10 +1229,11 @@ function populateActions(view, item, key, isFree, price) {
   }
 
   if (item.liveDemoUrl || item.frontendDemoUrl || item.backendDemoUrl) {
-    // liveDemoUrl is the catalog demo link → Demo button (new tab).
     const backendUrl = item.backendDemoUrl || item.liveDemoUrl || '';
     const frontendUrl = item.frontendDemoUrl || '';
-    const backendLabel = view.dataset.labelDemoBackend || view.dataset.labelDemo || 'Demo';
+    const backendLabel = item.backendDemoUrl
+      ? (view.dataset.labelDemoBackend || view.dataset.labelDemo || 'Demo')
+      : (view.dataset.labelDemoLive || view.dataset.labelDemo || 'Live Demo');
 
     if (frontendUrl) {
       const fe = document.createElement('a');
@@ -1257,19 +1306,21 @@ function populateResources(view, item) {
   }
   list.innerHTML = '';
   const externalIcon = getProductDetailIconHtml(view, 'resource-external');
-  const isGerman = String(document.documentElement.lang || '').toLowerCase().startsWith('de');
-  const reportIssueUrl = (
-    isGerman
-      ? (view.dataset.reportIssueUrlDe || 'https://t3planet.de/kontakt')
-      : (view.dataset.reportIssueUrlEn || 'https://t3planet.de/en/contact')
-  ).trim();
-  const docsUrl = String(
+  const docsUrl = localizeT3PlanetUrl(String(
     item.documentationUrl
     || item.documentationLink
     || item.documentation_link
     || item.details?.documentation_link
     || ''
-  ).trim();
+  ).trim());
+  const scheduleUrl = localizeT3PlanetUrl(String(
+    item.scheduleCallUrl
+    || item.bookCallUrl
+    || item.scheduleUrl
+    || (isEnglishBackendLang()
+      ? (view.dataset.scheduleCallUrlEn || 'https://t3planet.de/en/contact')
+      : (view.dataset.scheduleCallUrl || 'https://t3planet.de/kontakt'))
+  ).trim());
   const links = [
     {
       href: docsUrl,
@@ -1277,23 +1328,12 @@ function populateResources(view, item) {
       icon: 'resource-docs',
     },
     {
-      href: reportIssueUrl,
-      label: view.dataset.labelReportIssue || 'Found an issue',
-      icon: 'resource-report',
-    },
-    {
-      href: String(item.productUrl || item.knowMoreUrl || item.details?.product_link || '').trim(),
+      href: localizeT3PlanetUrl(String(item.productUrl || item.knowMoreUrl || item.details?.product_link || '').trim()),
       label: view.dataset.labelProductPage || 'T3Planet Page',
       icon: 'resource-product',
     },
     {
-      href: String(
-        item.scheduleCallUrl
-        || item.bookCallUrl
-        || item.scheduleUrl
-        || view.dataset.scheduleCallUrl
-        || ''
-      ).trim(),
+      href: scheduleUrl,
       label: view.dataset.labelScheduleCall || 'Schedule a Call',
       icon: 'resource-schedule',
     },
