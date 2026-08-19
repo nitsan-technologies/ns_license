@@ -7,7 +7,7 @@ namespace NITSAN\NsLicense\Service;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
- * Orchestrates All Licenses portfolio OTP, API fetch, and short-lived BE cache.
+ * Orchestrates All Licenses portfolio OTP, API fetch, and 7-day BE cache.
  */
 final class AllLicensesService
 {

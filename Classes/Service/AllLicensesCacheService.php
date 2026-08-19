@@ -8,14 +8,15 @@ use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
 
 /**
- * Short-lived TYPO3 cache for All Licenses portfolio payloads after email OTP.
+ * TYPO3 cache for All Licenses portfolio payloads after email OTP.
+ * Survives Admin cache flush; expires after TTL_SECONDS (7 days).
  */
 final class AllLicensesCacheService
 {
     public const CACHE_NAME = 'ns_license_all_licenses';
 
-    /** Absolute lifetime of a cache entry (20 minutes). */
-    public const TTL_SECONDS = 1200;
+    /** Absolute lifetime of a cache entry (7 days). */
+    public const TTL_SECONDS = 604800;
 
     public function __construct(
         private readonly CacheManager $cacheManager,
