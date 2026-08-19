@@ -124,6 +124,47 @@
                 </div>
             </section>
 
+            <section class="ns-product-detail__block js-product-detail-video-section d-none"
+                     data-iframe-title="{f:translate(key: 'license-catalog.detail.video.iframe-title', extensionName: 'ns_license')}">
+                <h2 class="ns-product-detail__section-title"><f:translate key="license-catalog.detail.video" extensionName="ns_license" /></h2>
+                <div class="card ns-product-detail__section">
+                    <div class="card-body">
+                        <div class="ns-product-detail__video">
+                            <div class="ns-product-detail__video-consent js-product-detail-video-consent">
+                                <p class="ns-product-detail__video-consent-text">
+                                    <f:translate key="license-catalog.detail.video.consent" extensionName="ns_license" />
+                                    <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">
+                                        <f:translate key="license-catalog.detail.video.privacy" extensionName="ns_license" />
+                                    </a>
+                                </p>
+                                <button type="button" class="btn btn-primary t3js-product-detail-load-video">
+                                    <core:icon identifier="actions-play" size="small" />
+                                    <f:translate key="license-catalog.detail.video.load" extensionName="ns_license" />
+                                </button>
+                            </div>
+                            <iframe class="js-product-detail-video d-none"
+                                    title="{f:translate(key: 'license-catalog.detail.video.iframe-title', extensionName: 'ns_license')}"
+                                    referrerpolicy="strict-origin-when-cross-origin"
+                                    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowfullscreen></iframe>
+                        </div>
+                        <p class="ns-product-detail__video-fallback mb-0 mt-2">
+                            <a class="js-product-detail-video-link btn btn-link btn-sm px-0"
+                               href="#"
+                               target="_blank"
+                               rel="noopener noreferrer">
+                                <f:translate key="license-catalog.detail.video.watch" extensionName="ns_license" />
+                                <core:icon identifier="actions-window-open" size="small" />
+                            </a>
+                            <button type="button"
+                                    class="btn btn-link btn-sm px-0 js-product-detail-video-revoke t3js-product-detail-revoke-video d-none">
+                                <f:translate key="license-catalog.detail.video.revoke" extensionName="ns_license" />
+                            </button>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
             <section class="ns-product-detail__block js-product-detail-keywords-section d-none">
                 <h2 class="ns-product-detail__section-title"><f:translate key="license-catalog.detail.tags" extensionName="ns_license" /></h2>
                 <div class="card ns-product-detail__section">

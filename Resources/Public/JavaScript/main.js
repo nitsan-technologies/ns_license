@@ -182,6 +182,9 @@ document.addEventListener('click', (e) => {
   e.preventDefault();
 
   const type = button.dataset.type || button.getAttribute('data-type');
+  const activeNav = document.querySelector('.ns-license-nav-tabs .nav-link.active');
+  const activeCatalogTab = activeNav ? (activeNav.getAttribute('data-catalog-tab') || '') : '';
+  const paneCatalogTab = button.closest('[data-catalog-tab]') ? (button.closest('[data-catalog-tab]').getAttribute('data-catalog-tab') || '') : '';
   const buttons = document.querySelectorAll('.refresh-data-button[data-type]');
   const originalHtml = button.innerHTML;
 
@@ -203,6 +206,12 @@ document.addEventListener('click', (e) => {
 
       if (responseData.success) {
         Notification.success('Success', responseData.message || 'Data updated successfully');
+        if (type === 'shop') {
+          document.dispatchEvent(new CustomEvent('ns-license:reload-catalog', {
+            detail: { tabKey: activeCatalogTab || paneCatalogTab },
+          }));
+          return;
+        }
         setTimeout(() => window.location.reload(), 1000);
       } else {
         if (responseData.error_code === 'no_license_keys') {

@@ -454,6 +454,9 @@
             <trans-unit id="license-catalog.sort.label">
                 <source>Sort products</source>
             </trans-unit>
+            <trans-unit id="license-catalog.sort.ordering">
+                <source>Shop order</source>
+            </trans-unit>
             <trans-unit id="license-catalog.sort.price-asc">
                 <source>Price: Low → High</source>
             </trans-unit>
@@ -570,6 +573,27 @@
             </trans-unit>
             <trans-unit id="license-catalog.detail.overview">
                 <source>Overview</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.video">
+                <source>Installation video</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.video.iframe-title">
+                <source>Installation video</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.video.watch">
+                <source>Watch on YouTube</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.video.load">
+                <source>Load YouTube video</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.video.consent">
+                <source>This video is hosted by YouTube (Google). It is not loaded until you click the button.</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.video.privacy">
+                <source>Google Privacy Policy</source>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.video.revoke">
+                <source>Don't load YouTube</source>
             </trans-unit>
             <trans-unit id="license-catalog.detail.version-support">
                 <source>TYPO3 Version Support</source>

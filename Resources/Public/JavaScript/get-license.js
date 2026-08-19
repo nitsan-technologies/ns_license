@@ -218,9 +218,14 @@ function buildOrderedProductGroups(modal, products) {
   });
 
   return orderedSections.map((section) => {
-    const items = (groups.get(section) || []).slice().sort((a, b) =>
-      String(a.name || a.extensionKey || '').localeCompare(String(b.name || b.extensionKey || '')),
-    );
+    const items = (groups.get(section) || []).slice().sort((a, b) => {
+      const orderA = Number(a.ordering) || 0;
+      const orderB = Number(b.ordering) || 0;
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
+      return String(a.name || a.extensionKey || '').localeCompare(String(b.name || b.extensionKey || ''));
+    });
     return [section, items];
   });
 }

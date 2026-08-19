@@ -13,10 +13,31 @@ const loadedDataCache = {
 };
 
 /**
- * @param {string} tabKey
+ * @param {string} [tabKey]
  */
-function loadCatalogData(tabKey) {
-    if (loadedDataCache[tabKey]) {
+function reloadCatalogAfterShopSync(tabKey) {
+    Object.keys(loadedDataCache).forEach((key) => {
+        loadedDataCache[key] = false;
+    });
+    const activeKey = tabKey
+        || document.querySelector('.t3js-catalog-tab.active, .t3js-catalog-tab.is-active')?.getAttribute('data-catalog-tab')
+        || '';
+    if (activeKey) {
+        loadCatalogData(activeKey, true);
+    }
+}
+
+document.addEventListener('ns-license:reload-catalog', (event) => {
+    const key = event?.detail?.tabKey || '';
+    reloadCatalogAfterShopSync(key);
+});
+
+/**
+ * @param {string} tabKey
+ * @param {boolean} [force]
+ */
+function loadCatalogData(tabKey, force = false) {
+    if (!force && loadedDataCache[tabKey]) {
         return;
     }
 
@@ -34,12 +55,19 @@ function loadCatalogData(tabKey) {
     const errorUrlNotFound = catalogPane.getAttribute('data-error-url-not-found') || 'Catalog URL not found.';
     const errorFailed = catalogPane.getAttribute('data-error-failed') || 'Failed to load catalog data. Please try again.';
     const errorLoading = catalogPane.getAttribute('data-error-loading') || 'Error loading catalog data. Please refresh the page.';
+    const loadingLabel = catalogPane.getAttribute('data-loading-label') || 'Loading...';
 
     if (!catalogUrl) {
         loadingPlaceholder.innerHTML = '<p class="text-danger">' + errorUrlNotFound + '</p>';
         return;
     }
 
+    loadedDataCache[tabKey] = false;
+    if (!loadingPlaceholder.querySelector('.spinner-border')) {
+        loadingPlaceholder.innerHTML = '<div class="spinner-border text-primary" role="status">'
+            + '<span class="visually-hidden">' + loadingLabel + '</span></div>'
+            + '<p class="mt-3 text-variant">' + loadingLabel + '</p>';
+    }
     loadingPlaceholder.style.display = 'block';
     contentContainer.style.display = 'none';
 
@@ -305,7 +333,7 @@ function filterCatalog(pane) {
     }
 
     const filterValue = typeFilter.value || 'all';
-    const sortValue = activePane.querySelector('.catalog-sort')?.value || 'price-desc';
+    const sortValue = activePane.querySelector('.catalog-sort')?.value || 'ordering';
     const searchText = searchInput.value.toLowerCase().trim();
     const cards = activePane.querySelectorAll('.catalog-card');
     let visibleCount = 0;
@@ -417,6 +445,21 @@ function getCardPrice(card) {
 }
 
 /**
+ * @param {HTMLElement} card
+ * @returns {number}
+ */
+function getCardOrdering(card) {
+    const fromValue = card.dataset.ordering;
+    if (fromValue !== undefined && fromValue !== '') {
+        const num = parseInt(fromValue, 10);
+        if (Number.isFinite(num)) {
+            return num;
+        }
+    }
+    return 0;
+}
+
+/**
  * Reorder cards within each section container by the selected sort mode.
  *
  * @param {HTMLElement} pane
@@ -439,9 +482,11 @@ function sortCatalogCards(pane, sortValue) {
             let cmp = 0;
             if (sortValue === 'price-asc') {
                 cmp = getCardPrice(a) - getCardPrice(b);
-            } else {
-                // price-desc (default)
+            } else if (sortValue === 'price-desc') {
                 cmp = getCardPrice(b) - getCardPrice(a);
+            } else {
+                // ordering (default shop order)
+                cmp = getCardOrdering(a) - getCardOrdering(b);
             }
             if (cmp !== 0) {
                 return cmp;

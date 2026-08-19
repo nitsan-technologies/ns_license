@@ -408,6 +408,10 @@
                 <source>Sort products</source>
                 <target>Produkte sortieren</target>
             </trans-unit>
+            <trans-unit id="license-catalog.sort.ordering">
+                <source>Shop order</source>
+                <target>Shop-Reihenfolge</target>
+            </trans-unit>
             <trans-unit id="license-catalog.sort.price-asc">
                 <source>Price: Low → High</source>
                 <target>Preis: Niedrig → Hoch</target>
@@ -547,6 +551,34 @@
             <trans-unit id="license-catalog.detail.overview">
                 <source>Overview</source>
                 <target>Übersicht</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.video">
+                <source>Installation video</source>
+                <target>Installationsvideo</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.video.iframe-title">
+                <source>Installation video</source>
+                <target>Installationsvideo</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.video.watch">
+                <source>Watch on YouTube</source>
+                <target>Auf YouTube ansehen</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.video.load">
+                <source>Load YouTube video</source>
+                <target>YouTube-Video laden</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.video.consent">
+                <source>This video is hosted by YouTube (Google). It is not loaded until you click the button.</source>
+                <target>Dieses Video wird von YouTube (Google) bereitgestellt</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.video.privacy">
+                <source>Google Privacy Policy</source>
+                <target>Datenschutzerklärung von Google</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.video.revoke">
+                <source>Don't load YouTube</source>
+                <target>YouTube nicht mehr laden</target>
             </trans-unit>
             <trans-unit id="license-catalog.detail.version-support">
                 <source>TYPO3 Version Support</source>

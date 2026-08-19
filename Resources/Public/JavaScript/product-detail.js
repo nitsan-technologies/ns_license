@@ -596,6 +596,7 @@ function populateView(view, item) {
   }
   setVisible(featuresSection, features.length > 0);
 
+  populateVideo(view, item);
   populateExternalNav(view, item);
   populateSecurity(view, item);
   populateChangelog(view, item);
@@ -606,6 +607,136 @@ function populateView(view, item) {
   populateResources(view, item);
   populateMeta(view, item, key);
   populateDependencies(view, item);
+}
+
+const YOUTUBE_EMBED_ORIGIN = 'https://www.youtube-nocookie.com';
+const YOUTUBE_CONSENT_KEY = 'nsLicenseYoutubeConsent';
+
+/**
+ * Session-only YouTube consent for this backend tab.
+ * @returns {boolean}
+ */
+function hasYoutubeConsent() {
+  try {
+    return sessionStorage.getItem(YOUTUBE_CONSENT_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * @param {boolean} allowed
+ */
+function setYoutubeConsent(allowed) {
+  try {
+    if (allowed) {
+      sessionStorage.setItem(YOUTUBE_CONSENT_KEY, '1');
+    } else {
+      sessionStorage.removeItem(YOUTUBE_CONSENT_KEY);
+    }
+  } catch {
+    // Private mode / blocked storage: consent lasts for this view only.
+  }
+}
+
+/**
+ * YouTube ID from catalog videoLink (ID or watch/embed URL).
+ * @param {unknown} value
+ * @returns {string}
+ */
+function youtubeEmbedId(value) {
+  const raw = String(value || '').trim();
+  if (/^[a-zA-Z0-9_-]{11}$/.test(raw)) {
+    return raw;
+  }
+  const match = raw.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
+  return match ? match[1] : '';
+}
+
+/**
+ * Drop any YouTube iframe connection (no Google request until the user clicks).
+ * @param {HTMLElement|null} view
+ */
+function unloadProductVideo(view) {
+  if (!view) {
+    return;
+  }
+  const iframe = view.querySelector('.js-product-detail-video');
+  const wrap = view.querySelector('.ns-product-detail__video');
+  const consent = view.querySelector('.js-product-detail-video-consent');
+  if (iframe) {
+    iframe.removeAttribute('src');
+    iframe.classList.add('d-none');
+  }
+  wrap?.classList.remove('is-loaded');
+  if (consent) {
+    consent.hidden = false;
+  }
+  setVisible(view.querySelector('.js-product-detail-video-revoke'), false);
+}
+
+/**
+ * Load youtube-nocookie embed only after explicit user action.
+ * @param {HTMLElement} view
+ */
+function loadProductVideo(view) {
+  const section = view.querySelector('.js-product-detail-video-section');
+  const id = section?.dataset.youtubeId || '';
+  const iframe = view.querySelector('.js-product-detail-video');
+  const wrap = view.querySelector('.ns-product-detail__video');
+  const consent = view.querySelector('.js-product-detail-video-consent');
+  if (!id || !iframe) {
+    return;
+  }
+  iframe.title = section?.dataset.iframeTitle || 'Installation video';
+  iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+  iframe.setAttribute('allowfullscreen', '');
+  iframe.src = `${YOUTUBE_EMBED_ORIGIN}/embed/${encodeURIComponent(id)}?rel=0`;
+  iframe.classList.remove('d-none');
+  wrap?.classList.add('is-loaded');
+  if (consent) {
+    consent.hidden = true;
+  }
+  setVisible(view.querySelector('.js-product-detail-video-revoke'), true);
+}
+
+/**
+ * @param {HTMLElement} view
+ * @param {object} item
+ */
+function populateVideo(view, item) {
+  unloadProductVideo(view);
+  const section = view.querySelector('.js-product-detail-video-section');
+  const iframe = view.querySelector('.js-product-detail-video');
+  const watchLink = view.querySelector('.js-product-detail-video-link');
+  const id = youtubeEmbedId(item.videoLink || item.video_link || '');
+  const iframeTitle = section?.dataset.iframeTitle || 'Installation video';
+  if (section) {
+    if (id) {
+      section.dataset.youtubeId = id;
+    } else {
+      delete section.dataset.youtubeId;
+    }
+  }
+  if (iframe) {
+    iframe.title = iframeTitle;
+    iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+    iframe.setAttribute('allowfullscreen', '');
+  }
+  if (watchLink) {
+    if (id) {
+      watchLink.href = `https://www.youtube.com/watch?v=${encodeURIComponent(id)}`;
+      watchLink.hidden = false;
+    } else {
+      watchLink.removeAttribute('href');
+      watchLink.hidden = true;
+    }
+  }
+  setVisible(section, !!id);
+  setVisible(view.querySelector('.js-product-detail-video-revoke'), false);
+  if (id && hasYoutubeConsent()) {
+    loadProductVideo(view);
+  }
 }
 
 /**
@@ -1482,6 +1613,7 @@ function toggleDetailMode(show) {
       header.classList.add('d-none');
     }
   } else {
+    unloadProductVideo(view);
     view.classList.add('d-none');
     view.setAttribute('hidden', 'hidden');
     view.setAttribute('aria-hidden', 'true');
@@ -1515,6 +1647,28 @@ document.addEventListener('click', (e) => {
     if (view && !view.classList.contains('d-none')) {
       toggleDetailMode(false);
     }
+  }
+
+  const loadVideo = e.target.closest('.t3js-product-detail-load-video');
+  if (loadVideo) {
+    e.preventDefault();
+    const view = document.getElementById(VIEW_ID);
+    if (view) {
+      setYoutubeConsent(true);
+      loadProductVideo(view);
+    }
+    return;
+  }
+
+  const revokeVideo = e.target.closest('.t3js-product-detail-revoke-video');
+  if (revokeVideo) {
+    e.preventDefault();
+    const view = document.getElementById(VIEW_ID);
+    setYoutubeConsent(false);
+    if (view) {
+      unloadProductVideo(view);
+    }
+    return;
   }
 
   const copyBtn = e.target.closest('.t3js-product-detail-copy-composer');
