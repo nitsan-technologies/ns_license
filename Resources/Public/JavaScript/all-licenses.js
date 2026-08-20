@@ -6,9 +6,9 @@
 import AjaxRequest from '@typo3/core/ajax/ajax-request.js';
 import Notification from '@typo3/backend/notification.js';
 
-const DEFAULT_TABLE_COLSPAN = 10;
+const DEFAULT_TABLE_COLSPAN = 9;
 /** Bump when table columns change (must match data-js-table-version on .ns-all-licenses). */
-const ALL_LICENSES_JS_TABLE_VERSION = 8;
+const ALL_LICENSES_JS_TABLE_VERSION = 9;
 
 /**
  * @param {*} result
@@ -388,24 +388,33 @@ async function copyToClipboard(text) {
   return false;
 }
 
-const COPY_ICON_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M6 2h5a1 1 0 0 1 1 1v1h1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h1V3a1 1 0 0 1 1-1m0 3H6v8h7V5h-1v1H6zm1-2v1h4V3z"/></svg>';
+const COPY_ICON_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M21 8C21 6.34315 19.6569 5 18 5H10C8.34315 5 7 6.34315 7 8V20C7 21.6569 8.34315 23 10 23H18C19.6569 23 21 21.6569 21 20V8ZM19 8C19 7.44772 18.5523 7 18 7H10C9.44772 7 9 7.44772 9 8V20C9 20.5523 9.44772 21 10 21H18C18.5523 21 19 20.5523 19 20V8Z"/><path d="M6 3H16C16.5523 3 17 2.55228 17 2C17 1.44772 16.5523 1 16 1H6C4.34315 1 3 2.34315 3 4V18C3 18.5523 3.44772 19 4 19C4.55228 19 5 18.5523 5 18V4C5 3.44772 5.44772 3 6 3Z"/></svg>';
 
 /**
- * Truncated value with a copy button.
+ * Truncated value with optional copy button.
  *
  * @param {string} value
  * @param {object} labels
  * @param {string} modifier
+ * @param {boolean} [withCopy=true]
  * @returns {string}
  */
-function copyableValue(value, labels, modifier) {
+function copyableValue(value, labels, modifier, withCopy = true) {
   const text = String(value || '').trim();
   if (!text) {
     return '<span class="text-variant">—</span>';
   }
   const extra = modifier ? ` ns-all-licenses-copycell--${modifier}` : '';
+  const copyBtn = withCopy
+    ? `<button type="button"
+      class="btn btn-link btn-sm ns-all-licenses-copy"
+      data-all-licenses-copy="${escapeAttr(text)}"
+      title="${escapeAttr(labels.copy || 'Copy')}"
+      aria-label="${escapeAttr(labels.copy || 'Copy')}">${COPY_ICON_SVG}</button>`
+    : '';
   return `<span class="ns-all-licenses-copycell${extra}">
     <code class="ns-all-licenses-clip" title="${escapeAttr(text)}">${escapeHtml(text)}</code>
+    ${copyBtn}
   </span>`;
 }
 
@@ -444,20 +453,16 @@ function renderDomainSection(section, labels) {
     return '';
   }
   const items = section.domains.map((domain) => `
-    <div class="domains-list__item">
-      <div class="domains-list__item-content">
-        <div class="domains-list__item-content-text">
-          <p class="mb-0 text-break ns-all-licenses-domains-domain">${escapeHtml(domain)}</p>
-        </div>
-      </div>
-    </div>`).join('');
+    <li class="ns-all-licenses-domains-list__item">
+      <code class="text-break ns-all-licenses-domains-domain">${escapeHtml(domain)}</code>
+    </li>`).join('');
   return `
-    <div class="mb-3">
+    <div class="mb-3 ns-all-licenses-domains-section">
       <div class="d-flex align-items-center gap-2 mb-2">
         <h3 class="h6 mb-0 ns-all-licenses-domains-section__title">${escapeHtml(section.label)}</h3>
-        <span class="badge badge-default">${section.domains.length}</span>
+        <span class="small text-variant">(${section.domains.length})</span>
       </div>
-      <div class="domains-list ns-all-licenses-domains-list">${items}</div>
+      <ul class="list-unstyled mb-0 ns-all-licenses-domains-list">${items}</ul>
     </div>`;
 }
 
@@ -543,7 +548,6 @@ function licenseSearchBlob(license) {
     license.latestVersion,
     license.installedVersion,
     license.primaryDomain,
-    license.domainsMaxLabel,
     license.domains,
     license.localDomains,
     license.stagingDomains,
@@ -589,7 +593,6 @@ function renderLicenseRow(license, labels) {
   const extensionKey = license.extensionKey || '';
   const licenseKey = license.licenseKey || '';
   const composerUsername = license.composerUsername || '';
-  const licenseType = license.domainsMaxLabel || '—';
   const latestVersion = license.latestVersion || '—';
   const installedVersion = license.installedVersion || '—';
   const expiry = license.validUntilFormatted || (license.isLifeTime ? labels.lifetime : '—');
@@ -598,7 +601,7 @@ function renderLicenseRow(license, labels) {
   const primaryDomain = license.primaryDomain || '';
 
   const composerCell = copyableValue(composerUsername, labels, 'user');
-  const domainCell = copyableValue(primaryDomain, labels, 'domain');
+  const domainCell = copyableValue(primaryDomain, labels, 'domain', false);
   const licenseKeyCell = copyableValue(licenseKey, labels, 'key');
 
   const viewDomainsBtn = `<button type="button"
@@ -638,7 +641,6 @@ function renderLicenseRow(license, labels) {
       </td>
       <td>${composerCell}</td>
       <td>${licenseKeyCell}</td>
-      <td>${escapeHtml(licenseType)}</td>
       <td>${escapeHtml(latestVersion)}</td>
       <td>${escapeHtml(installedVersion)}</td>
       <td>${escapeHtml(expiry)}</td>
@@ -788,7 +790,6 @@ function exportLicensesCsv(licenses, labels) {
     'Extension key',
     'Composer username',
     'License key',
-    'Allowed domain',
     'Latest Ext Version',
     'Installed',
     'Expiry Date',
@@ -807,7 +808,6 @@ function exportLicensesCsv(licenses, labels) {
       license.extensionKey || '',
       license.composerUsername || '',
       license.licenseKey || '',
-      license.domainsMaxLabel || '',
       license.latestVersion || '',
       license.installedVersion || '',
       expiry,
