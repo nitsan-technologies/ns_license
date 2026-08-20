@@ -310,6 +310,9 @@
             <trans-unit id="license-all-licenses.otp.sent_to">
                 <source>Please enter the 6-digit code we just sent to %s</source>
             </trans-unit>
+            <trans-unit id="license-all-licenses.otp.instructions">
+                <source>Please enter the 6-digit verification code sent to %s. Check your inbox and spam folder. If you experience any issues, please contact T3Planet Support.</source>
+            </trans-unit>
             <trans-unit id="license-all-licenses.otp.modal.title">
                 <source>Verify Email</source>
             </trans-unit>
@@ -344,7 +347,7 @@
                 <source>Cancellation</source>
             </trans-unit>
             <trans-unit id="license-all-licenses.verified_as">
-                <source>Showing licenses for</source>
+                <source>Showing all associated licenses under:</source>
             </trans-unit>
             <trans-unit id="license-all-licenses.badge.total">
                 <source>%s total</source>
@@ -374,13 +377,13 @@
                 <source>License type</source>
             </trans-unit>
             <trans-unit id="license-all-licenses.column.latest_version">
-                <source>Latest</source>
+                <source>Latest Ext Version</source>
             </trans-unit>
             <trans-unit id="license-all-licenses.column.installed_version">
                 <source>Installed</source>
             </trans-unit>
             <trans-unit id="license-all-licenses.column.expiry">
-                <source>Expiry</source>
+                <source>Expiry Date</source>
             </trans-unit>
             <trans-unit id="license-all-licenses.column.status">
                 <source>Status</source>
@@ -440,7 +443,7 @@
                 <source>OTP verified</source>
             </trans-unit>
             <trans-unit id="license-all-licenses.status.trial_started">
-                <source>Trial started</source>
+                <source>Trial</source>
             </trans-unit>
             <trans-unit id="license-all-licenses.domains.modal_title">
                 <source>Associated domains</source>
