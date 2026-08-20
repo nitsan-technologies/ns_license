@@ -179,7 +179,7 @@
                             </button>
                         </f:if>
 
-                        <f:if condition="{extension.details.lts_version} != {extension.details.version} && {extension.details.isUpdateAvail} && ({extension.details.days} > 0 || {extension.details.is_life_time})">
+                        <f:if condition="{extension.details.isUpdateAvail} && ({extension.details.days} > 0 || {extension.details.is_life_time})">
                             <div class="callout callout-notice mb-3">
                                 <div class="callout-content">
                                     <div class="callout-body">
