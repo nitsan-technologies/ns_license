@@ -274,7 +274,7 @@ final class CatalogCacheService
 
     private function getApiBaseUrl(): string
     {
-        return 'https://composer.ddev.site/API/';
+        return 'https://composer.thebetaspace.com/API/';
     }
 
     /**

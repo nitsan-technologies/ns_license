@@ -1045,7 +1045,7 @@ final class LicenseService
         if ($configured !== '') {
             return rtrim($configured, '/') . '/';
         }
-        return 'https://composer.ddev.site/API/';
+        return 'https://composer.thebetaspace.com/API/';
     }
 
     /**
