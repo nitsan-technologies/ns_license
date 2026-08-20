@@ -712,6 +712,9 @@
             <trans-unit id="license-catalog.detail.demo.backend">
                 <source>Demo</source>
             </trans-unit>
+            <trans-unit id="license-demo-modal.iframe-title">
+                <source>Product demo</source>
+            </trans-unit>
             <trans-unit id="license-catalog.detail.meta">
                 <source>Details</source>
             </trans-unit>

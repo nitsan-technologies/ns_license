@@ -1,0 +1,44 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers" data-namespace-typo3-fluid="true">
+<div id="demo-modal"
+    class="t3js-modal modal fade modal-type-default modal-severity-default modal-style-default ns-license-modal ns-demo-modal modal-size-large position-fixed top-50 start-50 translate-middle p-0 border-0"
+    tabindex="-1"
+    data-bs-keyboard="true"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="t3js-modal-content modal-content">
+            <div class="modal-header">
+                <h4 class="t3js-modal-title modal-title mb-0" data-demo-modal-title>
+                    <f:translate key="license-catalog.detail.demo.backend" extensionName="ns_license" />
+                </h4>
+                <button type="button" class="t3js-modal-close close bg-transparent border-0" data-bs-dismiss="modal" aria-label="Close">
+                    <core:icon identifier="actions-close" size="small" />
+                </button>
+            </div>
+            <div class="t3js-modal-body modal-body p-0">
+                <iframe class="ns-demo-modal__iframe"
+                    data-demo-modal-iframe
+                    title="{f:translate(key: 'license-demo-modal.iframe-title', extensionName: 'ns_license')}"
+                    loading="lazy"
+                    allow="fullscreen; clipboard-write"
+                    allowfullscreen></iframe>
+            </div>
+            <div class="t3js-modal-footer modal-footer d-flex justify-content-between gap-2">
+                <button type="button" class="btn btn-default" data-demo-modal-cancel>
+                    <f:translate key="license.renew.modal.cancel" extensionName="ns_license" />
+                </button>
+                <a href="#"
+                    class="btn btn-default d-inline-flex align-items-center gap-1"
+                    data-demo-modal-open-tab
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    <span>
+                        <f:translate key="license-get-new.buy.open_new_tab" extensionName="ns_license" />
+                    </span>
+                    <core:icon identifier="actions-window-open" size="small" />
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

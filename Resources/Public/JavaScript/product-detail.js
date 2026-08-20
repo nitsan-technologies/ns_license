@@ -1360,6 +1360,7 @@ function populateActions(view, item, key, isFree, price) {
   }
 
   if (item.liveDemoUrl || item.frontendDemoUrl || item.backendDemoUrl) {
+    const isTemplate = item.catalogSection === 'templates';
     const backendUrl = item.backendDemoUrl || item.liveDemoUrl || '';
     const frontendUrl = item.frontendDemoUrl || '';
     const backendLabel = item.backendDemoUrl
@@ -1367,29 +1368,44 @@ function populateActions(view, item, key, isFree, price) {
       : (view.dataset.labelDemoLive || view.dataset.labelDemo || 'Live Demo');
 
     if (frontendUrl) {
-      const fe = document.createElement('a');
-      fe.href = frontendUrl;
-      fe.target = '_blank';
-      fe.rel = 'noopener noreferrer';
-      fe.className = 'btn btn-default';
-      setProductDetailCtaContent(view, fe, {
-        label: view.dataset.labelDemoFrontend || 'Frontend Demo',
-        external: true,
-      });
-      actions.appendChild(fe);
+      const feLabel = view.dataset.labelDemoFrontend || 'Frontend Demo';
+      if (isTemplate) {
+        const fe = document.createElement('a');
+        fe.href = frontendUrl;
+        fe.target = '_blank';
+        fe.rel = 'noopener noreferrer';
+        fe.className = 'btn btn-default';
+        setProductDetailCtaContent(view, fe, { label: feLabel, external: true });
+        actions.appendChild(fe);
+      } else {
+        const fe = document.createElement('button');
+        fe.type = 'button';
+        fe.className = 'btn btn-default t3js-demo-modal-trigger';
+        fe.dataset.demoUrl = frontendUrl;
+        fe.dataset.demoTitle = feLabel;
+        setProductDetailCtaContent(view, fe, { label: feLabel, leadingIcon: 'actions-preview' });
+        actions.appendChild(fe);
+      }
     }
 
     if (backendUrl) {
-      const be = document.createElement('a');
-      be.href = backendUrl;
-      be.target = '_blank';
-      be.rel = 'noopener noreferrer';
-      be.className = 'btn btn-default';
-      setProductDetailCtaContent(view, be, {
-        label: backendLabel,
-        external: true,
-      });
-      actions.appendChild(be);
+      if (isTemplate) {
+        const be = document.createElement('a');
+        be.href = backendUrl;
+        be.target = '_blank';
+        be.rel = 'noopener noreferrer';
+        be.className = 'btn btn-default';
+        setProductDetailCtaContent(view, be, { label: backendLabel, external: true });
+        actions.appendChild(be);
+      } else {
+        const be = document.createElement('button');
+        be.type = 'button';
+        be.className = 'btn btn-default t3js-demo-modal-trigger';
+        be.dataset.demoUrl = backendUrl;
+        be.dataset.demoTitle = backendLabel;
+        setProductDetailCtaContent(view, be, { label: backendLabel, leadingIcon: 'actions-preview' });
+        actions.appendChild(be);
+      }
     }
   }
 

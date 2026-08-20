@@ -157,19 +157,49 @@
                         </f:else>
                     </f:if>
                     <f:if condition="{isTemplatesTab}">
+                        <f:then>
+                            <f:variable name="demoUrl" value="" />
+                            <f:if condition="{item.frontendDemoUrl}">
+                                <f:then>
+                                    <f:variable name="demoUrl" value="{item.frontendDemoUrl}" />
+                                </f:then>
+                                <f:else>
+                                    <f:if condition="{item.liveDemoUrl}">
+                                        <f:then>
+                                            <f:variable name="demoUrl" value="{item.liveDemoUrl}" />
+                                        </f:then>
+                                        <f:else>
+                                            <f:if condition="{item.backendDemoUrl}">
+                                                <f:variable name="demoUrl" value="{item.backendDemoUrl}" />
+                                            </f:if>
+                                        </f:else>
+                                    </f:if>
+                                </f:else>
+                            </f:if>
+                            <f:if condition="{demoUrl}">
+                                <a href="{demoUrl}" class="btn btn-default btn-sm" target="_blank" rel="noopener noreferrer">
+                                    <core:icon identifier="actions-preview" size="small" />
+                                    <span>
+                                        <f:translate key="license-catalog.detail.demo.live" extensionName="ns_license" />
+                                    </span>
+                                </a>
+                            </f:if>
+                        </f:then>
                         <f:else>
                             <f:variable name="backendDemoUrl" value="{item.liveDemoUrl}" />
                             <f:if condition="{item.backendDemoUrl}">
                                 <f:variable name="backendDemoUrl" value="{item.backendDemoUrl}" />
                             </f:if>
                             <f:if condition="{backendDemoUrl}">
-                                <a href="{backendDemoUrl}" class="btn btn-default btn-sm" target="_blank"
-                                    rel="noopener noreferrer">
+                                <button type="button"
+                                    class="btn btn-default btn-sm t3js-demo-modal-trigger"
+                                    data-demo-url="{backendDemoUrl}"
+                                    data-demo-title="{item.name}">
                                     <core:icon identifier="actions-preview" size="small" />
                                     <span>
                                         <f:translate key="license-catalog.detail.demo.backend" extensionName="ns_license" />
                                     </span>
-                                </a>
+                                </button>
                             </f:if>
                         </f:else>
                     </f:if>

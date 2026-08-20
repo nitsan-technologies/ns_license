@@ -696,6 +696,10 @@
                 <source>Demo</source>
                 <target>Demo</target>
             </trans-unit>
+            <trans-unit id="license-demo-modal.iframe-title">
+                <source>Product demo</source>
+                <target>Produktdemo</target>
+            </trans-unit>
             <trans-unit id="license-catalog.detail.meta">
                 <source>Details</source>
                 <target>Details</target>

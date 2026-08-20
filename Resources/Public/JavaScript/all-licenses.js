@@ -406,7 +406,6 @@ function copyableValue(value, labels, modifier) {
   const extra = modifier ? ` ns-all-licenses-copycell--${modifier}` : '';
   return `<span class="ns-all-licenses-copycell${extra}">
     <code class="ns-all-licenses-clip" title="${escapeAttr(text)}">${escapeHtml(text)}</code>
-    <button type="button" class="btn btn-default btn-sm ns-all-licenses-copy" data-all-licenses-copy="${escapeAttr(text)}" title="${escapeAttr(labels.copy)}" aria-label="${escapeAttr(labels.copy)}">${COPY_ICON_SVG}</button>
   </span>`;
 }
 
@@ -450,9 +449,6 @@ function renderDomainSection(section, labels) {
         <div class="domains-list__item-content-text">
           <p class="mb-0 text-break ns-all-licenses-domains-domain">${escapeHtml(domain)}</p>
         </div>
-      </div>
-      <div class="domains-list__item-actions">
-        <button type="button" class="btn btn-default btn-sm ns-all-licenses-copy" data-all-licenses-copy="${escapeAttr(domain)}" title="${escapeAttr(labels.copy)}" aria-label="${escapeAttr(labels.copy)}">${COPY_ICON_SVG}</button>
       </div>
     </div>`).join('');
   return `

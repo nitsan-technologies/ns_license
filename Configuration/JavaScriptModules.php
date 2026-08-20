@@ -12,5 +12,6 @@ return [
         '@nitsan/ns-license/get-license.js' => 'EXT:ns_license/Resources/Public/JavaScript/get-license.js',
         '@nitsan/ns-license/product-detail.js' => 'EXT:ns_license/Resources/Public/JavaScript/product-detail.js',
         '@nitsan/ns-license/all-licenses.js' => 'EXT:ns_license/Resources/Public/JavaScript/all-licenses.js',
+        '@nitsan/ns-license/demo-modal.js' => 'EXT:ns_license/Resources/Public/JavaScript/demo-modal.js',
     ],
 ];
