@@ -374,7 +374,7 @@
                 <source>Composer username</source>
             </trans-unit>
             <trans-unit id="license-all-licenses.column.license_type">
-                <source>License type</source>
+                <source>Allowed domain</source>
             </trans-unit>
             <trans-unit id="license-all-licenses.column.latest_version">
                 <source>Latest Ext Version</source>

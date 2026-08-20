@@ -32,8 +32,8 @@
      data-labels-badge-total="{f:translate(key: 'license-all-licenses.badge.total', extensionName: 'ns_license')}"
      data-labels-badge-active="{f:translate(key: 'license-all-licenses.badge.active', extensionName: 'ns_license')}"
      data-labels-badge-expiring="{f:translate(key: 'license-all-licenses.badge.expiring', extensionName: 'ns_license')}"
-     data-table-colspan="8"
-     data-js-table-version="7">
+     data-table-colspan="10"
+     data-js-table-version="8">
 
     <div class="ns-all-licenses__otp" data-all-licenses-otp style="{f:if(condition: allLicensesVerified, then: 'display:none', else: '')}">
         <div class="card card-size-large custom-card mb-3">
@@ -126,7 +126,9 @@
                         <th><f:translate key="license-all-licenses.column.product" extensionName="ns_license" /></th>
                         <th><f:translate key="license-all-licenses.column.composer_username" extensionName="ns_license" /></th>
                         <th><f:translate key="license-all-licenses.column.license_key" extensionName="ns_license" /></th>
+                        <th><f:translate key="license-all-licenses.column.license_type" extensionName="ns_license" /></th>
                         <th><f:translate key="license-all-licenses.column.latest_version" extensionName="ns_license" /></th>
+                        <th><f:translate key="license-all-licenses.column.installed_version" extensionName="ns_license" /></th>
                         <th><f:translate key="license-all-licenses.column.expiry" extensionName="ns_license" /></th>
                         <th><f:translate key="license-all-licenses.column.status" extensionName="ns_license" /></th>
                         <th><f:translate key="license-all-licenses.column.production_domain" extensionName="ns_license" /></th>
@@ -164,7 +166,9 @@
                                                 </button>
                                             </span>
                                         </td>
+                                        <td>{license.domainsMaxLabel}</td>
                                         <td>{license.latestVersion}</td>
+                                        <td>{license.installedVersion}</td>
                                         <td>{license.validUntilFormatted}</td>
                                         <td>
                                             <f:switch expression="{license.status}">
@@ -241,7 +245,7 @@
                             </f:then>
                             <f:else>
                                 <tr data-all-licenses-empty-row>
-                                    <td colspan="8" class="text-variant"><f:translate key="license-all-licenses.empty" extensionName="ns_license" /></td>
+                                    <td colspan="10" class="text-variant"><f:translate key="license-all-licenses.empty" extensionName="ns_license" /></td>
                                 </tr>
                             </f:else>
                         </f:if>

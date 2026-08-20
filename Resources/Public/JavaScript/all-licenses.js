@@ -6,9 +6,9 @@
 import AjaxRequest from '@typo3/core/ajax/ajax-request.js';
 import Notification from '@typo3/backend/notification.js';
 
-const DEFAULT_TABLE_COLSPAN = 8;
+const DEFAULT_TABLE_COLSPAN = 10;
 /** Bump when table columns change (must match data-js-table-version on .ns-all-licenses). */
-const ALL_LICENSES_JS_TABLE_VERSION = 7;
+const ALL_LICENSES_JS_TABLE_VERSION = 8;
 
 /**
  * @param {*} result
@@ -593,7 +593,9 @@ function renderLicenseRow(license, labels) {
   const extensionKey = license.extensionKey || '';
   const licenseKey = license.licenseKey || '';
   const composerUsername = license.composerUsername || '';
+  const licenseType = license.domainsMaxLabel || '—';
   const latestVersion = license.latestVersion || '—';
+  const installedVersion = license.installedVersion || '—';
   const expiry = license.validUntilFormatted || (license.isLifeTime ? labels.lifetime : '—');
   const meta = statusMeta(license.status, labels);
   const domainsUsed = license.domainsUsed ?? 0;
@@ -640,7 +642,9 @@ function renderLicenseRow(license, labels) {
       </td>
       <td>${composerCell}</td>
       <td>${licenseKeyCell}</td>
+      <td>${escapeHtml(licenseType)}</td>
       <td>${escapeHtml(latestVersion)}</td>
+      <td>${escapeHtml(installedVersion)}</td>
       <td>${escapeHtml(expiry)}</td>
       <td><span class="badge badge-${meta.badge}">${escapeHtml(meta.label)}</span></td>
       <td>${domainCell}</td>
@@ -788,9 +792,10 @@ function exportLicensesCsv(licenses, labels) {
     'Extension key',
     'Composer username',
     'License key',
-    'Latest',
+    'Allowed domain',
+    'Latest Ext Version',
     'Installed',
-    'Expiry',
+    'Expiry Date',
     'Status',
     'Production domain',
     'Domains used',
@@ -806,6 +811,7 @@ function exportLicensesCsv(licenses, labels) {
       license.extensionKey || '',
       license.composerUsername || '',
       license.licenseKey || '',
+      license.domainsMaxLabel || '',
       license.latestVersion || '',
       license.installedVersion || '',
       expiry,

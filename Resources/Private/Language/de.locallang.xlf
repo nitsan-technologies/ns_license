@@ -1049,8 +1049,8 @@
                 <target>Composer-Benutzername</target>
             </trans-unit>
             <trans-unit id="license-all-licenses.column.license_type">
-                <source>License type</source>
-                <target>Lizenztyp</target>
+                <source>Allowed domain</source>
+                <target>Erlaubte Domain</target>
             </trans-unit>
             <trans-unit id="license-all-licenses.column.latest_version">
                 <source>Latest Ext Version</source>
