@@ -304,7 +304,7 @@ body > .ns-license-module-shell.module {
   max-height: calc(100dvh - 40px);
 }
 
-.ns-license-modal.modal.show:not(.ns-renew-license-modal):not(.ns-get-license-modal):not(.ns-all-licenses-otp-modal):not(.ns-all-licenses-domains-modal) .t3js-modal-content.modal-content {
+.ns-license-modal.modal.show:not(.ns-renew-license-modal):not(.ns-get-license-modal):not(.ns-all-licenses-otp-modal):not(.ns-all-licenses-domains-modal):not(.ns-demo-modal) .t3js-modal-content.modal-content {
   height: 100%;
 }
 
@@ -317,7 +317,7 @@ body > .ns-license-module-shell.module {
   transform: none;
 }
 
-.ns-license-modal.modal.show:not(.ns-renew-license-modal):not(.ns-get-license-modal):not(.ns-all-licenses-otp-modal):not(.ns-all-licenses-domains-modal) .modal-dialog {
+.ns-license-modal.modal.show:not(.ns-renew-license-modal):not(.ns-get-license-modal):not(.ns-all-licenses-otp-modal):not(.ns-all-licenses-domains-modal):not(.ns-demo-modal) .modal-dialog {
   height: 100%;
 }
 
@@ -1656,6 +1656,7 @@ body > .ns-license-module-shell.module {
   border: none;
   box-shadow: none;
   padding: 0.25rem;
+  min-height: 16px;
 }
 
 .ns-renew-license-modal .modal-header .t3js-modal-close:hover,
@@ -3587,24 +3588,13 @@ button.catalog-hero__wordmark.catalog-card__media-btn {
 
 /* All Licenses — compact toolbar + truncated copyable cells */
 .ns-all-licenses-toolbar__search {
-  flex: 1 1 16rem;
-  max-width: 28rem;
+  flex: 1 1 0;
+  max-width: 100%;
 }
 
 .ns-all-licenses-copycell {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  min-width: 0;
-  max-width: 12rem;
-}
-
-.ns-all-licenses-copycell--user {
-  max-width: 9rem;
-}
-
-.ns-all-licenses-copycell--key {
-  max-width: 12rem;
 }
 
 .ns-all-licenses-copycell--domain {
@@ -3683,4 +3673,74 @@ button.catalog-hero__wordmark.catalog-card__media-btn {
 
 .ns-all-licenses-domains-modal .domains-list__item-content-text {
   min-width: 0;
+}
+
+/* Demo modal (Supademo iframe — AI Universe + Extensions) */
+.ns-demo-modal.modal {
+  position: fixed !important;
+  left: 50% !important;
+  right: auto !important;
+  top: 50% !important;
+  bottom: auto !important;
+  transform: translate(-50%, -50%) !important;
+  width: auto;
+  max-width: calc(100vw - 2rem);
+  height: auto !important;
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  margin: 0;
+  z-index: 1091;
+}
+
+.ns-demo-modal.modal.show {
+  border: 0 !important;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.ns-demo-modal.modal.show .modal-dialog,
+.ns-demo-modal.modal.show .t3js-modal-content.modal-content {
+  pointer-events: auto;
+}
+
+.ns-demo-modal.modal .modal-dialog,
+.ns-demo-modal.modal.show .modal-dialog {
+  transform: none !important;
+  height: auto;
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  width: min(96vw, 72rem);
+  max-width: min(96vw, 72rem);
+  margin: 0;
+}
+
+.ns-demo-modal.modal.show .t3js-modal-content.modal-content {
+  height: auto;
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  overflow: hidden;
+  width: 100%;
+}
+
+.ns-demo-modal .modal-body {
+  overflow: hidden;
+  min-height: 0;
+  padding: 0;
+}
+
+.ns-demo-modal .modal-footer {
+  flex-shrink: 0;
+}
+
+.ns-demo-modal .ns-demo-modal__iframe,
+.ns-demo-modal [data-demo-modal-iframe] {
+  display: block;
+  width: 100%;
+  height: min(78vh, 860px);
+  height: min(78dvh, 860px);
+  min-height: 480px;
+  border: 0;
+  background: #f3f4f6;
+  background: var(--typo3-surface-container-low, light-dark(#f3f4f6, #2a2a2a));
 }
