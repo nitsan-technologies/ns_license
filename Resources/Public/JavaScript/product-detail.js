@@ -39,6 +39,53 @@ function escapeHtml(text) {
 }
 
 /**
+ * Backend UI language. t3planet.de is German-first; only treat explicit English as EN.
+ * @returns {boolean}
+ */
+function isEnglishBackendLang() {
+  return String(document.documentElement.lang || '').toLowerCase().startsWith('en');
+}
+
+/**
+ * Rewrite t3planet.de marketing URLs: DE has no /en/ prefix; EN uses /en/.
+ * Leaves docs.t3planet.de and other hosts unchanged.
+ * @param {string} url
+ * @returns {string}
+ */
+function localizeT3PlanetUrl(url) {
+  const value = String(url || '').trim();
+  if (!value) {
+    return '';
+  }
+  let parsed;
+  try {
+    parsed = new URL(value, window.location.origin);
+  } catch {
+    return value;
+  }
+  const host = parsed.hostname.replace(/^www\./i, '').toLowerCase();
+  if (host !== 't3planet.de') {
+    return value;
+  }
+  const path = parsed.pathname || '/';
+  const contactPath = path.replace(/\/$/, '') || '/';
+  if (contactPath === '/kontakt' || contactPath === '/contact' || contactPath === '/en/contact') {
+    parsed.pathname = isEnglishBackendLang() ? '/en/contact' : '/kontakt';
+    return parsed.toString();
+  }
+  const isEnPath = path === '/en' || path === '/en/' || path.startsWith('/en/');
+  if (isEnglishBackendLang()) {
+    if (!isEnPath) {
+      parsed.pathname = path === '/' ? '/en/' : `/en${path.startsWith('/') ? path : `/${path}`}`;
+    }
+  } else if (isEnPath) {
+    const stripped = path.replace(/^\/en(?=\/|$)/, '');
+    parsed.pathname = stripped === '' ? '/' : stripped;
+  }
+  return parsed.toString();
+}
+
+/**
  * Turn API HTML blurbs into readable plain text (no XSS via innerHTML).
  * @param {unknown} value
  * @returns {string}
@@ -596,6 +643,7 @@ function populateView(view, item) {
   }
   setVisible(featuresSection, features.length > 0);
 
+  populateVideo(view, item);
   populateExternalNav(view, item);
   populateSecurity(view, item);
   populateChangelog(view, item);
@@ -606,6 +654,136 @@ function populateView(view, item) {
   populateResources(view, item);
   populateMeta(view, item, key);
   populateDependencies(view, item);
+}
+
+const YOUTUBE_EMBED_ORIGIN = 'https://www.youtube-nocookie.com';
+const YOUTUBE_CONSENT_KEY = 'nsLicenseYoutubeConsent';
+
+/**
+ * Session-only YouTube consent for this backend tab.
+ * @returns {boolean}
+ */
+function hasYoutubeConsent() {
+  try {
+    return sessionStorage.getItem(YOUTUBE_CONSENT_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * @param {boolean} allowed
+ */
+function setYoutubeConsent(allowed) {
+  try {
+    if (allowed) {
+      sessionStorage.setItem(YOUTUBE_CONSENT_KEY, '1');
+    } else {
+      sessionStorage.removeItem(YOUTUBE_CONSENT_KEY);
+    }
+  } catch {
+    // Private mode / blocked storage: consent lasts for this view only.
+  }
+}
+
+/**
+ * YouTube ID from catalog videoLink (ID or watch/embed URL).
+ * @param {unknown} value
+ * @returns {string}
+ */
+function youtubeEmbedId(value) {
+  const raw = String(value || '').trim();
+  if (/^[a-zA-Z0-9_-]{11}$/.test(raw)) {
+    return raw;
+  }
+  const match = raw.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
+  return match ? match[1] : '';
+}
+
+/**
+ * Drop any YouTube iframe connection (no Google request until the user clicks).
+ * @param {HTMLElement|null} view
+ */
+function unloadProductVideo(view) {
+  if (!view) {
+    return;
+  }
+  const iframe = view.querySelector('.js-product-detail-video');
+  const wrap = view.querySelector('.ns-product-detail__video');
+  const consent = view.querySelector('.js-product-detail-video-consent');
+  if (iframe) {
+    iframe.removeAttribute('src');
+    iframe.classList.add('d-none');
+  }
+  wrap?.classList.remove('is-loaded');
+  if (consent) {
+    consent.hidden = false;
+  }
+  setVisible(view.querySelector('.js-product-detail-video-revoke'), false);
+}
+
+/**
+ * Load youtube-nocookie embed only after explicit user action.
+ * @param {HTMLElement} view
+ */
+function loadProductVideo(view) {
+  const section = view.querySelector('.js-product-detail-video-section');
+  const id = section?.dataset.youtubeId || '';
+  const iframe = view.querySelector('.js-product-detail-video');
+  const wrap = view.querySelector('.ns-product-detail__video');
+  const consent = view.querySelector('.js-product-detail-video-consent');
+  if (!id || !iframe) {
+    return;
+  }
+  iframe.title = section?.dataset.iframeTitle || 'Installation video';
+  iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+  iframe.setAttribute('allowfullscreen', '');
+  iframe.src = `${YOUTUBE_EMBED_ORIGIN}/embed/${encodeURIComponent(id)}?rel=0`;
+  iframe.classList.remove('d-none');
+  wrap?.classList.add('is-loaded');
+  if (consent) {
+    consent.hidden = true;
+  }
+  setVisible(view.querySelector('.js-product-detail-video-revoke'), true);
+}
+
+/**
+ * @param {HTMLElement} view
+ * @param {object} item
+ */
+function populateVideo(view, item) {
+  unloadProductVideo(view);
+  const section = view.querySelector('.js-product-detail-video-section');
+  const iframe = view.querySelector('.js-product-detail-video');
+  const watchLink = view.querySelector('.js-product-detail-video-link');
+  const id = youtubeEmbedId(item.videoLink || item.video_link || '');
+  const iframeTitle = section?.dataset.iframeTitle || 'Installation video';
+  if (section) {
+    if (id) {
+      section.dataset.youtubeId = id;
+    } else {
+      delete section.dataset.youtubeId;
+    }
+  }
+  if (iframe) {
+    iframe.title = iframeTitle;
+    iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+    iframe.setAttribute('allowfullscreen', '');
+  }
+  if (watchLink) {
+    if (id) {
+      watchLink.href = `https://www.youtube.com/watch?v=${encodeURIComponent(id)}`;
+      watchLink.hidden = false;
+    } else {
+      watchLink.removeAttribute('href');
+      watchLink.hidden = true;
+    }
+  }
+  setVisible(section, !!id);
+  setVisible(view.querySelector('.js-product-detail-video-revoke'), false);
+  if (id && hasYoutubeConsent()) {
+    loadProductVideo(view);
+  }
 }
 
 /**
@@ -720,7 +898,8 @@ function populateExternalNav(view, item) {
       link.removeAttribute('href');
       return;
     }
-    link.href = hashByKey[key] ? withUrlHash(url, hashByKey[key]) : url;
+    const localized = localizeT3PlanetUrl(url);
+    link.href = hashByKey[key] ? withUrlHash(localized, hashByKey[key]) : localized;
     setVisible(link, true);
   });
 }
@@ -1165,7 +1344,7 @@ function populateActions(view, item, key, isFree, price) {
     });
     actions.appendChild(trialBtn);
   } else if (isFree) {
-    const knowMoreUrl = item.knowMoreUrl || item.productUrl || '';
+    const knowMoreUrl = localizeT3PlanetUrl(item.knowMoreUrl || item.productUrl || '');
     if (knowMoreUrl) {
       const knowMore = document.createElement('a');
       knowMore.href = knowMoreUrl;
@@ -1181,35 +1360,52 @@ function populateActions(view, item, key, isFree, price) {
   }
 
   if (item.liveDemoUrl || item.frontendDemoUrl || item.backendDemoUrl) {
-    // liveDemoUrl is the catalog demo link → Demo button (new tab).
+    const isTemplate = item.catalogSection === 'templates';
     const backendUrl = item.backendDemoUrl || item.liveDemoUrl || '';
     const frontendUrl = item.frontendDemoUrl || '';
-    const backendLabel = view.dataset.labelDemoBackend || view.dataset.labelDemo || 'Demo';
+    const backendLabel = item.backendDemoUrl
+      ? (view.dataset.labelDemoBackend || view.dataset.labelDemo || 'Demo')
+      : (view.dataset.labelDemoLive || view.dataset.labelDemo || 'Live Demo');
 
     if (frontendUrl) {
-      const fe = document.createElement('a');
-      fe.href = frontendUrl;
-      fe.target = '_blank';
-      fe.rel = 'noopener noreferrer';
-      fe.className = 'btn btn-default';
-      setProductDetailCtaContent(view, fe, {
-        label: view.dataset.labelDemoFrontend || 'Frontend Demo',
-        external: true,
-      });
-      actions.appendChild(fe);
+      const feLabel = view.dataset.labelDemoFrontend || 'Frontend Demo';
+      if (isTemplate) {
+        const fe = document.createElement('a');
+        fe.href = frontendUrl;
+        fe.target = '_blank';
+        fe.rel = 'noopener noreferrer';
+        fe.className = 'btn btn-default';
+        setProductDetailCtaContent(view, fe, { label: feLabel, external: true });
+        actions.appendChild(fe);
+      } else {
+        const fe = document.createElement('button');
+        fe.type = 'button';
+        fe.className = 'btn btn-default t3js-demo-modal-trigger';
+        fe.dataset.demoUrl = frontendUrl;
+        fe.dataset.demoTitle = feLabel;
+        setProductDetailCtaContent(view, fe, { label: feLabel, leadingIcon: 'actions-preview' });
+        actions.appendChild(fe);
+      }
     }
 
     if (backendUrl) {
-      const be = document.createElement('a');
-      be.href = backendUrl;
-      be.target = '_blank';
-      be.rel = 'noopener noreferrer';
-      be.className = 'btn btn-default';
-      setProductDetailCtaContent(view, be, {
-        label: backendLabel,
-        external: true,
-      });
-      actions.appendChild(be);
+      if (isTemplate) {
+        const be = document.createElement('a');
+        be.href = backendUrl;
+        be.target = '_blank';
+        be.rel = 'noopener noreferrer';
+        be.className = 'btn btn-default';
+        setProductDetailCtaContent(view, be, { label: backendLabel, external: true });
+        actions.appendChild(be);
+      } else {
+        const be = document.createElement('button');
+        be.type = 'button';
+        be.className = 'btn btn-default t3js-demo-modal-trigger';
+        be.dataset.demoUrl = backendUrl;
+        be.dataset.demoTitle = backendLabel;
+        setProductDetailCtaContent(view, be, { label: backendLabel, leadingIcon: 'actions-preview' });
+        actions.appendChild(be);
+      }
     }
   }
 
@@ -1257,19 +1453,21 @@ function populateResources(view, item) {
   }
   list.innerHTML = '';
   const externalIcon = getProductDetailIconHtml(view, 'resource-external');
-  const isGerman = String(document.documentElement.lang || '').toLowerCase().startsWith('de');
-  const reportIssueUrl = (
-    isGerman
-      ? (view.dataset.reportIssueUrlDe || 'https://t3planet.de/kontakt')
-      : (view.dataset.reportIssueUrlEn || 'https://t3planet.de/en/contact')
-  ).trim();
-  const docsUrl = String(
+  const docsUrl = localizeT3PlanetUrl(String(
     item.documentationUrl
     || item.documentationLink
     || item.documentation_link
     || item.details?.documentation_link
     || ''
-  ).trim();
+  ).trim());
+  const scheduleUrl = localizeT3PlanetUrl(String(
+    item.scheduleCallUrl
+    || item.bookCallUrl
+    || item.scheduleUrl
+    || (isEnglishBackendLang()
+      ? (view.dataset.scheduleCallUrlEn || 'https://t3planet.de/en/contact')
+      : (view.dataset.scheduleCallUrl || 'https://t3planet.de/kontakt'))
+  ).trim());
   const links = [
     {
       href: docsUrl,
@@ -1277,23 +1475,12 @@ function populateResources(view, item) {
       icon: 'resource-docs',
     },
     {
-      href: reportIssueUrl,
-      label: view.dataset.labelReportIssue || 'Found an issue',
-      icon: 'resource-report',
-    },
-    {
-      href: String(item.productUrl || item.knowMoreUrl || item.details?.product_link || '').trim(),
+      href: localizeT3PlanetUrl(String(item.productUrl || item.knowMoreUrl || item.details?.product_link || '').trim()),
       label: view.dataset.labelProductPage || 'T3Planet Page',
       icon: 'resource-product',
     },
     {
-      href: String(
-        item.scheduleCallUrl
-        || item.bookCallUrl
-        || item.scheduleUrl
-        || view.dataset.scheduleCallUrl
-        || ''
-      ).trim(),
+      href: scheduleUrl,
       label: view.dataset.labelScheduleCall || 'Schedule a Call',
       icon: 'resource-schedule',
     },
@@ -1482,6 +1669,7 @@ function toggleDetailMode(show) {
       header.classList.add('d-none');
     }
   } else {
+    unloadProductVideo(view);
     view.classList.add('d-none');
     view.setAttribute('hidden', 'hidden');
     view.setAttribute('aria-hidden', 'true');
@@ -1515,6 +1703,28 @@ document.addEventListener('click', (e) => {
     if (view && !view.classList.contains('d-none')) {
       toggleDetailMode(false);
     }
+  }
+
+  const loadVideo = e.target.closest('.t3js-product-detail-load-video');
+  if (loadVideo) {
+    e.preventDefault();
+    const view = document.getElementById(VIEW_ID);
+    if (view) {
+      setYoutubeConsent(true);
+      loadProductVideo(view);
+    }
+    return;
+  }
+
+  const revokeVideo = e.target.closest('.t3js-product-detail-revoke-video');
+  if (revokeVideo) {
+    e.preventDefault();
+    const view = document.getElementById(VIEW_ID);
+    setYoutubeConsent(false);
+    if (view) {
+      unloadProductVideo(view);
+    }
+    return;
   }
 
   const copyBtn = e.target.closest('.t3js-product-detail-copy-composer');

@@ -22,8 +22,8 @@
   min-width: auto;
 }
 
-/* Domains / shared modals only — do not fight Get New License / Renew sizing */
-.ns-license-modal.modal:not(.ns-get-license-modal):not(.ns-renew-license-modal) {
+/* Domains / shared modals only — do not fight Get New License / Renew / Demo sizing */
+.ns-license-modal.modal:not(.ns-get-license-modal):not(.ns-renew-license-modal):not(.ns-demo-modal) {
   pointer-events: none;
   position: fixed;
   left: 50%;
@@ -31,8 +31,23 @@
   transform: translate(-50%, -50%);
 }
 
-.ns-license-modal.modal.show:not(.ns-get-license-modal):not(.ns-renew-license-modal) {
+.ns-license-modal.modal.show:not(.ns-get-license-modal):not(.ns-renew-license-modal):not(.ns-demo-modal) {
   pointer-events: auto;
+}
+
+/* Demo modal — v12 uses vh fallback (dvh in shared custom.css) */
+.ns-demo-modal.modal.show .t3js-modal-content.modal-content {
+  max-height: calc(100vh - 2rem);
+}
+
+.ns-demo-modal.modal.show .modal-dialog {
+  max-height: calc(100vh - 2rem);
+}
+
+.ns-demo-modal .ns-demo-modal__iframe,
+.ns-demo-modal [data-demo-modal-iframe] {
+  height: min(78vh, 860px);
+  min-height: 420px;
 }
 
 /* v12: only force what core may override (rest lives in custom.css) */

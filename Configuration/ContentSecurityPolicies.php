@@ -12,7 +12,9 @@ use TYPO3\CMS\Core\Type\Map;
 
 /**
  * Backend CSP: allow framing T3Planet / Pabbly checkout in Get New License Buy modal,
- * and loading catalog/product images from T3Planet CDNs.
+ * YouTube privacy-enhanced embeds on product detail (loaded only after user click),
+ * Supademo demos in the catalog demo modal,
+ * and catalog/product images from T3Planet CDNs.
  *
  * Hosts must stay in sync with {@see \NITSAN\NsLicense\Service\Checkout\CheckoutUrlValidator}.
  */
@@ -31,6 +33,9 @@ return Map::fromEntries([
             new UriValue('https://payments.pabbly.com'),
             new UriValue('*.pabbly.com'),
             new UriValue('https://pabbly.t3planet.de'),
+            new UriValue('https://www.youtube-nocookie.com'),
+            new UriValue('https://app.supademo.com'),
+            new UriValue('*.supademo.com'),
         ),
         new Mutation(
             MutationMode::Extend,

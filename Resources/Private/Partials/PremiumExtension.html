@@ -179,7 +179,7 @@
                             </button>
                         </f:if>
 
-                        <f:if condition="{extension.details.lts_version} != {extension.details.version} && {extension.details.isUpdateAvail} && ({extension.details.days} > 0 || {extension.details.is_life_time})">
+                        <f:if condition="{extension.details.isUpdateAvail} && ({extension.details.days} > 0 || {extension.details.is_life_time})">
                             <div class="callout callout-notice mb-3">
                                 <div class="callout-content">
                                     <div class="callout-body">
@@ -301,8 +301,6 @@
                                         <f:if condition="{extension.details.days} <= 60">
                                             <button type="button"
                                                 class="btn btn-success js-license-renew-trigger"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#renew-license-modal"
                                                 data-days="{extension.details.days}"
                                                 data-expiration-date="{extension.details.expiration_date}">
                                                 <core:icon identifier="actions-link" size="small" />

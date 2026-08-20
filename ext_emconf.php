@@ -8,13 +8,13 @@ $EM_CONF['ns_license'] = [
     'author_email' => 'info@t3planet.de',
     'author_company' => 'T3Planet',
     'state' => 'stable',
-    'version' => '14.4.2',
+    'version' => '14.5.0',
     'constraints'
       => [
         'depends'
           => [
-            'typo3' => '12.0.0-14.9.99',
-            'extensionmanager' => '12.0.0-14.9.99',
+            'typo3' => '12.4.18-14.9.99',
+            'extensionmanager' => '12.4.18-14.9.99',
           ],
       ],
     'autoload'

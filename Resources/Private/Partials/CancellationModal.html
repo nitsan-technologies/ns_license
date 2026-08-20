@@ -1,0 +1,62 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+<div id="cancellation-license-modal"
+     class="t3js-modal modal fade modal-type-default modal-severity-default modal-style-default ns-license-modal ns-renew-license-modal modal-size-small position-fixed top-50 start-50 translate-middle p-0 border-0"
+     tabindex="-1"
+     data-bs-keyboard="true">
+    <div class="modal-dialog">
+        <div class="t3js-modal-content modal-content">
+            <div class="t3js-modal-header modal-header">
+                <h4 class="t3js-modal-title modal-title mb-0">
+                    <f:translate key="license.cancellation.modal.title" extensionName="ns_license" />
+                </h4>
+                <button type="button"
+                    class="btn btn-default btn-sm t3js-modal-close ms-auto border-0 p-0"
+                    data-bs-dismiss="modal"
+                    aria-label="{f:translate(key: 'license.cancellation.modal.close', extensionName: 'ns_license', default: 'Close')}">
+                    <core:icon identifier="actions-close" size="small" alternativeMarkupIdentifier="inline" />
+                </button>
+            </div>
+            <div class="t3js-modal-body modal-body">
+                <p class="mb-3">
+                    <f:translate key="license.cancellation.modal.intro" extensionName="ns_license" />
+                </p>
+
+                <div class="ns-renew-license-modal__steps mb-3">
+                    <p class="mb-2">
+                        <span class="ns-renew-step-num"><f:translate key="license.cancellation.modal.step1_num" extensionName="ns_license" default="Step 1." /></span>
+                        <f:translate key="license.cancellation.modal.step1_text" extensionName="ns_license" default="Log in to your account:" />
+                        <a href="https://t3planet.shop/portal/signin/t3planet"
+                           target="_blank"
+                           rel="noopener noreferrer">https://t3planet.shop/portal/signin/t3planet</a>
+                    </p>
+                    <p class="mb-2">
+                        <span class="ns-renew-step-num"><f:translate key="license.cancellation.modal.step2_num" extensionName="ns_license" default="Step 2." /></span>
+                        <f:translate key="license.cancellation.modal.step2_text" extensionName="ns_license" default="Submit your cancellation request from your account or contact support." />
+                    </p>
+                    <p class="mb-0">
+                        <span class="ns-renew-step-num"><f:translate key="license.cancellation.modal.step3_num" extensionName="ns_license" default="Step 3." /></span>
+                        <f:translate key="license.cancellation.modal.step3_text" extensionName="ns_license" default="Our team will review and confirm cancellation by email." />
+                    </p>
+                </div>
+
+                <p class="text-variant mb-0">
+                    <f:translate key="license.cancellation.modal.note" extensionName="ns_license" />
+                </p>
+            </div>
+            <div class="t3js-modal-footer modal-footer">
+                <button type="button" class="btn btn-default t3js-modal-close" data-bs-dismiss="modal">
+                    <f:translate key="license.cancellation.modal.cancel" extensionName="ns_license" default="Cancel" />
+                </button>
+                <a class="btn btn-danger"
+                   href="https://t3planet.de/en/support"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    <span><f:translate key="license.cancellation.modal.cta" extensionName="ns_license" default="Contact Support" /></span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

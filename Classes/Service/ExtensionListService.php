@@ -120,16 +120,18 @@ class ExtensionListService
                 }
                 $extensions['premium'][$key]['domains'] = $totalDomains;
 
-                $extVersion = $extensions['premium'][$key]['details']['version'];
-                   
+                $installedVersion = $this->getInstalledPackageVersion((string)($extension['key'] ?? ''));
 
-                if (isset($extDetails['lts_version']) && $extensions['premium'][$key]['version']) {
-                    if ($extVersion && version_compare($extDetails['lts_version'], $extVersion, '>')) {
+                if (isset($extDetails['lts_version']) && $installedVersion !== '') {
+                    if (version_compare((string)$extDetails['lts_version'], $installedVersion, '>')) {
                         $extensions['premium'][$key]['details']['isUpdateAvail'] = true;
                     }
                     if (ProductBundleRegistry::isChatbotSearchProduct((string) $extension['key'])) {
-                        $csVersion = $extensions['premium'][$key]['details']['cs_version'];
-                        if ($csVersion && version_compare($extDetails['cs_lts_version'], $csVersion, '>')) {
+                        $csInstalledVersion = $this->getInstalledPackageVersion('ns_t3cs');
+                        if ($csInstalledVersion === '') {
+                            $csInstalledVersion = trim((string)($extDetails['cs_version'] ?? ''));
+                        }
+                        if ($csInstalledVersion !== '' && version_compare((string)($extDetails['cs_lts_version'] ?? ''), $csInstalledVersion, '>')) {
                             $extensions['premium'][$key]['details']['isUpdateAvail'] = true;
                         }
                     }
@@ -326,6 +328,23 @@ class ExtensionListService
             }
         }
         return false;
+    }
+
+    /**
+     * Installed package version from PackageManager, then ext_emconf.php.
+     */
+    private function getInstalledPackageVersion(string $extensionKey): string
+    {
+        if ($extensionKey === '') {
+            return '';
+        }
+        $package = $this->getPackage($extensionKey);
+        $packageMetaData = $package ? $package->getPackageMetaData() : null;
+        $version = $packageMetaData ? trim((string)$packageMetaData->getVersion()) : '';
+        if ($version !== '') {
+            return $version;
+        }
+        return trim((string)$this->getVersionFromEmconf($extensionKey));
     }
 
     /**

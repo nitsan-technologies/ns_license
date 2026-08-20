@@ -19,3 +19,13 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['ns_license
     ],
     'groups' => ['system'],
 ];
+
+// All Licenses portfolio cache (email OTP session, 7 days; not flushed with system caches)
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['ns_license_all_licenses'] ??= [
+    'frontend' => \TYPO3\CMS\Core\Cache\Frontend\VariableFrontend::class,
+    'backend' => \NITSAN\NsLicense\Cache\NonFlushingTypo3DatabaseBackend::class,
+    'options' => [
+        'defaultLifetime' => 604800,
+    ],
+    'groups' => [],
+];

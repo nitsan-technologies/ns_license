@@ -127,13 +127,14 @@ final class CatalogTabMapper
                 if (!is_array($item)) {
                     continue;
                 }
-                $item['isFree'] = self::isFreeItem($item, $isFreeSection);
-                if ($item['isFree'] && trim((string)($item['price'] ?? '')) === '') {
-                    $item['price'] = 'Free';
-                }
-                $item['priceValue'] = self::parsePriceValue($item['price'] ?? null);
-                $item['ratingValue'] = self::parseRatingValue($item['rating'] ?? null);
-                $item['downloadsValue'] = self::parseDownloadsCount($item['downloads'] ?? 0);
+                    $item['isFree'] = self::isFreeItem($item, $isFreeSection);
+                    if ($item['isFree'] && trim((string)($item['price'] ?? '')) === '') {
+                        $item['price'] = 'Free';
+                    }
+                    $item['priceValue'] = self::parsePriceValue($item['price'] ?? null);
+                    $item['ratingValue'] = self::parseRatingValue($item['rating'] ?? null);
+                    $item['downloadsValue'] = self::parseDownloadsCount($item['downloads'] ?? 0);
+                    $item['ordering'] = max(0, (int)($item['ordering'] ?? 0));
                 $tabs[$tab]['items'][] = $item;
             }
         }
@@ -164,6 +165,7 @@ final class CatalogTabMapper
                     $item['priceValue'] = self::parsePriceValue($item['price'] ?? null);
                     $item['ratingValue'] = self::parseRatingValue($item['rating'] ?? null);
                     $item['downloadsValue'] = self::parseDownloadsCount($item['downloads'] ?? 0);
+                    $item['ordering'] = max(0, (int)($item['ordering'] ?? 0));
                     $normalized[$tabKey]['items'][] = $item;
                 }
             }

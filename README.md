@@ -1,6 +1,6 @@
 # TYPO3 Extension `ns_license`
 
-[![Latest Stable Version](https://img.shields.io/badge/Stable-14.4.2-success)](https://extensions.typo3.org/extension/ns_license/)
+[![Latest Stable Version](https://img.shields.io/badge/Stable-14.5.0-success)](https://extensions.typo3.org/extension/ns_license/)
 [![TYPO3 14](https://img.shields.io/badge/TYPO3-14-important.svg?logo=typo3)](https://get.typo3.org/version/14)
 [![TYPO3 13](https://img.shields.io/badge/TYPO3-13-important.svg?logo=typo3)](https://get.typo3.org/version/13)
 [![TYPO3 12](https://img.shields.io/badge/TYPO3-12-important.svg?logo=typo3)](https://get.typo3.org/version/12)

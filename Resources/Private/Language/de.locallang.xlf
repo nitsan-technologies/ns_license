@@ -408,6 +408,10 @@
                 <source>Sort products</source>
                 <target>Produkte sortieren</target>
             </trans-unit>
+            <trans-unit id="license-catalog.sort.ordering">
+                <source>Shop order</source>
+                <target>Shop-Reihenfolge</target>
+            </trans-unit>
             <trans-unit id="license-catalog.sort.price-asc">
                 <source>Price: Low → High</source>
                 <target>Preis: Niedrig → Hoch</target>
@@ -488,6 +492,10 @@
                 <source>Resources</source>
                 <target>Ressourcen</target>
             </trans-unit>
+            <trans-unit id="license-catalog.detail.contribute">
+                <source>Contribute</source>
+                <target>Mitwirken</target>
+            </trans-unit>
             <trans-unit id="license-catalog.detail.resource.docs">
                 <source>Documentation</source>
                 <target>Dokumentation</target>
@@ -547,6 +555,34 @@
             <trans-unit id="license-catalog.detail.overview">
                 <source>Overview</source>
                 <target>Übersicht</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.video">
+                <source>Installation video</source>
+                <target>Installationsvideo</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.video.iframe-title">
+                <source>Installation video</source>
+                <target>Installationsvideo</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.video.watch">
+                <source>Watch on YouTube</source>
+                <target>Auf YouTube ansehen</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.video.load">
+                <source>Load YouTube video</source>
+                <target>YouTube-Video laden</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.video.consent">
+                <source>This video is hosted by YouTube (Google). It is not loaded until you click the button.</source>
+                <target>Dieses Video wird von YouTube (Google) bereitgestellt</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.video.privacy">
+                <source>Google Privacy Policy</source>
+                <target>Datenschutzerklärung von Google</target>
+            </trans-unit>
+            <trans-unit id="license-catalog.detail.video.revoke">
+                <source>Don't load YouTube</source>
+                <target>YouTube nicht mehr laden</target>
             </trans-unit>
             <trans-unit id="license-catalog.detail.version-support">
                 <source>TYPO3 Version Support</source>
@@ -652,9 +688,17 @@
                 <source>Frontend Demo</source>
                 <target>Frontend-Demo</target>
             </trans-unit>
+            <trans-unit id="license-catalog.detail.demo.live">
+                <source>Live Demo</source>
+                <target>Live-Demo</target>
+            </trans-unit>
             <trans-unit id="license-catalog.detail.demo.backend">
                 <source>Demo</source>
                 <target>Demo</target>
+            </trans-unit>
+            <trans-unit id="license-demo-modal.iframe-title">
+                <source>Product demo</source>
+                <target>Produktdemo</target>
             </trans-unit>
             <trans-unit id="license-catalog.detail.meta">
                 <source>Details</source>
@@ -1000,6 +1044,146 @@
                 <source>Error loading catalog data. Please refresh the page.</source>
                 <target>Fehler beim Laden der Katalogdaten. Bitte Seite aktualisieren.</target>
             </trans-unit>
+            <trans-unit id="license-all-licenses.column.actions">
+                <source>Actions</source>
+                <target>Aktionen</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.column.composer_username">
+                <source>Composer username</source>
+                <target>Composer-Benutzername</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.column.license_type">
+                <source>Allowed domain</source>
+                <target>Erlaubte Domain</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.column.latest_version">
+                <source>Latest Ext Version</source>
+                <target>Neueste Ext-Version</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.column.installed_version">
+                <source>Installed</source>
+                <target>Installiert</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.column.expiry">
+                <source>Expiry Date</source>
+                <target>Ablaufdatum</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.column.production_domain">
+                <source>Production domain</source>
+                <target>Produktionsdomain</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.status.existing">
+                <source>Existing</source>
+                <target>Vorhanden</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.status.pending">
+                <source>Pending</source>
+                <target>Ausstehend</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.status.otp_verified">
+                <source>OTP verified</source>
+                <target>OTP verifiziert</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.status.trial_started">
+                <source>Trial </source>
+                <target>Testversion</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.status.expired">
+                <source>Expired</source>
+                <target>Abgelaufen</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.status.inactive">
+                <source>Inactive</source>
+                <target>Inaktiv</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.search.placeholder">
+                <source>Search by license key, extension, or domain...</source>
+                <target>Suche nach Lizenzschlüssel, Extension oder Domain...</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.badge.total">
+                <source>%s total</source>
+                <target>%s gesamt</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.badge.active">
+                <source>%s active</source>
+                <target>%s aktiv</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.badge.expiring">
+                <source>%s expiring soon</source>
+                <target>%s läuft bald ab</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.filter.trial">
+                <source>Trial</source>
+                <target>Testversion</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.filter.attention">
+                <source>Attention</source>
+                <target>Handlungsbedarf</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.filter.status.all">
+                <source>All statuses</source>
+                <target>Alle Status</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.tab.all">
+                <source>All</source>
+                <target>Alle</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.tab.attention">
+                <source>Needs attention</source>
+                <target>Handlungsbedarf</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.otp.sent_to">
+                <source>Please enter the 6-digit code we just sent to %s</source>
+                <target>Bitte geben Sie den 6-stelligen Code ein, den wir gerade an %s gesendet haben</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.otp.instructions">
+                <source>Please enter the 6-digit verification code sent to %s. Check your inbox and spam folder. If you experience any issues, please contact T3Planet Support.</source>
+                <target>Bitte geben Sie den 6-stelligen Bestätigungscode ein, der an %s gesendet wurde. Prüfen Sie Ihren Posteingang und den Spam-Ordner. Bei Problemen wenden Sie sich bitte an den T3Planet Support.</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.otp.modal.title">
+                <source>Verify Email</source>
+                <target>E-Mail bestätigen</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.otp.resend.prompt">
+                <source>Didn't receive the code?</source>
+                <target>Code nicht erhalten?</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.button.verify">
+                <source>Verify</source>
+                <target>Bestätigen</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.button.verifying">
+                <source>Verifying…</source>
+                <target>Wird überprüft…</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.button.sending">
+                <source>Sending…</source>
+                <target>Wird gesendet…</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.error.otp">
+                <source>Please enter the 6-digit code.</source>
+                <target>Bitte geben Sie den 6-stelligen Code ein.</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.button.resend">
+                <source>Resend code</source>
+                <target>Code erneut senden</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.button.export_csv">
+                <source>Export CSV</source>
+                <target>CSV exportieren</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.button.cancellation">
+                <source>Cancellation</source>
+                <target>Kündigung</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.verified_as">
+                <source>Showing all associated licenses under:</source>
+                <target>Alle zugehörigen Lizenzen unter:</target>
+            </trans-unit>
+            <trans-unit id="license-all-licenses.empty_filtered">
+                <source>No licenses match your filters.</source>
+                <target>Keine Lizenzen entsprechen Ihren Filtern.</target>
+            </trans-unit>
             <trans-unit id="license.renew">
                 <source>Renew</source>
                 <target>Verlängern</target>
@@ -1083,6 +1267,54 @@
             <trans-unit id="license.renew.modal.cta">
                 <source>Renew Now</source>
                 <target>Jetzt verlängern</target>
+            </trans-unit>
+            <trans-unit id="license.cancellation.modal.title">
+                <source>Cancellation Request</source>
+                <target>Kündigungsanfrage</target>
+            </trans-unit>
+            <trans-unit id="license.cancellation.modal.close">
+                <source>Close</source>
+                <target>Schließen</target>
+            </trans-unit>
+            <trans-unit id="license.cancellation.modal.cancel">
+                <source>Cancel</source>
+                <target>Abbrechen</target>
+            </trans-unit>
+            <trans-unit id="license.cancellation.modal.intro">
+                <source>Need to cancel your subscription? Follow the steps below and our support team will assist you.</source>
+                <target>Möchten Sie Ihr Abonnement kündigen? Folgen Sie den Schritten unten, unser Support-Team hilft Ihnen weiter.</target>
+            </trans-unit>
+            <trans-unit id="license.cancellation.modal.step1_num">
+                <source>Step 1.</source>
+                <target>Schritt 1.</target>
+            </trans-unit>
+            <trans-unit id="license.cancellation.modal.step1_text">
+                <source>Log in to your account:</source>
+                <target>Melden Sie sich in Ihrem Konto an:</target>
+            </trans-unit>
+            <trans-unit id="license.cancellation.modal.step2_num">
+                <source>Step 2.</source>
+                <target>Schritt 2.</target>
+            </trans-unit>
+            <trans-unit id="license.cancellation.modal.step2_text">
+                <source>Submit your cancellation request from your account or contact support.</source>
+                <target>Senden Sie Ihre Kündigungsanfrage über Ihr Konto oder kontaktieren Sie den Support.</target>
+            </trans-unit>
+            <trans-unit id="license.cancellation.modal.step3_num">
+                <source>Step 3.</source>
+                <target>Schritt 3.</target>
+            </trans-unit>
+            <trans-unit id="license.cancellation.modal.step3_text">
+                <source>Our team will review and confirm cancellation by email.</source>
+                <target>Unser Team prüft die Anfrage und bestätigt die Kündigung per E-Mail.</target>
+            </trans-unit>
+            <trans-unit id="license.cancellation.modal.note">
+                <source>Note: Your request is handled by our support team and confirmation is sent by email.</source>
+                <target>Hinweis: Ihre Anfrage wird von unserem Support-Team bearbeitet und die Bestätigung per E-Mail gesendet.</target>
+            </trans-unit>
+            <trans-unit id="license.cancellation.modal.cta">
+                <source>Contact Support</source>
+                <target>Support kontaktieren</target>
             </trans-unit>
             <trans-unit id="license.buy">
                 <source>Buy</source>

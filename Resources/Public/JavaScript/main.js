@@ -182,6 +182,9 @@ document.addEventListener('click', (e) => {
   e.preventDefault();
 
   const type = button.dataset.type || button.getAttribute('data-type');
+  const activeNav = document.querySelector('.ns-license-nav-tabs .nav-link.active');
+  const activeCatalogTab = activeNav ? (activeNav.getAttribute('data-catalog-tab') || '') : '';
+  const paneCatalogTab = button.closest('[data-catalog-tab]') ? (button.closest('[data-catalog-tab]').getAttribute('data-catalog-tab') || '') : '';
   const buttons = document.querySelectorAll('.refresh-data-button[data-type]');
   const originalHtml = button.innerHTML;
 
@@ -203,6 +206,12 @@ document.addEventListener('click', (e) => {
 
       if (responseData.success) {
         Notification.success('Success', responseData.message || 'Data updated successfully');
+        if (type === 'shop') {
+          document.dispatchEvent(new CustomEvent('ns-license:reload-catalog', {
+            detail: { tabKey: activeCatalogTab || paneCatalogTab },
+          }));
+          return;
+        }
         setTimeout(() => window.location.reload(), 1000);
       } else {
         if (responseData.error_code === 'no_license_keys') {
@@ -251,22 +260,101 @@ document.addEventListener('click', (e) => {
   ]);
 });
 
-// Renew: fill Fluid renew modal status / expiry when it opens from a card trigger.
-document.addEventListener('show.bs.modal', (e) => {
-  const modal = e.target;
-  if (!(modal instanceof HTMLElement) || modal.id !== 'renew-license-modal') {
-    return;
+/**
+ * Hide an in-page Bootstrap modal (TYPO3 v14 does not bind data-bs-dismiss).
+ * @param {HTMLElement} modalElement
+ */
+function hideInlineBootstrapModal(modalElement) {
+  try {
+    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+      const instance = bootstrap.Modal.getInstance(modalElement);
+      if (instance) {
+        instance.hide();
+        return;
+      }
+    }
+    if (typeof window.bootstrap !== 'undefined' && window.bootstrap.Modal) {
+      const instance = window.bootstrap.Modal.getInstance(modalElement);
+      if (instance) {
+        instance.hide();
+        return;
+      }
+    }
+  } catch (e) {
+    // fall through
+  }
+  modalElement.classList.remove('show');
+  modalElement.style.display = 'none';
+  modalElement.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('modal-open');
+  document.body.style.overflow = '';
+  document.querySelectorAll('.modal-backdrop').forEach((el) => el.remove());
+}
+
+/**
+ * Show an in-page Bootstrap modal (TYPO3 v14 does not bind data-bs-toggle).
+ * @param {HTMLElement} modalElement
+ * @param {HTMLElement|null} [relatedTarget]
+ */
+function showInlineBootstrapModal(modalElement, relatedTarget) {
+  if (!modalElement.dataset.nsLicenseCloseBound) {
+    modalElement.dataset.nsLicenseCloseBound = '1';
+    modalElement.querySelectorAll('.t3js-modal-close, [data-bs-dismiss="modal"]').forEach((btn) => {
+      btn.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        hideInlineBootstrapModal(modalElement);
+      });
+    });
+    modalElement.addEventListener('click', (event) => {
+      if (event.target === modalElement) {
+        hideInlineBootstrapModal(modalElement);
+      }
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && modalElement.classList.contains('show')) {
+        hideInlineBootstrapModal(modalElement);
+      }
+    });
   }
 
-  const button = e.relatedTarget;
-  if (!(button instanceof HTMLElement) || !button.classList.contains('js-license-renew-trigger')) {
-    return;
+  try {
+    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+      bootstrap.Modal.getOrCreateInstance(modalElement).show(relatedTarget);
+      return;
+    }
+    if (typeof window.bootstrap !== 'undefined' && window.bootstrap.Modal) {
+      window.bootstrap.Modal.getOrCreateInstance(modalElement).show(relatedTarget);
+      return;
+    }
+  } catch (e) {
+    // fall through
   }
+  modalElement.classList.add('show');
+  modalElement.style.display = 'block';
+  modalElement.removeAttribute('aria-hidden');
+  document.body.classList.add('modal-open');
+  document.body.style.overflow = 'hidden';
+  if (!document.querySelector('.modal-backdrop')) {
+    const backdrop = document.createElement('div');
+    backdrop.className = 'modal-backdrop fade show';
+    document.body.appendChild(backdrop);
+  }
+}
 
-  const days = Number.parseInt(button.dataset.days ?? '', 10);
+/**
+ * @param {HTMLElement} modal
+ * @param {HTMLElement} button
+ */
+function fillRenewModal(modal, button) {
+  let days = Number.parseInt(button.dataset.days ?? '', 10);
   const expirationTs = Number.parseInt(button.dataset.expirationDate ?? '', 10);
   const statusBadge = modal.querySelector('.js-renew-status-badge');
   const expiryEl = modal.querySelector('.js-renew-expiry-date');
+
+  if (!Number.isFinite(days) && Number.isFinite(expirationTs) && expirationTs > 0) {
+    days = Math.floor((expirationTs - Math.floor(Date.now() / 1000)) / 86400);
+  }
 
   let statusKey = 'active';
   let badgeClass = 'badge rounded-pill badge-success js-renew-status-badge';
@@ -300,4 +388,44 @@ document.addEventListener('show.bs.modal', (e) => {
       expiryEl.textContent = '—';
     }
   }
+}
+
+// Renew / Cancellation: open in-page modals in JS (same as View domains).
+document.addEventListener('click', (e) => {
+  const renewBtn = e.target.closest('.js-license-renew-trigger');
+  if (renewBtn) {
+    e.preventDefault();
+    const modal = document.getElementById('renew-license-modal');
+    if (!(modal instanceof HTMLElement)) {
+      return;
+    }
+    fillRenewModal(modal, renewBtn);
+    showInlineBootstrapModal(modal, renewBtn);
+    return;
+  }
+
+  const cancelBtn = e.target.closest('.js-license-cancellation-trigger');
+  if (!cancelBtn) {
+    return;
+  }
+  e.preventDefault();
+  const modal = document.getElementById('cancellation-license-modal');
+  if (modal instanceof HTMLElement) {
+    showInlineBootstrapModal(modal, cancelBtn);
+  }
+});
+
+// Keep filling Renew if anything else opens it via Bootstrap's show() + relatedTarget.
+document.addEventListener('show.bs.modal', (e) => {
+  const modal = e.target;
+  if (!(modal instanceof HTMLElement) || modal.id !== 'renew-license-modal') {
+    return;
+  }
+
+  const button = e.relatedTarget;
+  if (!(button instanceof HTMLElement) || !button.classList.contains('js-license-renew-trigger')) {
+    return;
+  }
+
+  fillRenewModal(modal, button);
 });
