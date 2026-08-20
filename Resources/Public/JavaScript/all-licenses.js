@@ -93,7 +93,9 @@ function readLabels(root) {
     envProduction: root.getAttribute('data-labels-env-production') || 'Production',
     envStaging: root.getAttribute('data-labels-env-staging') || 'Staging',
     envLocal: root.getAttribute('data-labels-env-local') || 'Local',
-    otpSentTo: root.getAttribute('data-labels-otp-sent-to') || 'We sent a code to %s',
+    otpSentTo: root.getAttribute('data-labels-otp-instructions')
+      || root.getAttribute('data-labels-otp-sent-to')
+      || 'Please enter the 6-digit verification code sent to %s. Check your inbox and spam folder. If you experience any issues, please contact T3Planet Support.',
     otpInvalid: root.getAttribute('data-labels-otp-invalid') || 'Please enter the 6-digit code.',
     viewDomains: root.getAttribute('data-labels-view-domains') || 'View domains',
     licenseKey: root.getAttribute('data-labels-license-key') || 'License key',
