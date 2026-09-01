@@ -86,14 +86,13 @@ class NsLicenseRepository
                     'license_type' => $data->license_type ?? '',
                     'rating' => $data->rating ?? 0,
                     'downloads' => $data->downloads ?? 0,
-                    'max_scan_pages' => (int)($data->max_scan_pages ?? 0),
-                    'scan_pages_used' => (int)($data->scan_pages_used ?? 0),
                     'username' => $data->user_name ?? '',
                     'trial_extended' => (int)$data->trial_extended ?? 0,
                     'cs_version' => $csVersion,
                     'cs_lts_version' => $csLTSVersion,
                 ])
                 ->executeStatement();
+            $this->syncNsT3aaScanQuota($data);
         }
 
         return $row;
@@ -189,8 +188,6 @@ class NsLicenseRepository
             ->set('staging_domains', $stageDomains)
             ->set('rating', $data->rating ?? 0)
             ->set('downloads', $data->downloads ?? 0)
-            ->set('max_scan_pages', (int)($data->max_scan_pages ?? 0))
-            ->set('scan_pages_used', (int)($data->scan_pages_used ?? 0))
             ->set('license_type', $data->license_type ?? 0)
             ->set('description', $data->description ?? '')
             ->set('title', $data->title ?? '')
@@ -215,6 +212,7 @@ class NsLicenseRepository
         }
 
         $queryBuilder->executeStatement();
+        $this->syncNsT3aaScanQuota($data);
     }
 
     /**
@@ -686,5 +684,21 @@ class NsLicenseRepository
         }
         
         return is_array($decodedData) ? $decodedData : [];
+    }
+
+    /**
+     * ns_t3aa owns scan-quota columns on ns_product_license. Other products
+     * never receive those fields.
+     */
+    private function syncNsT3aaScanQuota(object $data): void
+    {
+        if ((string)($data->extension_key ?? '') !== 'ns_t3aa') {
+            return;
+        }
+        if (!class_exists(\NITSAN\NsT3AA\Service\Scan\ScanQuotaLicenseSync::class)) {
+            return;
+        }
+        GeneralUtility::makeInstance(\NITSAN\NsT3AA\Service\Scan\ScanQuotaLicenseSync::class)
+            ->syncFromComposerPayload($data);
     }
 }
