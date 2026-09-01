@@ -26,6 +26,8 @@ CREATE TABLE ns_product_license (
 	trial_extended smallint(5) unsigned DEFAULT '0' NOT NULL,
 	rating float DEFAULT '0',
 	downloads int(11) DEFAULT '0' NOT NULL,
+	max_scan_pages int(11) DEFAULT '0' NOT NULL,
+	scan_pages_used int(11) unsigned DEFAULT '0' NOT NULL,
 	PRIMARY KEY (uid)
 );
 

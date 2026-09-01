@@ -86,6 +86,8 @@ class NsLicenseRepository
                     'license_type' => $data->license_type ?? '',
                     'rating' => $data->rating ?? 0,
                     'downloads' => $data->downloads ?? 0,
+                    'max_scan_pages' => (int)($data->max_scan_pages ?? 0),
+                    'scan_pages_used' => (int)($data->scan_pages_used ?? 0),
                     'username' => $data->user_name ?? '',
                     'trial_extended' => (int)$data->trial_extended ?? 0,
                     'cs_version' => $csVersion,
@@ -187,6 +189,8 @@ class NsLicenseRepository
             ->set('staging_domains', $stageDomains)
             ->set('rating', $data->rating ?? 0)
             ->set('downloads', $data->downloads ?? 0)
+            ->set('max_scan_pages', (int)($data->max_scan_pages ?? 0))
+            ->set('scan_pages_used', (int)($data->scan_pages_used ?? 0))
             ->set('license_type', $data->license_type ?? 0)
             ->set('description', $data->description ?? '')
             ->set('title', $data->title ?? '')
