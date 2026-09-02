@@ -92,7 +92,6 @@ class NsLicenseRepository
                     'cs_lts_version' => $csLTSVersion,
                 ])
                 ->executeStatement();
-            $this->syncNsT3aaScanQuota($data);
         }
 
         return $row;
@@ -212,7 +211,6 @@ class NsLicenseRepository
         }
 
         $queryBuilder->executeStatement();
-        $this->syncNsT3aaScanQuota($data);
     }
 
     /**
@@ -684,21 +682,5 @@ class NsLicenseRepository
         }
         
         return is_array($decodedData) ? $decodedData : [];
-    }
-
-    /**
-     * ns_t3aa owns scan-quota columns on ns_product_license. Other products
-     * never receive those fields.
-     */
-    private function syncNsT3aaScanQuota(object $data): void
-    {
-        if ((string)($data->extension_key ?? '') !== 'ns_t3aa') {
-            return;
-        }
-        if (!class_exists(\NITSAN\NsT3AA\Service\Scan\ScanQuotaLicenseSync::class)) {
-            return;
-        }
-        GeneralUtility::makeInstance(\NITSAN\NsT3AA\Service\Scan\ScanQuotaLicenseSync::class)
-            ->syncFromComposerPayload($data);
     }
 }
