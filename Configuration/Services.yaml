@@ -29,6 +29,9 @@ services:
   NITSAN\NsLicense\Service\LicenseService:
     public: true
 
+  NITSAN\NsLicense\Service\ComposerApiClient:
+    public: true
+
   NITSAN\NsLicense\Service\AllLicensesCacheService:
     public: true
 

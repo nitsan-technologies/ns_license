@@ -1039,12 +1039,13 @@ final class LicenseService
      * Get API base URL from extension configuration (falls back to production).
      * Always returns a URL ending in a single trailing slash.
      */
-    protected function getApiBaseUrl(): string
+    public function getApiBaseUrl(): string
     {
         $configured = $this->getExtensionConfiguration('apiBaseUrl', '');
         if ($configured !== '') {
             return rtrim($configured, '/') . '/';
         }
+        return 'https://composer.thebetaspace.com/API/';
         return 'https://composer.t3planet.cloud/API/';
     }
 

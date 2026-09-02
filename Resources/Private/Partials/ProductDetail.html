@@ -109,9 +109,15 @@
                 <h2 class="ns-product-detail__section-title"><f:translate key="license-catalog.detail.version-support" extensionName="ns_license" /></h2>
                 <div class="card ns-product-detail__section">
                     <div class="card-body">
-                        <div class="ns-product-detail__version-box">
-                            <p class="ns-product-detail__version-label mb-2"><f:translate key="license-catalog.detail.version-support.label" extensionName="ns_license" /></p>
-                            <div class="ns-product-detail__version-pills js-product-detail-version-pills" role="list"></div>
+                        <div>
+                            <div class="ns-product-detail__version-box js-product-detail-version-current d-none mb-3">
+                                <p class="ns-product-detail__version-label mb-2"><f:translate key="license-catalog.detail.version-support.label" extensionName="ns_license" /></p>
+                                <div class="ns-product-detail__version-pills js-product-detail-version-pills" role="list"></div>
+                            </div>
+                            <div class="ns-product-detail__version-box js-product-detail-version-older d-none">
+                                <p class="ns-product-detail__version-label mb-2"><f:translate key="license-catalog.detail.version-support.older-label" extensionName="ns_license" /></p>
+                                <div class="ns-product-detail__version-pills js-product-detail-version-pills-older" role="list"></div>
+                            </div>
                         </div>
                     </div>
                 </div>

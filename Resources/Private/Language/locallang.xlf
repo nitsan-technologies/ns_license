@@ -634,6 +634,9 @@
             <trans-unit id="license-catalog.detail.version-support.label">
                 <source>This version supports TYPO3</source>
             </trans-unit>
+            <trans-unit id="license-catalog.detail.version-support.older-label">
+                <source>Older versions also support TYPO3</source>
+            </trans-unit>
             <trans-unit id="license-catalog.detail.tags">
                 <source>Tags</source>
             </trans-unit>
