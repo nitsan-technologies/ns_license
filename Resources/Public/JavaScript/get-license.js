@@ -1276,8 +1276,26 @@ function isDisposableEmail(email) {
 }
 
 /**
+ * Strip protocol and path; keep hostname and optional port.
+ * @param {string} value
+ * @returns {string}
+ */
+function normalizeDomainInput(value) {
+  if (!value || typeof value !== 'string') {
+    return '';
+  }
+  value = value.trim().replace(/^https?:\/\//i, '');
+  const slashIndex = value.indexOf('/');
+  if (slashIndex !== -1) {
+    value = value.substring(0, slashIndex);
+  }
+  return value.trim();
+}
+
+/**
  * Validate domain format (same rules as domains.js add-domain).
- * Valid: docs.t3planet.de, typo3-src-12.4.38.ddev.site, localhost.
+ * Valid: docs.t3planet.de, typo3-src-12.4.38.ddev.site, localhost,
+ * t3pbootstrap, t3pbootstrap:8890.
  * @param {string} value
  * @returns {boolean}
  */
@@ -1285,26 +1303,36 @@ function isValidDomainFormat(value) {
   if (!value || typeof value !== 'string') {
     return false;
   }
-  value = value.replace(/^https?:\/\//, '').replace(/\/$/, '').trim();
+  value = normalizeDomainInput(value);
   if (!value) {
     return false;
   }
-  if (value.toLowerCase() === 'localhost') {
+
+  let host = value;
+  const colonIndex = value.lastIndexOf(':');
+  if (colonIndex !== -1) {
+    const port = value.substring(colonIndex + 1);
+    host = value.substring(0, colonIndex);
+    if (!/^\d{1,5}$/.test(port) || Number(port) < 1 || Number(port) > 65535) {
+      return false;
+    }
+  }
+  if (!host) {
+    return false;
+  }
+  if (host.toLowerCase() === 'localhost') {
     return true;
   }
-  if (value.indexOf('.') === -1) {
+  if (!/[a-zA-Z]/.test(host)) {
     return false;
   }
-  if (!/[a-zA-Z]/.test(value)) {
+  if (!/^[a-zA-Z0-9.-]+$/.test(host)) {
     return false;
   }
-  if (!/^[a-zA-Z0-9.-]+$/.test(value)) {
+  if (/^[.-]|[.-]$/.test(host)) {
     return false;
   }
-  if (/^[.-]|[.-]$/.test(value)) {
-    return false;
-  }
-  const labels = value.split('.');
+  const labels = host.split('.');
   for (let i = 0; i < labels.length; i++) {
     const label = labels[i];
     if (!label.length) {
@@ -1353,7 +1381,7 @@ function readTrialForm(modal) {
     );
     return null;
   }
-  domain = domain.replace(/^https?:\/\//, '').replace(/\/$/, '').trim();
+  domain = normalizeDomainInput(domain);
   if (!isValidDomainFormat(domain)) {
     Notification.warning(
       modal.dataset.labelTitleWarning || 'Warning',

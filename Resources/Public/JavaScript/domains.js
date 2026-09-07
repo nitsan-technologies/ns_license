@@ -342,7 +342,7 @@ $(document).on('click', '.t3js-add-domain-modal-trigger', function(e) {
                         if (environmentSelect) environmentSelect.focus();
                         return;
                     }
-                    domain = domain.replace(/^https?:\/\//, '').replace(/\/$/, '').trim();
+                    domain = normalizeDomainInput(domain);
                     let domainValidation = validateDomain(domain);
                     if (!domainValidation.valid) {
                         Notification.error('Invalid domain', domainValidation.message || 'Enter a valid domain (e.g. docs.t3planet.de, typo3-src-12.4.38.ddev.site).');
@@ -406,40 +406,67 @@ $(document).on('click', '.t3js-add-domain-modal-trigger', function(e) {
 });
 
 /**
- * Validate domain format. Valid: docs.t3planet.de, typo3-src-12.4.38.ddev.site, localhost.
- * Invalid: 123, 790d (no dot / not a hostname).
- * @param {string} value - Trimmed domain string (without protocol)
+ * Strip protocol and path; keep hostname and optional port.
+ * @param {string} value
+ * @returns {string}
+ */
+function normalizeDomainInput(value) {
+    if (!value || typeof value !== 'string') {
+        return '';
+    }
+    value = value.trim().replace(/^https?:\/\//i, '');
+    const slashIndex = value.indexOf('/');
+    if (slashIndex !== -1) {
+        value = value.substring(0, slashIndex);
+    }
+    return value.trim();
+}
+
+/**
+ * Validate domain format. Valid: docs.t3planet.de, typo3-src-12.4.38.ddev.site,
+ * localhost, t3pbootstrap, t3pbootstrap:8890.
+ * Invalid: 123, 121.12 (numeric-only).
+ * @param {string} value - Domain string (URL, host, or host:port)
  * @returns {{ valid: boolean, message?: string }}
  */
 function validateDomain(value) {
     if (!value || typeof value !== 'string') {
         return { valid: false, message: 'Please enter a domain name.' };
     }
-    value = value.replace(/^https?:\/\//, '').replace(/\/$/, '').trim();
+    value = normalizeDomainInput(value);
     if (!value) {
         return { valid: false, message: 'Please enter a domain name.' };
     }
-    if (value.toLowerCase() === 'localhost') {
+
+    let host = value;
+    const colonIndex = value.lastIndexOf(':');
+    if (colonIndex !== -1) {
+        const port = value.substring(colonIndex + 1);
+        host = value.substring(0, colonIndex);
+        if (!/^\d{1,5}$/.test(port) || Number(port) < 1 || Number(port) > 65535) {
+            return { valid: false, message: 'Enter a valid port number (1-65535).' };
+        }
+    }
+    if (!host) {
+        return { valid: false, message: 'Please enter a domain name.' };
+    }
+    if (host.toLowerCase() === 'localhost') {
         return { valid: true };
     }
-    // Must contain at least one dot (e.g. example.com, docs.t3planet.de)
-    if (value.indexOf('.') === -1) {
-        return { valid: false, message: 'Enter a valid domain' };
-    }
     // Must contain at least one letter (reject e.g. 121.12, 123.456)
-    if (!/[a-zA-Z]/.test(value)) {
+    if (!/[a-zA-Z]/.test(host)) {
         return { valid: false, message: 'Enter a valid domain ' };
     }
     // Only letters, digits, hyphens, dots
-    if (!/^[a-zA-Z0-9.-]+$/.test(value)) {
+    if (!/^[a-zA-Z0-9.-]+$/.test(host)) {
         return { valid: false, message: 'Domain can only contain letters, numbers, hyphens and dots.' };
     }
     // No leading/trailing dot or hyphen
-    if (/^[.-]|[.-]$/.test(value)) {
+    if (/^[.-]|[.-]$/.test(host)) {
         return { valid: false, message: 'Domain cannot start or end with a dot or hyphen.' };
     }
-    // Each label (between dots) must be non-empty and valid
-    let labels = value.split('.');
+    // Each label (between dots) must be non-empty and valid; single-label hosts are allowed
+    let labels = host.split('.');
     for (let i = 0; i < labels.length; i++) {
         let label = labels[i];
         if (!label.length) {
@@ -526,7 +553,7 @@ $(document).on('click', '.domains-list__item-action-save', function(e) {
         return;
     }
 
-    newDomain = newDomain.replace(/^https?:\/\//, '').replace(/\/$/, '').trim();
+    newDomain = normalizeDomainInput(newDomain);
     let domainValidation = validateDomain(newDomain);
     if (!domainValidation.valid) {
         Notification.error('Invalid domain', domainValidation.message || 'Enter a valid domain');
