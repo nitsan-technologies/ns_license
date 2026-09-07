@@ -424,8 +424,8 @@ function normalizeDomainInput(value) {
 
 /**
  * Validate domain format. Valid: docs.t3planet.de, typo3-src-12.4.38.ddev.site,
- * localhost, t3pbootstrap, t3pbootstrap:8890.
- * Invalid: 123, 121.12 (numeric-only).
+ * localhost, t3pbootstrap:8890.
+ * Invalid: 123, 121.12 (numeric-only), assaasd (single-label without port).
  * @param {string} value - Domain string (URL, host, or host:port)
  * @returns {{ valid: boolean, message?: string }}
  */
@@ -439,6 +439,7 @@ function validateDomain(value) {
     }
 
     let host = value;
+    let hasPort = false;
     const colonIndex = value.lastIndexOf(':');
     if (colonIndex !== -1) {
         const port = value.substring(colonIndex + 1);
@@ -446,6 +447,7 @@ function validateDomain(value) {
         if (!/^\d{1,5}$/.test(port) || Number(port) < 1 || Number(port) > 65535) {
             return { valid: false, message: 'Enter a valid port number (1-65535).' };
         }
+        hasPort = true;
     }
     if (!host) {
         return { valid: false, message: 'Please enter a domain name.' };
@@ -465,7 +467,7 @@ function validateDomain(value) {
     if (/^[.-]|[.-]$/.test(host)) {
         return { valid: false, message: 'Domain cannot start or end with a dot or hyphen.' };
     }
-    // Each label (between dots) must be non-empty and valid; single-label hosts are allowed
+    // Each label (between dots) must be non-empty and valid
     let labels = host.split('.');
     for (let i = 0; i < labels.length; i++) {
         let label = labels[i];
@@ -475,6 +477,10 @@ function validateDomain(value) {
         if (!/^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(label)) {
             return { valid: false, message: 'Invalid domain: each part must start and end with a letter or number.' };
         }
+    }
+    // Single-label hosts (e.g. t3pbootstrap) require a port; random strings like assaasd are rejected
+    if (host.indexOf('.') === -1 && !hasPort) {
+        return { valid: false, message: 'Enter a valid domain' };
     }
     return { valid: true };
 }

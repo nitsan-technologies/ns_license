@@ -1295,7 +1295,8 @@ function normalizeDomainInput(value) {
 /**
  * Validate domain format (same rules as domains.js add-domain).
  * Valid: docs.t3planet.de, typo3-src-12.4.38.ddev.site, localhost,
- * t3pbootstrap, t3pbootstrap:8890.
+ * t3pbootstrap:8890.
+ * Invalid: assaasd (single-label without port).
  * @param {string} value
  * @returns {boolean}
  */
@@ -1309,6 +1310,7 @@ function isValidDomainFormat(value) {
   }
 
   let host = value;
+  let hasPort = false;
   const colonIndex = value.lastIndexOf(':');
   if (colonIndex !== -1) {
     const port = value.substring(colonIndex + 1);
@@ -1316,6 +1318,7 @@ function isValidDomainFormat(value) {
     if (!/^\d{1,5}$/.test(port) || Number(port) < 1 || Number(port) > 65535) {
       return false;
     }
+    hasPort = true;
   }
   if (!host) {
     return false;
@@ -1341,6 +1344,9 @@ function isValidDomainFormat(value) {
     if (!/^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(label)) {
       return false;
     }
+  }
+  if (host.indexOf('.') === -1 && !hasPort) {
+    return false;
   }
   return true;
 }
