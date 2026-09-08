@@ -224,20 +224,15 @@ function formatDownloads(value) {
 }
 
 /**
- * Expand version support into major pills (e.g. "TYPO3 v12 to v14" → ["12 LTS","13 LTS","14 LTS"]).
- * Prefers an array from the API when present.
+ * Current TYPO3 support pills from product version / versionSupport (not older-versions list).
  * @param {object} item
  * @returns {string[]}
  */
-function parseTypo3VersionPills(item) {
-  const rawList = item.supportedVersions
-    || item.typo3Versions
-    || item.versionSupport
-    || null;
-  if (Array.isArray(rawList) && rawList.length) {
-    return rawList
-      .map((entry) => formatVersionPillLabel(entry))
-      .filter(Boolean);
+function parseCurrentTypo3VersionPills(item) {
+  const rawList = item.supportedVersions || item.versionSupport || null;
+  const fromList = normalizeVersionPillSource(rawList);
+  if (fromList.length) {
+    return fromList.map((entry) => formatVersionPillLabel(entry)).filter(Boolean);
   }
 
   const source = String(item.version ?? '').trim();
@@ -281,6 +276,35 @@ function parseTypo3VersionPills(item) {
 }
 
 /**
+ * Older TYPO3 majors from shop typo3Versions / typo3_version (tx_mask_typo3_version).
+ * @param {object} item
+ * @returns {string[]}
+ */
+function parseOlderTypo3VersionPills(item) {
+  const rawList = item.typo3Versions
+    || item.typo3_version
+    || item.tx_mask_typo3_version
+    || null;
+  return normalizeVersionPillSource(rawList)
+    .map((entry) => formatVersionPillLabel(entry))
+    .filter(Boolean);
+}
+
+/**
+ * @param {unknown} rawList
+ * @returns {string[]}
+ */
+function normalizeVersionPillSource(rawList) {
+  if (Array.isArray(rawList) && rawList.length) {
+    return rawList.map((entry) => String(entry ?? '').trim()).filter(Boolean);
+  }
+  if (typeof rawList === 'string' && rawList.trim()) {
+    return rawList.split(/[\r\n,]+/).map((part) => part.trim()).filter(Boolean);
+  }
+  return [];
+}
+
+/**
  * @param {unknown} value
  * @returns {string}
  */
@@ -301,19 +325,52 @@ function formatVersionPillLabel(value) {
 }
 
 /**
+ * @param {string} label
+ * @returns {number|null}
+ */
+function versionPillMajor(label) {
+  const match = String(label ?? '').match(/(\d{1,2})/);
+  if (!match) {
+    return null;
+  }
+  const major = Number.parseInt(match[1], 10);
+  return Number.isFinite(major) ? major : null;
+}
+
+/**
  * @param {HTMLElement} view
  * @param {object} item
  */
 function populateVersionSupport(view, item) {
   const section = view.querySelector('.js-product-detail-version-section');
-  const pillsEl = view.querySelector('.js-product-detail-version-pills');
-  const pills = parseTypo3VersionPills(item);
-  if (pillsEl) {
-    pillsEl.innerHTML = pills.map((label) => (
+  const currentBox = view.querySelector('.js-product-detail-version-current');
+  const olderBox = view.querySelector('.js-product-detail-version-older');
+  const currentPillsEl = view.querySelector('.js-product-detail-version-pills');
+  const olderPillsEl = view.querySelector('.js-product-detail-version-pills-older');
+
+  const currentPills = parseCurrentTypo3VersionPills(item);
+  const olderPills = parseOlderTypo3VersionPills(item);
+  const currentMajors = new Set(
+    currentPills.map((label) => versionPillMajor(label)).filter((n) => n !== null)
+  );
+
+  if (currentPillsEl) {
+    currentPillsEl.innerHTML = currentPills.map((label) => (
       `<span class="badge badge-success ns-product-detail__version-pill" role="listitem">${escapeHtml(label)}</span>`
     )).join('');
   }
-  setVisible(section, pills.length > 0);
+  if (olderPillsEl) {
+    olderPillsEl.innerHTML = olderPills.map((label) => {
+      const major = versionPillMajor(label);
+      const isCurrent = major !== null && currentMajors.has(major);
+      const badgeClass = isCurrent ? 'badge-success' : 'badge-warning';
+      return `<span class="badge ${badgeClass} ns-product-detail__version-pill" role="listitem">${escapeHtml(label)}</span>`;
+    }).join('');
+  }
+
+  setVisible(currentBox, currentPills.length > 0);
+  setVisible(olderBox, olderPills.length > 0);
+  setVisible(section, currentPills.length > 0 || olderPills.length > 0);
 }
 
 /**

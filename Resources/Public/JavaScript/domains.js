@@ -342,7 +342,7 @@ $(document).on('click', '.t3js-add-domain-modal-trigger', function(e) {
                         if (environmentSelect) environmentSelect.focus();
                         return;
                     }
-                    domain = domain.replace(/^https?:\/\//, '').replace(/\/$/, '').trim();
+                    domain = normalizeDomainInput(domain);
                     let domainValidation = validateDomain(domain);
                     if (!domainValidation.valid) {
                         Notification.error('Invalid domain', domainValidation.message || 'Enter a valid domain (e.g. docs.t3planet.de, typo3-src-12.4.38.ddev.site).');
@@ -406,40 +406,166 @@ $(document).on('click', '.t3js-add-domain-modal-trigger', function(e) {
 });
 
 /**
- * Validate domain format. Valid: docs.t3planet.de, typo3-src-12.4.38.ddev.site, localhost.
- * Invalid: 123, 790d (no dot / not a hostname).
- * @param {string} value - Trimmed domain string (without protocol)
+ * Strip protocol and path; keep hostname and optional port.
+ * @param {string} value
+ * @returns {string}
+ */
+function normalizeDomainInput(value) {
+    if (!value || typeof value !== 'string') {
+        return '';
+    }
+    value = value.trim().replace(/^https?:\/\//i, '');
+    const slashIndex = value.indexOf('/');
+    if (slashIndex !== -1) {
+        value = value.substring(0, slashIndex);
+    }
+    return value.trim();
+}
+
+/**
+ * Split host and optional port. Supports hostname:port, IPv4:port, [::1]:port, and unbracketed ::1.
+ * @param {string} value
+ * @returns {{ host: string, hasPort: boolean, invalid?: boolean, invalidPort?: boolean }}
+ */
+function parseHostAndPort(value) {
+    if (value.charAt(0) === '[') {
+        const close = value.indexOf(']');
+        if (close === -1) {
+            return { host: '', hasPort: false, invalid: true };
+        }
+        const host = value.substring(1, close);
+        const rest = value.substring(close + 1);
+        if (!host) {
+            return { host: '', hasPort: false, invalid: true };
+        }
+        if (!rest) {
+            return { host: host, hasPort: false };
+        }
+        if (rest.charAt(0) !== ':') {
+            return { host: host, hasPort: false, invalid: true };
+        }
+        const port = rest.substring(1);
+        if (!/^\d{1,5}$/.test(port) || Number(port) < 1 || Number(port) > 65535) {
+            return { host: host, hasPort: false, invalidPort: true };
+        }
+        return { host: host, hasPort: true };
+    }
+
+    const colonCount = (value.match(/:/g) || []).length;
+    if (colonCount >= 2) {
+        return { host: value, hasPort: false };
+    }
+
+    let host = value;
+    let hasPort = false;
+    const colonIndex = value.lastIndexOf(':');
+    if (colonIndex !== -1) {
+        const port = value.substring(colonIndex + 1);
+        host = value.substring(0, colonIndex);
+        if (!/^\d{1,5}$/.test(port) || Number(port) < 1 || Number(port) > 65535) {
+            return { host: host, hasPort: false, invalidPort: true };
+        }
+        hasPort = true;
+    }
+    return { host: host, hasPort: hasPort };
+}
+
+/**
+ * @param {string} host
+ * @returns {boolean}
+ */
+function isIpv4Address(host) {
+    const match = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(host);
+    if (!match) {
+        return false;
+    }
+    for (let i = 1; i <= 4; i++) {
+        if (Number(match[i]) > 255) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
+ * True for IPv4 or IPv6 literal hosts (not hostnames).
+ * @param {string} host
+ * @returns {boolean}
+ */
+function isIpAddress(host) {
+    if (isIpv4Address(host)) {
+        return true;
+    }
+    return host.indexOf(':') !== -1 && /^[0-9a-fA-F:]+$/.test(host) && (host.match(/:/g) || []).length >= 2;
+}
+
+/**
+ * Loopback only: 127.0.0.0/8 and ::1. Public, private, and link-local IPs are rejected.
+ * @param {string} host
+ * @returns {boolean}
+ */
+function isLoopbackHost(host) {
+    if (host.toLowerCase() === '::1') {
+        return true;
+    }
+    if (!isIpv4Address(host)) {
+        return false;
+    }
+    return Number(host.split('.')[0]) === 127;
+}
+
+/**
+ * Validate domain format. Valid: docs.t3planet.de, typo3-src-12.4.38.ddev.site,
+ * localhost, t3pbootstrap:8890, 127.0.0.1, 127.0.0.1:8890, ::1.
+ * Invalid: 123, 121.12 (numeric-only), 8.8.8.8 / 192.168.0.1 (non-loopback IPs),
+ * assaasd (single-label without port).
+ * @param {string} value - Domain string (URL, host, or host:port)
  * @returns {{ valid: boolean, message?: string }}
  */
 function validateDomain(value) {
     if (!value || typeof value !== 'string') {
         return { valid: false, message: 'Please enter a domain name.' };
     }
-    value = value.replace(/^https?:\/\//, '').replace(/\/$/, '').trim();
+    value = normalizeDomainInput(value);
     if (!value) {
         return { valid: false, message: 'Please enter a domain name.' };
     }
-    if (value.toLowerCase() === 'localhost') {
-        return { valid: true };
-    }
-    // Must contain at least one dot (e.g. example.com, docs.t3planet.de)
-    if (value.indexOf('.') === -1) {
+
+    const parsed = parseHostAndPort(value);
+    if (parsed.invalid) {
         return { valid: false, message: 'Enter a valid domain' };
     }
+    if (parsed.invalidPort) {
+        return { valid: false, message: 'Enter a valid port number (1-65535).' };
+    }
+    const host = parsed.host;
+    const hasPort = parsed.hasPort;
+    if (!host) {
+        return { valid: false, message: 'Please enter a domain name.' };
+    }
+    if (host.toLowerCase() === 'localhost') {
+        return { valid: true };
+    }
+    if (isIpAddress(host)) {
+        if (isLoopbackHost(host)) {
+            return { valid: true };
+        }
+        return { valid: false, message: 'Only loopback IP addresses (127.0.0.1, ::1) are allowed.' };
+    }
     // Must contain at least one letter (reject e.g. 121.12, 123.456)
-    if (!/[a-zA-Z]/.test(value)) {
+    if (!/[a-zA-Z]/.test(host)) {
         return { valid: false, message: 'Enter a valid domain ' };
     }
     // Only letters, digits, hyphens, dots
-    if (!/^[a-zA-Z0-9.-]+$/.test(value)) {
+    if (!/^[a-zA-Z0-9.-]+$/.test(host)) {
         return { valid: false, message: 'Domain can only contain letters, numbers, hyphens and dots.' };
     }
     // No leading/trailing dot or hyphen
-    if (/^[.-]|[.-]$/.test(value)) {
+    if (/^[.-]|[.-]$/.test(host)) {
         return { valid: false, message: 'Domain cannot start or end with a dot or hyphen.' };
     }
     // Each label (between dots) must be non-empty and valid
-    let labels = value.split('.');
+    let labels = host.split('.');
     for (let i = 0; i < labels.length; i++) {
         let label = labels[i];
         if (!label.length) {
@@ -448,6 +574,10 @@ function validateDomain(value) {
         if (!/^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(label)) {
             return { valid: false, message: 'Invalid domain: each part must start and end with a letter or number.' };
         }
+    }
+    // Single-label hosts (e.g. t3pbootstrap) require a port; random strings like assaasd are rejected
+    if (host.indexOf('.') === -1 && !hasPort) {
+        return { valid: false, message: 'Enter a valid domain' };
     }
     return { valid: true };
 }
@@ -526,7 +656,7 @@ $(document).on('click', '.domains-list__item-action-save', function(e) {
         return;
     }
 
-    newDomain = newDomain.replace(/^https?:\/\//, '').replace(/\/$/, '').trim();
+    newDomain = normalizeDomainInput(newDomain);
     let domainValidation = validateDomain(newDomain);
     if (!domainValidation.valid) {
         Notification.error('Invalid domain', domainValidation.message || 'Enter a valid domain');

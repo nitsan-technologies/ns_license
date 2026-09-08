@@ -1039,7 +1039,7 @@ final class LicenseService
      * Get API base URL from extension configuration (falls back to production).
      * Always returns a URL ending in a single trailing slash.
      */
-    protected function getApiBaseUrl(): string
+    public function getApiBaseUrl(): string
     {
         $configured = $this->getExtensionConfiguration('apiBaseUrl', '');
         if ($configured !== '') {

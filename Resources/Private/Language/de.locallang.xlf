@@ -592,6 +592,10 @@
                 <source>This version supports TYPO3</source>
                 <target>Diese Version unterstützt TYPO3</target>
             </trans-unit>
+            <trans-unit id="license-catalog.detail.version-support.older-label">
+                <source>Older versions also support TYPO3</source>
+                <target>Ältere Versionen unterstützen ebenfalls TYPO3</target>
+            </trans-unit>
             <trans-unit id="license-catalog.detail.tags">
                 <source>Tags</source>
                 <target>Tags</target>
