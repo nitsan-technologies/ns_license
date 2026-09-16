@@ -3,10 +3,13 @@
 namespace NITSAN\NsLicense\Controller;
 
 use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Core\ClassLoadingInformation;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Package\PackageManager;
+use TYPO3\CMS\Core\DependencyInjection\Cache\ContainerBackend;
+use TYPO3\CMS\Core\Service\OpcodeCacheService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use NITSAN\NsLicense\Service\LicenseService;
 use NITSAN\NsLicense\Service\CatalogCacheService;
@@ -461,6 +464,77 @@ class NsLicenseModuleController extends ActionController
     }
 
     /**
+     * Match Extension Manager + Install Tool after a ZIP overwrite (TYPO3 12/13/14).
+     *
+     * EM does not update in-place: it uninstalls, extracts, then activates. Activation
+     * dumps autoload (ClassLoadingInformationUpdater) and PackageActivationService
+     * flushes caches + opcode. Install Tool "Flush cache" also forceFlushes cache.di
+     * because ContainerBackend::flush() is a no-op — CacheManager::flushCaches() alone
+     * leaves the compiled DI container (ArgumentCountError on new constructors).
+     */
+    protected function rebuildAfterExtensionFilesChanged(string $extensionKey = ''): void
+    {
+        $opcodeCacheService = GeneralUtility::makeInstance(OpcodeCacheService::class);
+        $isComposerMode = Environment::isComposerMode();
+
+        try {
+            // Same order as InstallUtility::reloadPackageInformation()
+            $opcodeCacheService->clearAllActive();
+
+            if ($extensionKey !== '') {
+                try {
+                    $packageManager = GeneralUtility::makeInstance(PackageManager::class);
+                    if ($packageManager->isPackageAvailable($extensionKey)) {
+                        $packageManager->reloadPackageInformation($extensionKey);
+                        // Same as PackageManager::activatePackage() for the current request.
+                        if (!$isComposerMode && $packageManager->isPackageActive($extensionKey)) {
+                            ClassLoadingInformation::registerTransientClassLoadingInformationForPackage(
+                                $packageManager->getPackage($extensionKey)
+                            );
+                        }
+                    }
+                } catch (\Throwable) {
+                    // First extract may run before the package is registered.
+                }
+            }
+
+            // Same as ClassLoadingInformationUpdater after EM activate/deactivate.
+            if (!$isComposerMode) {
+                ClassLoadingInformation::dumpClassLoadingInformation();
+            }
+
+            $opcodeCacheService->clearAllActive();
+            $this->flushTypo3AndDiCaches();
+        } catch (\Throwable) {
+            try {
+                $this->flushTypo3AndDiCaches();
+            } catch (\Throwable) {
+            }
+        }
+    }
+
+    /**
+     * Flush TYPO3 caches and the DI container (Install Tool / cache:flush --group di).
+     */
+    protected function flushTypo3AndDiCaches(): void
+    {
+        $this->cacheManager->flushCaches();
+        try {
+            $container = GeneralUtility::getContainer();
+            if ($container->has('cache.di')) {
+                $backend = $container->get('cache.di')->getBackend();
+                if ($backend instanceof ContainerBackend) {
+                    $backend->forceFlush();
+                } elseif (method_exists($backend, 'forceFlush')) {
+                    $backend->forceFlush();
+                }
+            }
+        } catch (\Throwable) {
+            // cache.di is always present on 12/13/14; skip if the container is failsafe.
+        }
+    }
+
+    /**
      * action activation.
      *
      * @param array $params
@@ -557,8 +631,8 @@ class NsLicenseModuleController extends ActionController
                             }
                         }
 
-                        // Let's flush all the cache to change the version number
-                        $this->cacheManager->flushCaches();
+                        // Rebuild autoload + opcode + TYPO3 caches so new constructors/DI are used on the next request.
+                        $this->rebuildAfterExtensionFilesChanged((string)($licenseData['extension_key'] ?? ''));
                     } catch (\Exception $e) {
                         if (str_contains($e->getMessage(), 'Unable to open zip')) {
                             return $this->finishActivation(
@@ -606,8 +680,8 @@ class NsLicenseModuleController extends ActionController
                                     );
                                 }
                             }
-                            // Let's flush all the cache to change the version number
-                            $this->cacheManager->flushCaches();
+                            // Rebuild autoload + opcode + TYPO3 caches so new constructors/DI are used on the next request.
+                            $this->rebuildAfterExtensionFilesChanged((string)($licenseData['extension_key'] ?? ''));
                         } catch (\Exception $e) {
                             if (str_contains($e->getMessage(), 'Unable to open zip')) {
                                 return $this->finishActivation(
@@ -722,6 +796,7 @@ class NsLicenseModuleController extends ActionController
                     }
                 }
 
+                $this->rebuildAfterExtensionFilesChanged((string)($licenseData['extension_key'] ?? ''));
                 return $this->finishActivation($successMessage, $successTitle, ContextualFeedbackSeverity::OK);
             }
             $title = is_array($licenseData) ? ($licenseData['extKey'] ?? 'ERROR') : 'ERROR';
