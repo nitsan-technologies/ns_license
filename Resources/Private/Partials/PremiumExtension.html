@@ -264,7 +264,7 @@
                                         data-title="{f:translate(key: 'license-activation.update_extension', extensionName: 'ns_license')}"
                                         data-content="{f:translate(key: 'license-activation.update_extension_msg', extensionName: 'ns_license')}"
                                         data-confirm-text="{f:translate(key: 'license-activation.update_extension_btn_update', extensionName: 'ns_license')}"
-                                        arguments="{extension: {extension_key: extension.key, license_key: extension.details.license_key}}">
+                                        arguments="{extension: {extension_key: extension.key, license_key: extension.details.license_key, version: extension.version}}">
                                         <core:icon identifier="actions-synchronize" size="small" />
                                         <f:translate key="license-activation.updateTo" /> {extension.details.lts_version}
                                     </f:link.action>

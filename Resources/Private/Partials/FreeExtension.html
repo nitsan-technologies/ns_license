@@ -84,7 +84,7 @@
                         </f:if>
                         <div class="actions-wrapper d-flex flex-wrap justify-content-between gap-2 mb-0">
                             <div class="actions-wrapper-inner d-flex flex-wrap gap-2">
-                                <f:if condition="{extension.key}">
+                                <f:if condition="{extension.key} && {extension.key} != 'ns_t3af'">
                                     <button type="button" class="btn btn-primary btn-sm t3js-get-license-trigger"
                                         data-extension-key="{extension.key}" data-gl-mode="trial">
                                         <core:icon identifier="actions-plus" size="small" />

@@ -365,6 +365,11 @@ class NsLicenseModuleController extends ActionController
                 $this->addFlashMessage(LocalizationUtility::translate('errorMessage.license_expired', 'NsLicense'), 'Your annual License key is expired', ContextualFeedbackSeverity::ERROR);
                 return $this->redirect('list');
             }
+            // Capture installed version before overwrite so ns_revolution_slider can locate the backup folder.
+            $installedVersion = trim((string)$this->extensionListService->getVersionFromEmconf($extKey));
+            if ($installedVersion !== '') {
+                $params['extension']['version'] = $installedVersion;
+            }
             // Let's take backup to /uploads/ns_license/
             $this->extensionArchiveService->getBackupToUploadFolder($extKey);
             $params['extension']['license'] = $params['extension']['license_key'];
@@ -650,63 +655,65 @@ class NsLicenseModuleController extends ActionController
 
                 // Special code for EXT.ns_revolution_slider
                 if (isset($params['extension_key']) && $params['extension_key'] == 'ns_revolution_slider') {
-
-                    $versionOriginalId = $params['version'];
-                    $this->extensionListService->getVersionFromEmconf($params['extension_key']);
-
-                    // Setup Plugin
-                    $pluginsFolder = $this->siteRoot . 'uploads/ns_license/ns_revolution_slider/' . $versionOriginalId . '/vendor/wp/wp-content/plugins/';
-                    $mainPluginsUploadFolder = $this->siteRoot . 'typo3conf/ext/ns_revolution_slider/Resources/Public/vendor/wp/wp-content/plugins/';
-                    if (Environment::isComposerMode()) {
-                        $mainPluginsUploadFolder = Environment::getProjectPath() . '/vendor/nitsan/ns-revolution-slider/Resources/Public/vendor/wp/wp-content/plugins/';
-                    }
-
-                    //Check if old structure is available while migrating the extension from <=11 to 12.x
-                    if (file_exists($this->siteRoot . 'typo3conf/ext/ns_revolution_slider/vendor/')) {
-                        $mainPluginsUploadFolder = $this->siteRoot . 'typo3conf/ext/ns_revolution_slider/vendor/wp/wp-content/plugins/';
+                    // Must be the pre-update version (backup folder name). Do not read emconf here: ZIP is already extracted.
+                    $versionOriginalId = trim((string)($params['version'] ?? ''));
+                    if ($versionOriginalId !== '') {
+                        // Setup Plugin
+                        $pluginsFolder = $this->siteRoot . 'uploads/ns_license/ns_revolution_slider/' . $versionOriginalId . '/vendor/wp/wp-content/plugins/';
+                        $mainPluginsUploadFolder = $this->siteRoot . 'typo3conf/ext/ns_revolution_slider/Resources/Public/vendor/wp/wp-content/plugins/';
                         if (Environment::isComposerMode()) {
-                            $mainPluginsUploadFolder = Environment::getProjectPath() . '/vendor/nitsan/ns-revolution-slider/vendor/wp/wp-content/plugins/';
+                            $mainPluginsUploadFolder = Environment::getProjectPath() . '/vendor/nitsan/ns-revolution-slider/Resources/Public/vendor/wp/wp-content/plugins/';
                         }
-                    }
 
-                    $folders = GeneralUtility::get_dirs($pluginsFolder);
-                    if (is_array($folders) && !empty($folders)) {
-                        try {
-                            foreach ($folders as $folder) {
-                                if ($folder !== 'revslider') {
-                                    $pluginsSouceFolder = $pluginsFolder . $folder . '/';
-                                    $pluginsUploadFolder = $mainPluginsUploadFolder . $folder . '/';
+                        //Check if old structure is available while migrating the extension from <=11 to 12.x
+                        if (file_exists($this->siteRoot . 'typo3conf/ext/ns_revolution_slider/vendor/')) {
+                            $mainPluginsUploadFolder = $this->siteRoot . 'typo3conf/ext/ns_revolution_slider/vendor/wp/wp-content/plugins/';
+                            if (Environment::isComposerMode()) {
+                                $mainPluginsUploadFolder = Environment::getProjectPath() . '/vendor/nitsan/ns-revolution-slider/vendor/wp/wp-content/plugins/';
+                            }
+                        }
 
-                                    GeneralUtility::rmdir($pluginsUploadFolder, true);
-                                    GeneralUtility::mkdir_deep($pluginsUploadFolder);
-                                    GeneralUtility::copyDirectory($pluginsSouceFolder, $pluginsUploadFolder);
+                        $folders = GeneralUtility::get_dirs($pluginsFolder);
+                        if (is_array($folders) && !empty($folders)) {
+                            try {
+                                foreach ($folders as $folder) {
+                                    if ($folder !== 'revslider') {
+                                        $pluginsSouceFolder = $pluginsFolder . $folder . '/';
+                                        $pluginsUploadFolder = $mainPluginsUploadFolder . $folder . '/';
+
+                                        GeneralUtility::rmdir($pluginsUploadFolder, true);
+                                        GeneralUtility::mkdir_deep($pluginsUploadFolder);
+                                        GeneralUtility::copyDirectory($pluginsSouceFolder, $pluginsUploadFolder);
+                                    }
+                                }
+                            } catch (\Exception $e) {
+                                return $this->finishActivation($e->getMessage(), 'Extension not updated', ContextualFeedbackSeverity::ERROR);
+                            }
+                        }
+
+                        // Setup Main Uploads — only when the backup source exists, so a missing backup cannot wipe live files.
+                        $revsliderSourceFolder = $this->siteRoot . 'uploads/ns_license/ns_revolution_slider/' . $versionOriginalId . '/Resources/Public/vendor/wp/wp-content/uploads/';
+                        if (is_dir($revsliderSourceFolder)) {
+                            $revsliderUploadFolder = $this->siteRoot . 'typo3conf/ext/ns_revolution_slider/Resources/Public/vendor/wp/wp-content/uploads/';
+                            if (Environment::isComposerMode()) {
+                                $revsliderUploadFolder = Environment::getProjectPath() . '/vendor/nitsan/ns-revolution-slider/Resources/Public/vendor/wp/wp-content/uploads/';
+                            }
+
+                            //Check if old structure is available while migrating the extension from <=11 to 12.x
+                            if (file_exists($this->siteRoot . 'typo3conf/ext/ns_revolution_slider/vendor/')) {
+                                $revsliderUploadFolder = $this->siteRoot . 'typo3conf/ext/ns_revolution_slider/vendor/wp/wp-content/uploads/';
+                                if (Environment::isComposerMode()) {
+                                    $revsliderUploadFolder = Environment::getProjectPath() . '/vendor/nitsan/ns-revolution-slider/vendor/wp/wp-content/uploads/';
                                 }
                             }
-                        } catch (\Exception $e) {
-                            return $this->finishActivation($e->getMessage(), 'Extension not updated', ContextualFeedbackSeverity::ERROR);
+                            try {
+                                GeneralUtility::rmdir($revsliderUploadFolder, true);
+                                GeneralUtility::mkdir_deep($revsliderUploadFolder);
+                                GeneralUtility::copyDirectory($revsliderSourceFolder, $revsliderUploadFolder);
+                            } catch (\Exception $e) {
+                                return $this->finishActivation($e->getMessage(), 'Extension not updated', ContextualFeedbackSeverity::ERROR);
+                            }
                         }
-                    }
-
-                    // Setup Main Uploads
-                    $revsliderSourceFolder = $this->siteRoot . 'uploads/ns_license/ns_revolution_slider/' . $versionOriginalId . '/Resources/Public/vendor/wp/wp-content/uploads/';
-                    $revsliderUploadFolder = $this->siteRoot . 'typo3conf/ext/ns_revolution_slider/Resources/Public/vendor/wp/wp-content/uploads/';
-                    if (Environment::isComposerMode()) {
-                        $revsliderUploadFolder = Environment::getProjectPath() . '/vendor/nitsan/ns-revolution-slider/Resources/Public/vendor/wp/wp-content/uploads/';
-                    }
-
-                    //Check if old structure is available while migrating the extension from <=11 to 12.x
-                    if (file_exists($this->siteRoot . 'typo3conf/ext/ns_revolution_slider/vendor/')) {
-                        $revsliderUploadFolder = $this->siteRoot . 'typo3conf/ext/ns_revolution_slider/vendor/wp/wp-content/uploads/';
-                        if (Environment::isComposerMode()) {
-                            $revsliderUploadFolder = Environment::getProjectPath() . '/vendor/nitsan/ns-revolution-slider/vendor/wp/wp-content/uploads/';
-                        }
-                    }
-                    try {
-                        GeneralUtility::rmdir($revsliderUploadFolder, true);
-                        GeneralUtility::mkdir_deep($revsliderUploadFolder);
-                        GeneralUtility::copyDirectory($revsliderSourceFolder, $revsliderUploadFolder);
-                    } catch (\Exception $e) {
-                        return $this->finishActivation($e->getMessage(), 'Extension not updated', ContextualFeedbackSeverity::ERROR);
                     }
 
                     // Update Path in Database (If Composer Mode)

@@ -881,6 +881,11 @@ function populateSecurity(view, item) {
   if (!section) {
     return;
   }
+  const extensionKey = String(item.extensionKey || item.extension_key || '').trim();
+  if (extensionKey === 'ns_t3af') {
+    setVisible(section, false);
+    return;
+  }
   const checksumEl = view.querySelector('.js-product-detail-checksum');
   const checksum = String(
     item.sha256
