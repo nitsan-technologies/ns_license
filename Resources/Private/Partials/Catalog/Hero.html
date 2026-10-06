@@ -169,26 +169,36 @@
                                 </f:if>
                             </f:then>
                             <f:else>
-                                <f:if condition="{item.extensionKey}">
-                                    <button type="button"
-                                        class="btn btn-primary t3js-get-license-trigger"
-                                        data-extension-key="{item.extensionKey}"
-                                        data-gl-mode="trial">
-                                        <core:icon identifier="actions-plus" size="small" />
-                                        <span><f:translate key="license-shop.free-trial" extensionName="ns_license" /></span>
-                                    </button>
-                                    <button type="button"
-                                        class="btn btn-default t3js-get-license-trigger"
-                                        data-extension-key="{item.extensionKey}"
-                                        data-gl-mode="buy">
-                                        <core:icon identifier="actions-plus" size="small" />
-                                        <span>
-                                            <f:if condition="{item.price}">
-                                                <f:then>{item.price} <f:translate key="license-catalog.detail.buy-now" extensionName="ns_license" /></f:then>
-                                                <f:else><f:translate key="license-catalog.detail.buy-now" extensionName="ns_license" /></f:else>
-                                            </f:if>
-                                        </span>
-                                    </button>
+                                <f:if condition="{item.extensionKey} && {item.priceValue} > 0">
+                                    <f:then>
+                                        <button type="button"
+                                            class="btn btn-primary t3js-get-license-trigger"
+                                            data-extension-key="{item.extensionKey}"
+                                            data-gl-mode="trial">
+                                            <core:icon identifier="actions-plus" size="small" />
+                                            <span><f:translate key="license-shop.free-trial" extensionName="ns_license" /></span>
+                                        </button>
+                                        <button type="button"
+                                            class="btn btn-default t3js-get-license-trigger"
+                                            data-extension-key="{item.extensionKey}"
+                                            data-gl-mode="buy">
+                                            <core:icon identifier="actions-plus" size="small" />
+                                            <span>
+                                                <f:if condition="{item.price}">
+                                                    <f:then>{item.price} <f:translate key="license-catalog.detail.buy-now" extensionName="ns_license" /></f:then>
+                                                    <f:else><f:translate key="license-catalog.detail.buy-now" extensionName="ns_license" /></f:else>
+                                                </f:if>
+                                            </span>
+                                        </button>
+                                    </f:then>
+                                    <f:else>
+                                        <f:if condition="{item.knowMoreUrl}">
+                                            <a href="{item.knowMoreUrl}" class="btn btn-default" target="_blank" rel="noopener noreferrer">
+                                                <core:icon identifier="actions-window-open" size="small" />
+                                                <span><f:translate key="license-shop.know-more" extensionName="ns_license" /></span>
+                                            </a>
+                                        </f:if>
+                                    </f:else>
                                 </f:if>
                             </f:else>
                         </f:if>
