@@ -1771,12 +1771,19 @@ document.addEventListener('click', (e) => {
   const trigger = e.target.closest('.t3js-get-license-trigger');
   if (!trigger) return;
   e.preventDefault();
+  openGetLicenseModal(trigger.dataset.extensionKey || '', trigger.dataset.glMode || '');
+});
 
+/**
+ * Open the Get License wizard for an extension key and mode ('trial' | 'buy' | '').
+ * Shared by `.t3js-get-license-trigger` clicks and the ?trial= deep link.
+ */
+function openGetLicenseModal(extensionKey, mode) {
   const modal = document.getElementById(MODAL_ID);
   if (!modal) return;
 
-  const extensionKey = trigger.dataset.extensionKey || '';
-  const glMode = (trigger.dataset.glMode || '').trim().toLowerCase();
+  extensionKey = String(extensionKey || '').trim();
+  const glMode = String(mode || '').trim().toLowerCase();
 
   trialContext = null;
   purchaseContext = null;
@@ -1801,7 +1808,7 @@ document.addEventListener('click', (e) => {
       }
     }
   });
-});
+}
 
 // Welcome: Skip / Get Started → product step
 document.addEventListener('click', (e) => {
@@ -2070,8 +2077,62 @@ document.addEventListener('paste', (e) => {
   showOtpFeedback(modal, '');
 });
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', maybeShowPurchaseReturnSuccess);
-} else {
+/**
+ * Deep link (?trial=<extension_key>[#free-section]), e.g. from another extension's
+ * "Start free trial" button. Shows the tab that lists the product, scrolls to it,
+ * and opens the Get License wizard in trial mode with the product preselected.
+ * Paid products are not in "My Extensions > Free" (that list only holds installed
+ * free items), so fall back to the Extensions catalog tab; the modal is opened
+ * directly and does not depend on a (possibly AJAX-rendered) card button.
+ */
+function maybeOpenTrialDeepLink() {
+  let url;
+  try {
+    url = new URL(window.location.href);
+  } catch {
+    return;
+  }
+  const key = String(url.searchParams.get('trial') || '').trim();
+  if (!key) {
+    return;
+  }
+  try {
+    url.searchParams.delete('trial');
+    const next = url.pathname + (url.searchParams.toString() ? `?${url.searchParams}` : '') + url.hash;
+    window.history.replaceState(window.history.state, '', next);
+  } catch {
+    /* ignore */
+  }
+  if (!/^[a-z0-9_]+$/i.test(key) || !document.getElementById(MODAL_ID)) {
+    return;
+  }
+
+  const selector = `.t3js-get-license-trigger[data-gl-mode="trial"][data-extension-key="${key}"]`;
+  const pane = document.getElementById('extensions-pane');
+  const inMyExtensions = pane ? pane.querySelector(selector) : null;
+  if (inMyExtensions) {
+    const myTab = document.getElementById('my-extensions-tab');
+    if (myTab && !myTab.classList.contains('active')) {
+      myTab.click();
+    }
+    (document.getElementById('free-section') || inMyExtensions).scrollIntoView({ block: 'start' });
+  } else {
+    const catalogTab = document.getElementById('extensions-catalog-tab');
+    if (catalogTab) {
+      catalogTab.click();
+    }
+  }
+
+  openGetLicenseModal(key, 'trial');
+}
+
+function initGetLicenseFromUrl() {
   maybeShowPurchaseReturnSuccess();
+  maybeOpenTrialDeepLink();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initGetLicenseFromUrl);
+} else {
+  initGetLicenseFromUrl();
 }
