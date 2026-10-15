@@ -1892,6 +1892,14 @@ button.catalog-hero__wordmark.catalog-card__media-btn {
   color: var(--typo3-text-color-variant, light-dark(#6b7280, #b0b0b0));
 }
 
+/* t3sbootstrap (extension setting "preview") loads bestyles.css after the core .w-100 utility and
+ * forces every .card-size-small to calc(50% - gap) !important once its container is >= 992px.
+ * Two classes outrank it, so cards marked full width stay full width in the module and in the
+ * Get License modal (rendered outside .ns-license-module). */
+:where(.ns-license-module-wrapper, .ns-get-license-modal) .card-size-small.w-100 {
+  width: 100% !important;
+}
+
 /* Catalog listing cards — own grid so wrappers work on v12–v14
  * (v12/v13 .card-container is flex + .card-size-* on direct children;
  *  v14 uses CSS grid on .card-container. Our .catalog-card wrapper breaks
