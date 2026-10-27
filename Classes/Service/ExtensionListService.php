@@ -359,6 +359,9 @@ class ExtensionListService
         $extFolder = $this->getExtensionFolder($extKey);
         if (is_file($extFolder . 'ext_emconf.php')) {
             $EM_CONF = [];
+            // Same as PackageManager::getExtensionEmConf() — typical ext_emconf.php
+            // does $EM_CONF[$_EXTKEY] = [...]. Without this, PHP 8.5 deprecates null offsets.
+            $_EXTKEY = $extKey;
             include $extFolder . 'ext_emconf.php';
             $arrEmConf = [];
             if (isset($EM_CONF[$extKey]) && is_array($EM_CONF[$extKey])) {
