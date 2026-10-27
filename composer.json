@@ -52,7 +52,10 @@
           "cms-package-dir": "{$vendor-dir}/typo3/cms",
           "web-dir": ".Build/public",
           "extension-key": "ns_license",
-          "version": "14.5.4"
+          "version": "14.5.4",
+          "Package": {
+              "providesPackages": {}
+          }
       }
   }
 }
