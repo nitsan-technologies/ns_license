@@ -355,12 +355,19 @@ class ExtensionListService
     public function getVersionFromEmconf($extKey)
     {
         $versionId = '';
-        // Let's grab mannualy the Version Id
+        $extKey = (string)$extKey;
         $extFolder = $this->getExtensionFolder($extKey);
         if (is_file($extFolder . 'ext_emconf.php')) {
+            $EM_CONF = [];
             include $extFolder . 'ext_emconf.php';
-            $arrEmConf = (isset($EM_CONF[$extKey])) ? $EM_CONF[$extKey] : $EM_CONF[null];
-            $versionId = $arrEmConf['version'];
+            $arrEmConf = [];
+            if (isset($EM_CONF[$extKey]) && is_array($EM_CONF[$extKey])) {
+                $arrEmConf = $EM_CONF[$extKey];
+            } elseif ($EM_CONF !== []) {
+                $first = reset($EM_CONF);
+                $arrEmConf = is_array($first) ? $first : [];
+            }
+            $versionId = (string)($arrEmConf['version'] ?? '');
         }
         return $versionId;
     }

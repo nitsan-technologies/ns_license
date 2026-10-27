@@ -22,7 +22,10 @@ class Setup
         if (is_object($extname)) {
             $extname = array_key_first($extname->getPackageKeys());
         }
-        if (str_contains($extname, 'ns_theme_')   && $extname != 'ns_license' && $extname != 'ns_basetheme') {
+        if (!is_string($extname) || $extname === '') {
+            return;
+        }
+        if (str_contains($extname, 'ns_theme_') && $extname != 'ns_license' && $extname != 'ns_basetheme') {
             $this->nsLicenseModule->connectToServer($extname, 1, 'checkTheme');
         }
     }

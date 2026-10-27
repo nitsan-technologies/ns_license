@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace NITSAN\NsLicense\Service;
 
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Http\NormalizedParams;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -42,9 +44,29 @@ final class LicenseService
         $this->composerApiClient = $composerApiClient;
     }
 
-   
+    /**
+     * Current HTTP host without GeneralUtility::getIndpEnv() (deprecated in TYPO3 14.3).
+     */
+    public function getHttpHost(): string
+    {
+        $request = $GLOBALS['TYPO3_REQUEST'] ?? null;
+        if ($request instanceof ServerRequestInterface) {
+            $normalizedParams = $request->getAttribute('normalizedParams');
+            if (!$normalizedParams instanceof NormalizedParams) {
+                $normalizedParams = NormalizedParams::createFromRequest($request);
+            }
+            $host = $normalizedParams->getHttpHost();
+            if ($host !== '') {
+                return $host;
+            }
+        }
+
+        return (string)($_SERVER['HTTP_HOST'] ?? '');
+    }
+
     public function connectToServer($extKey = null, $reload = 0, $checkType = '')
     {
+        $extKey = is_string($extKey) ? $extKey : '';
         $extFolder = $this->extensionListService->getExtensionFolder($extKey);
       
         if (!isset($_COOKIE['serverConnectionTime']) || $reload) {
@@ -52,7 +74,7 @@ final class LicenseService
 
             if ($checkType == 'checkTheme') {
                 $licenseData = $this->fetchLicense(
-                    'domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_key=' . $extKey . '&typo3_version=' . $this->typo3Version,
+                    'domain=' . $this->getHttpHost() . '&ns_key=' . $extKey . '&typo3_version=' . $this->typo3Version,
                     $extKey
                 );
                 if (is_array($licenseData) && (isset($licenseData['status']) || isset($licenseData['checkTheme']))) {
@@ -63,7 +85,7 @@ final class LicenseService
                 $extData = $this->nsLicenseRepository->fetchData($extKey);
                 if (!empty($extData)) {
                     $licenseData = $this->fetchLicense(
-                        'domain=' . GeneralUtility::getIndpEnv('HTTP_HOST') . '&ns_license=' . $extData[0]['license_key'] . '&typo3_version=' . $this->typo3Version,
+                        'domain=' . $this->getHttpHost() . '&ns_license=' . $extData[0]['license_key'] . '&typo3_version=' . $this->typo3Version,
                         $extKey
                     );
                     if (is_array($licenseData)) {
@@ -281,7 +303,7 @@ final class LicenseService
         $apiBaseUrl = $this->getApiBaseUrl();
 
         // First, validate the license key by calling GetComposerDetails.php
-        $currentDomain = GeneralUtility::getIndpEnv('HTTP_HOST');
+        $currentDomain = $this->getHttpHost();
         $validateQuery = $this->appendEnvironmentQuery(
             'domain=' . urlencode($currentDomain) . '&ns_license=' . urlencode($licenseKey) . '&typo3_version=' . $this->typo3Version,
             $extensionKey !== '' ? $extensionKey : null
