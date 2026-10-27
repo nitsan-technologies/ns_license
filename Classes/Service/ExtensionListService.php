@@ -355,12 +355,22 @@ class ExtensionListService
     public function getVersionFromEmconf($extKey)
     {
         $versionId = '';
-        // Let's grab mannualy the Version Id
+        $extKey = (string)$extKey;
         $extFolder = $this->getExtensionFolder($extKey);
         if (is_file($extFolder . 'ext_emconf.php')) {
+            $EM_CONF = [];
+            // Same as PackageManager::getExtensionEmConf() — typical ext_emconf.php
+            // does $EM_CONF[$_EXTKEY] = [...]. Without this, PHP 8.5 deprecates null offsets.
+            $_EXTKEY = $extKey;
             include $extFolder . 'ext_emconf.php';
-            $arrEmConf = (isset($EM_CONF[$extKey])) ? $EM_CONF[$extKey] : $EM_CONF[null];
-            $versionId = $arrEmConf['version'];
+            $arrEmConf = [];
+            if (isset($EM_CONF[$extKey]) && is_array($EM_CONF[$extKey])) {
+                $arrEmConf = $EM_CONF[$extKey];
+            } elseif ($EM_CONF !== []) {
+                $first = reset($EM_CONF);
+                $arrEmConf = is_array($first) ? $first : [];
+            }
+            $versionId = (string)($arrEmConf['version'] ?? '');
         }
         return $versionId;
     }

@@ -36,13 +36,7 @@ class NsLicenseRepository
         if ($isAvailable) {
             $this->updateData($data, 1);
         } else if($data->license_key){
-            $extensionDownloadUrl = $data->extension_download_url ?? [];
-            if (PHP_VERSION > 8) {
-                $extensionDownloadUrl = $data->extension_download_url ? get_mangled_object_vars($data->extension_download_url) : [];
-            }
-            if (!is_array($extensionDownloadUrl)) {
-                $extensionDownloadUrl = [];
-            }
+            $extensionDownloadUrl = ProductBundleRegistry::toDownloadUrlMap($data->extension_download_url ?? []);
             $key = null;
             if ($extensionDownloadUrl !== []) {
                 end($extensionDownloadUrl);
@@ -145,17 +139,7 @@ class NsLicenseRepository
      */
     public function updateData($data, $ltsCheck = 0): void
     {
-        $extensionDownloadUrl = $data->extension_download_url ?? [];
-        if (PHP_VERSION > 8) {
-            if ($data->extension_download_url) {
-                $extensionDownloadUrl = get_mangled_object_vars($data->extension_download_url);
-            } else {
-                $extensionDownloadUrl = [];
-            }
-        }
-        if (!is_array($extensionDownloadUrl)) {
-            $extensionDownloadUrl = [];
-        }
+        $extensionDownloadUrl = ProductBundleRegistry::toDownloadUrlMap($data->extension_download_url ?? []);
         $key = null;
         if ($extensionDownloadUrl !== []) {
             end($extensionDownloadUrl);
@@ -271,11 +255,11 @@ class NsLicenseRepository
         $connection = $connectionPool->getConnectionForTable('wp_revslider_slides');
         $query1 = "UPDATE wp_revslider_slides SET params = JSON_REPLACE(params, '$.bg.image', REPLACE(JSON_UNQUOTE(JSON_EXTRACT(params, '$.bg.image')), '/typo3conf/ext/ns_revolution_slider/', $convertedPath)) WHERE JSON_UNQUOTE(JSON_EXTRACT(params, '$.bg.image')) LIKE '%/typo3conf/ext/ns_revolution_slider/%'";
 
-        $connection->executeQuery($query1);
+        $connection->executeStatement($query1);
         $query2 = "UPDATE wp_revslider_slides SET params = JSON_REPLACE(params, '$.thumb.customThumbSrc', REPLACE(JSON_UNQUOTE(JSON_EXTRACT(params, '$.thumb.customThumbSrc')), '/typo3conf/ext/ns_revolution_slider/', $convertedPath))
             WHERE JSON_UNQUOTE(JSON_EXTRACT(params, '$.thumb.customThumbSrc')) LIKE '%/typo3conf/ext/ns_revolution_slider/%'";
 
-        $connection->executeQuery($query2);
+        $connection->executeStatement($query2);
     }
 
     /**

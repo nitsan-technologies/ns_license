@@ -21,15 +21,26 @@ final class ProductBundleRegistry
     }
 
     /**
+     * Normalize a download-url map from JSON (object or array) without PHP 8 TypeErrors.
+     *
+     * @return array<string, mixed>
+     */
+    public static function toDownloadUrlMap(mixed $downloadUrl): array
+    {
+        if (is_object($downloadUrl)) {
+            return get_mangled_object_vars($downloadUrl);
+        }
+
+        return is_array($downloadUrl) ? $downloadUrl : [];
+    }
+
+    /**
      * @return array{version:string,ltsVersion:string}
      */
     public static function resolveDownloadVersions(object $data, string $downloadField): array
     {
-        $downloadUrl = $data->{$downloadField} ?? [];
-        if (PHP_VERSION_ID >= 80000 && $downloadUrl !== []) {
-            $downloadUrl = get_mangled_object_vars($downloadUrl);
-        }
-        if (!is_array($downloadUrl) || $downloadUrl === []) {
+        $downloadUrl = self::toDownloadUrlMap($data->{$downloadField} ?? []);
+        if ($downloadUrl === []) {
             return ['version' => '', 'ltsVersion' => ''];
         }
 
